@@ -30,6 +30,21 @@ def topic_csv(sep_dir):
 
     return output.getvalue()
 
+@route('/docs/<sep_dir>')
+def doc_csv(sep_dir, threshold=0.2):
+
+    response.content_type = 'text/csv; charset=UTF8'
+
+    doc_id = sep_dir + '.txt'
+    data = lda_v.sim_doc_doc(doc_id)
+
+    output=StringIO()
+    writer = csv.writer(output)
+    writer.writerow(['doc','prob'])
+    writer.writerows([(t, "%6f" % p) for t,p in data if p > threshold])
+
+    return output.getvalue()
+
 
 @route('/<filename:path>')
 def send_static(filename):
