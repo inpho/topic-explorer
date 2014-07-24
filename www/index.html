@@ -68,9 +68,9 @@ var svg = d3.select("body").append("svg")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-d3.csv("/topics/epistemology", function(error, data) {
+d3.csv("/docs/epistemology", function(error, data) {
   console.log(data);
-  x.domain(data.map(function(d) { return d.topic; }));
+  x.domain(data.map(function(d) { return d.doc; }));
   y.domain([0, d3.max(data, function(d) { return d.prob; })]);
 
   svg.append("g")
@@ -92,7 +92,7 @@ d3.csv("/topics/epistemology", function(error, data) {
       .data(data)
     .enter().append("rect")
       .attr("class", "bar")
-      .attr("x", function(d) { return x(d.topic); })
+      .attr("x", function(d) { return x(d.doc); })
       .attr("width", x.rangeBand())
       .attr("y", function(d) { return y(d.prob); })
       .attr("height", function(d) { return height - y(d.prob); });
