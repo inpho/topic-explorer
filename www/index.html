@@ -31,10 +31,6 @@
     shape-rendering: crispEdges;
 }
 
-.x.axis path {
-    display: none;
-}
-
 </style>
 
 
@@ -86,7 +82,7 @@ d3.csv("/docs/" + sepdir, function(error, data) {
 
   svg.append("g")
       .attr("class", "x axis")
-      .attr("transform", "translate(0," + height + ")")
+      .attr("transform", "translate(10," + height + ")")
       .call(xAxis)
     .append("text")
       //.attr("transform", "rotate(-90)")
@@ -103,7 +99,7 @@ d3.csv("/docs/" + sepdir, function(error, data) {
       .data(data)
     .enter().append("rect")
       .attr("class", "bar")
-      .attr("x", margin.right)
+      .attr("x", "10")
       .attr("width", function(d) { return x(d.prob); })
       .attr("y", function(d) { return y(d.doc); })
       .attr("height", y.rangeBand());
