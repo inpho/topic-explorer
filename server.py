@@ -9,7 +9,7 @@ from vsm.viewer.ldagibbsviewer import LDAGibbsViewer as LDAViewer
 
 from bottle import response, route, run, static_file
 
-path = '/media/Media/inphosemantics/'
+path = '/var/inphosemantics/data/20130101/sep/vsm-data/'
 
 lda_c = Corpus.load(path + 'sep-nltk-freq1.npz')
 lda_m = LCM.load(path + 'sep-nltk-freq1-LdaCgsMulti-K140-2000-chain2.model.npz')
@@ -54,5 +54,5 @@ def send_static(filename):
 def index():
     return send_static('index.html')
 
-run(host='localhost', port='8080')
+run(host='inphodata.cogs.indiana.edu', port='8888')
 
