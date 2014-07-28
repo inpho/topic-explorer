@@ -1,4 +1,5 @@
 import csv
+import json
 from StringIO import StringIO
 
 from vsm.corpus import Corpus
@@ -41,9 +42,25 @@ def doc_csv(sep_dir, threshold=0.2):
     output=StringIO()
     writer = csv.writer(output)
     writer.writerow(['doc','prob'])
-    writer.writerows([(t[:-4], "%6f" % p) for t,p in data if p > threshold])
+    writer.writerows([(d[:-4], "%6f" % p) for d,p in data if p > threshold])
 
     return output.getvalue()
+
+@route('/docs_topics/<sep_dir>.json')
+def doc_topics(sep_dir, threshold=0.5):
+
+    response.content_type = 'application/json; charset=UTF8'
+
+    doc_id = sep_dir + '.txt'
+    data = lda_v.sim_doc_doc(doc_id)
+
+    js = []
+    for doc, prob in data:
+        if prob > threshold:
+            js.append({'doc' : doc[:-4], 'prob' : prob,
+                'topics' : dict([(t, p) for t,p in lda_v.doc_topics(doc)])})
+
+    return json.dumps(js)
 
 
 @route('/<filename:path>')

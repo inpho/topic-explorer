@@ -60,6 +60,9 @@ var x = d3.scale.linear()
 var y = d3.scale.ordinal()
     .rangeRoundBands([0, height], .1);
 
+var color = d3.scale.ordinal()
+    .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+
 var xAxis = d3.svg.axis()
     .scale(x)
     .orient("bottom")
@@ -74,11 +77,19 @@ var svg = d3.select("body").append("svg")
     .attr("height", height + margin.top + margin.bottom)
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-d3.csv("/docs/" + sepdir, function(error, data) {
+var tops;
+d3.json("/docs_topics/" + sepdir + '.json', function(error, data) {
   console.log(data);
   x.domain([0, d3.max(data, function(d) { return d.prob; })]);
   y.domain(data.map(function(d) { return d.doc; }));
+  tops = data;
+  color.domain(d3.keys(data[0].topics));
+
+  data.forEach(function(d) {
+    var x0 = 0;
+    d.topicMap = color.domain().map(function(name) { return {name: name, x0: x0, x1: x0 += +(d.topics[name]*d.prob) }; });
+  });
+
 
   svg.append("g")
       .attr("class", "x axis")
@@ -95,17 +106,20 @@ d3.csv("/docs/" + sepdir, function(error, data) {
       .attr("class", "y axis")
       .call(yAxis);
 
-  svg.selectAll(".bar")
+  var doc = svg.selectAll(".bar")
       .data(data)
-    .enter().append("rect")
-      .attr("class", "bar")
-      .attr("x", "10")
-      .attr("width", function(d) { return x(d.prob); })
-      .attr("y", function(d) { return y(d.doc); })
-      .attr("height", y.rangeBand())
-    .append("title")
-      .text(function(d) { return d.doc; });
+    .enter().append("g")
+      .attr("class", "g")
+      .attr("transform", function(d) { return "translate(0," + y(d.doc) + ")"; });
 
+  doc.selectAll("rect")
+      .data(function(d) { return d.topicMap; })
+    .enter().append("rect")
+      .attr("height", y.rangeBand())
+      .attr("x", function(d) { return x(d.x0); })
+      .attr("width", function(d) { return x(d.x1) - x(d.x0); })
+      .style("fill", function(d) { return color(d.name); });
+/*
   d3.select("input").on("change", change);
 
   var sortTimeout = setTimeout(function() {
@@ -134,7 +148,7 @@ d3.csv("/docs/" + sepdir, function(error, data) {
       .selectAll("g")
         .delay(delay);
   }
-
+*/
 });
 
 
