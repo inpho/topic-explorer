@@ -54,24 +54,24 @@
 
 var sepdir = inpho.util.getValueForURLParam('sep') || 'epistemology';
 $('#title').text(sepdir);
-var margin = {top: 20, right: 20, bottom: 150, left: 40},
+var margin = {top: 20, right: 20, bottom: 80, left: 150},
     width = 960 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom;
 
-var x = d3.scale.ordinal()
-    .rangeRoundBands([0, width], .1);
+var x = d3.scale.linear()
+    .range([0, width]);
 
-var y = d3.scale.linear()
-    .range([height, 0]);
+var y = d3.scale.ordinal()
+    .rangeRoundBands([0, height], .1);
 
 var xAxis = d3.svg.axis()
     .scale(x)
-    .orient("bottom");
+    .orient("bottom")
+    .ticks(10, "%");
 
 var yAxis = d3.svg.axis()
     .scale(y)
-    .orient("left")
-    .ticks(10, "%");
+    .orient("left");
 
 var svg = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -81,20 +81,13 @@ var svg = d3.select("body").append("svg")
 
 d3.csv("/docs/" + sepdir, function(error, data) {
   console.log(data);
-  x.domain(data.map(function(d) { return d.doc; }));
-  y.domain([0, d3.max(data, function(d) { return d.prob; })]);
+  x.domain([0, d3.max(data, function(d) { return d.prob; })]);
+  y.domain(data.map(function(d) { return d.doc; }));
 
   svg.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
-      .call(xAxis)
-      .selectAll("text")  
-            .style("text-anchor", "end")
-            .attr("dx", "-.8em")
-            .attr("dy", ".15em")
-            .attr("transform", function(d) {
-                return "rotate(-65)" 
-                });
+      .call(xAxis);
 
   svg.append("g")
       .attr("class", "y axis")
@@ -110,10 +103,10 @@ d3.csv("/docs/" + sepdir, function(error, data) {
       .data(data)
     .enter().append("rect")
       .attr("class", "bar")
-      .attr("x", function(d) { return x(d.doc); })
-      .attr("width", x.rangeBand())
-      .attr("y", function(d) { return y(d.prob); })
-      .attr("height", function(d) { return height - y(d.prob); });
+      .attr("x", function(d) { return x(d.prob); })
+      .attr("width", function(d) { return width - x(d.prob); })
+      .attr("y", function(d) { return y(d.doc); })
+      .attr("height", y.rangeBand());
 
   d3.select("input").on("change", change);
 
