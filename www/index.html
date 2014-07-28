@@ -41,9 +41,16 @@
 
 <body>
 
+
+<h1>The SEP Topic Explorer</h1>
+<p>This visualization uses the VSM topic models to display topics per SEP article.</p>
+
+<label><input type="checkbox"> Sort values</label>
+<div id="chart"> </div>
+<!--<script src="topics.js"></script>-->
 <script>
 
-var margin = {top: 20, right: 20, bottom: 30, left: 40},
+var margin = {top: 20, right: 20, bottom: 100, left: 40},
     width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
@@ -76,7 +83,14 @@ d3.csv("/docs/epistemology", function(error, data) {
   svg.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
-      .call(xAxis);
+      .call(xAxis)
+      .selectAll("text")  
+            .style("text-anchor", "end")
+            .attr("dx", "-.8em")
+            .attr("dy", ".15em")
+            .attr("transform", function(d) {
+                return "rotate(-65)" 
+                });
 
   svg.append("g")
       .attr("class", "y axis")
@@ -97,20 +111,47 @@ d3.csv("/docs/epistemology", function(error, data) {
       .attr("y", function(d) { return y(d.prob); })
       .attr("height", function(d) { return height - y(d.prob); });
 
+  d3.select("input").on("change", change);
+
+  var sortTimeout = setTimeout(function() {
+    d3.select("input").property("checked", true).each(change);
+  }, 2000);
+
+  function change() {
+    clearTimeout(sortTimeout);
+
+    // Copy-on-write since tweens are evaluated after a delay.
+    var x0 = x.domain(data.sort(this.checked
+        ? function(a, b) { return b.prob - a.prob; }
+        : function(a, b) { return d3.ascending(a.doc, b.doc); })
+        .map(function(d) { return d.doc; }))
+        .copy();
+
+    var transition = svg.transition().duration(750),
+        delay = function(d, i) { return i * 50; };
+
+    transition.selectAll(".bar")
+        .delay(delay)
+        .attr("x", function(d) { return x(d.doc); });
+
+    transition.select(".x.axis")
+        .call(xAxis)
+      .selectAll("g")
+        .delay(delay)
+      .selectAll("text")  
+            .style("text-anchor", "end")
+            .attr("dx", "-.8em")
+            .attr("dy", ".15em")
+            .attr("transform", function(d) {
+                return "rotate(-65)" 
+                });
+  }
+
 });
 
-function type(d) {
-  d.frequency = +d.frequency;
-  return d;
-}
+
 
 </script>
-
-<h1>The SEP Topic Explorer</h1>
-<p>This visualization uses the VSM topic models to display topics per SEP article.</p>
-
-<div id="chart"> </div>
-<!--<script src="topics.js"></script>-->
 
 </body>
 </html>

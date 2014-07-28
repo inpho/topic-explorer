@@ -41,7 +41,7 @@ def doc_csv(sep_dir, threshold=0.2):
     output=StringIO()
     writer = csv.writer(output)
     writer.writerow(['doc','prob'])
-    writer.writerows([(t, "%6f" % p) for t,p in data if p > threshold])
+    writer.writerows([(t[:-4], "%6f" % p) for t,p in data if p > threshold])
 
     return output.getvalue()
 
