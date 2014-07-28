@@ -87,27 +87,27 @@ d3.csv("/docs/" + sepdir, function(error, data) {
   svg.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
-      .call(xAxis);
+      .call(xAxis)
+    .append("text")
+      //.attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", "2em")
+      .style("text-anchor", "end")
+      .text("Topic-based Similarity");
 
   svg.append("g")
       .attr("class", "y axis")
-      .call(yAxis)
-    .append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("dy", ".71em")
-      .style("text-anchor", "end")
-      .text("Topic-based Similarity");
+      .call(yAxis);
 
   svg.selectAll(".bar")
       .data(data)
     .enter().append("rect")
       .attr("class", "bar")
-      .attr("x", function(d) { return x(d.prob); })
-      .attr("width", function(d) { return width - x(d.prob); })
+      .attr("x", margin.right)
+      .attr("width", function(d) { return x(d.prob); })
       .attr("y", function(d) { return y(d.doc); })
       .attr("height", y.rangeBand());
-
+/*
   d3.select("input").on("change", change);
 
   var sortTimeout = setTimeout(function() {
@@ -143,7 +143,7 @@ d3.csv("/docs/" + sepdir, function(error, data) {
                 return "rotate(-65)" 
                 });
   }
-
+*/
 });
 
 
