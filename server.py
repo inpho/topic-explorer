@@ -10,10 +10,10 @@ from vsm.viewer.ldagibbsviewer import LDAGibbsViewer as LDAViewer
 
 from bottle import response, route, run, static_file
 
-path = '/var/inphosemantics/data/20130101/sep/vsm-data/'
+path = '/var/inphosemantics/data/20140801/sep/vsm-data/'
 
 lda_c = Corpus.load(path + 'sep-nltk-freq1.npz')
-lda_m = LCM.load(path + 'sep-nltk-freq1-LdaCgsMulti-K140-2000-chain2.model.npz')
+lda_m = LCM.load(path + 'sep-nltk-freq1-article-LDA-K20.npz')
 lda_v = LDAViewer(lda_c, lda_m)
 
 @route('/topics/<sep_dir>')
