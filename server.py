@@ -16,8 +16,10 @@ lda_c = Corpus.load(path + 'sep-nltk-freq1.npz')
 lda_m = LCM.load(path + 'sep-nltk-freq1-article-LDA-K20.npz')
 lda_v = LDAViewer(lda_c, lda_m)
 
-@route('/topics/<sep_dir>')
-def topic_csv(sep_dir):
+
+
+@route('/doc_topics/<sep_dir>')
+def doc_topic_csv(sep_dir):
 
     response.content_type = 'text/csv; charset=UTF8'
 
@@ -59,6 +61,19 @@ def doc_topics(sep_dir, threshold=0.5):
         if prob > threshold:
             js.append({'doc' : doc[:-4], 'prob' : prob,
                 'topics' : dict([(t, p) for t,p in lda_v.doc_topics(doc)])})
+
+    return json.dumps(js)
+
+@route('/topics.json')
+def topics():
+    response.content_type = 'application/json; charset=UTF8'
+
+    data = lda_v.topics()
+
+    js ={} 
+    for i,topic in enumerate(data):
+        for word, prob in topic[:10]:
+            js.update({str(i) : dict([(w, p) for w,p in topic[:10]])})
 
     return json.dumps(js)
 
