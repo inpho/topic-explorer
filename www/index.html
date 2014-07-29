@@ -120,10 +120,13 @@ d3.json("/docs_topics/" + sepdir + '.json', function(error, data) {
   y.domain(data.map(function(d) { return d.doc; }));
   tops = data;
   color.domain(d3.keys(data[0].topics));
+    //.sort(function(a,b) {return data[0].topics[b] - data[0].topics[a];}));
 
   data.forEach(function(d) {
     var x0 = 0;
-    d.topicMap = color.domain().map(function(name) { return {name: name, x0: x0, x1: x0 += +(d.topics[name]*d.prob) }; });
+    d.topicMap = color.domain()
+      .sort(function(a,b) {return data[0].topics[b] - data[0].topics[a];})
+      .map(function(name) { return {name: name, x0: x0, x1: x0 += +(d.topics[name]*d.prob) }; });
   });
 
 
