@@ -76,7 +76,7 @@ var svg = d3.select("body").append("svg")
     .attr("height", height + margin.top + margin.bottom)
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-var tops;
+
 d3.json("/docs_topics/" + sepdir + '.json', function(error, data) {
   console.log(data);
   x.domain([0, d3.max(data, function(d) { return d.prob; })]);
@@ -109,7 +109,7 @@ d3.json("/docs_topics/" + sepdir + '.json', function(error, data) {
       .data(data)
     .enter().append("g")
       .attr("class", "doc")
-      .attr("transform", function(d) { return "translate(0," + y(d.doc) + ")"; });
+      .attr("transform", function(d) { return "translate(10," + y(d.doc) + ")"; });
 
   doc.selectAll("rect")
       .data(function(d) { return d.topicMap; })
@@ -118,6 +118,27 @@ d3.json("/docs_topics/" + sepdir + '.json', function(error, data) {
       .attr("x", function(d) { return x(d.x0); })
       .attr("width", function(d) { return x(d.x1) - x(d.x0); })
       .style("fill", function(d) { return color(d.name); });
+
+
+  var legend = svg.selectAll(".legend")
+      .data(color.domain().slice())
+    .enter().append("g")
+      .attr("class", "legend")
+      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+  legend.append("rect")
+      .attr("x", width - 18)
+      .attr("width", 18)
+      .attr("height", 18)
+      .style("fill", color);
+
+  legend.append("text")
+      .attr("x", width - 24)
+      .attr("y", 9)
+      .attr("dy", ".35em")
+      .style("text-anchor", "end")
+      .text(function(d) { return d; });
+
 
   d3.select("input").on("change", change);
 
@@ -140,7 +161,7 @@ d3.json("/docs_topics/" + sepdir + '.json', function(error, data) {
 
     transition.selectAll(".doc")
         .delay(delay)
-        .attr("transform", function(d) { return "translate(0," + y(d.doc) + ")"; });
+        .attr("transform", function(d) { return "translate(10," + y(d.doc) + ")"; });
         //.attr("y", function(d) { return y(d.doc); });
 
     transition.select(".y.axis")
