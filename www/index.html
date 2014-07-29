@@ -60,8 +60,7 @@ var x = d3.scale.linear()
 var y = d3.scale.ordinal()
     .rangeRoundBands([0, height], .1);
 
-var color = d3.scale.ordinal()
-    .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+var color = d3.scale.category20c();
 
 var xAxis = d3.svg.axis()
     .scale(x)
@@ -106,10 +105,10 @@ d3.json("/docs_topics/" + sepdir + '.json', function(error, data) {
       .attr("class", "y axis")
       .call(yAxis);
 
-  var doc = svg.selectAll(".bar")
+  var doc = svg.selectAll("doc")
       .data(data)
     .enter().append("g")
-      .attr("class", "g")
+      .attr("class", "doc")
       .attr("transform", function(d) { return "translate(0," + y(d.doc) + ")"; });
 
   doc.selectAll("rect")
@@ -119,7 +118,7 @@ d3.json("/docs_topics/" + sepdir + '.json', function(error, data) {
       .attr("x", function(d) { return x(d.x0); })
       .attr("width", function(d) { return x(d.x1) - x(d.x0); })
       .style("fill", function(d) { return color(d.name); });
-/*
+
   d3.select("input").on("change", change);
 
   var sortTimeout = setTimeout(function() {
@@ -139,16 +138,16 @@ d3.json("/docs_topics/" + sepdir + '.json', function(error, data) {
     var transition = svg.transition().duration(750),
         delay = function(d, i) { return i * 50; };
 
-    transition.selectAll(".bar")
+    transition.selectAll(".doc")
         .delay(delay)
-        .attr("y", function(d) { return y(d.doc); });
+        .attr("transform", function(d) { return "translate(0," + y(d.doc) + ")"; });
+        //.attr("y", function(d) { return y(d.doc); });
 
     transition.select(".y.axis")
         .call(yAxis)
       .selectAll("g")
         .delay(delay);
   }
-*/
 });
 
 
