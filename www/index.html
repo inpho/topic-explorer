@@ -3,6 +3,8 @@
 <head>
 <title>SEP Topic Explorer</title>
 <script src="lib/jquery-1.11.0.min.js"></script>
+<script src="lib/jquery.svg.min.js"></script>
+<script src="lib/jquery.svgdom.min.js"></script>
 <script src="lib/bootstrap-2.3.2/js/bootstrap.min.js"></script>
 <script src="lib/d3.v3.min.js"></script>
 <script src="lib/mustache.js"></script>
@@ -31,6 +33,17 @@
     shape-rendering: crispEdges;
 }
 
+rect {
+  opacity: 0.5;
+  }
+
+.doc:hover rect {
+  opacity: 0.8
+}
+
+rect:hover, rect.hover {
+  opacity: 1.0 !important;
+  }
 </style>
 
 
@@ -79,6 +92,9 @@ var svg = d3.select("body").append("svg")
 
 d3.json("/docs_topics/" + sepdir + '.json', function(error, data) {
   console.log(data);
+  d3.json("/topics.json", function(error_top, topics) {
+    console.log(topics);
+
   x.domain([0, d3.max(data, function(d) { return d.prob; })]);
   y.domain(data.map(function(d) { return d.doc; }));
   tops = data;
@@ -117,6 +133,12 @@ d3.json("/docs_topics/" + sepdir + '.json', function(error, data) {
       .attr("height", y.rangeBand())
       .attr("x", function(d) { return x(d.x0); })
       .attr("width", function(d) { return x(d.x1) - x(d.x0); })
+      .on("mouseenter", function(d) {
+          $(".top_" + d.name).addClass('hover').trigger('mouseenter');
+        })
+      .on("mouseleave", function(d) {
+          $(".top_" + d.name).removeClass('hover').trigger('mouseleave');
+        })
       .style("fill", function(d) { return color(d.name); });
 
 
@@ -130,7 +152,13 @@ d3.json("/docs_topics/" + sepdir + '.json', function(error, data) {
       .attr("x", width - 18)
       .attr("width", 18)
       .attr("height", 18)
-      .style("fill", color);
+      .attr("class", function(d) { return "top_" + d; })
+      .style("fill", color)
+      .attr("data-toggle", "tooltip")
+      .attr("data-placement", "right")
+      .attr("title", function(d) { return d3.keys(topics[d]).join(", "); });
+
+  $(".legend rect").tooltip({'container':'body'});
 
   legend.append("text")
       .attr("x", width - 24)
@@ -169,7 +197,7 @@ d3.json("/docs_topics/" + sepdir + '.json', function(error, data) {
       .selectAll("g")
         .delay(delay);
   }
-});
+}); });
 
 
 
