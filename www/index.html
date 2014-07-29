@@ -23,7 +23,7 @@
 }
 
 .axis {
-    font: 10px sans-serif;
+    font: 12px sans-serif;
 }
 
 .axis path,
@@ -34,16 +34,25 @@
 }
 
 rect {
-  opacity: 0.5;
+  opacity: 0.3;
   }
 
-.doc:hover rect {
-  opacity: 0.8
+rect.hover, .legend rect {
+  opacity: 0.7;
 }
-
-rect:hover, rect.hover {
-  opacity: 1.0 !important;
+.doc:hover rect {
+  opacity: 0.7;
   }
+rect:hover {
+  opacity: 1.0 !important;
+}
+rect:hover, .legend.hover rect{
+  stroke: #000;
+  stroke-width: 2;
+  }
+.hover text {
+  font-weight: bold;
+}
 </style>
 
 
@@ -54,9 +63,8 @@ rect:hover, rect.hover {
 
 <h1>The SEP Topic Explorer</h1>
 <h2 id="title"></h2>
-<p>This visualization shows similarity of the focal topic to other topics as modeled by the VSM model.</p>
-<p>The probability the topics that generated this article generated the other articles.</p>
-<label><input type="checkbox"> Sort values</label>
+<p>This visualization shows the similarity of each article to other articles. The color bands within each article's row show the topic distribution within that article.</p>
+<label><input class="sort" type="checkbox">Alphabetical sort</label>
 <div id="chart"> </div>
 <!--<script src="topics.js"></script>-->
 <script>
@@ -133,12 +141,23 @@ d3.json("/docs_topics/" + sepdir + '.json', function(error, data) {
   svg.append("g")
       .attr("class", "y axis")
       .call(yAxis);
+      /*
+      .selectAll("text")
+      .append("a")
+      .attr("href", function(d) {return "http://plato.stanford.edu/entires/" + d;})
+      .text(function(d) { return d;});*/
 
   var doc = svg.selectAll("doc")
       .data(data)
     .enter().append("g")
       .attr("class", "doc")
-      .attr("transform", function(d) { return "translate(10," + y(d.doc) + ")"; });
+      .attr("transform", function(d) { return "translate(10," + y(d.doc) + ")"; })
+      .on("mouseenter", function(d) {
+          $("text:contains(" + d.doc +")").attr("font-weight", "bold");
+        })
+      .on("mouseleave", function(d) {
+          $("text:contains(" + d.doc +")").attr("font-weight", "normal");
+        });
 
   doc.selectAll("rect")
       .data(function(d) { return d.topicMap; })
@@ -146,6 +165,7 @@ d3.json("/docs_topics/" + sepdir + '.json', function(error, data) {
       .attr("height", y.rangeBand())
       .attr("x", function(d) { return x(d.x0); })
       .attr("width", function(d) { return x(d.x1) - x(d.x0); })
+      .attr("class", function(d) { return "top_" + d.name; })
       .on("mouseenter", function(d) {
           $(".top_" + d.name).addClass('hover').trigger('mouseenter');
         })
@@ -158,7 +178,7 @@ d3.json("/docs_topics/" + sepdir + '.json', function(error, data) {
   var legend = svg.selectAll(".legend")
       .data(color.domain().slice())
     .enter().append("g")
-      .attr("class", "legend")
+      .attr("class", function(d) { return "legend top_" + d; })
       .attr("transform", function(d, i) { return "translate(0," + ((i * 20) + 13) + ")"; });
 
   legend.append("rect")
@@ -169,7 +189,13 @@ d3.json("/docs_topics/" + sepdir + '.json', function(error, data) {
       .style("fill", color)
       .attr("data-toggle", "tooltip")
       .attr("data-placement", "right")
-      .attr("title", function(d) { return d3.keys(topics[d]).join(", "); });
+      .attr("title", function(d) { return d3.keys(topics[d]).join(", "); })
+      .on("mouseenter", function(d) {
+          $(".top_" + d).addClass('hover').trigger('mouseenter');
+        })
+      .on("mouseleave", function(d) {
+          $(".top_" + d).removeClass('hover').trigger('mouseleave');
+        });
 
   $(".legend rect").tooltip({'container':'body'});
 
@@ -181,7 +207,7 @@ d3.json("/docs_topics/" + sepdir + '.json', function(error, data) {
       .text(function(d) { return d; });
 
 
-  d3.select("input").on("change", change);
+  d3.select(".sort").on("change", change);
 
   var sortTimeout = setTimeout(function() {
     d3.select("input").property("checked", true).each(change);
