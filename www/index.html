@@ -67,6 +67,15 @@ var margin = {top: 20, right: 20, bottom: 80, left: 150},
     width = 960 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom;
 
+function computeHeight(n) { 
+  height = n*22 - margin.top - margin.bottom;
+  y = d3.scale.ordinal()
+   .rangeRoundBands([0, height], .1);
+  yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left");
+}
+
 var x = d3.scale.linear()
     .range([0, width]);
 
@@ -87,6 +96,7 @@ var yAxis = d3.svg.axis()
 var svg = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
+    .attr("class", "main")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -94,6 +104,9 @@ d3.json("/docs_topics/" + sepdir + '.json', function(error, data) {
   console.log(data);
   d3.json("/topics.json", function(error_top, topics) {
     console.log(topics);
+
+  computeHeight(data.length);
+  $(".main").attr("height", height + margin.top + margin.bottom);
 
   x.domain([0, d3.max(data, function(d) { return d.prob; })]);
   y.domain(data.map(function(d) { return d.doc; }));
@@ -146,7 +159,7 @@ d3.json("/docs_topics/" + sepdir + '.json', function(error, data) {
       .data(color.domain().slice())
     .enter().append("g")
       .attr("class", "legend")
-      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+      .attr("transform", function(d, i) { return "translate(0," + ((i * 20) + 13) + ")"; });
 
   legend.append("rect")
       .attr("x", width - 18)
