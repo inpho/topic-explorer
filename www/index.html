@@ -175,10 +175,10 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
     .enter().append("g")
       .attr("class", "doc")
       .attr("transform", function(d) { return "translate(10," + y(d.doc) + ")"; })
-      .on("mouseenter", function(d) {
+      .on("mouseover", function(d) {
           $("text:contains(" + d.doc +")").attr("font-weight", "bold");
         })
-      .on("mouseleave", function(d) {
+      .on("mouseout", function(d) {
           $("text:contains(" + d.doc +")").attr("font-weight", "normal");
         });
 
@@ -189,16 +189,16 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
       .attr("x", function(d) { return x(d.x0); })
       .attr("width", function(d) { return x(d.x1) - x(d.x0); })
       .attr("class", function(d) { return "top_" + d.name; })
-      .on("mouseenter", function(d) {
+      .on("mouseover", function(d) {
           // SVG element z-index determined by render order, not style sheet
           // so element must be reappended to the end on hover so border 
           // is not occluded
           var parent = $(this).parent();
           $(this).detach().appendTo(parent);
-          $(".top_" + d.name).addClass('hover').trigger('mouseenter');
+          $(".top_" + d.name).addClass('hover').trigger('mouseover');
         })
-      .on("mouseleave", function(d) {
-          $(".top_" + d.name).removeClass('hover').trigger('mouseleave');
+      .on("mouseout", function(d) {
+          $(".top_" + d.name).removeClass('hover').trigger('mouseout');
         })
       .style("fill", function(d) { return color(d.name); });
 
@@ -219,11 +219,11 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
       .attr("data-toggle", "tooltip")
       .attr("data-placement", "right")
       .attr("title", function(d) { return d3.keys(topics[d]).join(", "); })
-      .on("mouseenter", function(d) {
-          $(".top_" + d).addClass('hover').trigger('mouseenter');
+      .on("mouseover", function(d) {
+          $(".top_" + d).addClass('hover').trigger('mouseover');
         })
-      .on("mouseleave", function(d) {
-          $(".top_" + d).removeClass('hover').trigger('mouseleave');
+      .on("mouseout", function(d) {
+          $(".top_" + d).removeClass('hover').trigger('mouseout');
         });
 
   $(".legend rect").tooltip({'container':'body'});
