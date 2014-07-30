@@ -177,6 +177,11 @@ d3.json("/docs_topics/" + sepdir + '.json', function(error, data) {
       .attr("width", function(d) { return x(d.x1) - x(d.x0); })
       .attr("class", function(d) { return "top_" + d.name; })
       .on("mouseenter", function(d) {
+          // SVG element z-index determined by render order, not style sheet
+          // so element must be reappended to the end on hover so border 
+          // is not occluded
+          var parent = $(this).parent();
+          $(this).detach().appendTo(parent);
           $(".top_" + d.name).addClass('hover').trigger('mouseenter');
         })
       .on("mouseleave", function(d) {
