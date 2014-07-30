@@ -70,13 +70,27 @@ rect:hover, .legend.hover rect{
 <h1>The SEP Topic Explorer</h1>
 <h2 id="title"></h2>
 <p>This visualization shows the similarity of each article to other articles. The color bands within each article's row show the topic distribution within that article.</p>
+
+<form action="/" method="GET" class="form-inline">
+<fieldset>
+<input type="text" name="doc" class="typeahead input-medium" placeholder="Document ID" autocomplete="off">
+<button type="submit" class="btn">Submit</button>
+</fieldset>
+</form>
+
+<script>
+$.getJSON('/docs.json', function(data) {
+  $(".typeahead").typeahead({source: data});
+});
+</script>
+
 <label><input class="sort" type="checkbox">Alphabetical sort</label>
 <div id="chart"> </div>
 <!--<script src="topics.js"></script>-->
 <script>
 
-var sepdir = inpho.util.getValueForURLParam('sep') || 'epistemology';
-$('#title').text(sepdir);
+var docid = inpho.util.getValueForURLParam('doc') || 'epistemology';
+$('#title').text(docid);
 var margin = {top: 20, right: 20, bottom: 80, left: 150},
     width = 960 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom;
@@ -114,7 +128,7 @@ var svg = d3.select("body").append("svg")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-d3.json("/docs_topics/" + sepdir + '.json', function(error, data) {
+d3.json("/docs_topics/" + docid + '.json', function(error, data) {
   console.log(data);
   d3.json("/topics.json", function(error_top, topics) {
     console.log(topics);
@@ -250,11 +264,6 @@ d3.json("/docs_topics/" + sepdir + '.json', function(error, data) {
 
 
 </script>
-
-<form action="/" method="GET">
-<label>SEP Directory: <input type="text" name="sep"></label>
-<input type="submit" value="Submit">
-</form>
 
 </body>
 </html>

@@ -77,6 +77,15 @@ def topics():
 
     return json.dumps(js)
 
+@route('/docs.json')
+def docs():
+    response.content_type = 'application/json; charset=UTF8'
+
+    data = lda_v.topics()
+    js = [label[:-4] for label in lda_c.view_metadata('article')['article_label']]
+
+    return json.dumps(js)
+
 
 @route('/<filename:path>')
 def send_static(filename):
