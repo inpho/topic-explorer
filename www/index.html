@@ -218,24 +218,18 @@ d3.json("/docs_topics/" + sepdir + '.json', function(error, data) {
       .text(function(d) { return d; });
 
 
-  d3.select(".sort").on("change", change);
+  d3.select(".sort").on("change", alphabetSort);
 
-  var sortTimeout = setTimeout(function() {
-    d3.select("input").property("checked", true).each(change);
-  }, 2000);
-
-  function change() {
-    clearTimeout(sortTimeout);
-
+  function alphabetSort() {
     // Copy-on-write since tweens are evaluated after a delay.
     var y0 = y.domain(data.sort(this.checked
-        ? function(a, b) { return b.prob - a.prob; }
-        : function(a, b) { return d3.ascending(a.doc, b.doc); })
+        ? function(a, b) { return d3.ascending(a.doc, b.doc); }
+        : function(a, b) { return b.prob - a.prob; })
         .map(function(d) { return d.doc; }))
         .copy();
 
-    var transition = svg.transition().duration(750),
-        delay = function(d, i) { return i * 50; };
+    var transition = svg.transition().duration(500),
+        delay = function(d, i) { return i * 25; };
 
     transition.selectAll(".doc")
         .delay(delay)
