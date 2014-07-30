@@ -34,14 +34,20 @@
 }
 
 rect {
-  opacity: 0.3;
+  opacity: 0.6;
   }
 
+rect.hover {
+  stroke: #000;
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+
 rect.hover, .legend rect {
-  opacity: 0.7;
+  opacity: 0.8;
 }
 .doc:hover rect {
-  opacity: 0.7;
+  opacity: 1.0;
   }
 rect:hover {
   opacity: 1.0 !important;
@@ -49,6 +55,7 @@ rect:hover {
 rect:hover, .legend.hover rect{
   stroke: #000;
   stroke-width: 2;
+  shape-rendering: crispEdges;
   }
 .hover text {
   font-weight: bold;
@@ -180,6 +187,7 @@ d3.json("/docs_topics/" + sepdir + '.json', function(error, data) {
 
   var legend = svg.selectAll(".legend")
       .data(color.domain().slice())
+      //.data(d3.keys(data[0].topics))
     .enter().append("g")
       .attr("class", function(d) { return "legend top_" + d; })
       .attr("transform", function(d, i) { return "translate(0," + ((i * 20) + 13) + ")"; });
