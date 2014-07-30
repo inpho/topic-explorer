@@ -68,8 +68,10 @@ rect:hover, .legend.hover rect{
 
 
 <h1>The SEP Topic Explorer</h1>
-<h2 id="title"></h2>
-<p>This visualization shows the similarity of each article to other articles. The color bands within each article's row show the topic distribution within that article.</p>
+<h2 class="title"></h2>
+<p>This visualization shows the similarity of other articles in the SEP to the entry on <span class="title"></span>. The color bands within each article's row show the topic distribution within that article, and the relative sizes of each band indicates the weight of that topic in the article.</p>
+
+<p>(See <a href="http://en.wikipedia.org/wiki/Latent_Dirichlet_allocation">Wikipedia: Latent Dirichlet Allocation</a> for more on the LDA topic modeling approach used to generate this representation.)</p>
 
 <form action="/" method="GET" class="form-inline">
 <fieldset>
@@ -85,12 +87,13 @@ $.getJSON('/docs.json', function(data) {
 </script>
 
 <label><input class="sort" type="checkbox">Alphabetical sort</label>
+<label><input class="scale" type="checkbox">Normalize topic bars</label>
 <div id="chart"> </div>
 <!--<script src="topics.js"></script>-->
 <script>
 
 var docid = inpho.util.getValueForURLParam('doc') || 'epistemology';
-$('#title').text(docid);
+$('.title').text(docid);
 var margin = {top: 20, right: 20, bottom: 80, left: 150},
     width = 960 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom;
@@ -128,6 +131,17 @@ var svg = d3.select("body").append("svg")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+function calculateTopicMap(data, scale){
+  data.forEach(function(d) {
+    var sizeFactor = (scale) ? d.prob : 1.0
+    var x0 = 0;
+    d.topicMap = color.domain()
+      .sort(function(a,b) {return data[0].topics[b] - data[0].topics[a];})
+      .map(function(name) { return {name: name, x0: x0, x1: x0 += +(d.topics[name]*sizeFactor) }; });
+  });
+  
+}
+
 d3.json("/docs_topics/" + docid + '.json', function(error, data) {
   console.log(data);
   d3.json("/topics.json", function(error_top, topics) {
@@ -142,12 +156,7 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
   color.domain(d3.keys(data[0].topics));
     //.sort(function(a,b) {return data[0].topics[b] - data[0].topics[a];}));
 
-  data.forEach(function(d) {
-    var x0 = 0;
-    d.topicMap = color.domain()
-      .sort(function(a,b) {return data[0].topics[b] - data[0].topics[a];})
-      .map(function(name) { return {name: name, x0: x0, x1: x0 += +(d.topics[name]*d.prob) }; });
-  });
+  calculateTopicMap(data, true);
 
 
   svg.append("g")
@@ -170,6 +179,7 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
       .attr("href", function(d) {return "http://plato.stanford.edu/entires/" + d;})
       .text(function(d) { return d;});*/
 
+  // draw total bar
   var doc = svg.selectAll("doc")
       .data(data)
     .enter().append("g")
@@ -182,6 +192,7 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
           $("text:contains(" + d.doc +")").attr("font-weight", "normal");
         });
 
+  // Draw topic bars
   doc.selectAll("rect")
       .data(function(d) { return d.topicMap; })
     .enter().append("rect")
@@ -208,7 +219,7 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
       //.data(d3.keys(data[0].topics))
     .enter().append("g")
       .attr("class", function(d) { return "legend top_" + d; })
-      .attr("transform", function(d, i) { return "translate(0," + ((i * 20) + 13) + ")"; });
+      .attr("transform", function(d, i) { return "translate(30," + ((i * 20) + 13) + ")"; });
 
   legend.append("rect")
       .attr("x", width - 18)
@@ -258,6 +269,23 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
         .call(yAxis)
       .selectAll("g")
         .delay(delay);
+  }
+
+  d3.select(".scale").on("change", scaleTopics);
+  function scaleTopics() {
+    calculateTopicMap(data, !this.checked);
+
+
+    svg.selectAll(".doc")
+      .data(data)
+      .selectAll("rect")
+      .data(function(d) { return d.topicMap; })
+      .transition().duration(2000).ease("linear")
+      .attr("x", function(d) { return x(d.x0); })
+      .attr("width", function(d) { return x(d.x1) - x(d.x0); })
+      .style("fill", function(d) { return color(d.name); });
+
+  
   }
 }); });
 
