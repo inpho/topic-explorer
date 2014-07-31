@@ -288,9 +288,11 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
     var negdelay = function(d, i) { return (20-i) * 20; };
     calculateTopicMap(dataset, !this.checked);
 
-    $(".doc").each(function(elt) {
-        var children = $(elt).children().sort(function(a,b) { return a.attr("x") - b.attr("x"); }).each(function(child) {
-          $(child).detach().attachTo(elt);
+    $(".doc").each(function(i,elt) {
+        $(elt).children()
+          .sort(function(a,b) { return $(a).attr('x') - $(b).attr('x'); })
+          .each(function(j,child) {
+            $(child).detach().appendTo($(elt));
         })
       });
 
