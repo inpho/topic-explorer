@@ -313,10 +313,12 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
           // is not occluded
           var parent = $(this).parent();
           $(this).detach().appendTo(parent);
-          $(".top_" + d.name).addClass('hover').trigger('mouseover');
+          $('.legend rect').not('.top_' + d.name).tooltip('hide');
+          $(".top_" + d.name).addClass('hover');
+          $('.legend rect.top_' + d.name).tooltip('show');
         })
       .on("mouseout", function(d) {
-          $(".top_" + d.name).removeClass('hover').trigger('mouseout');
+          $(".top_" + d.name).removeClass('hover');
         })
       .transition().duration(500).ease("linear").delay(this.checked ? delay : negdelay)
       .attr("x", function(d) { return x(d.x0); })
