@@ -134,7 +134,7 @@ var svg = d3.select("body").append("svg")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
     .on("mouseleave", function() {
-        $(".legend rect").removeClass('hover').trigger('mouseleave');
+        $(".legend rect").removeClass('hover').tooltip('hide');
       });
 
 function calculateTopicMap(data, scale){
@@ -216,11 +216,12 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
           // is not occluded
           var parent = $(this).parent();
           $(this).detach().appendTo(parent);
-          $('.legend rect').not('.top_' + d.name).trigger('mouseout');
-          $(".top_" + d.name).addClass('hover').trigger('mouseover');
+          $('.legend rect').not('.top_' + d.name).tooltip('hide');
+          $(".top_" + d.name).addClass('hover');
+          $('.legend rect.top_' + d.name).tooltip('show');
         })
       .on("mouseout", function(d) {
-          $(".top_" + d.name).removeClass('hover');//.trigger('mouseout');
+          $(".top_" + d.name).removeClass('hover');
         })
       .style("fill", function(d) { return color(d.name); });
 
@@ -238,17 +239,17 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
       .attr("height", 18)
       .attr("class", function(d) { return "top_" + d; })
       .style("fill", color)
-      .attr("data-toggle", "tooltip")
+      //.attr("data-toggle", "tooltip")
       .attr("data-placement", "right")
       .attr("title", function(d) { return d3.keys(topics[d]).join(", "); })
       .on("mouseover", function(d) {
-          $(".top_" + d).addClass('hover').trigger('mouseover');
+          $(".top_" + d).addClass('hover').tooltip('show');
         })
       .on("mouseout", function(d) {
-          $(".top_" + d).removeClass('hover').trigger('mouseout');
+          $(".top_" + d).removeClass('hover').tooltip('hide');
         });
 
-  $(".legend rect").tooltip({'container':'body'});
+  $(".legend rect").tooltip({container:'body', trigger: 'manual', animation: false});
 
   legend.append("text")
       .attr("x", width - 24)
