@@ -294,7 +294,6 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
         })
       });
 
-    if (this.checked) {
     svg.selectAll(".doc")
       .selectAll("rect")
       .data(function(d) { return d.topicMap; })
@@ -310,31 +309,10 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
       .on("mouseout", function(d) {
           $(".top_" + d.name).removeClass('hover').trigger('mouseout');
         })
-      .transition().duration(400).ease("linear").delay(delay)
+      .transition().duration(400).ease("linear").delay(this.checked ? delay : negdelay)
       .attr("x", function(d) { return x(d.x0); })
       .attr("width", function(d) { return x(d.x1) - x(d.x0); })
       .attr("class", function(d) { return "top_" + d.name; });
-    } else {
-    svg.selectAll(".doc")
-      .selectAll("rect")
-      .data(function(d) { return d.topicMap; })
-      .style("fill", function(d) { return color(d.name); })
-      .on("mouseover", function(d) {
-          // SVG element z-index determined by render order, not style sheet
-          // so element must be reappended to the end on hover so border 
-          // is not occluded
-          var parent = $(this).parent();
-          $(this).detach().appendTo(parent);
-          $(".top_" + d.name).addClass('hover').trigger('mouseover');
-        })
-      .on("mouseout", function(d) {
-          $(".top_" + d.name).removeClass('hover').trigger('mouseout');
-        })
-      .transition().duration(400).ease("linear").delay(negdelay)
-      .attr("x", function(d) { return x(d.x0); })
-      .attr("width", function(d) { return x(d.x1) - x(d.x0); })
-      .attr("class", function(d) { return "top_" + d.name; });
-    }
   }
   d3.select(".scale").on("change", scaleTopics);
 
