@@ -284,8 +284,10 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
 }); });
 
   function scaleTopics() {
-    var delay = function(d, i) { return i * 20; };
-    var negdelay = function(d, i) { return (20-i) * 20; };
+    var numTopics = dataset[0].topics.length;
+    var delay = function(d, i) { return i * (500/numTopics); },
+        negdelay = function(d, i) { return (numTopics-i) * (500/numTopics); };
+
     calculateTopicMap(dataset, !this.checked);
 
     $(".doc").each(function(i,elt) {
@@ -311,7 +313,7 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
       .on("mouseout", function(d) {
           $(".top_" + d.name).removeClass('hover').trigger('mouseout');
         })
-      .transition().duration(400).ease("linear").delay(this.checked ? delay : negdelay)
+      .transition().duration(500).ease("linear").delay(this.checked ? delay : negdelay)
       .attr("x", function(d) { return x(d.x0); })
       .attr("width", function(d) { return x(d.x1) - x(d.x0); })
       .attr("class", function(d) { return "top_" + d.name; });
