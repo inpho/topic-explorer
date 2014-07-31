@@ -132,7 +132,10 @@ var svg = d3.select("body").append("svg")
     .attr("height", height + margin.top + margin.bottom)
     .attr("class", "main")
   .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+    .on("mouseleave", function() {
+        $(".legend rect").removeClass('hover').trigger('mouseleave');
+      });
 
 function calculateTopicMap(data, scale){
   data.forEach(function(d) {
@@ -213,10 +216,11 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
           // is not occluded
           var parent = $(this).parent();
           $(this).detach().appendTo(parent);
+          $('.legend rect').not('.top_' + d.name).trigger('mouseout');
           $(".top_" + d.name).addClass('hover').trigger('mouseover');
         })
       .on("mouseout", function(d) {
-          $(".top_" + d.name).removeClass('hover').trigger('mouseout');
+          $(".top_" + d.name).removeClass('hover');//.trigger('mouseout');
         })
       .style("fill", function(d) { return color(d.name); });
 
