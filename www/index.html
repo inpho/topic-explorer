@@ -94,7 +94,7 @@ $.getJSON('/docs.json', function(data) {
 
 var docid = inpho.util.getValueForURLParam('doc') || 'epistemology';
 $('.title').text(docid);
-var margin = {top: 20, right: 20, bottom: 80, left: 150},
+var margin = {top: 20, right: 80, bottom: 80, left: 150},
     width = 960 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom;
 
@@ -124,6 +124,9 @@ var yAxis = d3.svg.axis()
     .scale(y)
     .orient("left");
 
+var dataset;
+var root_doc_data;
+
 var svg = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
@@ -136,11 +139,12 @@ function calculateTopicMap(data, scale){
     var sizeFactor = (scale) ? d.prob : 1.0
     var x0 = 0;
     d.topicMap = color.domain()
-      .sort(function(a,b) {return data[0].topics[b] - data[0].topics[a];})
+      .sort(function(a,b) {return root_doc_data.topics[b] - root_doc_data.topics[a];})
       .map(function(name) { return {name: name, x0: x0, x1: x0 += +(d.topics[name]*sizeFactor) }; });
   });
   
 }
+
 
 d3.json("/docs_topics/" + docid + '.json', function(error, data) {
   console.log(data);
@@ -156,8 +160,11 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
   color.domain(d3.keys(data[0].topics));
     //.sort(function(a,b) {return data[0].topics[b] - data[0].topics[a];}));
 
+  root_doc_data = data[0];
   calculateTopicMap(data, true);
 
+
+  dataset = data;
 
   svg.append("g")
       .attr("class", "x axis")
@@ -219,7 +226,7 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
       //.data(d3.keys(data[0].topics))
     .enter().append("g")
       .attr("class", function(d) { return "legend top_" + d; })
-      .attr("transform", function(d, i) { return "translate(30," + ((i * 20) + 13) + ")"; });
+      .attr("transform", function(d, i) { return "translate(60," + ((i * 20) + 13) + ")"; });
 
   legend.append("rect")
       .attr("x", width - 18)
@@ -251,11 +258,14 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
 
   function alphabetSort() {
     // Copy-on-write since tweens are evaluated after a delay.
-    var y0 = y.domain(data.sort(this.checked
+    dataset = data.sort(this.checked
         ? function(a, b) { return d3.ascending(a.doc, b.doc); }
-        : function(a, b) { return b.prob - a.prob; })
+        : function(a, b) { return b.prob - a.prob; });
+
+    var y0 = y.domain(dataset
         .map(function(d) { return d.doc; }))
         .copy();
+
 
     var transition = svg.transition().duration(500),
         delay = function(d, i) { return i * 25; };
@@ -271,24 +281,62 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
         .delay(delay);
   }
 
-  d3.select(".scale").on("change", scaleTopics);
-  function scaleTopics() {
-    calculateTopicMap(data, !this.checked);
-
-
-    svg.selectAll(".doc")
-      .data(data)
-      .selectAll("rect")
-      .data(function(d) { return d.topicMap; })
-      .transition().duration(2000).ease("linear")
-      .attr("x", function(d) { return x(d.x0); })
-      .attr("width", function(d) { return x(d.x1) - x(d.x0); })
-      .style("fill", function(d) { return color(d.name); });
-
-  
-  }
 }); });
 
+  function scaleTopics() {
+    var delay = function(d, i) { return i * 20; };
+    var negdelay = function(d, i) { return (20-i) * 20; };
+    calculateTopicMap(dataset, !this.checked);
+
+    $(".doc").each(function(elt) {
+        var children = $(elt).children().sort(function(a,b) { return a.attr("x") - b.attr("x"); }).each(function(child) {
+          $(child).detach().attachTo(elt);
+        })
+      });
+
+    if (this.checked) {
+    svg.selectAll(".doc")
+      .selectAll("rect")
+      .data(function(d) { return d.topicMap; })
+      .style("fill", function(d) { return color(d.name); })
+      .on("mouseover", function(d) {
+          // SVG element z-index determined by render order, not style sheet
+          // so element must be reappended to the end on hover so border 
+          // is not occluded
+          var parent = $(this).parent();
+          $(this).detach().appendTo(parent);
+          $(".top_" + d.name).addClass('hover').trigger('mouseover');
+        })
+      .on("mouseout", function(d) {
+          $(".top_" + d.name).removeClass('hover').trigger('mouseout');
+        })
+      .transition().duration(400).ease("linear").delay(delay)
+      .attr("x", function(d) { return x(d.x0); })
+      .attr("width", function(d) { return x(d.x1) - x(d.x0); })
+      .attr("class", function(d) { return "top_" + d.name; });
+    } else {
+    svg.selectAll(".doc")
+      .selectAll("rect")
+      .data(function(d) { return d.topicMap; })
+      .style("fill", function(d) { return color(d.name); })
+      .on("mouseover", function(d) {
+          // SVG element z-index determined by render order, not style sheet
+          // so element must be reappended to the end on hover so border 
+          // is not occluded
+          var parent = $(this).parent();
+          $(this).detach().appendTo(parent);
+          $(".top_" + d.name).addClass('hover').trigger('mouseover');
+        })
+      .on("mouseout", function(d) {
+          $(".top_" + d.name).removeClass('hover').trigger('mouseout');
+        })
+      .transition().duration(400).ease("linear").delay(negdelay)
+      .attr("x", function(d) { return x(d.x0); })
+      .attr("width", function(d) { return x(d.x1) - x(d.x0); })
+      .attr("class", function(d) { return "top_" + d.name; });
+    }
+  }
+  d3.select(".scale").on("change", scaleTopics);
 
 
 </script>
