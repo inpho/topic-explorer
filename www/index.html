@@ -320,6 +320,22 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
       .text(function(d) { return d; });
 
 
+  d3.select(window).on('resize', resize);
+
+  function resize() {
+    computeWidth(legendCols);
+
+    /* Update the axis with the new scale */
+    svg.select('.x.axis')
+      .call(xAxis);
+
+    doc.selectAll('rect')
+      .attr("x", function(d) { return x(d.x0); })
+      .attr("width", function(d) { return x(d.x1) - x(d.x0); });
+  }
+
+
+
   d3.select(".sort").on("change", alphabetSort);
 
   function alphabetSort() {
