@@ -196,10 +196,14 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
       .attr("class", "doc")
       .attr("transform", function(d) { return "translate(10," + y(d.doc) + ")"; })
       .on("mouseover", function(d) {
-          $("text:contains(" + d.doc +")").attr("font-weight", "bold");
+          $("text:contains(" + d.doc +")")
+            .filter(function() {return $(this).text().trim() == d.doc })
+            .attr("font-weight", "bold");
         })
       .on("mouseout", function(d) {
-          $("text:contains(" + d.doc +")").attr("font-weight", "normal");
+          $("text:contains(" + d.doc +")")
+            .filter(function() {return $(this).text().trim() == d.doc })
+            .attr("font-weight", "normal");
         });
 
   // Draw topic bars
