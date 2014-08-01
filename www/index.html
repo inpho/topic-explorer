@@ -111,17 +111,6 @@ var margin = {top: 80, right: 40, bottom: 20, left: 150},
     width = 960 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom;
 
-function computeHeight(data) { 
-  height = (data.length * 20);// - margin.top - margin.bottom;
-  y = d3.scale.ordinal()
-   .rangeRoundBands([0, height], .1, 0);
-  y.domain(data.map(function(d) { return d.doc; }));
-  yAxis = d3.svg.axis()
-    .scale(y)
-    .orient("left");
-  maxRows = Math.min(Math.floor(height / 20), maxRows);
-}
-
 var x = d3.scale.linear()
     .range([0, width]);
 
@@ -139,12 +128,37 @@ var yAxis = d3.svg.axis()
     .scale(y)
     .orient("left");
 
+function computeWidth(numCols) { 
+  $('#legend').attr("width", margin.right + (numCols*55) + 20 + margin.right);
+  $('#main').attr("width", Math.max($(window).width() - $('#legend').width() - 200 + margin.right, 750));
+  width = Math.max($(window).width() - $('#legend').width() - 200 + margin.right, 750) - margin.left - margin.right;
+  x = d3.scale.linear()
+    .range([0, width]);
+  x.domain([0,1]);
+  xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("top")
+    .ticks(10, "%");
+}
+
+function computeHeight(data) { 
+  height = (data.length * 20);// - margin.top - margin.bottom;
+  y = d3.scale.ordinal()
+   .rangeRoundBands([0, height], .1, 0);
+  y.domain(data.map(function(d) { return d.doc; }));
+  yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left");
+  maxRows = Math.min(Math.floor(height / 20), maxRows);
+}
+
 var dataset;
 var root_doc_data;
 
 var svg = d3.select("#chart").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
+    .attr("id","main")
     .attr("class", "main")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
@@ -188,10 +202,14 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
     return false;
   }
     console.log(topics);
-
-  console.log(data.length);
+  
   computeHeight(data);
   $(".main").attr("height", height + margin.top + margin.bottom);
+
+  var legendCols = Math.max(Math.ceil(d3.keys(topics).length / maxRows), minCols);
+  var legendFactor = Math.ceil(d3.keys(topics).length / legendCols);
+  computeWidth(legendCols);
+
 
   x.domain([0, 1.0]);
   tops = data;
@@ -270,8 +288,6 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
         })
       .style("fill", function(d) { return color(d.name); });
 
-  var legendCols = Math.max(Math.ceil(d3.keys(topics).length / maxRows), minCols);
-  var legendFactor = Math.ceil(d3.keys(topics).length / legendCols);
   var legendElts = legend.selectAll(".legend")
       .data(color.domain().slice())
       //.data(d3.keys(data[0].topics))
