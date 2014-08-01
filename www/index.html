@@ -88,10 +88,6 @@ rect:hover, .legend.hover rect{
     </div>
   </div>
   
-  <div id="controls" style="display:none">
-  <label><input class="sort" type="checkbox">Alphabetical sort</label>
-  <label><input class="scale" type="checkbox">Normalize topic bars</label>
-  </div>
 </div>
 <script>
 $.getJSON('/docs.json', function(data) {
@@ -100,6 +96,11 @@ $.getJSON('/docs.json', function(data) {
 </script>
 
 <div id="chart"> </div>
+<div id="controls" style="display:none; position: fixed;">
+  <strong>Display Options</strong>
+  <label class="checkbox"><input class="sort" type="checkbox"> Alphabetical sort</label>
+  <label class="checkbox"><input class="scale" type="checkbox"> Normalize topic bars</label>
+</div>
 <!--<script src="topics.js"></script>-->
 <script>
 
@@ -132,6 +133,7 @@ var yAxis = d3.svg.axis()
 function computeWidth(numCols) { 
   $('#legend').attr("width", margin.right + (numCols*55) + 20 + margin.right);
   $('#main').attr("width", Math.max($(window).width() - $('#legend').width() - 200 + margin.right, 750));
+  $('#controls').css("left", Math.max($(window).width() - $('#legend').width() - 200 + margin.right, 750) + 40);
   width = Math.max($(window).width() - $('#legend').width() - 200 + margin.right, 750) - margin.left - margin.right;
   x = d3.scale.linear()
     .range([0, width]);
@@ -142,8 +144,9 @@ function computeWidth(numCols) {
     .ticks(10, "%");
 }
 
-function computeHeight(data) { 
+function computeHeight(data, numLegendRows) { 
   height = (data.length * 20);// - margin.top - margin.bottom;
+  $('#controls').css("top", $('#legend').position().top + margin.top +  (numLegendRows * 20));
   y = d3.scale.ordinal()
    .rangeRoundBands([0, height], .1, 0);
   y.domain(data.map(function(d) { return d.doc; }));
@@ -204,12 +207,12 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
   }
     console.log(topics);
   
-  computeHeight(data);
-  $(".main").attr("height", height + margin.top + margin.bottom);
 
   var legendCols = Math.max(Math.ceil(d3.keys(topics).length / maxRows), minCols);
   var legendFactor = Math.ceil(d3.keys(topics).length / legendCols);
   computeWidth(legendCols);
+  computeHeight(data,legendFactor);
+  $(".main").attr("height", height + margin.top + margin.bottom);
 
 
   x.domain([0, 1.0]);
@@ -321,6 +324,14 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
       .text(function(d) { return d; });
 
 
+  legend.append("text")
+      //.attr("transform", "rotate(-90)")
+      .attr("class", "axis_label")
+      .attr("dy", "-.35em")
+      .attr("font-weight", "bold")
+      .style("text-anchor", "start")
+      .text("Topics");
+
   d3.select(window).on('resize', resize);
 
   function resize() {
@@ -366,7 +377,7 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
   $('#status .bar').addClass('bar-success').css('width', '100%').text("Complete!");
   setTimeout(function() {
     $('#status').hide(500);
-    $('#controls').show(500); }, 1000);
+    setTimeout(function () {$('#controls').show()}, 500); }, 1000);
 
 }); });
 
