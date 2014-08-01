@@ -86,8 +86,16 @@ $.getJSON('/docs.json', function(data) {
 });
 </script>
 
+<div id="status" style="width:960px">
+  <div class="progress loading progress-striped active">
+    <div class="bar" style="width:25%">Loading documents...</div>
+  </div>
+</div>
+
+<div id="controls" style="display:none">
 <label><input class="sort" type="checkbox">Alphabetical sort</label>
 <label><input class="scale" type="checkbox">Normalize topic bars</label>
+</div>
 <div id="chart"> </div>
 <!--<script src="topics.js"></script>-->
 <script>
@@ -151,8 +159,20 @@ function calculateTopicMap(data, scale){
 
 
 d3.json("/docs_topics/" + docid + '.json', function(error, data) {
+  $('#status .bar').css('width', '50%').text('Loading topics...');
+  if (error) {
+    $('#status .progress').removeClass('active progress-striped');
+    $('#status .bar').addClass('bar-danger').text('Invalid document: ' + docid +'.');
+    return false;
+  }
   console.log(data);
   d3.json("/topics.json", function(error_top, topics) {
+  $('#status .bar').css('width', '75%').text('Rendering chart...');
+  if (error_top) {
+    $('#status .progress').removeClass('active progress-striped');
+    $('#status .bar-danger').addClass('bar-error').text('Could not load topic list.');
+    return false;
+  }
     console.log(topics);
 
   console.log(data.length);
@@ -296,6 +316,9 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
       .selectAll("g")
         .delay(delay);
   }
+  $('#status .bar').css('width', '100%');
+  $('#status').hide();
+  $('#controls').show();
 
 }); });
 
