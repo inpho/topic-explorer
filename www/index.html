@@ -316,9 +316,10 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
       .selectAll("g")
         .delay(delay);
   }
-  $('#status .bar').css('width', '100%');
-  $('#status').hide();
-  $('#controls').show();
+  $('#status .bar').addClass('bar-success').css('width', '100%').text("Complete!");
+  setTimeout(function() {
+    $('#status').hide(500);
+    $('#controls').show(); }, 1000);
 
 }); });
 
