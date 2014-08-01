@@ -159,7 +159,7 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
   computeHeight(data);
   $(".main").attr("height", height + margin.top + margin.bottom);
 
-  x.domain([0, d3.max(data, function(d) { return d.prob; })]);
+  x.domain([0, 1.0]);
   tops = data;
   color.domain(d3.keys(data[0].topics));
     //.sort(function(a,b) {return data[0].topics[b] - data[0].topics[a];}));
@@ -179,7 +179,7 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
       .attr("class", "axis_label")
       .attr("dy", "-2em")
       .style("text-anchor", "middle")
-      .text("Topic-based similarity");
+      .text("Similarity to " + docid);
 
   svg.append("g")
       .attr("class", "y axis")
@@ -331,7 +331,7 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
       .attr("class", function(d) { return "top_" + d.name; });
 
     svg.selectAll(".x.axis text.axis_label").text(this.checked ? 
-      "Proportion of document assigned to topic" : "Topic-based similarity");
+      "Proportion of document assigned to topic" : ("Similarity to " + docid));
   }
   d3.select(".scale").on("change", scaleTopics);
 
