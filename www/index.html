@@ -45,7 +45,7 @@ rect.hover {
 rect.hover, .legend rect {
   opacity: 0.8;
 }
-.doc:hover rect {
+.doc.hover rect {
   opacity: 1.0;
   }
 rect:hover {
@@ -183,12 +183,17 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
 
   svg.append("g")
       .attr("class", "y axis")
-      .call(yAxis);
-      /*
+      .call(yAxis)
       .selectAll("text")
-      .append("a")
-      .attr("href", function(d) {return "http://plato.stanford.edu/entires/" + d;})
-      .text(function(d) { return d;});*/
+      .on("mouseenter", function(d) { 
+        $(this).attr('text-decoration', 'underline')
+          .attr('font-weight', 'bold');     
+        svg.selectAll(".doc").filter(function(doc,i) { return doc.doc == d}).attr("class", "doc hover"); })
+      .on("mouseleave", function(d) { 
+        $(this).removeAttr('text-decoration')
+          .removeAttr('font-weight'); 
+        svg.selectAll(".doc").filter(function(doc,i) { return doc.doc == d}).attr("class", "doc"); })
+      .on("click", function(d) { window.open("http://plato.stanford.edu/entires/" + d, "_blank");});
 
   // draw total bar
   var doc = svg.selectAll("doc")
