@@ -175,10 +175,11 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
       .call(xAxis)
     .append("text")
       //.attr("transform", "rotate(-90)")
+      .attr("class", "axis_label")
       .attr("y", 6)
       .attr("dy", "2em")
-      .style("text-anchor", "end")
-      .text("Topic-based Similarity");
+      .style("text-anchor", "start")
+      .text("Topic-based similarity");
 
   svg.append("g")
       .attr("class", "y axis")
@@ -328,6 +329,9 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
       .attr("x", function(d) { return x(d.x0); })
       .attr("width", function(d) { return x(d.x1) - x(d.x0); })
       .attr("class", function(d) { return "top_" + d.name; });
+
+    svg.selectAll(".x.axis text.axis_label").text(this.checked ? 
+      "Proportion of document assigned to topic" : "Topic-based similarity");
   }
   d3.select(".scale").on("change", scaleTopics);
 
