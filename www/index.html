@@ -59,8 +59,10 @@ rect:hover, .legend.hover rect{
 .hover text {
   font-weight: bold;
 }
+#legend {
+  position: fixed;
+}
 </style>
-
 
 </head>
 
@@ -100,9 +102,12 @@ $.getJSON('/docs.json', function(data) {
 <!--<script src="topics.js"></script>-->
 <script>
 
+var maxRows = 30;
+var minCols = 2;
+
 var docid = inpho.util.getValueForURLParam('doc') || 'epistemology';
 $('.title').text(docid);
-var margin = {top: 80, right: 80, bottom: 20, left: 150},
+var margin = {top: 80, right: 40, bottom: 20, left: 150},
     width = 960 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom;
 
@@ -114,6 +119,7 @@ function computeHeight(data) {
   yAxis = d3.svg.axis()
     .scale(y)
     .orient("left");
+  maxRows = Math.min(Math.floor(height / 20), maxRows);
 }
 
 var x = d3.scale.linear()
@@ -136,7 +142,7 @@ var yAxis = d3.svg.axis()
 var dataset;
 var root_doc_data;
 
-var svg = d3.select("body").append("svg")
+var svg = d3.select("#chart").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
     .attr("class", "main")
@@ -145,6 +151,14 @@ var svg = d3.select("body").append("svg")
     .on("mouseleave", function() {
         $(".legend rect").removeClass('hover').tooltip('hide');
       });
+
+var legend = d3.select("#chart").append("svg")
+    .attr("width", "350")
+    .attr("height", height)
+    .attr("id", "legend")
+    .attr("class", "main")
+  .append("g")
+    .attr("transform","translate("+margin.right+","+ margin.top + ")");
 
 function calculateTopicMap(data, scale){
   data.forEach(function(d) {
@@ -256,16 +270,16 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
         })
       .style("fill", function(d) { return color(d.name); });
 
-
-  var legend = svg.selectAll(".legend")
+  var legendCols = Math.max(Math.ceil(d3.keys(topics).length / maxRows), minCols);
+  var legendFactor = Math.ceil(d3.keys(topics).length / legendCols);
+  var legendElts = legend.selectAll(".legend")
       .data(color.domain().slice())
       //.data(d3.keys(data[0].topics))
     .enter().append("g")
       .attr("class", function(d) { return "legend top_" + d; })
-      .attr("transform", function(d, i) { return "translate(60," + ((i * 20) + 13) + ")"; });
+      .attr("transform", function(d, i) { return "translate("+(55 * Math.floor(i / legendFactor))+"," + y(i % legendFactor) + ")"; });
 
-  legend.append("rect")
-      .attr("x", width - 18)
+  legendElts.append("rect")
       .attr("width", 18)
       .attr("height", 18)
       .attr("class", function(d) { return "top_" + d; })
@@ -282,8 +296,8 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
 
   $(".legend rect").tooltip({container:'body', trigger: 'manual', animation: false});
 
-  legend.append("text")
-      .attr("x", width - 24)
+  legendElts.append("text")
+      .attr("dx", -6)
       .attr("y", 9)
       .attr("dy", ".35em")
       .style("text-anchor", "end")
