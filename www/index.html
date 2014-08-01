@@ -193,7 +193,8 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
         $(this).removeAttr('text-decoration')
           .removeAttr('font-weight'); 
         svg.selectAll(".doc").filter(function(doc,i) { return doc.doc == d}).attr("class", "doc"); })
-      .on("click", function(d) { window.open("http://plato.stanford.edu/entires/" + d, "_blank");});
+      .on("click", function(d) { window.open("https://inpho.cogs.indiana.edu/entity?redirect=True&sep=" + d, "_blank");});
+      //.on("click", function(d) { window.open("http://plato.stanford.edu/entires/" + d, "_blank");});
 
   // draw total bar
   var doc = svg.selectAll("doc")
