@@ -98,10 +98,11 @@ var margin = {top: 80, right: 80, bottom: 20, left: 150},
     width = 960 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom;
 
-function computeHeight(n) { 
-  height = n*22 - margin.top - margin.bottom;
+function computeHeight(data) { 
+  height = (data.length * 20);// - margin.top - margin.bottom;
   y = d3.scale.ordinal()
-   .rangeRoundBands([0, height], .1);
+   .rangeRoundBands([0, height], .1, 0);
+  y.domain(data.map(function(d) { return d.doc; }));
   yAxis = d3.svg.axis()
     .scale(y)
     .orient("left");
@@ -111,7 +112,7 @@ var x = d3.scale.linear()
     .range([0, width]);
 
 var y = d3.scale.ordinal()
-    .rangeRoundBands([0, height], .1);
+    .rangeRoundBands([0, height], .1, 0);
 
 var color = d3.scale.category20c();
 
@@ -154,11 +155,11 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
   d3.json("/topics.json", function(error_top, topics) {
     console.log(topics);
 
-  computeHeight(data.length);
+  console.log(data.length);
+  computeHeight(data);
   $(".main").attr("height", height + margin.top + margin.bottom);
 
   x.domain([0, d3.max(data, function(d) { return d.prob; })]);
-  y.domain(data.map(function(d) { return d.doc; }));
   tops = data;
   color.domain(d3.keys(data[0].topics));
     //.sort(function(a,b) {return data[0].topics[b] - data[0].topics[a];}));
@@ -171,7 +172,7 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
 
   svg.append("g")
       .attr("class", "x axis")
-      .attr("transform", "translate(10,0)")
+      .attr("transform", "translate(10,-10)")
       .call(xAxis)
     .append("text")
       //.attr("transform", "rotate(-90)")
