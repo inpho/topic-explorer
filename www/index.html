@@ -68,36 +68,37 @@ rect:hover, .legend.hover rect{
 
 <body>
 
-
-<h1>The SEP Topic Explorer</h1>
-<h2 class="title"></h2>
-<p>This visualization shows the similarity of other articles in the SEP to the entry on <span class="title"></span>. The color bands within each article's row show the topic distribution within that article, and the relative sizes of each band indicates the weight of that topic in the article.</p>
-
-<p>(See <a href="http://en.wikipedia.org/wiki/Latent_Dirichlet_allocation">Wikipedia: Latent Dirichlet Allocation</a> for more on the LDA topic modeling approach used to generate this representation.)</p>
-
-<form action="/" method="GET" class="form-inline">
-<fieldset>
-<input type="text" name="doc" class="typeahead input-medium" placeholder="Document ID" autocomplete="off">
-<button type="submit" class="btn">Submit</button>
-</fieldset>
-</form>
-
+<div class="container-fluid">
+  <h1>The SEP Topic Explorer</h1>
+  <h2 class="title"></h2>
+  <p>This visualization shows the similarity of other articles in the SEP to the entry on <span class="title"></span>. The color bands within each article's row show the topic distribution within that article, and the relative sizes of each band indicates the weight of that topic in the article.</p>
+  
+  <p>(See <a href="http://en.wikipedia.org/wiki/Latent_Dirichlet_allocation">Wikipedia: Latent Dirichlet Allocation</a> for more on the LDA topic modeling approach used to generate this representation.)</p>
+  
+  <form action="/" method="GET" class="form-inline">
+  <fieldset>
+  <input type="text" name="doc" class="typeahead input-medium" placeholder="Document ID" autocomplete="off">
+  <button type="submit" class="btn">Submit</button>
+  </fieldset>
+  </form>
+  
+  <div id="status" style="width:100%">
+    <div class="progress loading progress-striped active">
+      <div class="bar" style="width:25%">Loading documents...</div>
+    </div>
+  </div>
+  
+  <div id="controls" style="display:none">
+  <label><input class="sort" type="checkbox">Alphabetical sort</label>
+  <label><input class="scale" type="checkbox">Normalize topic bars</label>
+  </div>
+</div>
 <script>
 $.getJSON('/docs.json', function(data) {
   $(".typeahead").typeahead({source: data});
 });
 </script>
 
-<div id="status" style="width:960px">
-  <div class="progress loading progress-striped active">
-    <div class="bar" style="width:25%">Loading documents...</div>
-  </div>
-</div>
-
-<div id="controls" style="display:none">
-<label><input class="sort" type="checkbox">Alphabetical sort</label>
-<label><input class="scale" type="checkbox">Normalize topic bars</label>
-</div>
 <div id="chart"> </div>
 <!--<script src="topics.js"></script>-->
 <script>
