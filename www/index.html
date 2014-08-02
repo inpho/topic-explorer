@@ -239,6 +239,10 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
       .attr("class", "y axis")
       .call(yAxis)
       .selectAll("text")
+      .attr("x", -30)
+      .on("click", function(d) { window.location.href = "/?doc=" + d;})
+
+  var ticks = svg.select(".y.axis").selectAll("g")
       .on("mouseenter", function(d) { 
         $(this).attr('text-decoration', 'underline')
           .attr('font-weight', 'bold');     
@@ -247,7 +251,14 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
         $(this).removeAttr('text-decoration')
           .removeAttr('font-weight'); 
         svg.selectAll(".doc").filter(function(doc,i) { return doc.doc == d}).attr("class", "doc"); })
-      .on("click", function(d) { window.open("https://inpho.cogs.indiana.edu/entity?redirect=True&sep=" + d, "_blank");});
+      .append("svg:image")
+        .attr("xlink:href","/img/inpho.png")
+        .attr("width", 18)
+        .attr("height",18)
+        .attr("x", -27)
+        .attr("y", -9)
+        .on("click", function(d) { window.open("https://inpho.cogs.indiana.edu/entity?redirect=True&sep=" + d, "_blank");});
+
       //.on("click", function(d) { window.open("http://plato.stanford.edu/entires/" + d, "_blank");});
 
   // draw total bar
@@ -376,6 +387,8 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
     transition.select(".y.axis")
         .call(yAxis)
       .selectAll("g")
+        .selectAll("text")
+        .attr("x", "-30")
         .delay(delay);
   }
   $('#status .bar').addClass('bar-success').css('width', '100%').text("Complete!");
