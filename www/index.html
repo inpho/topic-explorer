@@ -59,7 +59,7 @@ rect:hover, .legend.hover rect{
 .hover text {
   font-weight: bold;
 }
-#legend {
+#legend, #controls {
   position: absolute;
 }
 </style>
@@ -146,7 +146,6 @@ function computeWidth(numCols) {
 
 function computeHeight(data, numLegendRows) { 
   height = (data.length * 20);// - margin.top - margin.bottom;
-  $('#controls').css("top", $('#legend').position().top + margin.top + (numLegendRows * 20));
   y = d3.scale.ordinal()
    .rangeRoundBands([0, height], .1, 0);
   y.domain(data.map(function(d) { return d.doc; }));
@@ -373,9 +372,11 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
       .selectAll("g")
         .delay(delay);
   }
-  $('#controls').show();
   $('#status .bar').addClass('bar-success').css('width', '100%').text("Complete!");
-  setTimeout(function() { $('#status').hide(500)}, 500);
+  setTimeout(function() { 
+    $('#status').hide(500);
+    setTimeout(function() {$('#controls').css({'top' : $('#legend').height() + $('#legend').position().top}).show();}, 500);
+    } , 500);
 
   $(window).on("scroll", scrollLegend);
   function scrollLegend() {
@@ -388,10 +389,10 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
       $('#controls').css({'position': 'absolute', 'top' : legendHeight + chartHeight});
     } else if ((scrollPos - chartHeight - heightFac) < (margin.top)) {
       $('#legend').css({'position': 'absolute', 'top' : scrollPos + heightFac});
-      $('#controls').css({'position': 'absolute', 'top' : legendHeight+ scrollPos + heightFac});
+      $('#controls').css({'position': 'absolute', 'top' : legendHeight+ scrollPos});
     } else {
       $('#legend').css({'position': 'fixed', 'top' : heightFac});
-      $('#controls').css({'position': 'fixed', 'top' : legendHeight +heightFac});
+      $('#controls').css({'position': 'fixed', 'top' : legendHeight});
     }}
    
 }); });
