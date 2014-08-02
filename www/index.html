@@ -323,6 +323,12 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
 
 
   legend.append("text")
+      .attr("dx", -6)
+      .attr("dy", "-.35em")
+      .attr("font-weight", "bold")
+      .style("text-anchor", "end")
+      .text(d3.keys(topics).length);
+  legend.append("text")
       //.attr("transform", "rotate(-90)")
       .attr("class", "axis_label")
       .attr("dy", "-.35em")
