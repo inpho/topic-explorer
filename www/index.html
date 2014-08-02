@@ -146,14 +146,13 @@ function computeWidth(numCols) {
 
 function computeHeight(data, numLegendRows) { 
   height = (data.length * 20);// - margin.top - margin.bottom;
-  $('#controls').css("top", $('#legend').position().top + margin.top +  (numLegendRows * 20));
+  $('#controls').css("top", $('#legend').position().top + margin.top + (numLegendRows * 20));
   y = d3.scale.ordinal()
    .rangeRoundBands([0, height], .1, 0);
   y.domain(data.map(function(d) { return d.doc; }));
   yAxis = d3.svg.axis()
     .scale(y)
     .orient("left");
-  maxRows = Math.min(Math.floor(height / 20), maxRows);
 }
 
 var dataset;
@@ -172,7 +171,6 @@ var svg = d3.select("#chart").append("svg")
 
 var legend = d3.select("#chart").append("svg")
     .attr("width", "350")
-    .attr("height", height)
     .attr("id", "legend")
     .attr("class", "main")
   .append("g")
@@ -208,11 +206,11 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
     console.log(topics);
   
 
-  var legendCols = Math.max(Math.ceil(d3.keys(topics).length / maxRows), minCols);
+  var legendCols = Math.max(Math.ceil(d3.keys(topics).length / Math.min(data.length, maxRows)), minCols);
   var legendFactor = Math.ceil(d3.keys(topics).length / legendCols);
-  computeWidth(legendCols);
   computeHeight(data,legendFactor);
   $(".main").attr("height", height + margin.top + margin.bottom);
+  computeWidth(legendCols);
 
 
   x.domain([0, 1.0]);
@@ -374,11 +372,10 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
       .selectAll("g")
         .delay(delay);
   }
+  $('#controls').show();
   $('#status .bar').addClass('bar-success').css('width', '100%').text("Complete!");
-  setTimeout(function() {
-    $('#status').hide(500);
-    setTimeout(function () {$('#controls').show()}, 500); }, 1000);
-
+  setTimeout(function() { $('#status').hide(500)}, 500);
+   
 }); });
 
   function scaleTopics() {
