@@ -104,7 +104,7 @@ $.getJSON('/docs.json', function(data) {
 <!--<script src="topics.js"></script>-->
 <script>
 
-var maxRows = 30;
+var maxRows = 25;
 var minCols = 2;
 
 var docid = inpho.util.getValueForURLParam('doc') || 'epistemology';
@@ -389,10 +389,10 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
       $('#controls').css({'position': 'absolute', 'top' : legendHeight + chartHeight});
     } else if ((scrollPos - chartHeight - heightFac) < (margin.top)) {
       $('#legend').css({'position': 'absolute', 'top' : scrollPos + heightFac});
-      $('#controls').css({'position': 'absolute', 'top' : legendHeight+ scrollPos});
+      $('#controls').css({'position': 'absolute', 'top' : legendHeight+ scrollPos + heightFac});
     } else {
       $('#legend').css({'position': 'fixed', 'top' : heightFac});
-      $('#controls').css({'position': 'fixed', 'top' : legendHeight});
+      $('#controls').css({'position': 'fixed', 'top' : legendHeight + heightFac});
     }}
    
 }); });
