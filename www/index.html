@@ -244,11 +244,11 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
 
   var ticks = svg.select(".y.axis").selectAll("g")
       .on("mouseenter", function(d) { 
-        $(this).attr('text-decoration', 'underline')
+        $('text', this).attr('text-decoration', 'underline')
           .attr('font-weight', 'bold');     
         svg.selectAll(".doc").filter(function(doc,i) { return doc.doc == d}).attr("class", "doc hover"); })
       .on("mouseleave", function(d) { 
-        $(this).removeAttr('text-decoration')
+        $('text',this).removeAttr('text-decoration')
           .removeAttr('font-weight'); 
         svg.selectAll(".doc").filter(function(doc,i) { return doc.doc == d}).attr("class", "doc"); })
       .append("svg:image")
