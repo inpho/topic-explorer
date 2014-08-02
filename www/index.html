@@ -175,12 +175,14 @@ var legend = d3.select("#chart").append("svg")
   .append("g")
     .attr("transform","translate("+margin.right+","+ margin.top + ")");
 
-function calculateTopicMap(data, scale){
+function calculateTopicMap(data, scale, sortFn){
+  if (!sortFn)
+    sortFn = function(a,b) {return root_doc_data.topics[b] - root_doc_data.topics[a];}
   data.forEach(function(d) {
     var sizeFactor = (scale) ? d.prob : 1.0
     var x0 = 0;
     d.topicMap = color.domain()
-      .sort(function(a,b) {return root_doc_data.topics[b] - root_doc_data.topics[a];})
+      .sort(sortFn)
       .map(function(name) { return {name: name, x0: x0, x1: x0 += +(d.topics[name]*sizeFactor) }; });
   });
   
@@ -300,6 +302,7 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
       .on("mouseout", function(d) {
           $(".top_" + d.name).removeClass('hover');
         })
+      .on("click", function(d) { topicSort(d.name); })
       .style("fill", function(d) { return color(d.name); });
 
   var legendElts = legend.selectAll(".legend")
@@ -365,33 +368,7 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
 
 
   d3.select(".sort").on("change", alphabetSort);
-
-  function alphabetSort() {
-    // Copy-on-write since tweens are evaluated after a delay.
-    dataset = data.sort(this.checked
-        ? function(a, b) { return d3.ascending(a.doc, b.doc); }
-        : function(a, b) { return b.prob - a.prob; });
-
-    var y0 = y.domain(dataset
-        .map(function(d) { return d.doc; }))
-        .copy();
-
-
-    var transition = svg.transition().duration(500),
-        delay = function(d, i) { return i * 25; };
-
-    transition.selectAll(".doc")
-        .delay(delay)
-        .attr("transform", function(d) { return "translate(10," + y(d.doc) + ")"; });
-        //.attr("y", function(d) { return y(d.doc); });
-
-    transition.select(".y.axis")
-        .call(yAxis)
-      .selectAll("g")
-        .selectAll("text")
-        .attr("x", "-30")
-        .delay(delay);
-  }
+  
   $('#status .bar').addClass('bar-success').css('width', '100%').text("Complete!");
   setTimeout(function() { 
     $('#status').hide(500);
@@ -459,6 +436,57 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
   }
   d3.select(".scale").on("change", scaleTopics);
 
+
+  function alphabetSort() {
+    // Copy-on-write since tweens are evaluated after a delay.
+    dataset = dataset.sort(this.checked
+        ? function(a, b) { return d3.ascending(a.doc, b.doc); }
+        : function(a, b) { return b.prob - a.prob; });
+
+    var y0 = y.domain(dataset
+        .map(function(d) { return d.doc; }))
+        .copy();
+
+    var transition = svg.transition().duration(500),
+        delay = function(d, i) { return i * 25; };
+
+    transition.selectAll(".doc")
+        .delay(delay)
+        .attr("transform", function(d) { return "translate(10," + y(d.doc) + ")"; });
+        //.attr("y", function(d) { return y(d.doc); });
+
+    transition.select(".y.axis")
+        .call(yAxis)
+      .selectAll("g")
+        .selectAll("text")
+        .attr("x", "-30")
+        .delay(delay);
+  }
+
+  function topicSort(topic) {
+    // Copy-on-write since tweens are evaluated after a delay.
+    dataset = dataset.sort(topic
+        ? function(a, b) { return b.topics[topic] - a.topics[topic]; }
+        : function(a, b) { return b.prob - a.prob; });
+
+    var y0 = y.domain(dataset
+        .map(function(d) { return d.doc; }))
+        .copy();
+
+    var transition = svg.transition().duration(500),
+        delay = function(d, i) { return i * 25; };
+
+    transition.selectAll(".doc")
+        .delay(delay)
+        .attr("transform", function(d) { return "translate(10," + y(d.doc) + ")"; });
+
+    transition.select(".y.axis")
+        .call(yAxis)
+      .selectAll("g")
+        .selectAll("text")
+        .attr("x", "-30")
+        .delay(delay);
+  }
 
 </script>
 
