@@ -257,6 +257,7 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
         .attr("height",18)
         .attr("x", -27)
         .attr("y", -9)
+        .attr("class", "inphoIcon")
         .on("click", function(d) { window.open("https://inpho.cogs.indiana.edu/entity?redirect=True&sep=" + d, "_blank");});
 
       //.on("click", function(d) { window.open("http://plato.stanford.edu/entires/" + d, "_blank");});
