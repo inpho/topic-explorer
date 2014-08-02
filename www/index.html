@@ -434,8 +434,8 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
     svg.selectAll(".x.axis text.axis_label").text(this.checked ? 
       "Proportion of document assigned to topic" : ("Similarity to " + docid));
   }
-  d3.select(".scale").on("change", scaleTopics);
 
+  d3.select(".scale").on("change", scaleTopics);
 
   function alphabetSort() {
     // Copy-on-write since tweens are evaluated after a delay.
@@ -486,6 +486,37 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
         .selectAll("text")
         .attr("x", "-30")
         .delay(delay);
+   
+    $("#legend .hover").removeClass("hover");
+    var numTopics = dataset[0].topics.length;
+    var delay = function(d, i) { return i * (1000/numTopics); },
+        negdelay = function(d, i) { return (numTopics-i) * (1000/numTopics); };
+
+    var sortFn = function(a,b) {return a == topic ? -1 : (dataset[0].topics[b] - dataset[0].topics[a]);}   
+    calculateTopicMap(dataset, !($('.scale')[0].checked), sortFn);
+    
+    svg.selectAll(".doc")
+      .selectAll("rect")
+      .data(function(d) { return d.topicMap; })
+      .style("fill", function(d) { return color(d.name); })
+      .on("mouseover", function(d) {
+          // SVG element z-index determined by render order, not style sheet
+          // so element must be reappended to the end on hover so border 
+          // is not occluded
+          var parent = $(this).parent();
+          $(this).detach().appendTo(parent);
+          $('.legend rect').not('.top_' + d.name).tooltip('hide');
+          $(".top_" + d.name).addClass('hover');
+          $('.legend rect.top_' + d.name).tooltip('show');
+        })
+      .on("mouseout", function(d) {
+          $(".top_" + d.name).removeClass('hover');
+        })
+      .transition().duration(1000).ease("linear").delay(this.checked ? delay : negdelay)
+      .attr("x", function(d) { return x(d.x0); })
+      .attr("width", function(d) { return x(d.x1) - x(d.x0); })
+      .attr("class", function(d) { return "top_" + d.name; });
+
   }
 
 </script>
