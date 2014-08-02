@@ -60,7 +60,7 @@ rect:hover, .legend.hover rect{
   font-weight: bold;
 }
 #legend {
-  position: fixed;
+  position: absolute;
 }
 </style>
 
@@ -96,7 +96,7 @@ $.getJSON('/docs.json', function(data) {
 </script>
 
 <div id="chart"> </div>
-<div id="controls" style="display:none; position: fixed;">
+<div id="controls" style="display:none;">
   <strong>Display Options</strong>
   <label class="checkbox"><input class="sort" type="checkbox"> Alphabetical sort</label>
   <label class="checkbox"><input class="scale" type="checkbox"> Normalize topic bars</label>
@@ -209,7 +209,8 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
   var legendCols = Math.max(Math.ceil(d3.keys(topics).length / Math.min(data.length, maxRows)), minCols);
   var legendFactor = Math.ceil(d3.keys(topics).length / legendCols);
   computeHeight(data,legendFactor);
-  $(".main").attr("height", height + margin.top + margin.bottom);
+  $("#main").attr("height", height + margin.top + margin.bottom);
+  $("#legend").attr("height", (legendFactor * 20) + margin.top + margin.bottom);
   computeWidth(legendCols);
 
 
@@ -375,6 +376,23 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
   $('#controls').show();
   $('#status .bar').addClass('bar-success').css('width', '100%').text("Complete!");
   setTimeout(function() { $('#status').hide(500)}, 500);
+
+  $(window).on("scroll", scrollLegend);
+  function scrollLegend() {
+    var scrollPos = $(window).scrollTop();
+    var chartHeight = $('#chart').position().top;
+    var legendHeight = $('#legend').height();
+    var heightFac = -60;
+    if((scrollPos - chartHeight - margin.top - heightFac) <= 0) {
+      $('#legend').css({'position': 'absolute', 'top' : chartHeight});
+      $('#controls').css({'position': 'absolute', 'top' : legendHeight + chartHeight});
+    } else if ((scrollPos - chartHeight - heightFac) < (margin.top)) {
+      $('#legend').css({'position': 'absolute', 'top' : scrollPos + heightFac});
+      $('#controls').css({'position': 'absolute', 'top' : legendHeight+ scrollPos + heightFac});
+    } else {
+      $('#legend').css({'position': 'fixed', 'top' : heightFac});
+      $('#controls').css({'position': 'fixed', 'top' : legendHeight +heightFac});
+    }}
    
 }); });
 
