@@ -174,15 +174,14 @@ var legend = d3.select("#chart").append("svg")
   .append("g")
     .attr("transform","translate("+margin.right+","+ margin.top + ")");
 
-var lastSortFn;
 function calculateTopicMap(data, scale, sortFn){
-  if (!sortFn) sortFn = lastSortFn;
-  else lastSortFn = sortFn;
   data.forEach(function(d) {
     var sizeFactor = (scale) ? d.prob : 1.0
     var x0 = 0;
-    d.topicMap = color.domain()
+    if (sortFn) d.topicMap = color.domain()
       .sort(sortFn)
+      .map(function(name) { return {name: name, x0: x0, x1: x0 += +(d.topics[name]*sizeFactor) }; });
+    else d.topicMap = color.domain()
       .map(function(name) { return {name: name, x0: x0, x1: x0 += +(d.topics[name]*sizeFactor) }; });
   });
   
