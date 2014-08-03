@@ -155,7 +155,6 @@ function computeHeight(data, numLegendRows) {
 }
 
 var dataset;
-var root_doc_data;
 
 var svg = d3.select("#chart").append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -175,9 +174,10 @@ var legend = d3.select("#chart").append("svg")
   .append("g")
     .attr("transform","translate("+margin.right+","+ margin.top + ")");
 
+var lastSortFn;
 function calculateTopicMap(data, scale, sortFn){
-  if (!sortFn)
-    sortFn = function(a,b) {return root_doc_data.topics[b] - root_doc_data.topics[a];}
+  if (!sortFn) sortFn = lastSortFn;
+  else lastSortFn = sortFn;
   data.forEach(function(d) {
     var sizeFactor = (scale) ? d.prob : 1.0
     var x0 = 0;
@@ -218,10 +218,9 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
   x.domain([0, 1.0]);
   tops = data;
   color.domain(d3.keys(data[0].topics));
-    //.sort(function(a,b) {return data[0].topics[b] - data[0].topics[a];}));
+    //.sort();
 
-  root_doc_data = data[0];
-  calculateTopicMap(data, true);
+  calculateTopicMap(data, true, function(a,b) {return data[0].topics[b] - data[0].topics[a];});
 
 
   dataset = data;
@@ -492,7 +491,11 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
     var delay = function(d, i) { return i * (1000/numTopics); },
         negdelay = function(d, i) { return (numTopics-i) * (1000/numTopics); };
 
-    var sortFn = function(a,b) {return a == topic ? -1 : (dataset[0].topics[b] - dataset[0].topics[a]);}   
+    var sortFn = function(a,b) {
+      if (a == topic) return -1;
+      else if (b == topic) return 1;
+      else return dataset[0].topics[b] - dataset[0].topics[a];
+    }   
     calculateTopicMap(dataset, !($('.scale')[0].checked), sortFn);
     
     svg.selectAll(".doc")
