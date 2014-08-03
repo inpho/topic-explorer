@@ -8,9 +8,9 @@
 <script src="lib/d3.v3.min.js"></script>
 <script src="lib/mustache.js"></script>
 <script src="lib/inpho/util.js"></script>
-<script src="sep.js"></script>
+<!--<script src="sep.js"></script>-->
 <link rel="stylesheet" type="text/css" href="lib/bootstrap-2.3.2/css/bootstrap.min.css" />
-<link rel="stylesheet" type="text/css" href="style.css" />
+<!--<link rel="stylesheet" type="text/css" href="style.css" />-->
 <style>
 
 .bar {
@@ -62,6 +62,16 @@ rect:hover, .legend.hover rect{
 #legend, #controls {
   position: absolute;
 }
+.primary {
+  text-transform: uppercase;
+}
+/*
+.primary.doc:hover, .primary.doc {
+  stroke: #000;
+  stroke-width: 1px;
+  stroke-opacity: 1.0;
+  shape-rendering: crispEdges;
+}*/
 </style>
 
 </head>
@@ -240,6 +250,7 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
       .call(yAxis)
       .selectAll("text")
       .attr("x", -30)
+      .attr("class", function(d) { return d == docid ? "primary" : "" })
       .on("click", function(d) { window.location.href = "/?doc=" + d;})
 
   var ticks = svg.select(".y.axis").selectAll("g")
@@ -266,7 +277,7 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
   var doc = svg.selectAll("doc")
       .data(data)
     .enter().append("g")
-      .attr("class", "doc")
+      .attr("class", function(d) { return d.doc == docid ? "doc primary" : "doc"})
       .attr("transform", function(d) { return "translate(10," + y(d.doc) + ")"; })
       .on("mouseover", function(d) {
           $("text:contains(" + d.doc +")")
@@ -318,6 +329,7 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
       //.attr("data-toggle", "tooltip")
       .attr("data-placement", "right")
       .attr("title", function(d) { return d3.keys(topics[d]).join(", "); })
+      .on("click", function(d) { topicSort(d); })
       .on("mouseover", function(d) {
           $(".top_" + d).addClass('hover').tooltip('show');
         })
