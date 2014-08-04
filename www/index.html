@@ -165,6 +165,7 @@ function computeHeight(data, numLegendRows) {
 }
 
 var dataset;
+var original_root;
 
 var svg = d3.select("#chart").append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -233,6 +234,7 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
 
 
   dataset = data;
+  original_root = data[0];
 
   svg.append("g")
       .attr("class", "x axis")
@@ -475,6 +477,7 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
 
   function topicSort(topic) {
     // Copy-on-write since tweens are evaluated after a delay.
+    /*
     dataset = dataset.sort(topic
         ? function(a, b) { return b.topics[topic] - a.topics[topic]; }
         : function(a, b) { return b.prob - a.prob; });
@@ -496,7 +499,8 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
         .selectAll("text")
         .attr("x", "-30")
         .delay(delay);
-   
+   */
+
     $("#legend .hover").removeClass("hover");
     var numTopics = dataset[0].topics.length;
     var delay = function(d, i) { return i * (1000/numTopics); },
@@ -505,7 +509,7 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
     var sortFn = function(a,b) {
       if (a == topic) return -1;
       else if (b == topic) return 1;
-      else return dataset[0].topics[b] - dataset[0].topics[a];
+      else return original_root.topics[b] - original_root.topics[a];
     }   
     calculateTopicMap(dataset, !($('.scale')[0].checked), sortFn);
     
