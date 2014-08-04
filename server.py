@@ -20,6 +20,7 @@ lda_v = LDAViewer(lda_c, lda_m)
 
 @route('/doc_topics/<sep_dir>')
 def doc_topic_csv(sep_dir):
+    sep_dir = sep_dir.lower()
 
     response.content_type = 'text/csv; charset=UTF8'
 
@@ -35,6 +36,7 @@ def doc_topic_csv(sep_dir):
 
 @route('/docs/<sep_dir>')
 def doc_csv(sep_dir, threshold=0.2):
+    sep_dir = sep_dir.lower()
 
     response.content_type = 'text/csv; charset=UTF8'
 
@@ -50,6 +52,7 @@ def doc_csv(sep_dir, threshold=0.2):
 
 @route('/docs_topics/<sep_dir>.json')
 def doc_topics(sep_dir, N=40):
+    sep_dir = sep_dir.lower()
 
     response.content_type = 'application/json; charset=UTF8'
 
