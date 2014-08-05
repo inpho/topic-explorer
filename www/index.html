@@ -12,6 +12,15 @@
 <link rel="stylesheet" type="text/css" href="lib/bootstrap-2.3.2/css/bootstrap.min.css" />
 <!--<link rel="stylesheet" type="text/css" href="style.css" />-->
 <style>
+.y.axis text, .y.axis image {
+  cursor: pointer;
+  }
+.y.axis g .inphoIcon {
+  display: none;
+  }
+.y.axis g:hover .inphoIcon {
+  display: inherit;
+  }
 
 .bar {
     fill: steelblue;
@@ -248,7 +257,7 @@ d3.json(url, function(error, data) {
       .attr("transform", "translate(10,-10)")
       .call(xAxis)
     .append("text")
-      //.attr("transform", "rotate(-90)")
+      //.attr("transform", "rotate(-120)")
       .attr("class", "axis_label")
       .attr("dy", "-2em")
       .style("text-anchor", "middle")
@@ -258,7 +267,6 @@ d3.json(url, function(error, data) {
       .attr("class", "y axis")
       .call(yAxis)
       .selectAll("text")
-      .attr("x", -30)
       .attr("class", function(d) { return d == docid ? "primary" : "" })
       .on("click", function(d) { window.location.href = "/?doc=" + d;})
 
@@ -275,7 +283,7 @@ d3.json(url, function(error, data) {
         .attr("xlink:href","/img/inpho.png")
         .attr("width", 18)
         .attr("height",18)
-        .attr("x", -27)
+        .attr("x", -margin.left + 5)
         .attr("y", -9)
         .attr("class", "inphoIcon")
         .on("click", function(d) { window.open("https://inpho.cogs.indiana.edu/entity?redirect=True&sep=" + d, "_blank");});
@@ -363,21 +371,20 @@ d3.json(url, function(error, data) {
       .style("text-anchor", "end")
       .text(d3.keys(topics).length);
   legend.append("text")
-      //.attr("transform", "rotate(-90)")
+      //.attr("transform", "rotate(-120)")
       .attr("class", "axis_label")
       .attr("dy", "-.35em")
       .attr("font-weight", "bold")
       .style("text-anchor", "start")
       .text("Topics");
   legend.append("text")
-      //.attr("transform", "rotate(-90)")
+      //.attr("transform", "rotate(-120)")
       .attr("class", "axis_label")
-      .attr("dy", "-.5em")
+      .attr("dy", "-.45em")
       .attr("dx", "5em")
       .attr("font-size", "10px")
-      .attr("font-weight", "normal")
       .style("text-anchor", "start")
-      .text("ordered by P( T | "+docid+" )");
+      .text("ordered by P( T | " + docid + " )");
 
   d3.select(window).on('resize', resize);
 
@@ -487,7 +494,6 @@ d3.json(url, function(error, data) {
         .call(yAxis)
       .selectAll("g")
         .selectAll("text")
-        .attr("x", "-30")
         .delay(delay);
   }
 
@@ -512,7 +518,6 @@ d3.json(url, function(error, data) {
         .call(yAxis)
       .selectAll("g")
         .selectAll("text")
-        .attr("x", "-30")
         .delay(delay);
 
     $("#legend .hover").removeClass("hover");
