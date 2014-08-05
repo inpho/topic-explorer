@@ -32,6 +32,10 @@
     shape-rendering: crispEdges;
 }
 
+.label {
+  
+  }
+
 rect {
   opacity: 0.6;
   }
@@ -118,8 +122,9 @@ var maxRows = 25;
 var minCols = 2;
 
 var docid = inpho.util.getValueForURLParam('doc') || 'epistemology';
+var roottopic = inpho.util.getValueForURLParam('topic') || null;
 $('.title').text(docid);
-var margin = {top: 80, right: 40, bottom: 20, left: 150},
+var margin = {top: 80, right: 40, bottom: 20, left: 200},
     width = 960 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom;
 
@@ -198,8 +203,10 @@ function calculateTopicMap(data, scale, sortFn){
   
 }
 
-
-d3.json("/docs_topics/" + docid + '.json', function(error, data) {
+var url;
+if (roottopic) url = "/topics/" + roottopic + '.json';
+else url = "/docs_topics/" + docid + '.json'
+d3.json(url, function(error, data) {
   $('#status .bar').css('width', '50%').text('Loading topics...');
   if (error) {
     $('#status .progress').removeClass('active progress-striped');
@@ -362,6 +369,15 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
       .attr("font-weight", "bold")
       .style("text-anchor", "start")
       .text("Topics");
+  legend.append("text")
+      //.attr("transform", "rotate(-90)")
+      .attr("class", "axis_label")
+      .attr("dy", "-.5em")
+      .attr("dx", "5em")
+      .attr("font-size", "10px")
+      .attr("font-weight", "normal")
+      .style("text-anchor", "start")
+      .text("ordered by P( T | "+docid+" )");
 
   d3.select(window).on('resize', resize);
 
@@ -477,7 +493,6 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
 
   function topicSort(topic) {
     // Copy-on-write since tweens are evaluated after a delay.
-    /*
     dataset = dataset.sort(topic
         ? function(a, b) { return b.topics[topic] - a.topics[topic]; }
         : function(a, b) { return b.prob - a.prob; });
@@ -499,7 +514,6 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
         .selectAll("text")
         .attr("x", "-30")
         .delay(delay);
-   */
 
     $("#legend .hover").removeClass("hover");
     var numTopics = dataset[0].topics.length;
@@ -509,7 +523,8 @@ d3.json("/docs_topics/" + docid + '.json', function(error, data) {
     var sortFn = function(a,b) {
       if (a == topic) return -1;
       else if (b == topic) return 1;
-      else return original_root.topics[b] - original_root.topics[a];
+      else return dataset[0].topics[b] - dataset[0].topics[a];
+      //else return original_root.topics[b] - original_root.topics[a];
     }   
     calculateTopicMap(dataset, !($('.scale')[0].checked), sortFn);
     
