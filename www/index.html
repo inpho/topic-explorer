@@ -13,6 +13,10 @@
 <!--<link rel="stylesheet" type="text/css" href="style.css" />-->
 <style>
 
+.y.axis text, .y.axis image {
+  cursor: pointer;
+  }
+
 .bar {
     fill: steelblue;
 }
@@ -40,6 +44,7 @@ rect.hover {
   stroke: #000;
   stroke-width: 1;
   shape-rendering: crispEdges;
+  cursor: crosshair;
 }
 
 rect.hover, .legend rect {
@@ -119,7 +124,7 @@ var minCols = 2;
 
 var docid = inpho.util.getValueForURLParam('doc') || 'epistemology';
 $('.title').text(docid);
-var margin = {top: 80, right: 40, bottom: 20, left: 150},
+var margin = {top: 80, right: 40, bottom: 20, left: 200},
     width = 960 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom;
 
