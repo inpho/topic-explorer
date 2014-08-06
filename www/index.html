@@ -92,6 +92,9 @@ rect:hover, .legend.hover rect{
 .primary {
   text-transform: uppercase;
 }
+.title{ 
+  font-weight: bold;
+  }
 /*
 .primary.doc:hover, .primary.doc {
   stroke: #000;
@@ -108,9 +111,10 @@ rect:hover, .legend.hover rect{
 <div class="container-fluid">
   <h1>The SEP Topic Explorer</h1>
   <h2 class="title"></h2>
-  <p>This visualization shows the similarity of other articles in the SEP to the entry on <span class="title"></span>. The color bands within each article's row show the topic distribution within that article, and the relative sizes of each band indicates the weight of that topic in the article.</p>
+  <p>This visualization shows the similarity of other articles in the SEP to the entry on <span class="title"></span>.  The color bands within each article's row show the topic distribution within that article, and the relative sizes of each band indicates the weight of that topic in the article.  The full width of each bar indicates the similarity to <span class="title"></span>. Each topic label and color is arbitrarily assigned, but is consistent across articles in the browser.</p>
+  <p>Display options include alphabetical and topic sort. By clicking a topic, the visualization will reorder acoording to that topic's probability given each document and topic bars will reorder according to the order of topics in the highest probable document for the selected topic. Additionally, topic bars can be normalized, such that topic weights per document can be compared.</p>
   
-  <p>(See <a href="http://en.wikipedia.org/wiki/Latent_Dirichlet_allocation">Wikipedia: Latent Dirichlet Allocation</a> for more on the LDA topic modeling approach used to generate this representation.)</p>
+  <p>The underlying dataset was generated using the <a href="http://github.com/inpho/vsm">InPhO VSM module's</a> Latent Dirichlet Allocation functions.  See <a href="http://en.wikipedia.org/wiki/Latent_Dirichlet_allocation">Wikipedia: Latent Dirichlet Allocation</a> for more on the LDA topic modeling approach used to generate this representation, or <a href="http://dl.acm.org/citation.cfm?id=2133826">"Probabilistic Topic Models" (Blei, 2012)</a> for a review.</p>
   
   <form action="/" method="GET" class="form-inline">
   <fieldset>
@@ -146,7 +150,7 @@ var minCols = 2;
 
 var docid = inpho.util.getValueForURLParam('doc') || 'epistemology';
 var roottopic = inpho.util.getValueForURLParam('topic') || null;
-$('.title').text(docid);
+$('.title').html('<a href="http://plato.stanford.edu/entries/'+docid+'" title="Stanford Encyclopedia of Philosophy: '+docid+'">'+docid+'</a>');
 var margin = {top: 80, right: 40, bottom: 20, left: 200},
     width = 960 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom;
