@@ -141,6 +141,7 @@ $.getJSON('/docs.json', function(data) {
   <strong>Display Options</strong>
   <label class="checkbox"><input class="sort" type="checkbox"> Alphabetical sort</label>
   <label class="checkbox"><input class="scale" type="checkbox"> Normalize topic bars</label>
+  <button class="btn reset" onclick="resetTopicSort()" disabled>Reset Topic Sort</button>
 </div>
 <!--<script src="topics.js"></script>-->
 <script>
@@ -502,12 +503,8 @@ $('.inphoIcon').tooltip({placement: 'top', title: 'Click to see more information
   }
 
   d3.select(".scale").on("change", scaleTopics);
-
-  function alphabetSort() {
-    // Copy-on-write since tweens are evaluated after a delay.
-    dataset = dataset.sort(this.checked
-        ? function(a, b) { return d3.ascending(a.doc, b.doc); }
-        : function(a, b) { return b.prob - a.prob; });
+  function sortDataset(sortFn) {
+    dataset = dataset.sort(sortFn);
 
     var y0 = y.domain(dataset
         .map(function(d) { return d.doc; }))
@@ -528,40 +525,43 @@ $('.inphoIcon').tooltip({placement: 'top', title: 'Click to see more information
         .delay(delay);
   }
 
+  function alphabetSort() {
+    // Copy-on-write since tweens are evaluated after a delay.
+    if (this.checked)
+      sortDataset(function(a, b) { return d3.ascending(a.doc, b.doc); });
+    else
+      sortDataset(function(a, b) { return b.prob - a.prob; });
+  }
+
+  function resetTopicSort() {
+    $('.reset').attr('disabled',true);
+    topicSort(null);
+  }
+
   function topicSort(topic) {
     // Copy-on-write since tweens are evaluated after a delay.
-    dataset = dataset.sort(topic
-        ? function(a, b) { return b.topics[topic] - a.topics[topic]; }
-        : function(a, b) { return b.prob - a.prob; });
+    $('.sort').removeAttr('checked');
+    if (topic) {
+      sortDataset(function(a, b) { return b.topics[topic] - a.topics[topic]; });
+      $('.reset').removeAttr('disabled');
+    } else
+      sortDataset(function(a, b) { return b.prob - a.prob; });
 
-    var y0 = y.domain(dataset
-        .map(function(d) { return d.doc; }))
-        .copy();
-
-    var transition = svg.transition().duration(500),
-        delay = function(d, i) { return i * 25; };
-
-    transition.selectAll(".doc")
-        .delay(delay)
-        .attr("transform", function(d) { return "translate(10," + y(d.doc) + ")"; });
-
-    transition.select(".y.axis")
-        .call(yAxis)
-      .selectAll("g")
-        .selectAll("text")
-        .delay(delay);
-
-    $("#legend .hover").removeClass("hover");
-    var numTopics = dataset[0].topics.length;
-    var delay = function(d, i) { return i * (1000/numTopics); },
-        negdelay = function(d, i) { return (numTopics-i) * (1000/numTopics); };
 
     var sortFn = function(a,b) {
       if (a == topic) return -1;
       else if (b == topic) return 1;
       else return dataset[0].topics[b] - dataset[0].topics[a];
       //else return original_root.topics[b] - original_root.topics[a];
-    }   
+    } 
+    redrawBars(sortFn);
+  }
+
+  function redrawBars(sortFn) { 
+    $("#legend .hover").removeClass("hover");
+    var numTopics = dataset[0].topics.length;
+    var delay = function(d, i) { return i * (1000/numTopics); },
+        negdelay = function(d, i) { return (numTopics-i) * (1000/numTopics); };
     calculateTopicMap(dataset, !($('.scale')[0].checked), sortFn);
     
     svg.selectAll(".doc")
