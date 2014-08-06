@@ -30,6 +30,9 @@
   stroke-width: 0;
   opacity: 0 !important;
 }
+.y.axis rect:hover .inphoIcon {
+  opacity: 1 !important;
+}
 
 .bar {
     fill: steelblue;
@@ -84,6 +87,7 @@ rect:hover, .legend.hover rect{
 }
 #legend, #controls {
   position: absolute;
+  overflow: visible;
 }
 .primary {
   text-transform: uppercase;
@@ -320,13 +324,13 @@ d3.json(url, function(error, data) {
           $("text:contains(" + d.doc +")")
             .filter(function() {return $(this).text().trim() == d.doc })
             .attr("font-weight", "bold")
-            .next(".inphoIcon").css('display', 'inherit');
+            .next(".inphoIcon").css('opacity', '1.0');
         })
       .on("mouseout", function(d) {
           $("text:contains(" + d.doc +")")
             .filter(function() {return $(this).text().trim() == d.doc })
             .attr("font-weight", "normal")
-            .next(".inphoIcon").css('display', 'hide');
+            .next(".inphoIcon").css('opacity', '');
         });
 
   // Draw topic bars
