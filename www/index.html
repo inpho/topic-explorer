@@ -289,6 +289,7 @@ d3.json(url, function(error, data) {
         .attr("width", 18)
         .attr("height",18)
         .attr("x", -margin.left + 5)
+        //.attr("x", -9)
         .attr("y", -9)
         .attr("class", "inphoIcon")
         .on("click", function(d) { window.open("https://inpho.cogs.indiana.edu/entity?redirect=True&sep=" + d, "_blank");});
@@ -304,12 +305,14 @@ d3.json(url, function(error, data) {
       .on("mouseover", function(d) {
           $("text:contains(" + d.doc +")")
             .filter(function() {return $(this).text().trim() == d.doc })
-            .attr("font-weight", "bold");
+            .attr("font-weight", "bold")
+            .next(".inphoIcon").css('display', 'inherit');
         })
       .on("mouseout", function(d) {
           $("text:contains(" + d.doc +")")
             .filter(function() {return $(this).text().trim() == d.doc })
-            .attr("font-weight", "normal");
+            .attr("font-weight", "normal")
+            .next(".inphoIcon").css('display', 'hide');
         });
 
   // Draw topic bars
@@ -350,7 +353,7 @@ d3.json(url, function(error, data) {
       .style("fill", color)
       //.attr("data-toggle", "tooltip")
       .attr("data-placement", "right")
-      .attr("title", function(d) { return d3.keys(topics[d]).join(", "); })
+      .attr("title", function(d) { return d3.keys(topics[d]).join(", ") + ", ..."; })
       .on("click", function(d) { topicSort(d); })
       .on("mouseover", function(d) {
           $(".top_" + d).addClass('hover').tooltip('show');
@@ -561,6 +564,8 @@ d3.json(url, function(error, data) {
       .attr("class", function(d) { return "top_" + d.name; });
 
   }
+
+$('.inphoIcon').tooltip({placement: 'right', title: 'Click to see more information at the InPhO Project.'});
 
 </script>
 
