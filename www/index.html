@@ -111,10 +111,13 @@ rect:hover, .legend.hover rect{
 <div class="container-fluid">
   <h1>The SEP Topic Explorer</h1>
   <h2 class="title"></h2>
-  <p>This visualization shows the similarity of other articles in the SEP to the entry on <span class="title"></span>.  The color bands within each article's row show the topic distribution within that article, and the relative sizes of each band indicates the weight of that topic in the article.  The full width of each bar indicates the similarity to <span class="title"></span>. Each topic label and color is arbitrarily assigned, but is consistent across articles in the browser.</p>
-  <p>Display options include alphabetical and topic sort. By clicking a topic, the visualization will reorder acoording to that topic's probability given each document and topic bars will reorder according to the order of topics in the highest probable document for the selected topic. Additionally, topic bars can be normalized, such that topic weights per document can be compared.</p>
+  <p>This visualization shows the similarity of other articles in the SEP to the entry on <span class="title"></span>.  The color bands within each article's row show the topic distribution within that article, and the relative sizes of each band indicates the weight of that topic in the article.  The full width of each bar indicates the similarity to <span class="title"></span>. Each topic's label and color is arbitrarily assigned, but is consistent across articles in the browser.</p>
+  <p>Display options include alphabetical and topic sort. By clicking a topic, the documents will reorder acoording to that topic's weight and topic bars will reorder according to the topic weights in the highest weighted document. Additionally, topic bars can be normalized, such that topic weights per document can be compared.</p>
   
-  <p>The underlying dataset was generated using the <a href="http://github.com/inpho/vsm">InPhO VSM module's</a> Latent Dirichlet Allocation functions.  See <a href="http://en.wikipedia.org/wiki/Latent_Dirichlet_allocation">Wikipedia: Latent Dirichlet Allocation</a> for more on the LDA topic modeling approach used to generate this representation, or <a href="http://dl.acm.org/citation.cfm?id=2133826">"Probabilistic Topic Models" (Blei, 2012)</a> for a review.</p>
+  <p>The underlying dataset was generated using the <a href="http://github.com/inpho/vsm" target="_blank">InPhO VSM module's</a> LDA implementation.  See <a href="http://en.wikipedia.org/wiki/Latent_Dirichlet_allocation" target="_blank">Wikipedia: Latent Dirichlet Allocation</a> for more on the LDA topic modeling approach or <a href="http://dl.acm.org/citation.cfm?id=2133826" target="_blank">"Probabilistic Topic Models" (Blei, 2012)</a> for a recent review.</p>
+  <p><a href="http://github.com/inpho/topic-explorer/" target="_blank">Source code</a> and <a href="http://github.com/inpho/topic-explorer/issues/" target="_blank">issue tracking</a> for this page available at <a href="http://github.com/inpho/topic-explorer/" target="_blank">GitHub</a>. <!--Contact Jaimie Murdock (<span class="iumail">jammurdo</span>) with further comments.--></p>
+  <script>var mail = $('.iumail').text();
+  $('.iumail').html('<a href="mailto:'+mail+'@indiana.edu">'+mail+'@indiana.edu</a>')</script>
   
   <form action="/" method="GET" class="form-inline">
   <fieldset>
@@ -151,7 +154,7 @@ var minCols = 2;
 
 var docid = inpho.util.getValueForURLParam('doc') || 'epistemology';
 var roottopic = inpho.util.getValueForURLParam('topic') || null;
-$('.title').html('<a href="http://plato.stanford.edu/entries/'+docid+'" title="Stanford Encyclopedia of Philosophy: '+docid+'">'+docid+'</a>');
+$('.title').html('<a href="http://plato.stanford.edu/entries/'+docid+'" target="_blank" title="Stanford Encyclopedia of Philosophy: '+docid+'">'+docid+'</a>');
 var margin = {top: 80, right: 40, bottom: 20, left: 200},
     width = 960 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom;
@@ -535,7 +538,10 @@ $('.inphoIcon').tooltip({placement: 'top', title: 'Click to see more information
 
   function resetTopicSort() {
     $('.reset').attr('disabled',true);
-    topicSort(null);
+    if (!($('.sort')[0].checked))
+      sortDataset(function(a,b) { return b.prob - a.prob; });
+
+    redrawBars(function(a,b) { return original_root.topics[b] - original_root.topics[a]; });
   }
 
   function topicSort(topic) {
