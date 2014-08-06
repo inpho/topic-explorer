@@ -153,6 +153,7 @@ var maxRows = 25;
 var minCols = 2;
 
 var docid = inpho.util.getValueForURLParam('doc') || 'epistemology';
+docid = docid.toLowerCase();
 var roottopic = inpho.util.getValueForURLParam('topic') || null;
 $('.title').html('<a href="http://plato.stanford.edu/entries/'+docid+'" target="_blank" title="Stanford Encyclopedia of Philosophy: '+docid+'">'+docid+'</a>');
 var margin = {top: 80, right: 40, bottom: 20, left: 200},
