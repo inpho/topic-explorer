@@ -16,15 +16,20 @@
   cursor: pointer;
   }
 .y.axis g .inphoIcon {
-  display: none;
+  opacity: 0;
   }
 .y.axis g:hover .inphoIcon {
-  display: inherit;
+  opacity: 1.0;
   }
 
 .y.axis text, .y.axis image {
   cursor: pointer;
   }
+.y.axis rect:hover {
+  stroke: #fff;  
+  stroke-width: 0;
+  opacity: 0 !important;
+}
 
 .bar {
     fill: steelblue;
@@ -275,11 +280,20 @@ d3.json(url, function(error, data) {
       .attr("class", function(d) { return d == docid ? "primary" : "" })
       .on("click", function(d) { window.location.href = "/?doc=" + d;})
 
+  svg.select(".y.axis").selectAll("g")
+      .insert("rect", ":first-child")
+        .attr("x", -margin.left + 5)
+        .attr("y", -9)
+        .attr("width", margin.left-5)
+        .attr("height", 18)
+        .style("opacity", "0");
+
   var ticks = svg.select(".y.axis").selectAll("g")
       .on("mouseenter", function(d) { 
         $('text', this).attr('text-decoration', 'underline')
           .attr('font-weight', 'bold');     
-        svg.selectAll(".doc").filter(function(doc,i) { return doc.doc == d}).attr("class", "doc hover"); })
+        svg.selectAll(".doc").filter(function(doc,i) { return doc.doc == d}).attr("class", "doc hover"); 
+        })
       .on("mouseleave", function(d) { 
         $('text',this).removeAttr('text-decoration')
           .removeAttr('font-weight'); 
@@ -289,8 +303,8 @@ d3.json(url, function(error, data) {
         .attr("width", 18)
         .attr("height",18)
         .attr("x", -margin.left + 5)
-        //.attr("x", -9)
         .attr("y", -9)
+        //.attr("x", -9)
         .attr("class", "inphoIcon")
         .on("click", function(d) { window.open("https://inpho.cogs.indiana.edu/entity?redirect=True&sep=" + d, "_blank");});
 
@@ -435,6 +449,7 @@ d3.json(url, function(error, data) {
       $('#controls').css({'position': 'fixed', 'top' : legendHeight + heightFac});
     }}
    
+$('.inphoIcon').tooltip({placement: 'top', title: 'Click to see more information<br /> at the InPhO Project.', container: 'body', html: true, animation: false});
 }); });
 
   function scaleTopics() {
@@ -565,7 +580,6 @@ d3.json(url, function(error, data) {
 
   }
 
-$('.inphoIcon').tooltip({placement: 'right', title: 'Click to see more information at the InPhO Project.'});
 
 </script>
 
