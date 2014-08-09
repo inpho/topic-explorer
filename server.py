@@ -13,8 +13,11 @@ from bottle import response, route, run, static_file
 path = '/var/inphosemantics/data/20140801/sep/vsm-data/'
 
 lda_c = Corpus.load(path + 'sep-nltk-freq1.npz')
-lda_m = LCM.load(path + 'sep-nltk-freq1-article-LDA-K20.npz')
-lda_v = LDAViewer(lda_c, lda_m)
+lda_m = None
+lda_v = None
+def load_model(k):
+    lda_m = LCM.load(path + 'sep-nltk-freq1-article-LDA-K%s.npz' % k)
+    lda_v = LDAViewer(lda_c, lda_m)
 
 
 
@@ -109,5 +112,14 @@ def send_static(filename):
 def index():
     return send_static('index.html')
 
-run(host='inphodata.cogs.indiana.edu', port='8888')
+if __name__ == '__main__':
+    from argparse import ArgumentParser
+    parser = ArgumentParser()
+    parser.add_argument('k', type=int)
+    args = parser.parse_args()
+
+    port = '16%03d' % args.k
+
+    load_model(args.k)
+    run(host='inphodata.cogs.indiana.edu', port=port)
 
