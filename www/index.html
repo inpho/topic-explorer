@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>SEP Topic Explorer</title>
+<title>InPhO Topic Explorer</title>
 <script src="lib/jquery-1.11.0.min.js"></script>
 <script src="lib/jquery.superdom.min.js"></script>
 <script src="lib/bootstrap-2.3.2/js/bootstrap.min.js"></script>
@@ -103,13 +103,11 @@ rect:hover, .legend.hover rect{
   shape-rendering: crispEdges;
 }*/
 </style>
-
 </head>
 
 <body>
-
 <div class="container-fluid">
-  <h1>The SEP Topic Explorer</h1>
+  <h1>The InPhO Topic Explorer</h1>
   <h2 class="title"></h2>
   <p>This visualization shows the similarity of other articles in the SEP to the entry on <span class="title"></span>.  The color bands within each article's row show the topic distribution within that article, and the relative sizes of each band indicates the weight of that topic in the article.  The full width of each row indicates the similarity to <span class="title"></span>.  Each topic's label and color is arbitrarily assigned, but is consistent across articles in the browser.</p>
   <p>Display options include topic normalization, alphabetical sort and topic sort. By normalizing topics, the full width of each bar expands and topic weights per document can be compared. By clicking a topic, the documents will reorder acoording to that topic's weight and topic bars will reorder according to the topic weights in the highest weighted document.</p>
@@ -121,10 +119,42 @@ rect:hover, .legend.hover rect{
   
   <form action="/" method="GET" class="form-inline">
   <fieldset>
-  <input type="text" name="doc" class="typeahead input-medium" placeholder="Document ID" autocomplete="off">
-  <button type="submit" class="btn">Submit</button>
+  <input type="text" name="doc" id="doc" class="typeahead input-medium" placeholder="Document ID" autocomplete="off">
+  <div class="btn-group">
+  <button type="submit" id="submit" class="btn">Viusalize</button>
+  <a class="btn dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
+  <ul class="dropdown-menu">
+  <li><a href="javascript:visualize(20)">20 Topics</a></li>
+  <li><a href="javascript:visualize(40)">40 Topics</a></li>
+  <li><a href="javascript:visualize(60)">60 Topics</a></li>
+  <li><a href="javascript:visualize(80)">80 Topics</a></li>
+  <li><a href="javascript:visualize(100)">100 Topics</a></li>
+  <li><a href="javascript:visualize(120)">120 Topics</a></li>
+  </ul>
+  </div>
   </fieldset>
   </form>
+
+<script>
+function visualize(k) {
+  var url = "http://inphodata.cogs.indiana.edu:16";
+  if (k < 100) url += "0" + k;
+  else url += k;
+
+  url += "?doc=" + ($("#doc").val() || docid) ;
+  window.location = url;
+  }
+$.getJSON('/docs.json', function(data) {
+  $(".typeahead").typeahead({source: data, items: 12,
+    sorter: function(items) {
+      var query = this.query;
+      items = items.sort();
+      var start = items.filter(function(item) { return item.lastIndexOf(query, 0) == 0;});
+      var elsewhere = items.filter(function(item) { return item.lastIndexOf(query, 0) != 0;});
+      return start.concat(elsewhere);
+      }});
+});
+</script>
   
   <div id="status" style="width:100%">
     <div class="progress loading progress-striped active">
@@ -133,11 +163,6 @@ rect:hover, .legend.hover rect{
   </div>
   
 </div>
-<script>
-$.getJSON('/docs.json', function(data) {
-  $(".typeahead").typeahead({source: data});
-});
-</script>
 
 <div id="chart"> </div>
 <div id="controls" style="display:none;">
@@ -154,6 +179,7 @@ var minCols = 2;
 
 var docid = inpho.util.getValueForURLParam('doc') || 'epistemology';
 docid = docid.toLowerCase();
+$('#doc').val(docid);
 var roottopic = inpho.util.getValueForURLParam('topic') || null;
 $('.title').html('<a href="http://plato.stanford.edu/entries/'+docid+'" target="_blank" title="Stanford Encyclopedia of Philosophy: '+docid+'">'+docid+'</a>');
 var margin = {top: 80, right: 40, bottom: 20, left: 200},
@@ -254,6 +280,7 @@ d3.json(url, function(error, data) {
     return false;
   }
     console.log(topics);
+  $('#submit').text(d3.keys(topics).length + ' Topics');
   
 
   var legendCols = Math.max(Math.ceil(d3.keys(topics).length / Math.min(data.length, maxRows)), minCols);

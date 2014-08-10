@@ -16,6 +16,7 @@ lda_c = Corpus.load(path + 'sep-nltk-freq1.npz')
 lda_m = None
 lda_v = None
 def load_model(k):
+    global lda_m, lda_v
     lda_m = LCM.load(path + 'sep-nltk-freq1-article-LDA-K%s.npz' % k)
     lda_v = LDAViewer(lda_c, lda_m)
 
