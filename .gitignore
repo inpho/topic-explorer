@@ -1,1 +1,3 @@
 *.pyc
+start-servers.sh
+logs/*
