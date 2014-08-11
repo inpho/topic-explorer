@@ -50,7 +50,7 @@ def doc_csv(sep_dir, threshold=0.2):
     output=StringIO()
     writer = csv.writer(output)
     writer.writerow(['doc','prob'])
-    writer.writerows([(d[:-4], "%6f" % p) for d,p in data if p > threshold])
+    writer.writerows([(d[:-4], "%6f" % p) for d,p in data if p > threshold and d != 'sample.txt'])
 
     return output.getvalue()
 
@@ -61,8 +61,9 @@ def topic_csv(topic_no, N=40):
     data = lda_v.sim_top_doc([topic_no])[:N]
     js = []
     for doc, prob in data:
-        js.append({'doc' : doc[:-4], 'prob' : prob,
-            'topics' : dict([(t, p) for t,p in lda_v.doc_topics(doc)])})
+        if doc != 'sample.txt':
+            js.append({'doc' : doc[:-4], 'prob' : prob,
+                'topics' : dict([(t, p) for t,p in lda_v.doc_topics(doc)])})
 
     return json.dumps(js)
 
@@ -77,8 +78,9 @@ def doc_topics(sep_dir, N=40):
 
     js = []
     for doc, prob in data:
-        js.append({'doc' : doc[:-4], 'prob' : prob,
-            'topics' : dict([(t, p) for t,p in lda_v.doc_topics(doc)])})
+        if doc != 'sample.txt':
+            js.append({'doc' : doc[:-4], 'prob' : prob,
+                'topics' : dict([(t, p) for t,p in lda_v.doc_topics(doc)])})
 
     return json.dumps(js)
 
@@ -100,7 +102,7 @@ def docs():
     response.content_type = 'application/json; charset=UTF8'
 
     data = lda_v.topics()
-    js = [label[:-4] for label in lda_c.view_metadata('article')['article_label']]
+    js = [label[:-4] for label in lda_c.view_metadata('article')['article_label'] if label != 'sample.txt']
 
     return json.dumps(js)
 
