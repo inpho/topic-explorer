@@ -8,7 +8,7 @@ from vsm.viewer.beagleviewer import BeagleViewer
 from vsm.model.ldacgsmulti import LdaCgsMulti as LCM
 from vsm.viewer.ldagibbsviewer import LDAGibbsViewer as LDAViewer
 
-from bottle import response, route, run, static_file
+from bottle import request, response, route, run, static_file
 
 path = '/var/inphosemantics/data/20140801/sep/vsm-data/'
 
@@ -70,11 +70,15 @@ def topic_csv(topic_no, N=40):
 @route('/docs_topics/<sep_dir>.json')
 def doc_topics(sep_dir, N=40):
     sep_dir = sep_dir.lower()
+    N = int(request.query.n)
 
     response.content_type = 'application/json; charset=UTF8'
 
     doc_id = sep_dir + '.txt'
-    data = lda_v.sim_doc_doc(doc_id)[:N]
+    if N > 0:
+        data = lda_v.sim_doc_doc(doc_id)[:N]
+    else:
+        data = lda_v.sim_doc_doc(doc_id)[N:]
 
     js = []
     for doc, prob in data:
