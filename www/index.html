@@ -15,10 +15,12 @@
 .y.axis text, .y.axis image {
   cursor: pointer;
   }
+.y.axis g .sepIcon,
 .y.axis g .inphoIcon {
   opacity: 0;
   }
-.y.axis g:hover .inphoIcon {
+.y.axis g:hover .inphoIcon,
+.y.axis g:hover .sepIcon {
   opacity: 1.0;
   }
 
@@ -30,6 +32,7 @@
   stroke-width: 0;
   opacity: 0 !important;
 }
+.y.axis rect:hover .sepIcon,
 .y.axis rect:hover .inphoIcon {
   opacity: 1 !important;
 }
@@ -132,7 +135,9 @@ letter-spacing: -1px;
 </head>
 
 <body>
-<div class="container-fluid">
+<div class="container">
+  <div class="row">
+  <div class="span12">
   <h1><a href="https://inpho.cogs.indiana.edu"><span class="logo-word">InPhO</span></a> Topic Explorer</h1>
   <!--<h2 class="title"></h2>-->
   <p>This visualization shows the similarity of other articles in the SEP to the entry on <span class="title"></span>.  The color bands within each article's row show the topic distribution within that article, and the relative sizes of each band indicates the weight of that topic in the article.  The full width of each row indicates the similarity to <span class="title"></span>.  Each topic's label and color is arbitrarily assigned, but is consistent across articles in the browser.</p>
@@ -145,23 +150,31 @@ letter-spacing: -1px;
   
   <form action="/" method="GET" class="form-inline">
   <div class="input-append">
-  <input type="text" name="doc" id="doc" class="typeahead input-medium" placeholder="Document ID" autocomplete="off">
-  <button class="btn" type="button" id="randomDoc"><span class="icon-random"></span></button>
+    <input type="text" name="doc" id="doc" class="typeahead input-medium" placeholder="Document ID" autocomplete="off">
+    <button class="btn" type="button" id="randomDoc"><span class="icon-random"></span></button>
   </div>
   <div class="btn-group">
-  <button type="submit" id="submit" class="btn">Viusalize</button>
-  <a class="btn dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
-  <ul class="dropdown-menu">
-  <li><a href="javascript:visualize(20)">20 Topics</a></li>
-  <li><a href="javascript:visualize(40)">40 Topics</a></li>
-  <li><a href="javascript:visualize(60)">60 Topics</a></li>
-  <li><a href="javascript:visualize(80)">80 Topics</a></li>
-  <li><a href="javascript:visualize(100)">100 Topics</a></li>
-  <li><a href="javascript:visualize(120)">120 Topics</a></li>
-  </ul>
+    <button type="submit" id="submit" class="btn">Viusalize</button>
+    <a class="btn dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
+    <ul class="dropdown-menu">
+    <li><a href="javascript:visualize(20)">20 Topics</a></li>
+    <li><a href="javascript:visualize(40)">40 Topics</a></li>
+    <li><a href="javascript:visualize(60)">60 Topics</a></li>
+    <li><a href="javascript:visualize(80)">80 Topics</a></li>
+    <li><a href="javascript:visualize(100)">100 Topics</a></li>
+    <li><a href="javascript:visualize(120)">120 Topics</a></li>
+    </ul>
   </div>
   </form>
-
+  </div>
+  </div>
+  <div id="status" style="width:100%">
+    <div class="progress loading progress-striped active">
+      <div class="bar" style="width:25%">Loading documents...</div>
+    </div>
+  </div>
+  
+</div>
 <script>
 function visualize(k) {
   var url = "http://inphodata.cogs.indiana.edu:16";
@@ -187,14 +200,6 @@ $.getJSON('/docs.json', function(data) {
   $('#randomDoc').tooltip({title: "Random SEP ID", placement: 'bottom'});
 });
 </script>
-  
-  <div id="status" style="width:100%">
-    <div class="progress loading progress-striped active">
-      <div class="bar" style="width:25%">Loading documents...</div>
-    </div>
-  </div>
-  
-</div>
 
 <div id="chart"> </div>
 <div id="controls" style="display:none;">
@@ -203,6 +208,7 @@ $.getJSON('/docs.json', function(data) {
   <label class="checkbox"><input class="scale" type="checkbox"> Normalize topic bars</label>
   <button class="btn reset" onclick="resetTopicSort()" disabled>Reset Topic Sort</button>
 </div>
+
 <!--<script src="topics.js"></script>-->
 <script>
 
@@ -369,18 +375,25 @@ d3.json(url, function(error, data) {
       .on("mouseleave", function(d) { 
         $('text',this).removeAttr('text-decoration')
           .removeAttr('font-weight'); 
-        svg.selectAll(".doc").filter(function(doc,i) { return doc.doc == d}).attr("class", "doc"); })
-      .append("svg:image")
-        .attr("xlink:href","/img/inpho.png")
+        svg.selectAll(".doc").filter(function(doc,i) { return doc.doc == d}).attr("class", "doc"); });
+    ticks.append("svg:image")
+        .attr("xlink:href","/img/sep.png")
         .attr("width", 18)
         .attr("height",18)
         .attr("x", -margin.left + 5)
         .attr("y", -9)
         //.attr("x", -9)
+        .attr("class", "sepIcon")
+        .on("click", function(d) { window.open("http://plato.stanford.edu/entires/" + d, "_blank");});
+    ticks.append("svg:image")
+        .attr("xlink:href","/img/inpho.png")
+        .attr("width", 18)
+        .attr("height",18)
+        .attr("x", -margin.left + 5 + 18)
+        .attr("y", -9)
+        //.attr("x", -9)
         .attr("class", "inphoIcon")
         .on("click", function(d) { window.open("https://inpho.cogs.indiana.edu/entity?redirect=True&sep=" + d, "_blank");});
-
-      //.on("click", function(d) { window.open("http://plato.stanford.edu/entires/" + d, "_blank");});
 
   // draw total bar
   var doc = svg.selectAll("doc")
@@ -392,12 +405,14 @@ d3.json(url, function(error, data) {
           $("text:contains(" + d.doc +")")
             .filter(function() {return $(this).text().trim() == d.doc })
             .attr("font-weight", "bold")
+            .next(".sepIcon").css('opacity', '1.0')
             .next(".inphoIcon").css('opacity', '1.0');
         })
       .on("mouseout", function(d) {
           $("text:contains(" + d.doc +")")
             .filter(function() {return $(this).text().trim() == d.doc })
             .attr("font-weight", "normal")
+            .next(".sepIcon").css('opacity', '')
             .next(".inphoIcon").css('opacity', '');
         });
 
@@ -522,6 +537,7 @@ d3.json(url, function(error, data) {
     }}
    
 $('.inphoIcon').tooltip({placement: 'top', title: 'Click to see more information<br /> at the InPhO Project.', container: 'body', html: true, animation: false});
+$('.sepIcon').tooltip({placement: 'top', title: 'Click for the SEP article.', container: 'body', html: true, animation: false});
 }); });
 
   function scaleTopics() {
