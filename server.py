@@ -70,7 +70,10 @@ def topic_csv(topic_no, N=40):
 @route('/docs_topics/<sep_dir>.json')
 def doc_topics(sep_dir, N=40):
     sep_dir = sep_dir.lower()
-    N = int(request.query.n)
+    try:
+        N = int(request.query.n)
+    except:
+        pass
 
     response.content_type = 'application/json; charset=UTF8'
 
@@ -79,6 +82,7 @@ def doc_topics(sep_dir, N=40):
         data = lda_v.sim_doc_doc(doc_id)[:N]
     else:
         data = lda_v.sim_doc_doc(doc_id)[N:]
+        data = reversed(data)
 
     js = []
     for doc, prob in data:

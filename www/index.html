@@ -302,6 +302,10 @@ function calculateTopicMap(data, scale, sortFn){
 var url;
 if (roottopic) url = "/topics/" + roottopic + '.json';
 else url = "/docs_topics/" + docid + '.json'
+
+var n = inpho.util.getValueForURLParam('n');
+if (n) url += "?n=" + n;
+
 d3.json(url, function(error, data) {
   $('#status .bar').css('width', '50%').text('Loading topics...');
   if (error) {
