@@ -102,13 +102,39 @@ rect:hover, .legend.hover rect{
   stroke-opacity: 1.0;
   shape-rendering: crispEdges;
 }*/
+.logo-word {
+  background-image: url('http://inphodata.cogs.indiana.edu/img/inpho_logo.png');
+  background-size: 172px 92px;
+  width: 172px;
+  height: 84px;
+  padding-top: 6px;
+  margin-top: 14px;
+  margin-bottom: 5px;
+  margin-left: -6px;
+  display: inline-block;
+  text-indent: -3000px;
+}
+h1 {
+text-align: center;
+margin-bottom: 0;
+font-size: 59px;
+line-height: 1;
+color: inherit;
+letter-spacing: -1px;
+
+}
+
+.btn {
+  vertical-align: middle;
+  margin-top: 2px;
+}
 </style>
 </head>
 
 <body>
 <div class="container-fluid">
-  <h1>The InPhO Topic Explorer</h1>
-  <h2 class="title"></h2>
+  <h1><a href="https://inpho.cogs.indiana.edu"><span class="logo-word">InPhO</span></a> Topic Explorer</h1>
+  <!--<h2 class="title"></h2>-->
   <p>This visualization shows the similarity of other articles in the SEP to the entry on <span class="title"></span>.  The color bands within each article's row show the topic distribution within that article, and the relative sizes of each band indicates the weight of that topic in the article.  The full width of each row indicates the similarity to <span class="title"></span>.  Each topic's label and color is arbitrarily assigned, but is consistent across articles in the browser.</p>
   <p>Display options include topic normalization, alphabetical sort and topic sort. By normalizing topics, the full width of each bar expands and topic weights per document can be compared. By clicking a topic, the documents will reorder acoording to that topic's weight and topic bars will reorder according to the topic weights in the highest weighted document.</p>
   
@@ -118,8 +144,10 @@ rect:hover, .legend.hover rect{
   $('.iumail').html('<a href="mailto:'+mail+'@indiana.edu">'+mail+'@indiana.edu</a>')</script>
   
   <form action="/" method="GET" class="form-inline">
-  <fieldset>
+  <div class="input-append">
   <input type="text" name="doc" id="doc" class="typeahead input-medium" placeholder="Document ID" autocomplete="off">
+  <button class="btn" type="button" id="randomDoc"><span class="icon-random"></span></button>
+  </div>
   <div class="btn-group">
   <button type="submit" id="submit" class="btn">Viusalize</button>
   <a class="btn dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
@@ -132,7 +160,6 @@ rect:hover, .legend.hover rect{
   <li><a href="javascript:visualize(120)">120 Topics</a></li>
   </ul>
   </div>
-  </fieldset>
   </form>
 
 <script>
@@ -153,6 +180,11 @@ $.getJSON('/docs.json', function(data) {
       var elsewhere = items.filter(function(item) { return item.lastIndexOf(query, 0) != 0;});
       return start.concat(elsewhere);
       }});
+  $('#randomDoc').click(function() { 
+      var rand = data[Math.floor(Math.random() * data.length)];
+      $('#doc').val(rand);
+    });
+  $('#randomDoc').tooltip({title: "Random SEP ID", placement: 'bottom'});
 });
 </script>
   
