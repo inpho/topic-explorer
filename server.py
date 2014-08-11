@@ -57,8 +57,17 @@ def doc_csv(sep_dir, threshold=0.2):
 @route('/topics/<topic_no>.json')
 def topic_csv(topic_no, N=40):
     response.content_type = 'application/json; charset=UTF8'
+    try:
+        N = int(request.query.n)
+    except:
+        pass
 
-    data = lda_v.sim_top_doc([topic_no])[:N]
+    if N > 0:
+        data = lda_v.sim_top_doc([topic_no])[:N]
+    else:
+        data = lda_v.sim_top_doc([topic_no])[N:]
+        data = reversed(data)
+
     js = []
     for doc, prob in data:
         if doc != 'sample.txt':
@@ -127,9 +136,14 @@ if __name__ == '__main__':
     from argparse import ArgumentParser
     parser = ArgumentParser()
     parser.add_argument('k', type=int)
+    parser.add_argument('-p', dest='port', type=int, 
+        help="Port Number", default=None)
     args = parser.parse_args()
 
-    port = '16%03d' % args.k
+    if args.port is None: 
+        port = '16%03d' % args.k
+    else:
+        port = args.port
 
     load_model(args.k)
     run(host='inphodata.cogs.indiana.edu', port=port)
