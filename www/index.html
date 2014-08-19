@@ -131,6 +131,9 @@ letter-spacing: -1px;
   vertical-align: middle;
   margin-top: 2px;
 }
+#twitter-widget-0 {
+  margin-bottom: -11px;
+}
 </style>
 </head>
 
@@ -165,6 +168,8 @@ letter-spacing: -1px;
     <li><a href="javascript:visualize(120)">120 Topics</a></li>
     </ul>
   </div>
+  <a href="https://twitter.com/share" class="twitter-share-button pull-right" style="padding-top: 10px" data-text="InPhO Topic Explorer" data-via="JaimieMurdock" data-size="large" data-hashtags="dighum" data-counturl="inphodata.cogs.indiana.edu">Tweet</a>
+  <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
   </form>
   </div>
   </div>
@@ -218,6 +223,7 @@ var minCols = 2;
 var docid = inpho.util.getValueForURLParam('doc') || 'epistemology';
 docid = docid.toLowerCase();
 $('#doc').val(docid);
+$('.twitter-share-button').attr('data-text', "What's similar to " +docid+"? Discover with the #InPhO Topic Explorer");
 var roottopic = inpho.util.getValueForURLParam('topic') || null;
 $('.title').html('<a href="http://plato.stanford.edu/entries/'+docid+'" target="_blank" title="Stanford Encyclopedia of Philosophy: '+docid+'">'+docid+'</a>');
 var margin = {top: 80, right: 40, bottom: 20, left: 200},
