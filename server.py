@@ -72,7 +72,7 @@ def topic_csv(topic_no, N=40):
     for doc, prob in data:
         if doc != 'sample.txt':
             js.append({'doc' : doc[:-4], 'prob' : prob,
-                'topics' : dict([(t, p) for t,p in lda_v.doc_topics(doc)])})
+                'topics' : dict([(str(t), p) for t,p in lda_v.doc_topics(doc)])})
 
     return json.dumps(js)
 
