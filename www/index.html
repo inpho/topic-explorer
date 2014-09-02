@@ -644,7 +644,7 @@ $('.sepIcon').tooltip({placement: 'top', title: 'Click for the SEP article.', co
       $('.topdoc').text('Top Documents for ' + topic);
       $('.topdoc').removeAttr('disabled');
       $('.topdoc').click(function URL() {location.href += '?topic=' + topic;});
-      }else
+    } else
       sortDataset(function(a, b) { return b.prob - a.prob; });
 
 
