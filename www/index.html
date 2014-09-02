@@ -143,7 +143,7 @@ letter-spacing: -1px;
   <div class="span12">
   <h1><a href="https://inpho.cogs.indiana.edu"><span class="logo-word">InPhO</span></a> Topic Explorer</h1>
   <!--<h2 class="title"></h2>-->
-  <p>This visualization shows the similarity of other articles in the SEP to the entry on <span class="title"></span>.  The color bands within each article's row show the topic distribution within that article, and the relative sizes of each band indicates the weight of that topic in the article.  The full width of each row indicates the similarity to <span class="title"></span>.  Each topic's label and color is arbitrarily assigned, but is consistent across articles in the browser.</p>
+  <p>This visualization shows the similarity of entries in the SEP to <span class="title"></span>.  The color bands within each article's row show the topic distribution within that article, and the relative sizes of each band indicates the weight of that topic in the article.  The full width of each row indicates the similarity to <span class="title"></span>.  Each topic's label and color is arbitrarily assigned, but is consistent across articles in the browser.</p>
   <p>Display options include topic normalization, alphabetical sort and topic sort. By normalizing topics, the full width of each bar expands and topic weights per document can be compared. By clicking a topic, the documents will reorder acoording to that topic's weight and topic bars will reorder according to the topic weights in the highest weighted document.</p>
   
   <p>The underlying dataset was generated using the <a href="http://github.com/inpho/vsm" target="_blank">InPhO VSM module's</a> LDA implementation.  See <a href="http://en.wikipedia.org/wiki/Latent_Dirichlet_allocation" target="_blank">Wikipedia: Latent Dirichlet Allocation</a> for more on the LDA topic modeling approach or <a href="http://dl.acm.org/citation.cfm?id=2133826" target="_blank">"Probabilistic Topic Models" (Blei, 2012)</a> for a recent review.</p>
@@ -227,7 +227,11 @@ docid = docid.toLowerCase();
 $('#doc').val(docid);
 $('.twitter-share-button').attr('data-text', "What's similar to " +docid+"? Discover with the #InPhO Topic Explorer");
 var roottopic = inpho.util.getValueForURLParam('topic') || null;
-$('.title').html('<a href="http://plato.stanford.edu/entries/'+docid+'" target="_blank" title="Stanford Encyclopedia of Philosophy: '+docid+'">'+docid+'</a>');
+if (roottopic)
+  $('.title').html('Topic ' + roottopic);
+else
+  $('.title').html('the entry on <a href="http://plato.stanford.edu/entries/'+docid+'" target="_blank" title="Stanford Encyclopedia of Philosophy: '+docid+'">'+docid+'</a>');
+
 var margin = {top: 80, right: 40, bottom: 20, left: 200},
     width = 960 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom;
@@ -318,7 +322,12 @@ d3.json(url, function(error, data) {
   $('#status .bar').css('width', '50%').text('Loading topics...');
   if (error) {
     $('#status .progress').removeClass('active progress-striped');
-    $('#status .bar').addClass('bar-danger').text('Invalid document: ' + docid +'.');
+    var errormsg;
+    
+    if (roottopic) errormsg = "Invalid topic: " + roottopic + ".";
+    else errormsg = "Invalid document: " + docid + ".";
+
+    $('#status .bar').addClass('bar-danger').text(errormsg);
     return false;
   }
   console.log(data);
@@ -351,6 +360,7 @@ d3.json(url, function(error, data) {
 
   dataset = data;
   original_root = data[0];
+  if (roottopic) docid = data[0]['doc'];
 
   svg.append("g")
       .attr("class", "x axis")
@@ -361,13 +371,13 @@ d3.json(url, function(error, data) {
       .attr("class", "axis_label")
       .attr("dy", "-2em")
       .style("text-anchor", "middle")
-      .text("Similarity to " + docid);
+      .text("Similarity to " + (roottopic ? ("Topic " + roottopic) : docid));
 
   svg.append("g")
       .attr("class", "y axis")
       .call(yAxis)
       .selectAll("text")
-      .attr("class", function(d) { return d == docid ? "primary" : "" })
+      .attr("class", function(d) { return (d == docid && roottopic == null) ? "primary" : "" })
       .on("click", function(d) { window.location.href = "/?doc=" + d;})
 
   svg.select(".y.axis").selectAll("g")
@@ -590,7 +600,8 @@ $('.sepIcon').tooltip({placement: 'top', title: 'Click for the SEP article.', co
       .attr("class", function(d) { return "top_" + d.name; });
 
     svg.selectAll(".x.axis text.axis_label").text(this.checked ? 
-      "Proportion of document assigned to topic" : ("Similarity to " + docid));
+      "Proportion of document assigned to topic" : 
+      ("Similarity to " + (roottopic ? ("Topic " + roottopic) : docid)));
   }
 
   d3.select(".scale").on("change", scaleTopics);
@@ -641,7 +652,7 @@ $('.sepIcon').tooltip({placement: 'top', title: 'Click for the SEP article.', co
     if (topic) {
       sortDataset(function(a, b) { return b.topics[topic] - a.topics[topic]; });
       $('.reset').removeAttr('disabled');
-      $('.topdoc').text('Top Documents for ' + topic);
+      $('.topdoc').text('Top Documents for Topic ' + topic);
       $('.topdoc').show();
       $('.topdoc').click(function URL() {location.href = location.origin + '?topic=' + topic;});
     } else
