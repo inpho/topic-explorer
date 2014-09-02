@@ -209,11 +209,11 @@ $.getJSON('/docs.json', function(data) {
 
 <div id="chart"> </div>
 <div id="controls" style="display:none;">
-  <strong>Display Options</strong>
+  <center><strong>Display Options</strong></center>
   <label class="checkbox"><input class="sort" type="checkbox"> Alphabetical sort</label>
   <label class="checkbox"><input class="scale" type="checkbox"> Normalize topic bars</label>
-  <button class="btn topdoc" disabled>Top Documents for [Topic]</button><br>
-  <button class="btn reset" onclick="resetTopicSort()" disabled>Reset Topic Sort</button>
+  <center><button class="btn reset" onclick="resetTopicSort()" disabled>Reset Topic Sort</button><br>
+  <button class="btn topdoc" style="display:none">Top Documents for [Topic]</button></center>
 </div>
 
 <!--<script src="topics.js"></script>-->
@@ -627,7 +627,7 @@ $('.sepIcon').tooltip({placement: 'top', title: 'Click for the SEP article.', co
   function resetTopicSort() {
     $('.reset').attr('disabled',true);
     $('.topicsort').attr('disabled',true);
-    $('.topdoc').attr('disabled',true);
+    $('.topdoc').hide();
     $('.topdoc').text('Top Documents for [Topic]');
     if (!($('.sort')[0].checked))
       sortDataset(function(a,b) { return b.prob - a.prob; });
@@ -642,8 +642,8 @@ $('.sepIcon').tooltip({placement: 'top', title: 'Click for the SEP article.', co
       sortDataset(function(a, b) { return b.topics[topic] - a.topics[topic]; });
       $('.reset').removeAttr('disabled');
       $('.topdoc').text('Top Documents for ' + topic);
-      $('.topdoc').removeAttr('disabled');
-      $('.topdoc').click(function URL() {location.href += '?topic=' + topic;});
+      $('.topdoc').show();
+      $('.topdoc').click(function URL() {location.href = location.origin + '?topic=' + topic;});
     } else
       sortDataset(function(a, b) { return b.prob - a.prob; });
 
