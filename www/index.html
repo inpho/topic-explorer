@@ -80,12 +80,12 @@ rect.hover, .legend rect {
 rect:hover {
   opacity: 1.0 !important;
 }
-rect:hover, .legend.hover rect{
+rect:hover, .legend.hover rect, .legend.selected rect {
   stroke: #000;
   stroke-width: 2;
   shape-rendering: crispEdges;
   }
-.hover text {
+.selected text, .hover text {
   font-weight: bold;
 }
 #legend, #controls {
@@ -143,8 +143,8 @@ letter-spacing: -1px;
   <div class="span12">
   <h1><a href="https://inpho.cogs.indiana.edu"><span class="logo-word">InPhO</span></a> Topic Explorer</h1>
   <!--<h2 class="title"></h2>-->
-  <p>This visualization shows the similarity of entries in the SEP to <span class="title"></span>.  The color bands within each article's row show the topic distribution within that article, and the relative sizes of each band indicates the weight of that topic in the article.  The full width of each row indicates the similarity to <span class="title"></span>.  Each topic's label and color is arbitrarily assigned, but is consistent across articles in the browser.</p>
-  <p>Display options include topic normalization, alphabetical sort and topic sort. By normalizing topics, the full width of each bar expands and topic weights per document can be compared. By clicking a topic, the documents will reorder acoording to that topic's weight and topic bars will reorder according to the topic weights in the highest weighted document.</p>
+  <p>This visualization shows the similarity of entries in the SEP to <span class="title"></span>.  The color bands within each article's row show the topic distribution within that article, and the relative sizes of each band indicates the weight of that topic in the article.  The combined width of each row indicates the <a href="http://en.wikipedia.org/wiki/Jensen–Shannon_divergence">Jensen-Shannon divergence</a> to <span class="title"></span>.  Each topic's label and color is arbitrarily assigned, but is consistent across articles in the browser.</p>
+  <p>Display options include topic normalization, alphabetical sort and topic sort. By normalizing topics, the combined width of each bar expands so that topic weights per document can be compared. By clicking a topic, the documents will reorder acoording to that topic's weight and topic bars will reorder according to the topic weights in the highest weighted document. When a topic is selected, clicking "Top Documents for [Topic]" will take you to a new page showing the most similar documents to that topic's word distribution. The original sort order can be restored with the "Reset Topic Sort" button.</p>
   
   <p>The underlying dataset was generated using the <a href="http://github.com/inpho/vsm" target="_blank">InPhO VSM module's</a> LDA implementation.  See <a href="http://en.wikipedia.org/wiki/Latent_Dirichlet_allocation" target="_blank">Wikipedia: Latent Dirichlet Allocation</a> for more on the LDA topic modeling approach or <a href="http://dl.acm.org/citation.cfm?id=2133826" target="_blank">"Probabilistic Topic Models" (Blei, 2012)</a> for a recent review.</p>
   <p><a href="http://github.com/inpho/topic-explorer/" target="_blank">Source code</a> and <a href="http://github.com/inpho/topic-explorer/issues/" target="_blank">issue tracking</a> for this page available at <a href="http://github.com/inpho/topic-explorer/" target="_blank">GitHub</a>. Contact Jaimie Murdock (<span class="iumail">jammurdo</span>) with further comments.</p>
@@ -638,6 +638,7 @@ $('.sepIcon').tooltip({placement: 'top', title: 'Click for the SEP article.', co
   function resetTopicSort() {
     $('.reset').attr('disabled',true);
     $('.topicsort').attr('disabled',true);
+    $('.selected').removeClass('selected');
     $('.topdoc').hide();
     $('.topdoc').text('Top Documents for [Topic]');
     if (!($('.sort')[0].checked))
@@ -651,12 +652,20 @@ $('.sepIcon').tooltip({placement: 'top', title: 'Click for the SEP article.', co
     $('.sort').removeAttr('checked');
     if (topic) {
       sortDataset(function(a, b) { return b.topics[topic] - a.topics[topic]; });
+      $(".top_" + topic).addClass('selected');
       $('.reset').removeAttr('disabled');
       $('.topdoc').text('Top Documents for Topic ' + topic);
       $('.topdoc').show();
       $('.topdoc').click(function URL() {location.href = location.origin + '?topic=' + topic;});
-    } else
+      $('.topdoc').mouseenter(function() {
+          $('.legend rect').not('.top_' + topic).tooltip('hide');
+          $(".legend rect.top_" + topic).tooltip('show'); });
+      $('.topdoc').mouseleave(function() { $(".top_" + topic).tooltip('hide'); });
+
+    } else {
+      $('.selected').removeClass('selected');
       sortDataset(function(a, b) { return b.prob - a.prob; });
+    }
 
 
     var sortFn = function(a,b) {
