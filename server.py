@@ -63,15 +63,15 @@ def topic_csv(topic_no, N=40):
         pass
 
     if N > 0:
-        data = lda_v.sim_top_doc([topic_no])[:N]
+        data = lda_v.sim_top_doc([int(topic_no)])[:N]
     else:
-        data = lda_v.sim_top_doc([topic_no])[N:]
+        data = lda_v.sim_top_doc([int(topic_no)])[N:]
         data = reversed(data)
 
     js = []
     for doc, prob in data:
         if doc != 'sample.txt':
-            js.append({'doc' : doc[:-4], 'prob' : prob,
+            js.append({'doc' : doc[:-4], 'prob' : 1-prob,
                 'topics' : dict([(str(t), p) for t,p in lda_v.doc_topics(doc)])})
 
     return json.dumps(js)
@@ -96,7 +96,7 @@ def doc_topics(sep_dir, N=40):
     js = []
     for doc, prob in data:
         if doc != 'sample.txt':
-            js.append({'doc' : doc[:-4], 'prob' : prob,
+            js.append({'doc' : doc[:-4], 'prob' : 1-prob,
                 'topics' : dict([(str(t), p) for t,p in lda_v.doc_topics(doc)])})
 
     return json.dumps(js)
