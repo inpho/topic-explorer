@@ -146,5 +146,5 @@ if __name__ == '__main__':
         port = args.port
 
     load_model(args.k)
-    run(host='inphodata.cogs.indiana.edu', port=port)
+    run(host='0.0.0.0', port=port)
 
