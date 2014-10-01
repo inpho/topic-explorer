@@ -40,6 +40,9 @@
   opacity: 1 !important;
 }
 
+.docLabel {
+  }
+
 .bar {
     fill: steelblue;
 }
@@ -58,10 +61,10 @@
     stroke: #000;
     shape-rendering: crispEdges;
 }
-
-.label {
-  
-  }
+.docLabel{
+  font:11px sans-serif;  
+  pointer-events: none;
+}
 
 rect {
   opacity: 0.6;
@@ -88,9 +91,6 @@ rect:hover, .legend.hover rect, .legend.selected rect {
   stroke-width: 2;
   shape-rendering: crispEdges;
   }
-.docLabel{
-  font:11px sans-serif;  
-}
 .selected text, .hover text {
   font-weight: bold;
 }
