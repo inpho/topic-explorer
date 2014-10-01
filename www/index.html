@@ -399,7 +399,7 @@ d3.json(url, function(error, data) {
       .attr("class", "axis_label")
       .attr("dy", "-2em")
       .style("text-anchor", "start")
-      .text("Similarity to " + (roottopic ? ("Topic " + roottopic) : '"'+original_root['label'])+'"');
+      .text("Similarity to " + (roottopic ? ("Topic " + roottopic) : '"'+original_root['label']+'"'));
 
   svg.append("g")
       .attr("class", "y axis")
@@ -652,7 +652,7 @@ $('.linkIcon').tooltip({placement: 'top', title: 'Click to refocus the Topic Exp
 
     svg.selectAll(".x.axis text.axis_label").text(this.checked ? 
       "Proportion of document assigned to topic" : 
-      ("Similarity to " + (roottopic ? ("Topic " + roottopic) : docid)));
+      ("Similarity to " + (roottopic ? ("Topic " + roottopic) : '"'+original_root.label+'"')));
   }
 
   d3.select(".scale").on("change", scaleTopics);
