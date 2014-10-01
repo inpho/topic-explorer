@@ -431,12 +431,17 @@ d3.json(url, function(error, data) {
       .on("mouseenter", function(d) { 
         $('text', this).attr('text-decoration', 'underline')
           .attr('font-weight', 'bold');     
-        svg.selectAll(".doc").filter(function(doc,i) { return doc.doc == d}).attr("class", "doc hover"); 
+        svg.selectAll(".doc")
+          .filter(function(doc,i) { return doc.doc == d})
+          .attr("class", function(d) { return (d.doc == docid ? "doc primary" : "doc") + " hover"}); 
         })
       .on("mouseleave", function(d) { 
         $('text',this).removeAttr('text-decoration')
           .removeAttr('font-weight'); 
-        svg.selectAll(".doc").filter(function(doc,i) { return doc.doc == d}).attr("class", "doc"); });
+        svg.selectAll(".doc")
+          .filter(function(doc,i) { return doc.doc == d})
+          .attr("class", function(d) { return d.doc == docid ? "doc primary" : "doc"}); 
+        });
     ticks.append("svg:image")
         .attr("xlink:href","/img/sep.png")
         .attr("width", 18)
