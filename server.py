@@ -9,6 +9,8 @@ from vsm.viewer.beagleviewer import BeagleViewer
 from vsm.model.ldacgsmulti import LdaCgsMulti as LCM
 from vsm.viewer.ldagibbsviewer import LDAGibbsViewer as LDAViewer
 
+from inpho.corpus import sep
+
 from bottle import request, response, route, run, static_file
 
 path = '/var/inphosemantics/data/20140801/sep/vsm-data/'
@@ -71,10 +73,12 @@ def topic_csv(topic_no, N=40):
         data = lda_v.sim_top_doc([int(topic_no)])[N:]
         data = reversed(data)
 
+    labels = sep.get_titles()
     js = []
     for doc, prob in data:
         if doc != 'sample.txt':
             js.append({'doc' : doc[:-4], 'prob' : 1-prob,
+                'label' : labels.get(doc[:-4], doc[:-4]),
                 'topics' : dict([(str(t), p) for t,p in lda_v.doc_topics(doc)])})
 
     return json.dumps(js)
@@ -95,12 +99,15 @@ def doc_topics(sep_dir, N=40):
     else:
         data = lda_v.sim_doc_doc(doc_id)[N:]
         data = reversed(data)
+    
+    labels = sep.get_titles()
 
     js = []
     for doc, prob in data:
         if doc != 'sample.txt':
-            js.append({'doc' : doc[:-4], 'prob' : 1-prob,
-                'topics' : dict([(str(t), p) for t,p in lda_v.doc_topics(doc)])})
+            js.append({'doc' : doc[:-4], 'prob' : 1-prob, 
+                       'label' : labels.get(doc[:-4], doc[:-4]),
+                       'topics' : dict([(str(t), p) for t,p in lda_v.doc_topics(doc)])})
 
     return json.dumps(js)
 
@@ -123,8 +130,15 @@ def docs():
     response.content_type = 'application/json; charset=UTF8'
     response.set_header('Expires', _cache_date())
 
-    data = lda_v.topics()
-    js = [label[:-4] for label in lda_c.view_metadata('article')['article_label'] if label != 'sample.txt']
+    ids = [label[:-4] for label in lda_c.view_metadata('article')['article_label'] if label != 'sample.txt'] 
+    labels = sep.get_titles()
+    labels = [labels.get(id,id) for id in ids]
+    js = list()
+    for id, title in zip(ids,labels):
+        js.append({
+            'id': id,
+            'label' : title
+        })
 
     return json.dumps(js)
 
