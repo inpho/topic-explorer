@@ -118,7 +118,7 @@ text.hover, .title{
   height: 84px;
   padding-top: 6px;
   margin-top: 14px;
-  margin-bottom: 5px;
+  margin-bottom: 15px;
   margin-left: -6px;
   display: inline-block;
   text-indent: -3000px;
@@ -140,6 +140,9 @@ letter-spacing: -1px;
 #twitter-widget-0 {
   margin-bottom: -11px;
 }
+.null, .non-null {
+  display: none;
+  }
 </style>
 </head>
 
@@ -149,8 +152,9 @@ letter-spacing: -1px;
   <div class="span12">
   <h1><a href="https://inpho.cogs.indiana.edu"><span class="logo-word">InPhO</span></a> Topic Explorer</h1>
   <!--<h2 class="title"></h2>-->
-  <p>This visualization shows the similarity of entries in the SEP to <span class="title"></span>.  The color bands within each article's row show the topic distribution within that article, and the relative sizes of each band indicates the weight of that topic in the article.  The combined width of each row indicates the <a href="http://en.wikipedia.org/wiki/Jensen–Shannon_divergence">Jensen-Shannon divergence</a> to <span class="title"></span>.  Each topic's label and color is arbitrarily assigned, but is consistent across articles in the browser.</p>
-  <p>Display options include topic normalization, alphabetical sort and topic sort. By normalizing topics, the combined width of each bar expands so that topic weights per document can be compared. By clicking a topic, the documents will reorder acoording to that topic's weight and topic bars will reorder according to the topic weights in the highest weighted document. When a topic is selected, clicking "Top Documents for [Topic]" will take you to a new page showing the most similar documents to that topic's word distribution. The original sort order can be restored with the "Reset Topic Sort" button.</p>
+  <p class="null">This visualization shows the similarity of entries in the Stanford Encyclopedia of Philosophy (SEP) to other entries in the SEP. Use the search box below to select an entry or click the <span class="icon-random"></span> button to populate the box with a random SEP article.</p>
+  <p class="non-null">This visualization shows the similarity of entries in the Stanford Encyclopedia of Philosophy (SEP) to <span class="title"></span>.  The color bands within each article's row show the topic distribution within that article, and the relative sizes of each band indicates the weight of that topic in the article.  The combined width of each row indicates the <a href="http://en.wikipedia.org/wiki/Jensen–Shannon_divergence">Jensen-Shannon divergence</a> to <span class="title"></span>.  Each topic's label and color is arbitrarily assigned, but is consistent across articles in the browser.</p>
+  <p class="non-null">Display options include topic normalization, alphabetical sort and topic sort. By normalizing topics, the combined width of each bar expands so that topic weights per document can be compared. By clicking a topic, the documents will reorder acoording to that topic's weight and topic bars will reorder according to the topic weights in the highest weighted document. When a topic is selected, clicking "Top Documents for [Topic]" will take you to a new page showing the most similar documents to that topic's word distribution. The original sort order can be restored with the "Reset Topic Sort" button.</p>
   
   <p>The underlying dataset was generated using the <a href="http://github.com/inpho/vsm" target="_blank">InPhO VSM module's</a> LDA implementation.  See <a href="http://en.wikipedia.org/wiki/Latent_Dirichlet_allocation" target="_blank">Wikipedia: Latent Dirichlet Allocation</a> for more on the LDA topic modeling approach or <a href="http://dl.acm.org/citation.cfm?id=2133826" target="_blank">"Probabilistic Topic Models" (Blei, 2012)</a> for a recent review.</p>
   <p><a href="http://github.com/inpho/topic-explorer/" target="_blank">Source code</a> and <a href="http://github.com/inpho/topic-explorer/issues/" target="_blank">issue tracking</a> for this page available at <a href="http://github.com/inpho/topic-explorer/" target="_blank">GitHub</a>. Contact Jaimie Murdock (<span class="iumail">jammurdo</span>) with further comments.</p>
@@ -180,7 +184,7 @@ letter-spacing: -1px;
   </form>
   </div>
   </div>
-  <div id="status" style="width:100%">
+  <div class="non-null" id="status" style="width:100%">
     <div class="progress loading progress-striped active">
       <div class="bar" style="width:25%">Loading documents...</div>
     </div>
@@ -194,14 +198,19 @@ if (docid) {
   docid = docid.toLowerCase();
   $('#hidden_id').val(docid);
   $('.twitter-share-button').attr('data-text', "What's similar to " +docid+"? Discover with the #InPhO Topic Explorer");
+
 }
 var roottopic = inpho.util.getValueForURLParam('topic') || null;
 
 if (roottopic) {
   $('.title').html('Topic ' + roottopic);
   $('.twitter-share-button').attr('data-text', "Check out topic "+ roottopic+" at the #InPhO Topic Explorer!");
-} else {
 }
+
+if (docid || roottopic)
+  $('.non-null').show()
+else
+  $('.null').show();
 
 function visualize(k) {
   var url = "http://inphodata.cogs.indiana.edu:16";
