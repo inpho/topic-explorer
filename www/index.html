@@ -208,9 +208,10 @@ function visualize(k) {
   if (k < 100) url += "0" + k;
   else url += k;
 
-  url += "?doc=" + ($("#doc").val() || docid) ;
+  url += "?doc=" + encodeURIComponent($("#hidden_id").val() || docid) ;
   window.location = url;
-  }
+}
+
 $.getJSON('/docs.json', function(data) {
   $(".typeahead").typeahead({items: 12,
     source: function(query, process) {
