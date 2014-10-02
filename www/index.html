@@ -249,8 +249,9 @@ $.getJSON('/docs.json', function(data) {
     if (title.length) {
       title = title[0].label;
       $('.title').html('<a href="http://hdl.handle.net/2027/'+docid+'" target="_blank" title="HathiTrust: '+docid+'">'+title+'</a>');
+      $('.title').html('the entry on <a href="http://plato.stanford.edu/entries/'+docid+'" target="_blank" title="Stanford Encyclopedia of Philosophy: '+docid+'">'+title+'</a>');
     } else {
-      $('.title').html('the volume <a href="http://hdl.handle.net/2027/'+docid+'" target="_blank" title="HathiTrust: '+docid+'">'+docid+'</a>');
+      $('.title').html('the entry on <a href="http://plato.stanford.edu/entries/'+docid+'" target="_blank" title="Stanford Encyclopedia of Philosophy: '+docid+'">'+docid+'</a>');
     }
   }
 });
@@ -272,7 +273,7 @@ $.getJSON('/docs.json', function(data) {
 var maxRows = 25;
 var minCols = 2;
 
-var margin = {top: 80, right: 40, bottom: 20, left: 55},
+var margin = {top: 80, right: 40, bottom: 20, left: 75},
     width = 960 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom;
 
@@ -444,28 +445,28 @@ d3.json(url, function(error, data) {
           .attr("class", function(d) { return d.doc == docid ? "doc primary" : "doc"}); 
         });
     ticks.append("svg:image")
-        .attr("xlink:href","/img/sep.png")
+        .attr("xlink:href","/img/inpho.png")
         .attr("width", 18)
         .attr("height",18)
         .attr("x", -margin.left + 5)
         .attr("y", -9)
         //.attr("x", -9)
-        .attr("class", "sepIcon")
-        .on("click", function(d) { window.open("http://plato.stanford.edu/entires/" + d, "_blank");});
-    ticks.append("svg:image")
-        .attr("xlink:href","/img/inpho.png")
-        .attr("width", 18)
-        .attr("height",18)
-        .attr("x", -margin.left + 5 + 18)
-        .attr("y", -9)
-        //.attr("x", -9)
         .attr("class", "inphoIcon")
         .on("click", function(d) { window.open("https://inpho.cogs.indiana.edu/entity?redirect=True&sep=" + d, "_blank");});
+    ticks.append("svg:image")
+        .attr("xlink:href","/img/sep.png")
+        .attr("width", 18)
+        .attr("height",18)
+        .attr("x", -margin.left + 5 + 20)
+        .attr("y", -9)
+        //.attr("x", -9)
+        .attr("class", "sepIcon")
+        .on("click", function(d) { window.open("http://plato.stanford.edu/entires/" + d, "_blank");});
     ticks.append("svg:image")
         .attr("xlink:href","/img/link.png")
         .attr("width", 18)
         .attr("height",18)
-        .attr("x", -margin.left + 5 + 36)
+        .attr("x", -margin.left + 5 + 20 + 20)
         .attr("y", -9)
         //.attr("x", -9)
         .attr("class", "linkIcon")
@@ -481,17 +482,17 @@ d3.json(url, function(error, data) {
           $("text:contains(" + d.doc +")")
             .filter(function() {return $(this).text().trim() == d.doc })
             .attr("font-weight", "bold")
+            .next(".inphoIcon").css('opacity', '1.0')
             .next(".sepIcon").css('opacity', '1.0')
-            .next(".linkIcon").css('opacity', '1.0')
-            .next(".inphoIcon").css('opacity', '1.0');
+            .next(".linkIcon").css('opacity', '1.0');
         })
       .on("mouseout", function(d) {
           $("text:contains(" + d.doc +")")
             .filter(function() {return $(this).text().trim() == d.doc })
             .attr("font-weight", "normal")
+            .next(".inphoIcon").css('opacity', '')
             .next(".sepIcon").css('opacity', '')
-            .next(".linkIcon").css('opacity', '')
-            .next(".inphoIcon").css('opacity', '');
+            .next(".linkIcon").css('opacity', '');
         });
 
   // Draw topic bars
