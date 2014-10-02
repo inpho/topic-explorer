@@ -46,7 +46,7 @@
 }
 
 .axis {
-    font: 12px sans-serif;
+    font: 11px sans-serif;
 }
 
 .axis path,
@@ -85,6 +85,9 @@ rect:hover, .legend.hover rect, .legend.selected rect {
   stroke-width: 2;
   shape-rendering: crispEdges;
   }
+.docLabel{
+  font:11px sans-serif;  
+}
 .selected text, .hover text {
   font-weight: bold;
 }
@@ -95,7 +98,7 @@ rect:hover, .legend.hover rect, .legend.selected rect {
 .primary {
   text-transform: uppercase;
 }
-.title{ 
+text.hover, .title{ 
   font-weight: bold;
   }
 /*
@@ -154,7 +157,7 @@ letter-spacing: -1px;
   <form action="/" method="GET" class="form-inline">
   <div class="input-append">
     <input type="hidden" name="doc" id="hidden_id">
-    <input type="text" id="doc" class="typeahead input-medium" placeholder="Document" autocomplete="off">
+    <input type="text" id="doc" class="typeahead input-xlarge" placeholder="Document" autocomplete="off">
     <button class="btn" type="button" id="randomDoc"><span class="icon-random"></span></button>
   </div>
   <div class="btn-group">
@@ -190,7 +193,6 @@ function visualize(k) {
   url += "?doc=" + ($("#doc").val() || docid) ;
   window.location = url;
   }
-var labels, mapped;
 $.getJSON('/docs.json', function(data) {
   $(".typeahead").typeahead({items: 12,
     source: function(query, process) {
@@ -218,9 +220,10 @@ $.getJSON('/docs.json', function(data) {
       }});
   $('#randomDoc').click(function() { 
       var rand = data[Math.floor(Math.random() * data.length)];
-      $('#doc').val(rand);
+      $('#hidden_id').val(rand.id);
+      $('#doc').val(rand.label);
     });
-  $('#randomDoc').tooltip({title: "Random SEP ID", placement: 'bottom'});
+  $('#randomDoc').tooltip({title: "Random Document", placement: 'bottom'});
 });
 </script>
 
@@ -393,13 +396,13 @@ d3.json(url, function(error, data) {
       .attr("class", "axis_label")
       .attr("dy", "-2em")
       .style("text-anchor", "middle")
-      .text("Similarity to " + (roottopic ? ("Topic " + roottopic) : docid));
+      .text("Similarity to " + (roottopic ? ("Topic " + roottopic) : '"'+original_root['label'])+'"');
 
   svg.append("g")
       .attr("class", "y axis")
       .call(yAxis)
       .selectAll("text")
-      .attr("class", function(d) { return (d == docid && roottopic == null) ? "primary" : "" })
+      .attr("class", function(d) { return (d == docid && roottopic != null) ? "primary" : "" })
       .on("click", function(d) { window.location.href = "/?doc=" + d;})
 
   svg.select(".y.axis").selectAll("g")
@@ -474,15 +477,25 @@ d3.json(url, function(error, data) {
           // is not occluded
           var parent = $(this).parent();
           $(this).detach().appendTo(parent);
+          $(".docLabel", parent).detach().appendTo(parent);
+          $(".docLabel", parent).addClass("hover");
           $('.legend rect').not('.top_' + d.name).tooltip('hide');
           $(".top_" + d.name).addClass('hover');
           $('.legend rect.top_' + d.name).tooltip('show');
         })
       .on("mouseout", function(d) {
+          var parent = $(this).parent();
+          $(".docLabel", parent).removeClass("hover");
           $(".top_" + d.name).removeClass('hover');
         })
       .on("click", function(d) { topicSort(d.name); })
       .style("fill", function(d) { return color(d.name); });
+  
+  doc.append("text")
+        .text(function(d) { return d.label; })
+        .attr("class","docLabel")
+        .attr("dx", "3")
+        .attr("dy", "13");
 
   var legendElts = legend.selectAll(".legend")
       .data(color.domain().slice())
@@ -603,19 +616,20 @@ $('.sepIcon').tooltip({placement: 'top', title: 'Click for the SEP article.', co
       .selectAll("rect")
       .data(function(d) { return d.topicMap; })
       .style("fill", function(d) { return color(d.name); })
-      .on("mouseover", function(d) {
+      /*.on("mouseover", function(d) {
           // SVG element z-index determined by render order, not style sheet
           // so element must be reappended to the end on hover so border 
           // is not occluded
           var parent = $(this).parent();
           $(this).detach().appendTo(parent);
+          $(".docLabel", parent).detach().appendTo(parent);
           $('.legend rect').not('.top_' + d.name).tooltip('hide');
           $(".top_" + d.name).addClass('hover');
           $('.legend rect.top_' + d.name).tooltip('show');
         })
       .on("mouseout", function(d) {
           $(".top_" + d.name).removeClass('hover');
-        })
+        })*/
       .transition().duration(500).ease("linear").delay(this.checked ? delay : negdelay)
       .attr("x", function(d) { return x(d.x0); })
       .attr("width", function(d) { return x(d.x1) - x(d.x0); })
@@ -710,19 +724,21 @@ $('.sepIcon').tooltip({placement: 'top', title: 'Click for the SEP article.', co
       .selectAll("rect")
       .data(function(d) { return d.topicMap; })
       .style("fill", function(d) { return color(d.name); })
+      /*
       .on("mouseover", function(d) {
           // SVG element z-index determined by render order, not style sheet
           // so element must be reappended to the end on hover so border 
           // is not occluded
           var parent = $(this).parent();
           $(this).detach().appendTo(parent);
+          $(".docLabel", parent).detach().appendTo(parent);
           $('.legend rect').not('.top_' + d.name).tooltip('hide');
           $(".top_" + d.name).addClass('hover');
           $('.legend rect.top_' + d.name).tooltip('show');
         })
       .on("mouseout", function(d) {
           $(".top_" + d.name).removeClass('hover');
-        })
+        })*/
       .transition().duration(1000).ease("linear").delay(this.checked ? delay : negdelay)
       .attr("x", function(d) { return x(d.x0); })
       .attr("width", function(d) { return x(d.x1) - x(d.x0); })
