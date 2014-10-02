@@ -133,6 +133,7 @@ def docs():
     ids = [label[:-4] for label in lda_c.view_metadata('article')['article_label'] if label != 'sample.txt'] 
     labels = sep.get_titles()
     labels = [labels.get(id,id) for id in ids]
+    
     js = list()
     for id, title in zip(ids,labels):
         js.append({

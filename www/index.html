@@ -188,6 +188,21 @@ letter-spacing: -1px;
   
 </div>
 <script>
+var docid = inpho.util.getValueForURLParam('doc') || null;
+if (docid) {
+  docid = decodeURIComponent(docid);
+  docid = docid.toLowerCase();
+  $('#hidden_id').val(docid);
+  $('.twitter-share-button').attr('data-text', "What's similar to " +docid+"? Discover with the #InPhO Topic Explorer");
+}
+var roottopic = inpho.util.getValueForURLParam('topic') || null;
+
+if (roottopic) {
+  $('.title').html('Topic ' + roottopic);
+  $('.twitter-share-button').attr('data-text', "Check out topic "+ roottopic+" at the #InPhO Topic Explorer!");
+} else {
+}
+
 function visualize(k) {
   var url = "http://inphodata.cogs.indiana.edu:16";
   if (k < 100) url += "0" + k;
@@ -227,6 +242,16 @@ $.getJSON('/docs.json', function(data) {
       $('#doc').val(rand.label);
     });
   $('#randomDoc').tooltip({title: "Random Document", placement: 'bottom'});
+
+  if (docid) {
+    title = data.filter(function(item) { return item.id == docid });
+    if (title.length) {
+      title = title[0].label;
+      $('.title').html('<a href="http://hdl.handle.net/2027/'+docid+'" target="_blank" title="HathiTrust: '+docid+'">'+title+'</a>');
+    } else {
+      $('.title').html('the volume <a href="http://hdl.handle.net/2027/'+docid+'" target="_blank" title="HathiTrust: '+docid+'">'+docid+'</a>');
+    }
+  }
 });
 </script>
 
@@ -245,20 +270,6 @@ $.getJSON('/docs.json', function(data) {
 
 var maxRows = 25;
 var minCols = 2;
-
-var docid = inpho.util.getValueForURLParam('doc') || null;
-if (docid) {
-  docid = docid.toLowerCase();
-  $('#hidden_id').val(docid);
-  $('.twitter-share-button').attr('data-text', "What's similar to " +docid+"? Discover with the #InPhO Topic Explorer");
-}
-var roottopic = inpho.util.getValueForURLParam('topic') || null;
-if (roottopic) {
-  $('.title').html('Topic ' + roottopic);
-  $('.twitter-share-button').attr('data-text', "Check out topic "+ roottopic+" at the #InPhO Topic Explorer!");
-} else {
-  $('.title').html('the entry on <a href="http://plato.stanford.edu/entries/'+docid+'" target="_blank" title="Stanford Encyclopedia of Philosophy: '+docid+'">'+docid+'</a>');
-}
 
 var margin = {top: 80, right: 40, bottom: 20, left: 55},
     width = 960 - margin.left - margin.right,
