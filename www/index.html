@@ -12,14 +12,16 @@
 <link rel="stylesheet" type="text/css" href="lib/bootstrap-2.3.2/css/bootstrap.min.css" />
 <!--<link rel="stylesheet" type="text/css" href="style.css" />-->
 <style>
-.y.axis text, .y.axis image {
-  cursor: pointer;
-  }
+.y.axis text {
+  visibility: hidden;
+}
 .y.axis g .sepIcon,
+.y.axis g .linkIcon,
 .y.axis g .inphoIcon {
   opacity: 0;
   }
 .y.axis g:hover .inphoIcon,
+.y.axis g:hover .linkIcon,
 .y.axis g:hover .sepIcon {
   opacity: 1.0;
   }
@@ -33,6 +35,7 @@
   opacity: 0 !important;
 }
 .y.axis rect:hover .sepIcon,
+.y.axis rect:hover .linkIcon,
 .y.axis rect:hover .inphoIcon {
   opacity: 1 !important;
 }
@@ -257,7 +260,7 @@ if (roottopic) {
   $('.title').html('the entry on <a href="http://plato.stanford.edu/entries/'+docid+'" target="_blank" title="Stanford Encyclopedia of Philosophy: '+docid+'">'+docid+'</a>');
 }
 
-var margin = {top: 80, right: 40, bottom: 20, left: 200},
+var margin = {top: 80, right: 40, bottom: 20, left: 55},
     width = 960 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom;
 
@@ -395,7 +398,7 @@ d3.json(url, function(error, data) {
       //.attr("transform", "rotate(-120)")
       .attr("class", "axis_label")
       .attr("dy", "-2em")
-      .style("text-anchor", "middle")
+      .style("text-anchor", "start")
       .text("Similarity to " + (roottopic ? ("Topic " + roottopic) : '"'+original_root['label'])+'"');
 
   svg.append("g")
@@ -441,6 +444,15 @@ d3.json(url, function(error, data) {
         //.attr("x", -9)
         .attr("class", "inphoIcon")
         .on("click", function(d) { window.open("https://inpho.cogs.indiana.edu/entity?redirect=True&sep=" + d, "_blank");});
+    ticks.append("svg:image")
+        .attr("xlink:href","/img/link.png")
+        .attr("width", 18)
+        .attr("height",18)
+        .attr("x", -margin.left + 5 + 36)
+        .attr("y", -9)
+        //.attr("x", -9)
+        .attr("class", "linkIcon")
+        .on("click", function(d) { window.location.href = "/?doc=" + encodeURIComponent(d);});
 
   // draw total bar
   var doc = svg.selectAll("doc")
@@ -453,6 +465,7 @@ d3.json(url, function(error, data) {
             .filter(function() {return $(this).text().trim() == d.doc })
             .attr("font-weight", "bold")
             .next(".sepIcon").css('opacity', '1.0')
+            .next(".linkIcon").css('opacity', '1.0')
             .next(".inphoIcon").css('opacity', '1.0');
         })
       .on("mouseout", function(d) {
@@ -460,6 +473,7 @@ d3.json(url, function(error, data) {
             .filter(function() {return $(this).text().trim() == d.doc })
             .attr("font-weight", "normal")
             .next(".sepIcon").css('opacity', '')
+            .next(".linkIcon").css('opacity', '')
             .next(".inphoIcon").css('opacity', '');
         });
 
@@ -595,6 +609,7 @@ d3.json(url, function(error, data) {
    
 $('.inphoIcon').tooltip({placement: 'top', title: 'Click to see more information<br /> at the InPhO Project.', container: 'body', html: true, animation: false});
 $('.sepIcon').tooltip({placement: 'top', title: 'Click for the SEP article.', container: 'body', html: true, animation: false});
+$('.linkIcon').tooltip({placement: 'top', title: 'Click to refocus the Topic Explorer on this document.', container: 'body', html: true, animation: false});
 }); });
 
   function scaleTopics() {
