@@ -1,4 +1,10 @@
 *.pyc
+sandbox
+
 start-servers.sh
 logs/*
-demo-data/ap
+
+demo-data/ap.npz
+demo-data/ap/*
+demo-data/models/*
+
