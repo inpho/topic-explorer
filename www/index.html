@@ -199,7 +199,6 @@ h1 a, h1 a:hover {
 var docid = inpho.util.getValueForURLParam('doc') || null;
 if (docid) {
   docid = decodeURIComponent(docid);
-  docid = docid.toLowerCase();
   $('#hidden_id').val(docid);
   $('.twitter-share-button').attr('data-text', "What's similar to " +docid+"? Discover with the #InPhO Topic Explorer");
 
