@@ -17,11 +17,13 @@
 }
 .y.axis g .sepIcon,
 .y.axis g .linkIcon,
+.y.axis g .apIcon,
 .y.axis g .inphoIcon {
   opacity: 0;
   }
 .y.axis g:hover .inphoIcon,
 .y.axis g:hover .linkIcon,
+.y.axis g:hover .apIcon,
 .y.axis g:hover .sepIcon {
   opacity: 1.0;
   }
@@ -36,6 +38,7 @@
 }
 .y.axis rect:hover .sepIcon,
 .y.axis rect:hover .linkIcon,
+.y.axis rect:hover .apIcon,
 .y.axis rect:hover .inphoIcon {
   opacity: 1 !important;
 }
@@ -156,8 +159,8 @@ h1 a, h1 a:hover {
   <div class="span12">
   <h1><a href="http://inphodata.cogs.indiana.edu"><span class="logo-word">InPhO</span> Topic Explorer</a></h1>
   <!--<h2 class="title"></h2>-->
-  <p class="null">This visualization shows the similarity of entries in the Stanford Encyclopedia of Philosophy (SEP) to other entries in the SEP. Use the search box below to select an entry or click the <span class="icon-random"></span> button to populate the box with a random SEP article.</p>
-  <p class="non-null">This visualization shows the similarity of entries in the Stanford Encyclopedia of Philosophy (SEP) to <span class="title"></span>.  The color bands within each article's row show the topic distribution within that article, and the relative sizes of each band indicates the weight of that topic in the article.  The combined width of each row indicates the <a href="http://en.wikipedia.org/wiki/Jensen–Shannon_divergence">Jensen-Shannon divergence</a> to <span class="title"></span>.  Each topic's label and color is arbitrarily assigned, but is consistent across articles in the browser.</p>
+  <p class="null">This visualization shows the similarity of article in the Associated Press sample data corpus from <a href="http://www.cs.princeton.edu/~blei/lda-c/">Blei (2003)</a>. Use the search box below to select an entry or click the <span class="icon-random"></span> button to populate the box with a random AP article.</p>
+  <p class="non-null">This visualization shows the similarity of article in the Associated Press sample data corpus from <a href="http://www.cs.princeton.edu/~blei/lda-c/">Blei (2003)</a> to <span class="title"></span>.  The color bands within each article's row show the topic distribution within that article, and the relative sizes of each band indicates the weight of that topic in the article.  The combined width of each row indicates the <a href="http://en.wikipedia.org/wiki/Jensen–Shannon_divergence">Jensen-Shannon divergence</a> to <span class="title"></span>.  Each topic's label and color is arbitrarily assigned, but is consistent across articles in the browser.</p>
   <p class="non-null">Display options include topic normalization, alphabetical sort and topic sort. By normalizing topics, the combined width of each bar expands so that topic weights per document can be compared. By clicking a topic, the documents will reorder acoording to that topic's weight and topic bars will reorder according to the topic weights in the highest weighted document. When a topic is selected, clicking "Top Documents for [Topic]" will take you to a new page showing the most similar documents to that topic's word distribution. The original sort order can be restored with the "Reset Topic Sort" button.</p>
   
   <p>The underlying dataset was generated using the <a href="http://github.com/inpho/vsm" target="_blank">InPhO VSM module's</a> LDA implementation.  See <a href="http://en.wikipedia.org/wiki/Latent_Dirichlet_allocation" target="_blank">Wikipedia: Latent Dirichlet Allocation</a> for more on the LDA topic modeling approach or <a href="http://dl.acm.org/citation.cfm?id=2133826" target="_blank">"Probabilistic Topic Models" (Blei, 2012)</a> for a recent review.</p>
@@ -260,10 +263,9 @@ $.getJSON('/docs.json', function(data) {
     title = data.filter(function(item) { return item.id == docid });
     if (title.length) {
       title = title[0].label;
-      $('.title').html('<a href="http://hdl.handle.net/2027/'+docid+'" target="_blank" title="HathiTrust: '+docid+'">'+title+'</a>');
-      $('.title').html('the entry on <a href="http://plato.stanford.edu/entries/'+docid+'" target="_blank" title="Stanford Encyclopedia of Philosophy: '+docid+'">'+title+'</a>');
+      $('.title').html(title);
     } else {
-      $('.title').html('the entry on <a href="http://plato.stanford.edu/entries/'+docid+'" target="_blank" title="Stanford Encyclopedia of Philosophy: '+docid+'">'+docid+'</a>');
+      $('.title').html(docid);
     }
   }
 });
@@ -285,7 +287,7 @@ $.getJSON('/docs.json', function(data) {
 var maxRows = 25;
 var minCols = 2;
 
-var margin = {top: 80, right: 40, bottom: 20, left: 75},
+var margin = {top: 80, right: 40, bottom: 20, left: 55},
     width = 960 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom;
 
@@ -457,28 +459,18 @@ d3.json(url, function(error, data) {
           .attr("class", function(d) { return d.doc == docid ? "doc primary" : "doc"}); 
         });
     ticks.append("svg:image")
-        .attr("xlink:href","/img/inpho.png")
+        .attr("xlink:href","/img/ap.jpg")
         .attr("width", 18)
         .attr("height",18)
         .attr("x", -margin.left + 5)
         .attr("y", -9)
         //.attr("x", -9)
-        .attr("class", "inphoIcon")
-        .on("click", function(d) { window.open("https://inpho.cogs.indiana.edu/entity?redirect=True&sep=" + d, "_blank");});
-    ticks.append("svg:image")
-        .attr("xlink:href","/img/sep.png")
-        .attr("width", 18)
-        .attr("height",18)
-        .attr("x", -margin.left + 5 + 20)
-        .attr("y", -9)
-        //.attr("x", -9)
-        .attr("class", "sepIcon")
-        .on("click", function(d) { window.open("http://plato.stanford.edu/entires/" + d, "_blank");});
+        .attr("class", "apIcon");
     ticks.append("svg:image")
         .attr("xlink:href","/img/link.png")
         .attr("width", 18)
         .attr("height",18)
-        .attr("x", -margin.left + 5 + 20 + 20)
+        .attr("x", -margin.left + 5 + 20)
         .attr("y", -9)
         //.attr("x", -9)
         .attr("class", "linkIcon")
@@ -494,16 +486,14 @@ d3.json(url, function(error, data) {
           $("text:contains(" + d.doc +")")
             .filter(function() {return $(this).text().trim() == d.doc })
             .attr("font-weight", "bold")
-            .next(".inphoIcon").css('opacity', '1.0')
-            .next(".sepIcon").css('opacity', '1.0')
+            .next(".apIcon").css('opacity', '1.0')
             .next(".linkIcon").css('opacity', '1.0');
         })
       .on("mouseout", function(d) {
           $("text:contains(" + d.doc +")")
             .filter(function() {return $(this).text().trim() == d.doc })
             .attr("font-weight", "normal")
-            .next(".inphoIcon").css('opacity', '')
-            .next(".sepIcon").css('opacity', '')
+            .next(".apIcon").css('opacity', '')
             .next(".linkIcon").css('opacity', '');
         });
 
@@ -637,8 +627,8 @@ d3.json(url, function(error, data) {
       $('#controls').css({'position': 'fixed', 'top' : legendHeight + heightFac});
     }}
    
-$('.inphoIcon').tooltip({placement: 'top', title: 'Click to see more information<br /> at the InPhO Project.', container: 'body', html: true, animation: false});
-$('.sepIcon').tooltip({placement: 'top', title: 'Click for the SEP article.', container: 'body', html: true, animation: false});
+$('.apIcon').tooltip({placement: 'top', title: 'Click for the full-text.', container: 'body', html: true, animation: false});
+$('.apIcon').popover({placement: 'right', container: 'body', animation: false});
 $('.linkIcon').tooltip({placement: 'top', title: 'Click to refocus the Topic Explorer on this document.', container: 'body', html: true, animation: false});
 }); });
 
