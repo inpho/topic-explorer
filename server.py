@@ -11,14 +11,14 @@ from vsm.viewer.ldagibbsviewer import LDAGibbsViewer as LDAViewer
 
 from bottle import request, response, route, run, static_file
 
-path ='demo-data'
+path ='demo-data/'
 context_type = 'document'
-lda_c = Corpus.load(path + '/ap.npz')
+lda_c = Corpus.load(path + 'ap.npz')
 lda_m = None
 lda_v = None
 def load_model(k):
     global lda_m, lda_v
-    lda_m = LCM.load(path + '/models/ap89-K%d.npz' % k)
+    lda_m = LCM.load(path + 'models/ap89-K%d.npz' % k)
     lda_v = LDAViewer(lda_c, lda_m)
 
 def _cache_date(days=1):
@@ -37,6 +37,34 @@ def doc_topic_csv(doc_id):
     writer.writerows([(t, "%6f" % p) for t,p in data])
 
     return output.getvalue()
+
+def _parse_ap():
+    from StringIO import StringIO
+    import xml.etree.ElementTree as ET
+    print "parsing ap/ap.txt"
+    with open(path+ 'ap/ap.txt') as f:
+        ap89_plain = f.read()
+    
+    ap89_plain = '<DOCS>\n' + ap89_plain + '</DOCS>\n'
+    ap89_plain = ap89_plain.replace('&', '&#038;')
+    ap89_IO = StringIO(ap89_plain)
+    tree = ET.parse(ap89_IO)
+    docs = tree.getroot()
+    
+    corpus = dict()
+    for doc in docs:
+        docno = doc.find('DOCNO').text.strip()
+        text = doc.find('TEXT').text.strip().replace('&#038;', '&')
+        corpus[docno] = text
+
+    return corpus
+
+plain_corpus = _parse_ap()
+
+@route('/docs/<doc_id>.txt')
+def get_doc(doc_id):
+    response.content_type = 'text/plain'
+    return plain_corpus[doc_id]
 
 @route('/docs/<doc_id>')
 def doc_csv(doc_id, threshold=0.2):
@@ -122,7 +150,6 @@ def docs():
         })
 
     return json.dumps(js)
-
 
 @route('/<filename:path>')
 def send_static(filename):
