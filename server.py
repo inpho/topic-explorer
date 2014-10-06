@@ -25,19 +25,6 @@ def _cache_date(days=1):
     time = datetime.now() + timedelta(days=days)
     return time.strftime("%a, %d %b %Y %I:%M:%S GMT")
 
-@route('/doc_topics/<doc_id>')
-def doc_topic_csv(doc_id):
-    response.content_type = 'text/csv; charset=UTF8'
-
-    data = lda_v.doc_topics(doc_id)
-
-    output=StringIO()
-    writer = csv.writer(output)
-    writer.writerow(['topic','prob'])
-    writer.writerows([(t, "%6f" % p) for t,p in data])
-
-    return output.getvalue()
-
 def _parse_ap():
     from StringIO import StringIO
     import xml.etree.ElementTree as ET
@@ -60,6 +47,25 @@ def _parse_ap():
     return corpus
 
 plain_corpus = _parse_ap()
+
+
+labels = dict()
+for doc in lda_c.view_metadata('document')['document_label']:
+    labels[doc] = doc + ': ' + ' '.join(plain_corpus[doc].split()[:10]) + ' ...'
+
+
+@route('/doc_topics/<doc_id>')
+def doc_topic_csv(doc_id):
+    response.content_type = 'text/csv; charset=UTF8'
+
+    data = lda_v.doc_topics(doc_id)
+
+    output=StringIO()
+    writer = csv.writer(output)
+    writer.writerow(['topic','prob'])
+    writer.writerows([(t, "%6f" % p) for t,p in data])
+
+    return output.getvalue()
 
 @route('/docs/<doc_id>.txt')
 def get_doc(doc_id):
@@ -95,7 +101,7 @@ def topic_json(topic_no, N=40):
     
     js = []
     for doc, prob in data:
-        js.append({'doc' : doc, 'label': doc, 'prob' : 1-prob,
+        js.append({'doc' : doc, 'label': labels[doc], 'prob' : 1-prob,
             'topics' : dict([(str(t), p) for t,p in lda_v.doc_topics(doc)])})
 
     return json.dumps(js)
@@ -114,10 +120,10 @@ def doc_topics(doc_id, N=40):
     else:
         data = lda_v.dist_doc_doc(doc_id)[N:]
         data = reversed(data)
-
+    
     js = []
     for doc, prob in data:
-        js.append({'doc' : doc, 'label': doc, 'prob' : 1-prob,
+        js.append({'doc' : doc, 'label': labels[doc], 'prob' : 1-prob,
             'topics' : dict([(str(t), p) for t,p in lda_v.doc_topics(doc)])})
 
     return json.dumps(js)
@@ -146,7 +152,7 @@ def docs():
     for doc in docs:
         js.append({
             'id': doc,
-            'label' : doc
+            'label' : labels[doc]
         })
 
     return json.dumps(js)
