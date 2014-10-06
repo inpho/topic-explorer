@@ -50,7 +50,7 @@ def doc_csv(sep_dir, threshold=0.2):
     response.content_type = 'text/csv; charset=UTF8'
 
     doc_id = sep_dir + '.txt'
-    data = lda_v.sim_doc_doc(doc_id)
+    data = lda_v.dist_doc_doc(doc_id)
 
     output=StringIO()
     writer = csv.writer(output)
@@ -68,9 +68,9 @@ def topic_csv(topic_no, N=40):
         pass
 
     if N > 0:
-        data = lda_v.sim_top_doc([int(topic_no)])[:N]
+        data = lda_v.dist_top_doc([int(topic_no)])[:N]
     else:
-        data = lda_v.sim_top_doc([int(topic_no)])[N:]
+        data = lda_v.dist_top_doc([int(topic_no)])[N:]
         data = reversed(data)
 
     labels = sep.get_titles()
@@ -95,9 +95,9 @@ def doc_topics(sep_dir, N=40):
 
     doc_id = sep_dir + '.txt'
     if N > 0:
-        data = lda_v.sim_doc_doc(doc_id)[:N]
+        data = lda_v.dist_doc_doc(doc_id)[:N]
     else:
-        data = lda_v.sim_doc_doc(doc_id)[N:]
+        data = lda_v.dist_doc_doc(doc_id)[N:]
         data = reversed(data)
     
     labels = sep.get_titles()
