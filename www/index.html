@@ -178,12 +178,16 @@ h1 a, h1 a:hover {
     <button type="submit" id="submit" class="btn">Visualize</button>
     <a class="btn dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
     <ul class="dropdown-menu">
+    <li><a href="javascript:visualize(10)">10 Topics</a></li>
     <li><a href="javascript:visualize(20)">20 Topics</a></li>
+    <li><a href="javascript:visualize(30)">30 Topics</a></li>
     <li><a href="javascript:visualize(40)">40 Topics</a></li>
+    <li><a href="javascript:visualize(50)">50 Topics</a></li>
     <li><a href="javascript:visualize(60)">60 Topics</a></li>
+    <li><a href="javascript:visualize(70)">70 Topics</a></li>
     <li><a href="javascript:visualize(80)">80 Topics</a></li>
+    <li><a href="javascript:visualize(90)">90 Topics</a></li>
     <li><a href="javascript:visualize(100)">100 Topics</a></li>
-    <li><a href="javascript:visualize(120)">120 Topics</a></li>
     </ul>
   </div>
   <a href="https://twitter.com/share" class="twitter-share-button pull-right" style="padding-top: 10px" data-text="InPhO Topic Explorer" data-via="JaimieMurdock" data-size="large" data-hashtags="dighum" data-counturl="inphodata.cogs.indiana.edu">Tweet</a>
@@ -219,7 +223,7 @@ else
   $('.null').show();
 
 function visualize(k) {
-  var url = "http://inphodata.cogs.indiana.edu:16";
+  var url = "http://inphodata.cogs.indiana.edu:18";
   if (k < 100) url += "0" + k;
   else url += k;
 
