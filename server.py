@@ -1,6 +1,8 @@
 import csv
 from datetime import datetime, timedelta
+from HTMLParser import HTMLParser
 import json
+import re
 from StringIO import StringIO
 
 from vsm.corpus import Corpus
@@ -26,6 +28,11 @@ def load_model(k):
 def _cache_date(days=1):
     time = datetime.now() + timedelta(days=days)
     return time.strftime("%a, %d %b %Y %I:%M:%S GMT")
+
+labels = sep.get_titles()
+for id,label in labels.iteritems():
+    label = re.sub("<.+>","", label)
+    labels[id] = HTMLParser().unescape(label)
 
 @route('/doc_topics/<sep_dir>')
 def doc_topic_csv(sep_dir):
@@ -73,7 +80,6 @@ def topic_csv(topic_no, N=40):
         data = lda_v.dist_top_doc([int(topic_no)])[N:]
         data = reversed(data)
 
-    labels = sep.get_titles()
     js = []
     for doc, prob in data:
         if doc != 'sample.txt':
@@ -99,8 +105,6 @@ def doc_topics(sep_dir, N=40):
     else:
         data = lda_v.dist_doc_doc(doc_id)[N:]
         data = reversed(data)
-    
-    labels = sep.get_titles()
 
     js = []
     for doc, prob in data:
@@ -131,14 +135,12 @@ def docs():
     response.set_header('Expires', _cache_date())
 
     ids = [label[:-4] for label in lda_c.view_metadata('article')['article_label'] if label != 'sample.txt'] 
-    labels = sep.get_titles()
-    labels = [labels.get(id,id) for id in ids]
     
     js = list()
-    for id, title in zip(ids,labels):
+    for id in ids:
         js.append({
             'id': id,
-            'label' : title
+            'label' : labels.get(id, id)
         })
 
     return json.dumps(js)
