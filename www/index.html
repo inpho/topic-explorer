@@ -150,6 +150,12 @@ h1 a, h1 a:hover {
 .null, .non-null {
   display: none;
   }
+.formula {
+  font-variant: small-caps;
+  }
+.formula em {
+  font-variant: normal;  
+}
 </style>
 </head>
 
@@ -160,7 +166,7 @@ h1 a, h1 a:hover {
   <h1><a href="http://inphodata.cogs.indiana.edu"><span class="logo-word">InPhO</span> Topic Explorer</a></h1>
   <!--<h2 class="title"></h2>-->
   <p class="null">This visualization shows the similarity of article in the Associated Press sample data corpus from <a href="http://www.cs.princeton.edu/~blei/lda-c/">Blei (2003)</a>. Use the search box below to select an entry or click the <span class="icon-random"></span> button to populate the box with a random AP article.</p>
-  <p class="non-null">This visualization shows the similarity of article in the Associated Press sample data corpus from <a href="http://www.cs.princeton.edu/~blei/lda-c/">Blei (2003)</a> to <span class="title"></span>.  The color bands within each article's row show the topic distribution within that article, and the relative sizes of each band indicates the weight of that topic in the article.  The combined width of each row indicates the <a href="http://en.wikipedia.org/wiki/Jensen–Shannon_divergence">Jensen-Shannon divergence</a> to <span class="title"></span>.  Each topic's label and color is arbitrarily assigned, but is consistent across articles in the browser.</p>
+  <p class="non-null">This visualization shows the similarity of article in the Associated Press sample data corpus from <a href="http://www.cs.princeton.edu/~blei/lda-c/">Blei (2003)</a> to <span class="title"></span>.  The color bands within each article's row show the topic distribution within that article, and the relative sizes of each band indicates the weight of that topic in the article.  The combined width of each row indicates similarity, as measured by the quantity <span class="formula">sim(<em>doc</em>) = 1 &ndash; JSD(<em>doc</em>, <span class="title"></span>)</span>, where <span class="formula">JSD</span> is the <a href="http://en.wikipedia.org/wiki/Jensen–Shannon_divergence">Jensen-Shannon distance</a> over each argument's word probability distributions. Each topic's label and color is arbitrarily assigned, but is consistent across articles in the browser.</p>
   <p class="non-null">Display options include topic normalization, alphabetical sort and topic sort. By normalizing topics, the combined width of each bar expands so that topic weights per document can be compared. By clicking a topic, the documents will reorder acoording to that topic's weight and topic bars will reorder according to the topic weights in the highest weighted document. When a topic is selected, clicking "Top Documents for [Topic]" will take you to a new page showing the most similar documents to that topic's word distribution. The original sort order can be restored with the "Reset Topic Sort" button.</p>
   
   <p>The underlying dataset was generated using the <a href="http://github.com/inpho/vsm" target="_blank">InPhO VSM module's</a> LDA implementation.  See <a href="http://en.wikipedia.org/wiki/Latent_Dirichlet_allocation" target="_blank">Wikipedia: Latent Dirichlet Allocation</a> for more on the LDA topic modeling approach or <a href="http://dl.acm.org/citation.cfm?id=2133826" target="_blank">"Probabilistic Topic Models" (Blei, 2012)</a> for a recent review.</p>

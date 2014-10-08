@@ -1,6 +1,8 @@
 import csv
 from datetime import datetime, timedelta
+from HTMLParser import HTMLParser
 import json
+import re
 from StringIO import StringIO
 
 from vsm.corpus import Corpus
@@ -47,7 +49,6 @@ def _parse_ap():
     return corpus
 
 plain_corpus = _parse_ap()
-
 
 labels = dict()
 for doc in lda_c.view_metadata('document')['document_label']:
@@ -152,7 +153,7 @@ def docs():
     for doc in docs:
         js.append({
             'id': doc,
-            'label' : labels[doc]
+            'label' : labels.get(doc, doc)
         })
 
     return json.dumps(js)
