@@ -1,6 +1,5 @@
 import csv
 from datetime import datetime, timedelta
-from HTMLParser import HTMLParser
 import json
 import os.path
 import re
@@ -18,28 +17,6 @@ def _cache_date(days=1):
     time = datetime.now() + timedelta(days=days)
     return time.strftime("%a, %d %b %Y %I:%M:%S GMT")
 
-def _parse_ap():
-    from StringIO import StringIO
-    import xml.etree.ElementTree as ET
-    print "parsing ap/ap.txt"
-    with open('demo-data/ap/ap.txt') as f:
-        ap89_plain = f.read()
-    
-    ap89_plain = '<DOCS>\n' + ap89_plain + '</DOCS>\n'
-    ap89_plain = ap89_plain.replace('&', '&#038;')
-    ap89_IO = StringIO(ap89_plain)
-    tree = ET.parse(ap89_IO)
-    docs = tree.getroot()
-    
-    corpus = dict()
-    for doc in docs:
-        docno = doc.find('DOCNO').text.strip()
-        text = doc.find('TEXT').text.strip().replace('&#038;', '&')
-        corpus[docno] = text
-
-    return corpus
-
-
 @route('/doc_topics/<doc_id>')
 def doc_topic_csv(doc_id):
     response.content_type = 'text/csv; charset=UTF8'
@@ -52,11 +29,6 @@ def doc_topic_csv(doc_id):
     writer.writerows([(t, "%6f" % p) for t,p in data])
 
     return output.getvalue()
-
-@route('/docs/<doc_id>.txt')
-def get_doc(doc_id):
-    response.content_type = 'text/plain'
-    return plain_corpus[doc_id]
 
 @route('/docs/<doc_id>')
 def doc_csv(doc_id, threshold=0.2):
@@ -87,7 +59,7 @@ def topic_json(topic_no, N=40):
     
     js = []
     for doc, prob in data:
-        js.append({'doc' : doc, 'label': labels[doc], 'prob' : 1-prob,
+        js.append({'doc' : doc, 'label': labels.get(doc, doc), 'prob' : 1-prob,
             'topics' : dict([(str(t), p) for t,p in lda_v.doc_topics(doc)])})
 
     return json.dumps(js)
@@ -109,7 +81,7 @@ def doc_topics(doc_id, N=40):
     
     js = []
     for doc, prob in data:
-        js.append({'doc' : doc, 'label': labels[doc], 'prob' : 1-prob,
+        js.append({'doc' : doc, 'label': labels.get(doc,doc), 'prob' : 1-prob,
             'topics' : dict([(str(t), p) for t,p in lda_v.doc_topics(doc)])})
 
     return json.dumps(js)
@@ -195,12 +167,7 @@ if __name__ == '__main__':
         lda_v = LDAViewer(lda_c, lda_m)
 
     load_model(args.k)
-    
-    plain_corpus = _parse_ap()
-
     labels = dict()
-    for doc in lda_v.corpus.view_metadata('document')['document_label']:
-        labels[doc] = doc + ': ' + ' '.join(plain_corpus[doc].split()[:10]) + ' ...'
 
     run(host='0.0.0.0', port=port)
 
