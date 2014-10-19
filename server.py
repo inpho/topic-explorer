@@ -1,3 +1,4 @@
+from codecs import open
 import csv
 from datetime import datetime, timedelta
 import json
@@ -11,6 +12,7 @@ from vsm.viewer.ldagibbsviewer import LDAGibbsViewer as LDAViewer
 from vsm.viewer.wrappers import doc_label_name
 
 from bottle import request, response, route, run, static_file
+import pystache
 
 def _cache_date(days=1):
     time = datetime.now() + timedelta(days=days)
@@ -126,10 +128,6 @@ def docs():
 def send_static(filename):
     return static_file(filename, root='www/')
 
-@route('/')
-def index():
-    return send_static('index.html')
-
 
 
 if __name__ == '__main__':
@@ -161,7 +159,11 @@ if __name__ == '__main__':
         port = args.port
 
     # load in the configuration file
-    config = ConfigParser({'icons': 'link'})
+    config = ConfigParser({
+        'icons': 'link',
+        'corpus_link' : None,
+        'doc_title_format' : None,
+        'doc_url_format' : None})
     config.read(args.config)
 
     # path variables
@@ -189,7 +191,7 @@ if __name__ == '__main__':
     else:
         label = lambda x: x
 
-    config_icons = config.get('main','icons').split(",")
+    config_icons = config.get('www','icons').split(",")
 
     @route('/icons.js')
     def icons():
@@ -198,6 +200,24 @@ if __name__ == '__main__':
                 .format(icons.read(), json.dumps(config_icons))
         return text
 
+
+    corpus_name = config.get('www','corpus_name')
+    corpus_link = config.get('www','corpus_link')
+    doc_title_format = config.get('www', 'doc_title_format')
+    doc_url_format = config.get('www', 'doc_url_format')
+
+    renderer = pystache.Renderer(escape=lambda u: u)
+
+    @route('/')
+    def index():
+        with open('www/index.mustache.html', encoding='utf8') as tmpl_file:
+            template = tmpl_file.read()
+        return renderer.render(template, 
+            {'corpus_name' : corpus_name,
+             'corpus_link' : corpus_link,
+             'context_type' : context_type,
+             'doc_title_format' : doc_title_format,
+             'doc_url_format' : doc_url_format})
 
     # start server
     run(host='0.0.0.0', port=port)

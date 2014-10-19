@@ -28,7 +28,7 @@ def label(doc):
         return doc
 
 from bottle import route
-@route('/docs/<doc_id>.txt')
+@route('/fulltext/<doc_id>.txt')
 def get_doc(doc_id):
     response.content_type = 'text/plain'
     return plain_corpus[doc_id]
