@@ -21,7 +21,7 @@ def _cache_date(days=1):
 def doc_topic_csv(doc_id):
     response.content_type = 'text/csv; charset=UTF8'
 
-    data = lda_v.doc_topics(doc_id)
+    data = lda_v.doc_topics(doc_id)[0]
 
     output=StringIO()
     writer = csv.writer(output)
@@ -59,8 +59,8 @@ def topic_json(topic_no, N=40):
     
     js = []
     for doc, prob in data:
-        js.append({'doc' : doc, 'label': labels.get(doc, doc), 'prob' : 1-prob,
-            'topics' : dict([(str(t), p) for t,p in lda_v.doc_topics(doc)])})
+        js.append({'doc' : doc, 'label': label(doc), 'prob' : 1-prob,
+            'topics' : dict([(str(t), p) for t,p in lda_v.doc_topics(doc)[0]])})
 
     return json.dumps(js)
 
@@ -81,8 +81,8 @@ def doc_topics(doc_id, N=40):
     
     js = []
     for doc, prob in data:
-        js.append({'doc' : doc, 'label': labels.get(doc,doc), 'prob' : 1-prob,
-            'topics' : dict([(str(t), p) for t,p in lda_v.doc_topics(doc)])})
+        js.append({'doc' : doc, 'label': label(doc), 'prob' : 1-prob,
+            'topics' : dict([(str(t), p) for t,p in lda_v.doc_topics(doc)[0]])})
 
     return json.dumps(js)
 
@@ -110,7 +110,7 @@ def docs():
     for doc in docs:
         js.append({
             'id': doc,
-            'label' : labels.get(doc, doc)
+            'label' : label(doc)
         })
 
     return json.dumps(js)
@@ -167,7 +167,7 @@ if __name__ == '__main__':
         lda_v = LDAViewer(lda_c, lda_m)
 
     load_model(args.k)
-    labels = dict()
+    label = lambda x: x
 
     run(host='0.0.0.0', port=port)
 
