@@ -8,6 +8,7 @@ Display options include topic normalization, alphabetical sort and topic sort. B
 
 ## Installation
 1.  Clone and install the `general-refactoring` branch of the [vsm repository](http://github.com/inpho/vsm):
+
     ```
     git clone git@github.com:inpho/vsm.git
     cd vsm
@@ -15,21 +16,25 @@ Display options include topic normalization, alphabetical sort and topic sort. B
     python setup.py develop --user
     ```
 2.  Clone this repository:
+
     ```
     cd ..
     git clone git@github.com:inpho/topic-explorer.git
     ```
 3.  The Associated Press sample corpus is the original document set released with [Blei (2003)](www.cs.princeton.edu/~blei/lda-c/). It can be downloaded and trained by using `topic-explorer/demo-data/get-data.sh`:
+
+
     ```
     cd topic-explorer/demo-data
     ./get-data.sh
     ```
 4.  Start the Topic Explorer for the given number of topics:
+
     ```
     cd ..
     python server.py 20
     ```
-5.  Access at [http://localhost:18020].
+5.  Access at [http://localhost:18020](http://localhost:18020).
 
 ## Publications
  -  Jaimie Murdock and Colin Allen. (in review) Visualization Techniques for Topic Model Checking. [demo track] in Proceedings of the 29th AAAI Conference (AAAI-15). Austin, Texas, USA, January 25-29, 2015.
