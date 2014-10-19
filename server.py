@@ -133,7 +133,7 @@ def docs():
     response.content_type = 'application/json; charset=UTF8'
     response.set_header('Expires', _cache_date())
 
-    docs = lda_c.view_metadata(context_type)['document_label']
+    docs = lda_v.corpus.view_metadata(context_type)['document_label']
     js = list()
     for doc in docs:
         js.append({
@@ -199,7 +199,7 @@ if __name__ == '__main__':
     plain_corpus = _parse_ap()
 
     labels = dict()
-    for doc in lda_c.view_metadata('document')['document_label']:
+    for doc in lda_v.corpus.view_metadata('document')['document_label']:
         labels[doc] = doc + ': ' + ' '.join(plain_corpus[doc].split()[:10]) + ' ...'
 
     run(host='0.0.0.0', port=port)
