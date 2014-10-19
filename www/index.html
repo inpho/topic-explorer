@@ -482,18 +482,20 @@ d3.json(url, function(error, data) {
       .attr("class", function(d) { return d.doc == docid ? "doc primary" : "doc"})
       .attr("transform", function(d) { return "translate(10," + y(d.doc) + ")"; })
       .on("mouseover", function(d) {
-          $("text:contains(" + d.doc +")")
+          var tick = $("text:contains(" + d.doc +")")
             .filter(function() {return $(this).text().trim() == d.doc })
-            .attr("font-weight", "bold")
-            .next(".apIcon").css('opacity', '1.0')
-            .next(".linkIcon").css('opacity', '1.0');
+            .attr("font-weight", "bold");
+          icons.reduce(function(prev,cur) {
+            return prev.next("."+cur+"Icon").css('opacity', '1.0');
+          }, tick);
         })
       .on("mouseout", function(d) {
-          $("text:contains(" + d.doc +")")
+          var tick = $("text:contains(" + d.doc +")")
             .filter(function() {return $(this).text().trim() == d.doc })
-            .attr("font-weight", "normal")
-            .next(".apIcon").css('opacity', '')
-            .next(".linkIcon").css('opacity', '');
+            .attr("font-weight", "normal");
+          icons.reduce(function(prev, cur) {
+            return prev.next("."+cur+"Icon").css('opacity', '');
+          }, tick);
         });
 
   // Draw topic bars
