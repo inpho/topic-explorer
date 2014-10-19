@@ -6,10 +6,9 @@ import re
 from StringIO import StringIO
 
 from vsm.corpus import Corpus
-from vsm.model.beaglecomposite import BeagleComposite
-from vsm.viewer.beagleviewer import BeagleViewer
 from vsm.model.ldacgsmulti import LdaCgsMulti as LCM
 from vsm.viewer.ldagibbsviewer import LDAGibbsViewer as LDAViewer
+from vsm.viewer.wrappers import doc_label_name
 
 from bottle import request, response, route, run, static_file
 
@@ -105,7 +104,7 @@ def docs():
     response.content_type = 'application/json; charset=UTF8'
     response.set_header('Expires', _cache_date())
 
-    docs = lda_v.corpus.view_metadata(context_type)['document_label']
+    docs = lda_v.corpus.view_metadata(context_type)[doc_label_name(context_type)]
     js = list()
     for doc in docs:
         js.append({
