@@ -1,7 +1,9 @@
 import csv
+from ConfigParser import ConfigParser
 from datetime import datetime, timedelta
 from HTMLParser import HTMLParser
 import json
+import os.path
 import re
 from StringIO import StringIO
 
@@ -13,14 +15,20 @@ from vsm.viewer.ldagibbsviewer import LDAGibbsViewer as LDAViewer
 
 from bottle import request, response, route, run, static_file
 
-path ='demo-data/'
-context_type = 'document'
-lda_c = Corpus.load(path + 'ap.npz')
+config = ConfigParser()
+config.read('config.ini')
+
+path = config.get('main', 'path')
+context_type = config.get('main', 'context_type')
+corpus_file = config.get('main', 'corpus_file')
+model_pattern = config.get('main', 'model_pattern') 
+lda_c = Corpus.load(corpus_file)
+
 lda_m = None
 lda_v = None
 def load_model(k):
     global lda_m, lda_v
-    lda_m = LCM.load(path + 'models/ap89-K%d.npz' % k)
+    lda_m = LCM.load(model_pattern.format(k))
     lda_v = LDAViewer(lda_c, lda_m)
 
 def _cache_date(days=1):
@@ -31,7 +39,7 @@ def _parse_ap():
     from StringIO import StringIO
     import xml.etree.ElementTree as ET
     print "parsing ap/ap.txt"
-    with open(path+ 'ap/ap.txt') as f:
+    with open(path+ '/ap/ap.txt') as f:
         ap89_plain = f.read()
     
     ap89_plain = '<DOCS>\n' + ap89_plain + '</DOCS>\n'
