@@ -19,7 +19,6 @@ var icon_fns = {"link" : function(ticks, i) {
         .attr("xlink:href","/img/ap.jpg")
         .attr("class", "apIcon")
         .attr("onclick", function(d) { return (d) ? "ap.popover(this)" : ""; });
-   
   },
  "htrc" : function(ticks, i) {
       base_fn(ticks,i)
@@ -41,3 +40,21 @@ var icon_fns = {"link" : function(ticks, i) {
         .on("click", function(d) { window.open("http://plato.stanford.edu/entires/" + d, "_blank");});
    }
 };
+
+String.prototype.format = String.prototype.f = function() {
+    var s = this,
+        i = arguments.length;
+
+    while (i--) {
+        s = s.replace(new RegExp('\\{' + i + '\\}', 'gm'), arguments[i]);
+    }
+    return s;
+};
+
+var icon_tooltips = {
+    "link" : 'Click to refocus the Topic Explorer on this document.',
+    "ap" : 'Click for the full-text.',
+    "htrc" : 'Click for the HathiTrust Details.',
+    "inpho" : 'Click to see more information<br /> at the InPhO Project.',
+    "sep" : 'Click for the SEP article.'
+    };

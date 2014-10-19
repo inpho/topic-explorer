@@ -486,7 +486,7 @@ d3.json(url, function(error, data) {
             .filter(function() {return $(this).text().trim() == d.doc })
             .attr("font-weight", "bold");
           icons.reduce(function(prev,cur) {
-            return prev.next("."+cur+"Icon").css('opacity', '1.0');
+            return prev.next(".{0}Icon".format(cur)).css('opacity', '1.0');
           }, tick);
         })
       .on("mouseout", function(d) {
@@ -494,7 +494,7 @@ d3.json(url, function(error, data) {
             .filter(function() {return $(this).text().trim() == d.doc })
             .attr("font-weight", "normal");
           icons.reduce(function(prev, cur) {
-            return prev.next("."+cur+"Icon").css('opacity', '');
+            return prev.next(".{0}Icon".format(cur)).css('opacity', '');
           }, tick);
         });
 
@@ -627,9 +627,10 @@ d3.json(url, function(error, data) {
       $('#legend').css({'position': 'fixed', 'top' : heightFac});
       $('#controls').css({'position': 'fixed', 'top' : legendHeight + heightFac});
     }}
-   
-$('.apIcon').tooltip({placement: 'top', title: 'Click for the full-text.', container: 'body', html: true, animation: false});
-$('.linkIcon').tooltip({placement: 'top', title: 'Click to refocus the Topic Explorer on this document.', container: 'body', html: true, animation: false});
+
+  for (var i = 0; i < icons.length; i++) {
+    $(".{0}Icon".format(icons[i])).tooltip({placement: 'top', title: icon_tooltips[icons[i]], container: 'body', html: true, animation: false});
+  }
 }); });
 
   function scaleTopics() {
