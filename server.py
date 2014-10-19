@@ -128,13 +128,16 @@ def index():
 if __name__ == '__main__':
     from argparse import ArgumentParser
     from ConfigParser import ConfigParser
+    from importlib import import_module
     import os.path
+
     def is_valid_filepath(parser, arg):
         if not os.path.exists(arg):
             parser.error("The file %s does not exist!" % arg)
         else:
             return arg
-
+    
+    # argument parsing
     parser = ArgumentParser()
     parser.add_argument('config', type=lambda x: is_valid_filepath(parser, x),
         help="Configuration file path")
@@ -144,6 +147,7 @@ if __name__ == '__main__':
         help="Port Number", default=None)
     args = parser.parse_args()
 
+    # automatic port assignment
     if args.port is None: 
         port = '18%03d' % args.k
     else:
@@ -153,11 +157,13 @@ if __name__ == '__main__':
     config = ConfigParser()
     config.read(args.config)
 
+    # path variables
     path = config.get('main', 'path')
     context_type = config.get('main', 'context_type')
     corpus_file = config.get('main', 'corpus_file')
     model_pattern = config.get('main', 'model_pattern') 
 
+    # LDA objects
     lda_c = Corpus.load(corpus_file)
     lda_m = None
     lda_v = None
@@ -167,7 +173,15 @@ if __name__ == '__main__':
         lda_v = LDAViewer(lda_c, lda_m)
 
     load_model(args.k)
-    label = lambda x: x
 
+    # label function imports
+    label_module = config.get('main', 'label_module')
+    if label_module:
+        label_module = import_module(label_module)
+        label = label_module.label
+    else:
+        label = lambda x: x
+
+    # start server
     run(host='0.0.0.0', port=port)
 

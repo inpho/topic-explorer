@@ -19,12 +19,15 @@ def _parse_ap():
 
     return corpus
 
-    
 plain_corpus = _parse_ap()
-labels = dict()
-for doc in lda_v.corpus.view_metadata('document')['document_label']:
-    labels[doc] = doc + ': ' + ' '.join(plain_corpus[doc].split()[:10]) + ' ...'
 
+def label(doc):
+    if plain_corpus.get(doc):
+        return doc + ': ' + ' '.join(plain_corpus[doc].split()[:10]) + ' ...'
+    else:
+        return doc
+
+from bottle import route
 @route('/docs/<doc_id>.txt')
 def get_doc(doc_id):
     response.content_type = 'text/plain'
