@@ -153,7 +153,7 @@ if __name__ == '__main__':
         port = args.port
 
     # load in the configuration file
-    config = ConfigParser()
+    config = ConfigParser({'icons': 'link'})
     config.read(args.config)
 
     # path variables
@@ -180,6 +180,16 @@ if __name__ == '__main__':
         label = label_module.label
     else:
         label = lambda x: x
+
+    config_icons = config.get('main','icons').split(",")
+
+    @route('/icons.js')
+    def icons():
+        with open('www/icons.js') as icons:
+            text = '{0}\n var icons = {1};'\
+                .format(icons.read(), json.dumps(config_icons))
+        return text
+
 
     # start server
     run(host='0.0.0.0', port=port)

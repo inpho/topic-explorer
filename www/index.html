@@ -9,6 +9,7 @@
 <script src="lib/mustache.js"></script>
 <script src="lib/inpho/util.js"></script>
 <script src="ap.js"></script>
+<script src="icons.js"></script>
 <link rel="stylesheet" type="text/css" href="lib/bootstrap-2.3.2/css/bootstrap.min.css" />
 <!--<link rel="stylesheet" type="text/css" href="style.css" />-->
 <style>
@@ -294,10 +295,11 @@ $.getJSON('/docs.json', function(data) {
 <!--<script src="topics.js"></script>-->
 <script>
 
+  var ico;
 var maxRows = 25;
 var minCols = 2;
 
-var margin = {top: 80, right: 40, bottom: 20, left: 55},
+var margin = {top: 80, right: 40, bottom: 20, left: 15 + (icons.length * 20)},
     width = 960 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom;
 
@@ -468,25 +470,10 @@ d3.json(url, function(error, data) {
           .filter(function(doc,i) { return doc.doc == d})
           .attr("class", function(d) { return d.doc == docid ? "doc primary" : "doc"}); 
         });
-    ticks.append("svg:image")
-        .attr("xlink:href","/img/ap.jpg")
-        .attr("width", 18)
-        .attr("height",18)
-        .attr("data-doc-id", function (d) {return d})
-        .attr("x", -margin.left + 5)
-        .attr("y", -9)
-        //.attr("x", -9)
-        .attr("class", "apIcon")
-        .attr("onclick", function(d) { return (d) ? "ap.popover(this)" : ""; });
-    ticks.append("svg:image")
-        .attr("xlink:href","/img/link.png")
-        .attr("width", 18)
-        .attr("height",18)
-        .attr("x", -margin.left + 5 + 20)
-        .attr("y", -9)
-        //.attr("x", -9)
-        .attr("class", "linkIcon")
-        .on("click", function(d) { window.location.href = "/?doc=" + encodeURIComponent(d);});
+
+  for (var i = 0; i < icons.length; i++) {
+    icon_fns[icons[i]](ticks,i);
+  }
 
   // draw total bar
   var doc = svg.selectAll("doc")
@@ -791,8 +778,6 @@ $('.linkIcon').tooltip({placement: 'top', title: 'Click to refocus the Topic Exp
       .attr("class", function(d) { return "top_" + d.name; });
 
   }
-
-
 </script>
 
 </body>
