@@ -20,7 +20,7 @@ def _cache_date(days=1):
 def doc_topic_csv(doc_id):
     response.content_type = 'text/csv; charset=UTF8'
 
-    data = lda_v.doc_topics(doc_id)[0]
+    data = lda_v.doc_topics(doc_id)
 
     output=StringIO()
     writer = csv.writer(output)
@@ -56,10 +56,14 @@ def topic_json(topic_no, N=40):
         data = lda_v.dist_top_doc([int(topic_no)])[N:]
         data = reversed(data)
     
+    docs = [doc for doc,prob in data]
+    doc_topics_mat = lda_v.doc_topics(docs)
+
     js = []
-    for doc, prob in data:
+    for doc_prob, topics in zip(data, doc_topics_mat):
+        doc, proc = doc_prob
         js.append({'doc' : doc, 'label': label(doc), 'prob' : 1-prob,
-            'topics' : dict([(str(t), p) for t,p in lda_v.doc_topics(doc)[0]])})
+            'topics' : dict([(str(t), p) for t,p in topics])})
 
     return json.dumps(js)
 
@@ -77,11 +81,15 @@ def doc_topics(doc_id, N=40):
     else:
         data = lda_v.dist_doc_doc(doc_id)[N:]
         data = reversed(data)
-    
+   
+    docs = [doc for doc,prob in data]
+    doc_topics_mat = lda_v.doc_topics(docs)
+
     js = []
-    for doc, prob in data:
+    for doc_prob, topics in zip(data, doc_topics_mat):
+        doc, prob = doc_prob
         js.append({'doc' : doc, 'label': label(doc), 'prob' : 1-prob,
-            'topics' : dict([(str(t), p) for t,p in lda_v.doc_topics(doc)[0]])})
+            'topics' : dict([(str(t), p) for t,p in topics])})
 
     return json.dumps(js)
 
