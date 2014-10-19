@@ -1,5 +1,4 @@
 import csv
-from ConfigParser import ConfigParser
 from datetime import datetime, timedelta
 from HTMLParser import HTMLParser
 import json
@@ -15,22 +14,6 @@ from vsm.viewer.ldagibbsviewer import LDAGibbsViewer as LDAViewer
 
 from bottle import request, response, route, run, static_file
 
-config = ConfigParser()
-config.read('config.ini')
-
-path = config.get('main', 'path')
-context_type = config.get('main', 'context_type')
-corpus_file = config.get('main', 'corpus_file')
-model_pattern = config.get('main', 'model_pattern') 
-lda_c = Corpus.load(corpus_file)
-
-lda_m = None
-lda_v = None
-def load_model(k):
-    global lda_m, lda_v
-    lda_m = LCM.load(model_pattern.format(k))
-    lda_v = LDAViewer(lda_c, lda_m)
-
 def _cache_date(days=1):
     time = datetime.now() + timedelta(days=days)
     return time.strftime("%a, %d %b %Y %I:%M:%S GMT")
@@ -39,7 +22,7 @@ def _parse_ap():
     from StringIO import StringIO
     import xml.etree.ElementTree as ET
     print "parsing ap/ap.txt"
-    with open(path+ '/ap/ap.txt') as f:
+    with open('demo-data/ap/ap.txt') as f:
         ap89_plain = f.read()
     
     ap89_plain = '<DOCS>\n' + ap89_plain + '</DOCS>\n'
@@ -55,12 +38,6 @@ def _parse_ap():
         corpus[docno] = text
 
     return corpus
-
-plain_corpus = _parse_ap()
-
-labels = dict()
-for doc in lda_c.view_metadata('document')['document_label']:
-    labels[doc] = doc + ': ' + ' '.join(plain_corpus[doc].split()[:10]) + ' ...'
 
 
 @route('/doc_topics/<doc_id>')
@@ -174,10 +151,23 @@ def send_static(filename):
 def index():
     return send_static('index.html')
 
+
+
 if __name__ == '__main__':
     from argparse import ArgumentParser
+    from ConfigParser import ConfigParser
+    import os.path
+    def is_valid_filepath(parser, arg):
+        if not os.path.exists(arg):
+            parser.error("The file %s does not exist!" % arg)
+        else:
+            return arg
+
     parser = ArgumentParser()
-    parser.add_argument('k', type=int)
+    parser.add_argument('config', type=lambda x: is_valid_filepath(parser, x),
+        help="Configuration file path")
+    parser.add_argument('-k', type=int, required=True,
+        help="Number of Topics")
     parser.add_argument('-p', dest='port', type=int, 
         help="Port Number", default=None)
     args = parser.parse_args()
@@ -187,6 +177,30 @@ if __name__ == '__main__':
     else:
         port = args.port
 
+    # load in the configuration file
+    config = ConfigParser()
+    config.read(args.config)
+
+    path = config.get('main', 'path')
+    context_type = config.get('main', 'context_type')
+    corpus_file = config.get('main', 'corpus_file')
+    model_pattern = config.get('main', 'model_pattern') 
+
+    lda_c = Corpus.load(corpus_file)
+    lda_m = None
+    lda_v = None
+    def load_model(k):
+        global lda_m, lda_v
+        lda_m = LCM.load(model_pattern.format(k))
+        lda_v = LDAViewer(lda_c, lda_m)
+
     load_model(args.k)
+    
+    plain_corpus = _parse_ap()
+
+    labels = dict()
+    for doc in lda_c.view_metadata('document')['document_label']:
+        labels[doc] = doc + ': ' + ' '.join(plain_corpus[doc].split()[:10]) + ' ...'
+
     run(host='0.0.0.0', port=port)
 
