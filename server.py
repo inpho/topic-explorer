@@ -152,14 +152,9 @@ if __name__ == '__main__':
         help="Port Number", default=None)
     args = parser.parse_args()
 
-    # automatic port assignment
-    if args.port is None: 
-        port = '18%03d' % args.k
-    else:
-        port = args.port
-
     # load in the configuration file
     config = ConfigParser({
+        'port' : '8{0:03d}',
         'icons': 'link',
         'corpus_link' : None,
         'doc_title_format' : None,
@@ -201,6 +196,7 @@ if __name__ == '__main__':
         return text
 
 
+    # index page parameterization
     corpus_name = config.get('www','corpus_name')
     corpus_link = config.get('www','corpus_link')
     doc_title_format = config.get('www', 'doc_title_format')
@@ -218,6 +214,14 @@ if __name__ == '__main__':
              'context_type' : context_type,
              'doc_title_format' : doc_title_format,
              'doc_url_format' : doc_url_format})
+
+
+    # automatic port assignment
+    if args.port:
+        port = args.port
+    else:
+        port = config.get('main','port').format(args.k)
+
 
     # start server
     run(host='0.0.0.0', port=port)
