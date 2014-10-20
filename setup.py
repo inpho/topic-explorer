@@ -25,14 +25,15 @@ setup(
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
         "Topic :: Scientific/Engineering :: Visualization",
         "Topic :: Software Development :: User Interfaces",
-        "Topic :: Text Processing :: Linguistic"
+        "Topic :: Text Processing :: Linguistic",
         ],
     install_requires=[
         'bottle>=0.12', 
         'pystache>=0.5.4',
-        'vsm>=0.2'],
+        'vsm==0.2',
+        ],
     dependency_links=[
-        'https://github.com/inpho/vsm/archive/general-refactoring.zip',
+        'https://github.com/inpho/vsm/archive/general-refactoring.zip#egg=vsm',
         ],
 )
 
