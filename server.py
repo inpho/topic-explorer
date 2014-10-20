@@ -2,6 +2,7 @@ from codecs import open
 import csv
 from datetime import datetime, timedelta
 import json
+import itertools
 import os.path
 import re
 from StringIO import StringIO
@@ -13,6 +14,8 @@ from vsm.viewer.wrappers import doc_label_name
 
 from bottle import request, response, route, run, static_file
 import pystache
+
+import colorlib
 
 def _cache_date(days=1):
     time = datetime.now() + timedelta(days=days)
@@ -102,10 +105,7 @@ def topic_H():
 
     data = lda_v.topic_entropies()
 
-    colors = [
-        '#fef0d9', '#fdcc8a', '#fc8d59', '#e34a33', '#b30000'
-    ]
-    colors.reverse()
+    colors = [itertools.cycle(cs) for cs in zip(*colorlib.brew(3,n_cls=4))]
     factor = len(data) / len(colors)
     
     js = {}
@@ -113,7 +113,7 @@ def topic_H():
         topic, H = topic_H
         js[str(topic)] = {
             "H" : H, 
-            "color" : colors[rank / factor]
+            "color" : colors[min(rank / factor, len(colors)-1)].next()
         }
 
     return json.dumps(js)
