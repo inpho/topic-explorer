@@ -98,16 +98,18 @@ def doc_topics(doc_id, N=40):
 
     return json.dumps(js)
 
-@route('/topic_H.json')
-def topic_H():
+@route('/topics.json')
+def topics():
     response.content_type = 'application/json; charset=UTF8'
     response.set_header('Expires', _cache_date())
 
+
+    # populate entropy values
     data = lda_v.topic_entropies()
 
     colors = [itertools.cycle(cs) for cs in zip(*colorlib.brew(3,n_cls=4))]
     factor = len(data) / len(colors)
-    
+
     js = {}
     for rank,topic_H in enumerate(data):
         topic, H = topic_H
@@ -115,20 +117,12 @@ def topic_H():
             "H" : H, 
             "color" : colors[min(rank / factor, len(colors)-1)].next()
         }
-
-    return json.dumps(js)
-
-@route('/topics.json')
-def topics():
-    response.content_type = 'application/json; charset=UTF8'
-    response.set_header('Expires', _cache_date())
-
+    
+    # populate word values
     data = lda_v.topics()
-
-    js ={} 
     for i,topic in enumerate(data):
         for word, prob in topic[:10]:
-            js.update({str(i) : dict([(w, p) for w,p in topic[:10]])})
+            js[str(i)].update({'words' : dict([(w, p) for w,p in topic[:10]])})
 
     return json.dumps(js)
 

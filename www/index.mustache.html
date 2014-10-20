@@ -165,7 +165,7 @@ h1 a, h1 a:hover {
   <p class="non-null">This visualization shows the similarity of {{context_type}}s in the 
   {{#corpus_link}}<a href="{{corpus_link}}">{{corpus_name}}</a>{{/corpus_link}} 
   {{^corpus_link}}{{corpus_name}}{{/corpus_link}} to <span class="title"></span>.</p>
-  <p class="non-null">The color bands within each article's row show the topic distribution within that article, and the relative sizes of each band indicates the weight of that topic in the article. The total width of each row indicates similarity to the focal topic or document, measured by the quantity <span class="formula">sim(<em>doc</em>) = 1 &ndash; JSD(<em>doc</em>, <span class="title"></span>)</span>, where <span class="formula">JSD</span> is the <a href="http://en.wikipedia.org/wiki/Jensen–Shannon_divergence">Jensen-Shannon distance</a> between the word probability distributions of each item. Each topic's label and color is arbitrarily assigned, but is consistent across articles in the browser.</p>
+  <p class="non-null">The color bands within each article's row show the topic distribution within that article, and the relative sizes of each band indicates the weight of that topic in the article. The total width of each row indicates similarity to the focal topic or document, measured by the quantity <span class="formula">sim(<em>doc</em>) = 1 &ndash; JSD(<em>doc</em>, <span class="title"></span>)</span>, where <span class="formula">JSD</span> is the <a href="http://en.wikipedia.org/wiki/Jensen–Shannon_divergence">Jensen-Shannon distance</a> between the word probability distributions of each item. Each topic's label is arbitrarily assigned, while the color corresponds to the topic entropy. Both label and color are consistent across articles in the browser.</p>
   <p class="non-null">Display options include topic normalization, alphabetical sort and topic sort. By normalizing topics, the combined width of each bar expands so that topic weights per document can be compared. By clicking a topic, the documents will reorder acoording to that topic's weight and topic bars will reorder according to the topic weights in the highest weighted document. When a topic is selected, clicking "Top Documents for [Topic]" will take you to a new page showing the most similar documents to that topic's word distribution. The original sort order can be restored with the "Reset Topic Sort" button.</p>
   
   <p>The underlying dataset was generated using the <a href="http://github.com/inpho/vsm" target="_blank">InPhO VSM module's</a> LDA implementation.  See <a href="http://en.wikipedia.org/wiki/Latent_Dirichlet_allocation" target="_blank">Wikipedia: Latent Dirichlet Allocation</a> for more on the LDA topic modeling approach or <a href="http://dl.acm.org/citation.cfm?id=2133826" target="_blank">"Probabilistic Topic Models" (Blei, 2012)</a> for a recent review.</p>
@@ -388,7 +388,6 @@ d3.json(url, function(error, data) {
     return false;
   }
   console.log(data);
-  d3.json("/topic_H.json", function(error_top, topic_H) {
   d3.json("/topics.json", function(error_top, topics) {
     $('#status .bar').css('width', '75%').text('Rendering chart...');
     if (error_top) {
@@ -514,7 +513,7 @@ d3.json(url, function(error, data) {
             $(".top_" + d.name).removeClass('hover');
           })
         .on("click", function(d) { topicSort(d.name); })
-        .style("fill", function(d) { return topic_H[d.name]['color']; });
+        .style("fill", function(d) { return topics[d.name]['color']; });
     
     doc.append("text")
           .text(function(d) { return d.label; })
@@ -531,10 +530,12 @@ d3.json(url, function(error, data) {
         .attr("width", 18)
         .attr("height", 18)
         .attr("class", function(d) { return "top_" + d; })
-        .style("fill", function(d) { return topic_H[d]['color']; })
+        .style("fill", function(d) { return topics[d]['color']; })
         //.attr("data-toggle", "tooltip")
         .attr("data-placement", "right")
-        .attr("title", function(d) { return d3.keys(topics[d]).join(", ") + ", ..."; })
+        .attr("title", function(d) { 
+          return "<strong>Topic {0}:</strong> H(T<sub>{0}</sub>)={1}".format(d,topics[d].H.toFixed(2)) + "<br />"
+            + d3.keys(topics[d].words).join(", ") + ", ..."; })
         .on("click", function(d) { topicSort(d); })
         .on("mouseover", function(d) {
             $(".top_" + d).addClass('hover').tooltip('show');
@@ -543,7 +544,7 @@ d3.json(url, function(error, data) {
             $(".top_" + d).removeClass('hover').tooltip('hide');
           });
   
-    $(".legend rect").tooltip({container:'body', trigger: 'manual', animation: false});
+    $(".legend rect").tooltip({container:'body', trigger: 'manual', animation: false, html: true});
   
     legendElts.append("text")
         .attr("dx", -6)
@@ -620,7 +621,6 @@ d3.json(url, function(error, data) {
       $(".{0}Icon".format(icons[i])).tooltip({placement: 'top', title: icon_tooltips[icons[i]], container: 'body', html: true, animation: false});
     }
   }); 
-  }); 
 });
 
   function scaleTopics() {
@@ -641,7 +641,7 @@ d3.json(url, function(error, data) {
     svg.selectAll(".doc")
       .selectAll("rect")
       .data(function(d) { return d.topicMap; })
-      .style("fill", function(d) { return topic_H[d.name]['color']; })
+      .style("fill", function(d) { return topics[d.name]['color']; })
       /*.on("mouseover", function(d) {
           // SVG element z-index determined by render order, not style sheet
           // so element must be reappended to the end on hover so border 
@@ -749,7 +749,7 @@ d3.json(url, function(error, data) {
     svg.selectAll(".doc")
       .selectAll("rect")
       .data(function(d) { return d.topicMap; })
-      .style("fill", function(d) { return topic_H[d.name]['color']; })
+      .style("fill", function(d) { return topics[d.name]['color']; })
       /*
       .on("mouseover", function(d) {
           // SVG element z-index determined by render order, not style sheet
