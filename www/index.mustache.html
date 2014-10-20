@@ -301,8 +301,6 @@ var x = d3.scale.linear()
 var y = d3.scale.ordinal()
     .rangeRoundBands([0, height], .1, 0);
 
-var color = d3.scale.category20c();
-
 var xAxis = d3.svg.axis()
     .scale(x)
     .orient("top")
@@ -361,10 +359,10 @@ function calculateTopicMap(data, scale, sortFn){
   data.forEach(function(d) {
     var sizeFactor = (scale) ? d.prob : 1.0
     var x0 = 0;
-    if (sortFn) d.topicMap = color.domain()
+    if (sortFn) d.topicMap = d3.keys(original_root.topics)
       .sort(sortFn)
       .map(function(name) { return {name: name, x0: x0, x1: x0 += +(d.topics[name]*sizeFactor) }; });
-    else d.topicMap = color.domain()
+    else d.topicMap = d3.keys(original_root.topics)
       .map(function(name) { return {name: name, x0: x0, x1: x0 += +(d.topics[name]*sizeFactor) }; });
   });
   
@@ -390,6 +388,7 @@ d3.json(url, function(error, data) {
     return false;
   }
   console.log(data);
+  d3.json("/topic_H.json", function(error_top, topic_H) {
   d3.json("/topics.json", function(error_top, topics) {
     $('#status .bar').css('width', '75%').text('Rendering chart...');
     if (error_top) {
@@ -411,15 +410,14 @@ d3.json(url, function(error, data) {
   
     x.domain([0, 1.0]);
     tops = data;
-    color.domain(d3.keys(data[0].topics));
       //.sort();
+    dataset = data;
+    original_root = data[0];
+    if (roottopic) docid = data[0]['doc'];
   
     calculateTopicMap(data, true, function(a,b) {return data[0].topics[b] - data[0].topics[a];});
   
   
-    dataset = data;
-    original_root = data[0];
-    if (roottopic) docid = data[0]['doc'];
   
     svg.append("g")
         .attr("class", "x axis")
@@ -516,17 +514,15 @@ d3.json(url, function(error, data) {
             $(".top_" + d.name).removeClass('hover');
           })
         .on("click", function(d) { topicSort(d.name); })
-        .style("fill", function(d) { return color(d.name); });
+        .style("fill", function(d) { return topic_H[d.name]['color']; });
     
     doc.append("text")
           .text(function(d) { return d.label; })
           .attr("class","docLabel")
           .attr("dx", "3")
           .attr("dy", "13");
-  
     var legendElts = legend.selectAll(".legend")
-        .data(color.domain().slice())
-        //.data(d3.keys(data[0].topics))
+        .data(data[0].topicMap.map(function(t) { return t.name;}))
       .enter().append("g")
         .attr("class", function(d) { return "legend top_" + d; })
         .attr("transform", function(d, i) { return "translate("+(55 * Math.floor(i / legendFactor))+"," + y(i % legendFactor) + ")"; });
@@ -535,7 +531,7 @@ d3.json(url, function(error, data) {
         .attr("width", 18)
         .attr("height", 18)
         .attr("class", function(d) { return "top_" + d; })
-        .style("fill", color)
+        .style("fill", function(d) { return topic_H[d]['color']; })
         //.attr("data-toggle", "tooltip")
         .attr("data-placement", "right")
         .attr("title", function(d) { return d3.keys(topics[d]).join(", ") + ", ..."; })
@@ -578,7 +574,7 @@ d3.json(url, function(error, data) {
         .attr("font-size", "10px")
         .style("text-anchor", "start")
         .text("ordered by P( T | " + docid + " )");
-  
+
     d3.select(window).on('resize', resize);
   
     function resize() {
@@ -624,6 +620,7 @@ d3.json(url, function(error, data) {
       $(".{0}Icon".format(icons[i])).tooltip({placement: 'top', title: icon_tooltips[icons[i]], container: 'body', html: true, animation: false});
     }
   }); 
+  }); 
 });
 
   function scaleTopics() {
@@ -644,7 +641,7 @@ d3.json(url, function(error, data) {
     svg.selectAll(".doc")
       .selectAll("rect")
       .data(function(d) { return d.topicMap; })
-      .style("fill", function(d) { return color(d.name); })
+      .style("fill", function(d) { return topic_H[d.name]['color']; })
       /*.on("mouseover", function(d) {
           // SVG element z-index determined by render order, not style sheet
           // so element must be reappended to the end on hover so border 
@@ -752,7 +749,7 @@ d3.json(url, function(error, data) {
     svg.selectAll(".doc")
       .selectAll("rect")
       .data(function(d) { return d.topicMap; })
-      .style("fill", function(d) { return color(d.name); })
+      .style("fill", function(d) { return topic_H[d.name]['color']; })
       /*
       .on("mouseover", function(d) {
           // SVG element z-index determined by render order, not style sheet

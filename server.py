@@ -95,6 +95,29 @@ def doc_topics(doc_id, N=40):
 
     return json.dumps(js)
 
+@route('/topic_H.json')
+def topic_H():
+    response.content_type = 'application/json; charset=UTF8'
+    response.set_header('Expires', _cache_date())
+
+    data = lda_v.topic_entropies()
+
+    colors = [
+        '#fef0d9', '#fdcc8a', '#fc8d59', '#e34a33', '#b30000'
+    ]
+    colors.reverse()
+    factor = len(data) / len(colors)
+    
+    js = {}
+    for rank,topic_H in enumerate(data):
+        topic, H = topic_H
+        js[str(topic)] = {
+            "H" : H, 
+            "color" : colors[rank / factor]
+        }
+
+    return json.dumps(js)
+
 @route('/topics.json')
 def topics():
     response.content_type = 'application/json; charset=UTF8'
