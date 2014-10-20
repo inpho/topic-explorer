@@ -375,6 +375,7 @@ else url = "/docs_topics/" + docid + '.json'
 var n = inpho.util.getValueForURLParam('n');
 if (n) url += "?n=" + n;
 
+var tops;
 d3.json(url, function(error, data) {
   $('#status .bar').css('width', '50%').text('Loading topics...');
   if (error) {
@@ -408,7 +409,7 @@ d3.json(url, function(error, data) {
   
   
     x.domain([0, 1.0]);
-    tops = data;
+    tops = topics;
       //.sort();
     dataset = data;
     original_root = data[0];
@@ -641,7 +642,7 @@ d3.json(url, function(error, data) {
     svg.selectAll(".doc")
       .selectAll("rect")
       .data(function(d) { return d.topicMap; })
-      .style("fill", function(d) { return topics[d.name]['color']; })
+      .style("fill", function(d) { return tops[d.name]['color']; })
       /*.on("mouseover", function(d) {
           // SVG element z-index determined by render order, not style sheet
           // so element must be reappended to the end on hover so border 
@@ -749,7 +750,7 @@ d3.json(url, function(error, data) {
     svg.selectAll(".doc")
       .selectAll("rect")
       .data(function(d) { return d.topicMap; })
-      .style("fill", function(d) { return topics[d.name]['color']; })
+      .style("fill", function(d) { return tops[d.name]['color']; })
       /*
       .on("mouseover", function(d) {
           // SVG element z-index determined by render order, not style sheet
