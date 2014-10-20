@@ -7,34 +7,23 @@ The color bands within each article's row show the topic distribution within tha
 Display options include topic normalization, alphabetical sort and topic sort. By normalizing topics, the combined width of each bar expands so that topic weights per document can be compared. By clicking a topic, the documents will reorder acoording to that topic's weight and topic bars will reorder according to the topic weights in the highest weighted document. When a topic is selected, clicking "Top Documents for [Topic]" will take you to a new page showing the most similar documents to that topic's word distribution. The original sort order can be restored with the "Reset Topic Sort" button.
 
 ## Installation
-1.  Clone and install the `general-refactoring` branch of the [vsm repository](http://github.com/inpho/vsm):
-
+1.  Clone the repository:
+    
     ```
-    git clone git@github.com:inpho/vsm.git
-    cd vsm
-    git checkout general-refactoring
-    python setup.py develop --user
-    ```
-2.  Clone this repository:
-
-    ```
-    cd ..
     git clone git@github.com:inpho/topic-explorer.git
     ```
-3.  The Associated Press sample corpus is the original document set released with [Blei (2003)](www.cs.princeton.edu/~blei/lda-c/). It can be downloaded and trained by using `topic-explorer/demo-data/get-data.sh`:
-
+2.  Setup dependencies and the Associated Press sample corpus released with [Blei (2003)](www.cs.princeton.edu/~blei/lda-c/):
 
     ```
-    cd topic-explorer/demo-data
-    ./get-data.sh
+    python setup.py develop --user
     ```
 4.  Start the Topic Explorer for the given number of topics:
 
     ```
     cd ..
-    python server.py 20
+    python server.py -k 20 config/ap.ini
     ```
-5.  Access at [http://localhost:18020](http://localhost:18020).
+5.  Access at [http://localhost:16020](http://localhost:16020).
 
 ## Publications
  -  Jaimie Murdock and Colin Allen. (in review) Visualization Techniques for Topic Model Checking. [demo track] in Proceedings of the 29th AAAI Conference (AAAI-15). Austin, Texas, USA, January 25-29, 2015.
