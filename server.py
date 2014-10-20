@@ -150,12 +150,6 @@ if __name__ == '__main__':
         help="Port Number", default=None)
     args = parser.parse_args()
 
-    # automatic port assignment
-    if args.port:
-        port = args.port
-    else:
-        port = config.get('main','port').format(args.k)
-
     # load in the configuration file
     config = ConfigParser({
         'port' : '8{0:03d}',
@@ -171,6 +165,12 @@ if __name__ == '__main__':
     context_type = config.get('main', 'context_type')
     corpus_file = config.get('main', 'corpus_file')
     model_pattern = config.get('main', 'model_pattern') 
+
+    # automatic port assignment
+    if args.port:
+        port = args.port
+    else:
+        port = config.get('main','port').format(args.k)
 
     # LDA objects
     lda_c = Corpus.load(corpus_file)
