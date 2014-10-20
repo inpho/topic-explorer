@@ -128,8 +128,6 @@ def docs():
 def send_static(filename):
     return static_file(filename, root='www/')
 
-
-
 if __name__ == '__main__':
     from argparse import ArgumentParser
     from ConfigParser import ConfigParser
@@ -206,6 +204,8 @@ if __name__ == '__main__':
 
     @route('/')
     def index():
+        response.set_header('Expires', _cache_date())
+
         with open('www/index.mustache.html', encoding='utf8') as tmpl_file:
             template = tmpl_file.read()
         return renderer.render(template, 
