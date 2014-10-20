@@ -63,7 +63,7 @@ def topic_json(topic_no, N=40):
 
     js = []
     for doc_prob, topics in zip(data, doc_topics_mat):
-        doc, proc = doc_prob
+        doc, prob = doc_prob
         js.append({'doc' : doc, 'label': label(doc), 'prob' : 1-prob,
             'topics' : dict([(str(t), p) for t,p in topics])})
 
