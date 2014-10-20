@@ -150,9 +150,16 @@ if __name__ == '__main__':
         help="Port Number", default=None)
     args = parser.parse_args()
 
+    # automatic port assignment
+    if args.port:
+        port = args.port
+    else:
+        port = config.get('main','port').format(args.k)
+
     # load in the configuration file
     config = ConfigParser({
         'port' : '8{0:03d}',
+        'topic_range' : '{0},{1},1'.format(args.k, args.k+1),
         'icons': 'link',
         'corpus_link' : None,
         'doc_title_format' : None,
@@ -199,6 +206,10 @@ if __name__ == '__main__':
     corpus_link = config.get('www','corpus_link')
     doc_title_format = config.get('www', 'doc_title_format')
     doc_url_format = config.get('www', 'doc_url_format')
+    topic_range = map(int, config.get('main', 'topic_range').split(','))
+    topic_range = range(*topic_range)
+    topic_range = [{'k' : k, 'port' : config.get('main','port').format(k)} 
+        for k in topic_range] 
 
     renderer = pystache.Renderer(escape=lambda u: u)
 
@@ -212,15 +223,10 @@ if __name__ == '__main__':
             {'corpus_name' : corpus_name,
              'corpus_link' : corpus_link,
              'context_type' : context_type,
+             'topic_range' : topic_range,
              'doc_title_format' : doc_title_format,
              'doc_url_format' : doc_url_format})
 
-
-    # automatic port assignment
-    if args.port:
-        port = args.port
-    else:
-        port = config.get('main','port').format(args.k)
 
 
     # start server
