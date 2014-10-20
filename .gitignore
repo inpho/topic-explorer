@@ -8,3 +8,5 @@ demo-data/*.npz
 demo-data/ap/*
 demo-data/models/*
 
+build/
+topicexplorer.egg-info
