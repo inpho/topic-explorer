@@ -4,7 +4,7 @@ sandbox
 start-servers.sh
 logs/*
 
-demo-data/ap.npz
+demo-data/*.npz
 demo-data/ap/*
 demo-data/models/*
 
