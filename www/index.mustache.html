@@ -264,8 +264,10 @@ $.getJSON('/docs.json', function(data) {
     if (title.length) {
       title = title[0].label;
       $('.title').html('{{doc_title_format}}'.format(title,'{{doc_url_format}}'.format(docid)));
+      $('#doc').val(title);
     } else {
       $('.title').html('{{doc_title_format}}'.format(docid,'{{doc_url_format}}'.format(docid)));
+      $('#doc').val(docid);
     }
   }
 });
