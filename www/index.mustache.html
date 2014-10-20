@@ -221,7 +221,7 @@ else
   $('.null').show();
 
 function visualize(port) {
-  var url = "http://inphodata.cogs.indiana.edu:{{0}}/".format(port);
+  var url = "http://inphodata.cogs.indiana.edu:{0}/".format(port);
 
   url += "?doc=" + encodeURIComponent($("#hidden_id").val() || docid) ;
   window.location = url;
