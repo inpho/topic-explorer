@@ -1,0 +1,4 @@
+bottle>=0.12
+brewer2mpl>=1.4
+pystache>=0.5.4
+https://github.com/inpho/vsm/archive/general-refactoring.zip#egg=vsm

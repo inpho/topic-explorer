@@ -38,7 +38,3 @@ setup(
         ],
 )
 
-print "\nTraining Sample Data"
-import os, subprocess
-os.chdir('demo-data')
-subprocess.call(['sh', 'get-data.sh'])

@@ -63,7 +63,16 @@ else:
 
     # build up corpus with docids and stoplist
     c = Corpus(corpus, context_data=context_data, context_types=['document'])
-    c = apply_stoplist(c, nltk_stop=True, freq=5)
+    try:
+        c = apply_stoplist(c, nltk_stop=True, freq=5)
+    except LookupError:
+        import nltk
+        print "Downloading stopwords list"
+        nltk.download('stopwords')
+
+        c = apply_stoplist(c, nltk_stop=True, freq=5)
+    
+    # save the corpus
     c.save(corpus_path)
 
 # train the models
