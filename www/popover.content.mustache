@@ -1,0 +1,25 @@
+{{#author}}
+  {{.}}
+{{/author}}
+({{publishDate.0}})
+
+
+<dl>
+<dt>External Resources</dt>
+<dd><a href="http://hdl.handle.net/2027/{{id}}" target="_blank">HathiTrust</a></dd>
+{{#lccn.0}}
+<dd><a href="http://lccn.loc.gov/{{.}}" target="_blank">Library of Congress</a></dd>
+{{/lccn.0}}
+{{#oclc}}
+<dd><a href="http://www.worldcat.org/oclc/{{.}}" target="_blank">WorldCat</a></dd>
+{{/oclc}}
+{{^oclc}}
+<dd><a href="http://www.worldcat.org/search/?q={{title}}" target="_blank"><i class="icon-search"></i> WorldCat</a></dd>
+{{/oclc}}
+
+
+<dt>HathiTrust Topics</dt>
+{{#topicStr}}
+<dd><a href="http://catalog.hathitrust.org/Search/Home?lookfor={{.}}&searchtype=subject" target="_blank">{{.}}</a></dd>
+{{/topicStr}}
+</dl>
