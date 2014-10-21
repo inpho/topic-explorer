@@ -34,7 +34,7 @@ setup(
         'vsm==0.2',
         ],
     dependency_links=[
-        'https://github.com/inpho/vsm/archive/general-refactoring.zip#egg=vsm',
+        'https://github.com/inpho/vsm/archive/master.zip#egg=vsm',
         ],
 )
 
