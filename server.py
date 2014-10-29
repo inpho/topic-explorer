@@ -17,11 +17,24 @@ import pystache
 
 import colorlib
 
+def _set_acao_headers(f):
+    """
+    Decorator to set Access-Control-Allow-Origin headers to enable cross-InPhO
+    embedding of Topic Explorer bars.
+    """
+    def set_header(*args, **kwargs):
+        host = request.get_header('Origin')
+        if host and 'cogs.indiana.edu' in host:
+            response.headers['Access-Control-Allow-Origin'] = host
+        return f(*args, **kwargs)
+    return set_header
+
 def _cache_date(days=1):
     time = datetime.now() + timedelta(days=days)
     return time.strftime("%a, %d %b %Y %I:%M:%S GMT")
 
 @route('/doc_topics/<doc_id>')
+@_set_acao_headers
 def doc_topic_csv(doc_id):
     response.content_type = 'text/csv; charset=UTF8'
 
@@ -35,6 +48,7 @@ def doc_topic_csv(doc_id):
     return output.getvalue()
 
 @route('/docs/<doc_id>')
+@_set_acao_headers
 def doc_csv(doc_id, threshold=0.2):
     response.content_type = 'text/csv; charset=UTF8'
 
@@ -48,6 +62,7 @@ def doc_csv(doc_id, threshold=0.2):
     return output.getvalue()
 
 @route('/topics/<topic_no>.json')
+@_set_acao_headers
 def topic_json(topic_no, N=40):
     response.content_type = 'application/json; charset=UTF8'
     try:
@@ -73,6 +88,7 @@ def topic_json(topic_no, N=40):
     return json.dumps(js)
 
 @route('/docs_topics/<doc_id>.json')
+@_set_acao_headers
 def doc_topics(doc_id, N=40):
     try:
         N = int(request.query.n)
@@ -99,10 +115,10 @@ def doc_topics(doc_id, N=40):
     return json.dumps(js)
 
 @route('/topics.json')
+@_set_acao_headers
 def topics():
     response.content_type = 'application/json; charset=UTF8'
     response.set_header('Expires', _cache_date())
-
 
     # populate entropy values
     data = lda_v.topic_entropies()
@@ -127,6 +143,7 @@ def topics():
     return json.dumps(js)
 
 @route('/docs.json')
+@_set_acao_headers
 def docs():
     response.content_type = 'application/json; charset=UTF8'
     response.set_header('Expires', _cache_date())
@@ -142,6 +159,7 @@ def docs():
     return json.dumps(js)
 
 @route('/<filename:path>')
+@_set_acao_headers
 def send_static(filename):
     return static_file(filename, root='www/')
 
