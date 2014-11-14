@@ -12,18 +12,24 @@ Display options include topic normalization, alphabetical sort and topic sort. B
     ```
     git clone git@github.com:inpho/topic-explorer.git
     ```
-2.  Setup dependencies and the Associated Press sample corpus released with [Blei (2003)](www.cs.princeton.edu/~blei/lda-c/):
+2.  Setup dependencies.
 
     ```
     python setup.py develop --user
     ```
+3.  Setup the Associated Press sample corpus released with [Blei (2003)](www.cs.princeton.edu/~blei/lda-c/):
+
+    ```
+    cd demo-data
+    sh get-data.sh
+
 4.  Start the Topic Explorer for the given number of topics:
 
     ```
     cd ..
     python server.py -k 20 config/ap.ini
     ```
-5.  Access at [http://localhost:16020](http://localhost:16020).
+5.  Access at [http://localhost:18020](http://localhost:18020).
 
 ## Publications
  -  Jaimie Murdock and Colin Allen. (in review) Visualization Techniques for Topic Model Checking. [demo track] in Proceedings of the 29th AAAI Conference (AAAI-15). Austin, Texas, USA, January 25-29, 2015.
