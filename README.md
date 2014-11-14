@@ -22,6 +22,7 @@ Display options include topic normalization, alphabetical sort and topic sort. B
     ```
     cd demo-data
     sh get-data.sh
+    ```
 
 4.  Start the Topic Explorer for the given number of topics:
 
@@ -30,6 +31,7 @@ Display options include topic normalization, alphabetical sort and topic sort. B
     python server.py -k 20 config/ap.ini
     ```
 5.  Access at [http://localhost:18020](http://localhost:18020).
+
 
 ## Publications
  -  Jaimie Murdock and Colin Allen. (in review) Visualization Techniques for Topic Model Checking. [demo track] in Proceedings of the 29th AAAI Conference (AAAI-15). Austin, Texas, USA, January 25-29, 2015.
