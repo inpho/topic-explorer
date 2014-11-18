@@ -121,7 +121,7 @@ def topics():
     response.set_header('Expires', _cache_date())
 
     # populate entropy values
-    data = lda_v.topic_entropies()
+    data = lda_v.topic_oscillations()
 
     colors = [itertools.cycle(cs) for cs in zip(*colorlib.brew(3,n_cls=4))]
     factor = len(data) / len(colors)
