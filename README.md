@@ -1,4 +1,6 @@
 # InPhO Topic Explorer
+[![Build Status](https://travis-ci.org/inpho/topic-explorer.svg?branch=master)](https://travis-ci.org/inpho/topic-explorer)
+
 This interactive visualization displays information from the LDA topic models generated using the [InPhO VSM module](http://github.com/inpho/vsm/). Live demos trained on the Stanford
 Encyclopedia of Philosophy, a selection of books from the HathiTrust Digital Library, and the original LDA training set of Associated Press articles are available at [http://inphodata.cogs.indiana.edu].
 
@@ -34,4 +36,4 @@ Display options include topic normalization, alphabetical sort and topic sort. B
 
 
 ## Publications
- -  Jaimie Murdock and Colin Allen. (in review) Visualization Techniques for Topic Model Checking. [demo track] in Proceedings of the 29th AAAI Conference (AAAI-15). Austin, Texas, USA, January 25-29, 2015.
+ -  Jaimie Murdock and Colin Allen. (2015) *Visualization Techniques for Topic Model Checking* in Proceedings of the 29th AAAI Conference (AAAI-15). Austin, Texas, USA, January 25-29, 2015.
