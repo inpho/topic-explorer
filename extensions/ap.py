@@ -27,8 +27,11 @@ def label(doc):
     else:
         return doc
 
-from bottle import route
-@route('/fulltext/<doc_id>.txt')
+from bottle import error, response, route
+@route('/fulltext/<doc_id>')
 def get_doc(doc_id):
     response.content_type = 'text/plain'
-    return plain_corpus[doc_id]
+    try:
+        return plain_corpus[doc_id]
+    except KeyError:
+        return error(404)

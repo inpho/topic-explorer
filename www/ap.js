@@ -4,10 +4,9 @@ var ap = ap || {};
  * Create a popover for HTRC content
  * */
 ap.popover = function(elt) {
-  console.log("click the popover");
   if (!($(elt).data('popover'))) {
     var docid = $(elt).data('doc-id');
-    $.get('/docs/'+docid+'.txt', function (data) {
+    $.get('/fulltext/'+docid, function (data) {
       $(elt).popover({
         html: true,
         content : data,

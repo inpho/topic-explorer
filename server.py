@@ -13,6 +13,7 @@ from vsm.viewer.ldagibbsviewer import LDAGibbsViewer as LDAViewer
 from vsm.viewer.wrappers import doc_label_name
 
 from bottle import request, response, route, run, static_file
+from bottle import default_app
 import pystache
 
 import colorlib
@@ -158,11 +159,6 @@ def docs():
 
     return json.dumps(js)
 
-@route('/<filename:path>')
-@_set_acao_headers
-def send_static(filename):
-    return static_file(filename, root='www/')
-
 if __name__ == '__main__':
     from argparse import ArgumentParser
     from ConfigParser import ConfigParser
@@ -263,7 +259,13 @@ if __name__ == '__main__':
              'doc_url_format' : doc_url_format})
 
 
+    @route('/<filename:path>')
+    @_set_acao_headers
+    def send_static(filename):
+        return static_file(filename, root='www/')
 
+    app = default_app()
+    print app.routes
     # start server
     run(host='0.0.0.0', port=port)
 
