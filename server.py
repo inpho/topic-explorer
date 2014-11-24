@@ -219,11 +219,11 @@ if __name__ == '__main__':
     load_model(args.k)
 
     # label function imports
-    label_module = config.get('main', 'label_module')
-    if label_module:
+    try:
+        label_module = config.get('main', 'label_module')
         label_module = import_module(label_module)
         label = label_module.label
-    else:
+    except:
         label = lambda x: x
 
     config_icons = config.get('www','icons').split(",")
