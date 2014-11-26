@@ -14,7 +14,6 @@ from vsm.viewer.wrappers import doc_label_name
 
 
 from bottle import request, response, route, run, static_file
-from bottle import default_app, install
 from bottle_ssl import SSLWSGIRefServer
 
 import pystache
