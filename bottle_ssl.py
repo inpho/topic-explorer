@@ -23,11 +23,16 @@ class SSLWSGIRefServer(ServerAdapter):
                 def log_request(*args, **kw): pass
             self.options['handler_class'] = QuietHandler
         
-        certfile = self.options.pop('certfile', 'server.pem')
+        # ssl options
+        certfile = self.options.pop('certfile', None)
+        keyfile = self.options.pop('keyfile', None)
+        ca_certs = self.options.pop('ca_certs', None)
 
         srv = make_server(self.host, self.port, handler, **self.options)
         srv.socket = ssl.wrap_socket (
             srv.socket,
             certfile=certfile,  # path to certificate
+            keyfile=keyfile,
+            ca_certs=ca_certs,
             server_side=True)
         srv.serve_forever()

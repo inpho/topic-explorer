@@ -181,15 +181,26 @@ if __name__ == '__main__':
         help="Number of Topics")
     parser.add_argument('-p', dest='port', type=int, 
         help="Port Number", default=None)
-    parser.add_argument('--ssl', dest='certfile', nargs='?',
+    parser.add_argument('--ssl', action='store_true',
+        help="Use SSL (must specify certfile, keyfile, and ca_certs in config)")
+    parser.add_argument('--ssl-certfile', dest='certfile', nargs="?",
         const='server.pem', default=None,
         type=lambda x: is_valid_filepath(parser, x),
-        help="Use SSL (optional certificate file)")
+        help="SSL certificate file")
+    parser.add_argument('--ssl-keyfile', dest='keyfile', default=None,
+        type=lambda x: is_valid_filepath(parser, x),
+        help="SSL certificate key file")
+    parser.add_argument('--ssl-ca', dest='ca_certs', default=None,
+        type=lambda x: is_valid_filepath(parser, x),
+        help="SSL certificate authority file")
     args = parser.parse_args()
 
     # load in the configuration file
     config = ConfigParser({
         'certfile' : None,
+        'keyfile' : None,
+        'ca_certs' : None,
+        'ssl' : False,
         'port' : '8{0:03d}',
         'topic_range' : '{0},{1},1'.format(args.k, args.k+1),
         'icons': 'link',
@@ -271,10 +282,13 @@ if __name__ == '__main__':
     def send_static(filename):
         return static_file(filename, root='www/')
 
-    if args.certfile or config.get('main', 'certfile'):
-        certfile = args.certfile or config.get('main', 'certfile')
+    if args.ssl or config.get('main', 'ssl'):
+        certfile = args.certfile or config.get('ssl', 'certfile')
+        keyfile = args.keyfile or config.get('ssl', 'keyfile')
+        ca_certs = args.ca_certs or config.get('ssl', 'ca_certs')
+
         run(host='0.0.0.0', port=port, server=SSLWSGIRefServer,
-            certfile=certfile)
+            certfile=certfile, keyfile=keyfile, ca_certs=ca_certs)
     else:
         run(host='0.0.0.0', port=port)
 
