@@ -181,13 +181,15 @@ if __name__ == '__main__':
         help="Number of Topics")
     parser.add_argument('-p', dest='port', type=int, 
         help="Port Number", default=None)
-    parser.add_argument('--ssl', action='store_true',
-        help="Use SSL Port")
+    parser.add_argument('--ssl', dest='certfile', nargs='?',
+        const='server.pem', default=None,
+        type=lambda x: is_valid_filepath(parser, x),
+        help="Use SSL (optional certificate file)")
     args = parser.parse_args()
 
     # load in the configuration file
     config = ConfigParser({
-        'ssl' : False,
+        'certfile' : None,
         'port' : '8{0:03d}',
         'topic_range' : '{0},{1},1'.format(args.k, args.k+1),
         'icons': 'link',
@@ -269,8 +271,10 @@ if __name__ == '__main__':
     def send_static(filename):
         return static_file(filename, root='www/')
 
-    if args.ssl or config.get('main', 'ssl'):
-        run(host='0.0.0.0', port=port, server=SSLWSGIRefServer)
+    if args.certfile or config.get('main', 'certfile'):
+        certfile = args.certfile or config.get('main', 'certfile')
+        run(host='0.0.0.0', port=port, server=SSLWSGIRefServer,
+            certfile=certfile)
     else:
         run(host='0.0.0.0', port=port)
 
