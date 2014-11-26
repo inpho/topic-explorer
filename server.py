@@ -12,8 +12,10 @@ from vsm.model.ldacgsmulti import LdaCgsMulti as LCM
 from vsm.viewer.ldagibbsviewer import LDAGibbsViewer as LDAViewer
 from vsm.viewer.wrappers import doc_label_name
 
+
 from bottle import request, response, route, run, static_file
-from bottle import default_app
+from bottle_ssl import SSLWSGIRefServer
+
 import pystache
 
 import colorlib
@@ -267,5 +269,5 @@ if __name__ == '__main__':
     app = default_app()
     print app.routes
     # start server
-    run(host='0.0.0.0', port=port)
+    run(host='0.0.0.0', port=port, server=SSLWSGIRefServer)
 
