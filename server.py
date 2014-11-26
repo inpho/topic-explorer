@@ -14,6 +14,7 @@ from vsm.viewer.wrappers import doc_label_name
 
 
 from bottle import request, response, route, run, static_file
+from bottle import default_app, install
 from bottle_ssl import SSLWSGIRefServer
 
 import pystache
@@ -181,10 +182,13 @@ if __name__ == '__main__':
         help="Number of Topics")
     parser.add_argument('-p', dest='port', type=int, 
         help="Port Number", default=None)
+    parser.add_argument('--ssl', action='store_true',
+        help="Use SSL Port")
     args = parser.parse_args()
 
     # load in the configuration file
     config = ConfigParser({
+        'ssl' : False,
         'port' : '8{0:03d}',
         'topic_range' : '{0},{1},1'.format(args.k, args.k+1),
         'icons': 'link',
@@ -266,8 +270,8 @@ if __name__ == '__main__':
     def send_static(filename):
         return static_file(filename, root='www/')
 
-    app = default_app()
-    print app.routes
-    # start server
-    run(host='0.0.0.0', port=port, server=SSLWSGIRefServer)
+    if args.ssl or config.get('main', 'ssl'):
+        run(host='0.0.0.0', port=port, server=SSLWSGIRefServer)
+    else:
+        run(host='0.0.0.0', port=port)
 
