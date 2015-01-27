@@ -1,9 +1,9 @@
-var ap = ap || {};
+var fulltext = fulltext || {};
 
 /* htrc.popover
  * Create a popover for HTRC content
  * */
-ap.popover = function(elt) {
+fulltext.popover = function(elt) {
   if (!($(elt).data('popover'))) {
     var docid = $(elt).data('doc-id');
     $.get('/fulltext/'+docid, function (data) {
