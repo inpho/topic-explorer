@@ -80,6 +80,7 @@ if __name__ == '__main__':
     if args.k is None:
         args.k = range(120,0,-20)
     
+
     corpus_filename = build_corpus(args.corpus_path, args.model_path, 
                                    stop_freq=5)
     model_pattern = build_models(corpus_filename, args.model_path, args.k,
@@ -92,7 +93,8 @@ if __name__ == '__main__':
     config.set("main", "corpus_file", corpus_filename)
     config.set("main", "context_type", "document")
     config.set("main", "model_pattern", model_pattern)
-    config.set("main", "port", "16%03d")
+    config.set("main", "port", "16{0:03d}")
+    args.k.sort()
     config.set("main", "topics", args.k)
     config.add_section("www")
     config.set("www", "corpus_name", "Deafult")

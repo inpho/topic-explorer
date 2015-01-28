@@ -206,7 +206,9 @@ if __name__ == '__main__':
         'icons': 'link',
         'corpus_link' : None,
         'doc_title_format' : None,
-        'doc_url_format' : None})
+        'doc_url_format' : None,
+        'topic_range': None,
+        'topics': None})
     config.read(args.config)
 
     # path variables
@@ -218,8 +220,10 @@ if __name__ == '__main__':
     # automatic port assignment
     if args.port:
         port = args.port
+        print port, "auto port"
     else:
         port = config.get('main','port').format(args.k)
+        print port
 
     # LDA objects
     lda_c = Corpus.load(corpus_file)
@@ -255,10 +259,14 @@ if __name__ == '__main__':
     corpus_link = config.get('www','corpus_link')
     doc_title_format = config.get('www', 'doc_title_format')
     doc_url_format = config.get('www', 'doc_url_format')
-    topic_range = map(int, config.get('main', 'topic_range').split(','))
-    topic_range = range(*topic_range)
+
+    if config.get('main', 'topic_range'):
+        topic_range = map(int, config.get('main', 'topic_range').split(','))
+        topic_range = range(*topic_range)
+    if config.get('main', 'topics'):
+        topic_range = eval(config.get('main', 'topics'))
     topic_range = [{'k' : k, 'port' : config.get('main','port').format(k)} 
-        for k in topic_range] 
+            for k in topic_range] 
 
     renderer = pystache.Renderer(escape=lambda u: u)
 
