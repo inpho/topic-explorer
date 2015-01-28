@@ -1,5 +1,6 @@
 *.pyc
 sandbox
+config.*
 
 start-servers.sh
 logs/*
