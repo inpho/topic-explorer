@@ -53,4 +53,5 @@ if __name__ == '__main__':
             os.killpg(p.pid, signal.SIGINT)
         sys.exit()
     signal.signal(signal.SIGINT, signal_handler)
+    print "Press Ctrl+C to shutdown the Topic Explorer"
     signal.pause()

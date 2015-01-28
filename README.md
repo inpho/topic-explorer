@@ -8,7 +8,7 @@ The color bands within each article's row show the topic distribution within tha
 
 Display options include topic normalization, alphabetical sort and topic sort. By normalizing topics, the combined width of each bar expands so that topic weights per document can be compared. By clicking a topic, the documents will reorder acoording to that topic's weight and topic bars will reorder according to the topic weights in the highest weighted document. When a topic is selected, clicking "Top Documents for [Topic]" will take you to a new page showing the most similar documents to that topic's word distribution. The original sort order can be restored with the "Reset Topic Sort" button.
 
-## Installation
+## Installation and Testing
 1.  Clone the repository:
     
     ```
@@ -34,6 +34,22 @@ Display options include topic normalization, alphabetical sort and topic sort. B
     ```
 5.  Access at [http://localhost:18020](http://localhost:18020).
 
+## Usage
+1.  Train LDA models on a file, folder of text files, or folder of folders of text files:
+
+    ```
+    python train.py PATH
+    ```
+
+2.  Launch the topic explorer using the auto-generated config file:
+
+    ```
+    python launch.py config.ini
+    ```
+
+3.  Press Ctrl+C to quit all servers.
+
+See the sample configuration files in the `config` directory for examples of how to extend the topic explorer.
 
 ## Publications
  -  Jaimie Murdock and Colin Allen. (2015) *Visualization Techniques for Topic Model Checking* in Proceedings of the 29th AAAI Conference (AAAI-15). Austin, Texas, USA, January 25-29, 2015.
