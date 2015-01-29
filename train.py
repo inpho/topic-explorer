@@ -1,5 +1,6 @@
 """
-Simple Full-text Topic Explorer
+Program to build a Corpus object, train LDA models and finally build a config
+file for the topic explorer.
 """
 
 import os
@@ -21,7 +22,10 @@ def build_corpus(corpus_path, model_path, nltk_stop=True, stop_freq=1,
         count_dirs = filter(os.path.isdir, contents)
         count_files = filter(os.path.isfile, contents)
 
-        if count_dirs > count_files:
+        if not contents:
+            raise Exception("Empty directory, halting: " +
+                                os.path.abspath(corpus_path))
+        elif count_dirs > count_files:
             print "Building collection corpus, each folder is a document"
             c = coll_corpus(corpus_path, nltk_stop=nltk_stop,
                             stop_freq=stop_freq, context_type=context_type)
