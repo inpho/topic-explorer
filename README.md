@@ -14,9 +14,10 @@ Display options include topic normalization, alphabetical sort and topic sort. B
     ```
     git clone git@github.com:inpho/topic-explorer.git
     ```
-2.  Setup dependencies.
+2.  Setup the topic-explorer package and install dependencies.
 
     ```
+    cd topic-explorer
     python setup.py develop --user
     ```
 3.  Setup the Associated Press sample corpus released with [Blei (2003)](www.cs.princeton.edu/~blei/lda-c/):
