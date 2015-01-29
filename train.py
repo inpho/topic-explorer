@@ -53,7 +53,7 @@ def build_models(corpus_filename, model_path, krange,
     basefilename = os.path.join(model_path, basefilename)
 
     for k in krange:
-        print "okay", k, krange
+        print "Training model for k={0} Topics".format(k)
         m = LDA(corpus, corpus_type, K=k)
         m.train(n_iterations=n_iterations)
         m.save(basefilename.format(k))
@@ -66,6 +66,7 @@ if __name__ == '__main__':
     parser.add_argument("corpus_path", help="Path to Corpus")
     parser.add_argument("--model-path", dest="model_path",
         help="Model Path [Default: [corpus_path]/../models]")
+    parser.add_argument("--htrc", action="store_true")
     parser.add_argument("-k", nargs='+',
         help="K values to train upon", type=int)
     parser.add_argument('--iter', type=int, default=200,
@@ -99,6 +100,13 @@ if __name__ == '__main__':
     config.add_section("www")
     config.set("www", "corpus_name", "Deafult")
     config.set("www", "icons", "link")
+
+    if args.htrc:
+        config.set("main","label_module","extensions.htrc")
+        config.set("www","corpus_name","HTRC Data Capsule")
+        config.set("www","doc_title_format",'<a href="{1}">{0}</a>')
+        config.set("www","doc_url_format", 'http://hdl.handle.net/2027/{0}')
+        config.set("www", "icons", "htrc,link")
 
     configfile = "config.ini"
     config_i = 0
