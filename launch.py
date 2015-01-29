@@ -15,6 +15,7 @@ if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('config', type=lambda x: is_valid_filepath(parser, x),
         help="Configuration file path")
+    parser.add_argument('--no-browser', dest='browser', action='store_false')
     args = parser.parse_args()
 
     # load in the configuration file
@@ -44,14 +45,32 @@ if __name__ == '__main__':
 
     print "pid","port"
     for proc,k in zip(procs, topic_range):
-        print proc.pid, config.get("main","port").format(k)
+        port = config.get("main","port").format(k)
+        print proc.pid, "http://localhost:{0}/".format(port)
 
     import signal,sys
     def signal_handler(sig,frame):
+        print "\n"
         for p in procs:
             print "killing", p.pid
             os.killpg(p.pid, signal.SIGINT)
         sys.exit()
     signal.signal(signal.SIGINT, signal_handler)
-    print "Press Ctrl+C to shutdown the Topic Explorer"
+
+    import urllib, webbrowser
+    import time
+    port = config.get("main","port").format(topic_range[0])
+    url = "http://localhost:{0}/".format(port)
+
+    while True:
+        try:
+            urllib.urlopen(url)
+            print "Server successfully started"
+            break
+        except:
+            time.sleep(1)
+    if args.browser:
+        webbrowser.open(url)
+
+    print "Press Ctrl+C to shutdown the Topic Explorer server"
     signal.pause()
