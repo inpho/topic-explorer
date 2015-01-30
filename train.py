@@ -15,8 +15,8 @@ def build_corpus(corpus_path, model_path, nltk_stop=True, stop_freq=1,
     context_type='document'):
     if os.path.isfile(corpus_path):
         print "Building toy corpus, each line is a document"
-        c = toy_corpus(corpus_path, nltk_stop=nltk_stop, stop_freq=stop_freq,
-                       context_type=context_type)
+        c = toy_corpus(corpus_path, is_filename=True, nltk_stop=nltk_stop, 
+                       stop_freq=stop_freq, context_type=context_type)
     elif os.path.isdir(corpus_path):
         contents = os.listdir(corpus_path)
         count_dirs = filter(os.path.isdir, contents)
@@ -104,6 +104,12 @@ if __name__ == '__main__':
     config.add_section("www")
     config.set("www", "corpus_name", "Deafult")
     config.set("www", "icons", "link")
+    config.add_section("logging")
+    corpus_name = os.path.basename(args.corpus_path)
+    if not corpus_name:
+        corpus_name = os.path.basename(os.path.dirname(args.corpus_path))
+    config.set("logging","path","logs/%s/{0}.log" % corpus_name)
+
 
     if args.htrc:
         config.set("main","label_module","extensions.htrc")
