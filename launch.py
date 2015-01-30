@@ -39,9 +39,14 @@ if __name__ == '__main__':
     if config.get('main', 'topics'):
         topic_range = eval(config.get('main', 'topics'))
 
+    # Cross-platform compatability
+    try:
+        grp_fn = os.setsid
+    except AttributeError:
+        grp_fn = None
     procs = [subprocess.Popen("python server.py -k %d %s" % (k, args.config),
         shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-        preexec_fn=os.setsid) for k in topic_range]
+        preexec_fn=grp_fn) for k in topic_range]
 
     print "pid","port"
     for proc,k in zip(procs, topic_range):
@@ -53,8 +58,14 @@ if __name__ == '__main__':
         print "\n"
         for p in procs:
             print "killing", p.pid
-            os.killpg(p.pid, signal.SIGINT)
+            # Cross-Platform Compatability
+            try:
+                os.killpg(p.pid, signal.SIGINT)
+            except AttributeError:
+                subprocess.call(['taskkill', '/F', '/T', '/PID', str(p.pid)])    
+
         sys.exit()
+
     signal.signal(signal.SIGINT, signal_handler)
 
     import urllib, webbrowser
@@ -73,4 +84,10 @@ if __name__ == '__main__':
         webbrowser.open(url)
 
     print "Press Ctrl+C to shutdown the Topic Explorer server"
-    signal.pause()
+    # Cross-platform Compatability
+    try:
+        signal.pause()
+    except AttributeError:
+        # Windows hack
+        while True:
+            time.sleep(1)
