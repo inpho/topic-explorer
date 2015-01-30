@@ -75,19 +75,20 @@ if __name__ == '__main__':
 
     # CLEAN EXIT AND SHUTDOWN OF SERVERS
     import signal,sys
-    def signal_handler(sig,frame):
+    def signal_handler(signal,frame):
         print "\n"
         for p in procs:
             print "killing", p.pid
             # Cross-Platform Compatability
             try:
-                os.killpg(p.pid, signal.SIGINT)
+                os.killpg(p.pid, signal)
             except AttributeError:
                 subprocess.call(['taskkill', '/F', '/T', '/PID', str(p.pid)])    
 
         sys.exit()
 
     signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
 
     import urllib, webbrowser
     import time

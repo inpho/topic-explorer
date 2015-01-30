@@ -86,6 +86,10 @@ if __name__ == '__main__':
         args.k = range(120,0,-20)
     
 
+    corpus_name = os.path.basename(args.corpus_path)
+    if not corpus_name:
+        corpus_name = os.path.basename(os.path.dirname(args.corpus_path))
+
     corpus_filename = build_corpus(args.corpus_path, args.model_path, 
                                    stop_freq=5)
     model_pattern = build_models(corpus_filename, args.model_path, args.k,
@@ -105,9 +109,6 @@ if __name__ == '__main__':
     config.set("www", "corpus_name", "Deafult")
     config.set("www", "icons", "link")
     config.add_section("logging")
-    corpus_name = os.path.basename(args.corpus_path)
-    if not corpus_name:
-        corpus_name = os.path.basename(os.path.dirname(args.corpus_path))
     config.set("logging","path","logs/%s/{0}.log" % corpus_name)
 
 
@@ -118,10 +119,10 @@ if __name__ == '__main__':
         config.set("www","doc_url_format", 'http://hdl.handle.net/2027/{0}')
         config.set("www", "icons", "htrc,link")
 
-    configfile = "config.ini"
+    configfile = corpus_name + ".ini"
     config_i = 0
     while os.path.exists(configfile):
-        configfile = "config.%d.ini" % config_i
+        configfile = corpus_name + ".%d.ini" % config_i
         config_i += 1
 
     print "Writing configuration file", configfile
