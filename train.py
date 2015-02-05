@@ -49,13 +49,17 @@ def build_corpus(corpus_path, model_path, nltk_stop=True, stop_freq=1,
     c.save(filename)
     return filename 
 
-def build_models(corpus_filename, model_path, krange, 
-                 corpus_type='document', n_iterations=200):
+def build_models(corpus_filename, model_path, krange, n_iterations=200):
 
     corpus = Corpus.load(corpus_filename)
     basefilename = os.path.basename(corpus_filename).replace('.npz','')
     basefilename += "-LDA-K%s-%s-%d.npz" % ('{0}', corpus_type, n_iterations)
     basefilename = os.path.join(model_path, basefilename)
+
+    if 'book' in corpus.context_types:
+        corpus_type = 'book'
+    else:
+        corpus_type = 'document'
 
     for k in krange:
         print "Training model for k={0} Topics".format(k)
@@ -64,6 +68,7 @@ def build_models(corpus_filename, model_path, krange,
         m.save(basefilename.format(k))
 
     return basefilename
+
 if __name__ == '__main__':
     from argparse import ArgumentParser
     from ConfigParser import RawConfigParser as ConfigParser
