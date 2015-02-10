@@ -96,18 +96,24 @@ if __name__ == '__main__':
     corpus_name = os.path.basename(args.corpus_path)
     if not corpus_name:
         corpus_name = os.path.basename(os.path.dirname(args.corpus_path))
+    
 
     corpus_filename = build_corpus(args.corpus_path, args.model_path, 
                                    stop_freq=5)
     model_pattern = build_models(corpus_filename, args.model_path, args.k,
                  n_iterations=args.iter)
 
+    corpus = Corpus.load(corpus_filename)
+    if 'book' in corpus.context_types:
+        corpus_type = 'book'
+    else:
+        corpus_type = 'document'
 
     config = ConfigParser()
     config.add_section("main")
     config.set("main", "path", args.model_path)
     config.set("main", "corpus_file", corpus_filename)
-    config.set("main", "context_type", "document")
+    config.set("main", "context_type", corpus_type)
     config.set("main", "model_pattern", model_pattern)
     config.set("main", "port", "16{0:03d}")
     args.k.sort()
