@@ -138,6 +138,9 @@ if __name__ == '__main__':
         configfile = corpus_name + ".%d.ini" % config_i
         config_i += 1
 
-    print "Writing configuration file", configfile
+    print "\nWriting configuration file", configfile
     with open(configfile, "wb") as configfh:
         config.write(configfh)
+
+    print "Launch the topic explorer with:"
+    print "python launch.py", configfile
