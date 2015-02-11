@@ -29,7 +29,7 @@ def build_corpus(corpus_path, model_path, nltk_stop=True, stop_freq=1,
             print "Building dir corpus, each file is a document"
             c = dir_corpus(corpus_path, nltk_stop=nltk_stop,
                            stop_freq=stop_freq, chunk_name=context_type)
-        else count_dirs > 0:
+        elif count_dirs > 0:
             print "Building collection corpus, each folder is a document"
             context_type='book'
             c = coll_corpus(corpus_path, nltk_stop=nltk_stop,
