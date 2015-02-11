@@ -25,15 +25,15 @@ def build_corpus(corpus_path, model_path, nltk_stop=True, stop_freq=1,
         if not contents:
             raise Exception("Empty directory, halting: " +
                                 os.path.abspath(corpus_path))
-        elif count_dirs > 0:
+        elif count_files > 0:
+            print "Building dir corpus, each file is a document"
+            c = dir_corpus(corpus_path, nltk_stop=nltk_stop,
+                           stop_freq=stop_freq, chunk_name=context_type)
+        else count_dirs > 0:
             print "Building collection corpus, each folder is a document"
             context_type='book'
             c = coll_corpus(corpus_path, nltk_stop=nltk_stop,
                             stop_freq=stop_freq)
-        else:
-            print "Building dir corpus, each file is a document"
-            c = dir_corpus(corpus_path, nltk_stop=nltk_stop,
-                           stop_freq=stop_freq, chunk_name=context_type)
 
     corpus_name = os.path.basename(corpus_path)
     if not corpus_name:
