@@ -111,7 +111,7 @@ if __name__ == '__main__':
                 else:
                     print "Enter a valid integer!"
 
-        print "\nNumber of training iterations can be specified with argument '--iter N':"
+        print "\nTIP: number of training iterations can be specified with argument '--iter N':"
         print "python train.py --iter %d %s\n" % (args.iter, args.corpus_path)
 
 

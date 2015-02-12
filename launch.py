@@ -104,6 +104,8 @@ if __name__ == '__main__':
             time.sleep(1)
     if args.browser:
         webbrowser.open(url)
+        print "TIP: Browser launch can be disabled with the '--no-browser' argument:"
+        print "python launch.py --no-browser", args.config, "\n"
 
     print "Press Ctrl+C to shutdown the Topic Explorer server"
     # Cross-platform Compatability
