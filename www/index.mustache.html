@@ -183,6 +183,7 @@ h1 a, h1 a:hover {
   <div class="input-append">
     <input type="hidden" name="doc" id="hidden_id">
     <input type="text" id="doc" class="typeahead input-xlarge" placeholder="Document" autocomplete="off">
+    <button disabled class="btn" type="button" id="autocompleteDoc" data-toggle="button"><span class="icon-file"></span></button>
     <button class="btn" type="button" id="randomDoc"><span class="icon-random"></span></button>
   </div>
   <div class="btn-group">
@@ -247,19 +248,43 @@ $.getJSON('/docs.json', function(data) {
       this.$menu.find('.active').removeClass('active');
     },
     updater: function(item) {
-      if (!item) return this.$element.val();
-      else $('#hidden_id').val(mapped[item].id);
-      return item;
+      if (!item) { 
+        if ($('#autocompleteDoc').hasClass('active'))
+          $('#autocompleteDoc').button('toggle');
+        $('#autocompleteDoc').attr('disabled','disabled');
+
+        $('#hidden_id').val('');
+        return this.$element.val();
+      } else {
+        if (!$('#autocompleteDoc').hasClass('active'))
+          $('#autocompleteDoc').button('toggle');
+        $('#autocompleteDoc').removeAttr('disabled');
+
+        $('#hidden_id').val(mapped[item].id);
+        return item;
+      }
     },
     sorter: function(items) {
+      if (items.length > 0) 
+        $('#autocompleteDoc').removeAttr('disabled');
+      else if (items.length == 0) {
+        if ($('#autocompleteDoc').hasClass('active'))
+          $('#autocompleteDoc').button('toggle');
+        $('#autocompleteDoc').attr('disabled','disabled');
+      }
       var query = this.query;
       items = items.sort();
       var start = items.filter(function(item) { return item.lastIndexOf(query, 0) == 0;});
       var elsewhere = items.filter(function(item) { return item.lastIndexOf(query, 0) != 0;});
       return start.concat(elsewhere);
       }});
+
   $('#randomDoc').click(function() { 
       var rand = data[Math.floor(Math.random() * data.length)];
+      if (!$('#autocompleteDoc').hasClass('active'))
+        $('#autocompleteDoc').button('toggle');
+      $('#autocompleteDoc').removeAttr('disabled');
+
       $('#hidden_id').val(rand.id);
       $('#doc').val(rand.label);
     });
@@ -271,12 +296,17 @@ $.getJSON('/docs.json', function(data) {
       title = title[0].label;
       $('.title').html('{{doc_title_format}}'.format(title,'{{doc_url_format}}'.format(docid)));
       $('#doc').val(title);
+      $('#hidden_id').val(docid);
+      $('#autocompleteDoc').removeAttr('disabled').button('toggle');
       $('.twitter-share-button').attr('data-text', "What's similar to " + title +"? Discover with the #InPhO Topic Explorer!");
     } else {
       $('.title').html('{{doc_title_format}}'.format(docid,'{{doc_url_format}}'.format(docid)));
       $('#doc').val(docid);
     }
   }
+
+  $('#autocompleteDoc').click(function() {
+      $('.typeahead').typeahead('lookup'); console.log("trigger") });
 });
 </script>
 
