@@ -173,5 +173,5 @@ if __name__ == '__main__':
     with open(configfile, "wb") as configfh:
         config.write(configfh)
 
-    print "\nLaunch the topic explorer with:"
+    print "\nTIP: launch the topic explorer with:"
     print "python launch.py", configfile
