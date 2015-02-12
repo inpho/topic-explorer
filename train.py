@@ -5,6 +5,7 @@ file for the topic explorer.
 
 import os
 import os.path
+import sys
 
 from vsm.corpus import Corpus
 from vsm.corpus.util.corpusbuilders import coll_corpus, dir_corpus, toy_corpus
@@ -14,7 +15,7 @@ from vsm.viewer.ldagibbsviewer import LDAGibbsViewer
 def build_corpus(corpus_path, model_path, nltk_stop=True, stop_freq=1,
     context_type='document'):
     if os.path.isfile(corpus_path):
-        print "Building toy corpus, each line is a document"
+        print "Constructing toy corpus, each line is a document"
         c = toy_corpus(corpus_path, is_filename=True, nltk_stop=nltk_stop, 
                        stop_freq=stop_freq, context_type=context_type)
     elif os.path.isdir(corpus_path):
@@ -22,18 +23,19 @@ def build_corpus(corpus_path, model_path, nltk_stop=True, stop_freq=1,
         count_dirs = filter(os.path.isdir, contents)
         count_files = filter(os.path.isfile, contents)
 
-        if not contents:
-            raise Exception("Empty directory, halting: " +
-                                os.path.abspath(corpus_path))
-        elif count_files > 0:
-            print "Building dir corpus, each file is a document"
+        if count_files > 0:
+            print "Constructing directory corpus, each file is a document"
             c = dir_corpus(corpus_path, nltk_stop=nltk_stop,
                            stop_freq=stop_freq, chunk_name=context_type)
         elif count_dirs > 0:
-            print "Building collection corpus, each folder is a document"
+            print "Constructing collection corpus, each folder is a document"
             context_type='book'
             c = coll_corpus(corpus_path, nltk_stop=nltk_stop,
                             stop_freq=stop_freq)
+        else:
+            raise IOError("Invalid Path: empty directory")
+    else:
+        raise IOError("Invalid path")
 
     corpus_name = os.path.basename(corpus_path)
     if not corpus_name:
@@ -80,8 +82,8 @@ if __name__ == '__main__':
     parser.add_argument("--htrc", action="store_true")
     parser.add_argument("-k", nargs='+',
         help="K values to train upon", type=int)
-    parser.add_argument('--iter', type=int, default=200,
-        help="Number of training iterations [Default: 200]")
+    parser.add_argument('--iter', type=int,
+        help="Number of training iterations")
     args = parser.parse_args()
 
     if args.model_path is None:
@@ -92,14 +94,37 @@ if __name__ == '__main__':
     if args.k is None:
         args.k = range(120,0,-20)
     
+    if args.iter is None:
+        while args.iter is None:
+            iters = raw_input("Number of Training Iterations [Default 200]: ")
+            try:
+                args.iter = int(iters)
+            except ValueError:
+                if iters.strip() == '':
+                    args.iter = 200
+                else:
+                    print "Enter a valid integer!"
+
+        print "\nNumber of training iterations can be specified with argument '--iter N':"
+        print "python train.py --iter %d %s\n" % (args.iter, args.corpus_path)
+
 
     corpus_name = os.path.basename(args.corpus_path)
     if not corpus_name:
         corpus_name = os.path.basename(os.path.dirname(args.corpus_path))
     
 
-    corpus_filename = build_corpus(args.corpus_path, args.model_path, 
-                                   stop_freq=5)
+    try:
+        corpus_filename = build_corpus(args.corpus_path, args.model_path, 
+                                       stop_freq=5)
+    except IOError:
+        print "ERROR: invalid path, please specify either:"
+        print "  * a single plain-text file,"
+        print "  * a folder of plain-text files, or"
+        print "  * a folder of folders of plain-text files."
+        print "\nExiting..."
+        sys.exit(74)
+        
     model_pattern = build_models(corpus_filename, args.model_path, args.k,
                  n_iterations=args.iter)
 
@@ -142,5 +167,5 @@ if __name__ == '__main__':
     with open(configfile, "wb") as configfh:
         config.write(configfh)
 
-    print "Launch the topic explorer with:"
+    print "\nLaunch the topic explorer with:"
     print "python launch.py", configfile
