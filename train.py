@@ -13,25 +13,31 @@ from vsm.model.ldacgsmulti import LdaCgsMulti as LDA
 from vsm.viewer.ldagibbsviewer import LDAGibbsViewer
 
 def build_corpus(corpus_path, model_path, nltk_stop=True, stop_freq=1,
-    context_type='document'):
+    context_type='document', ignore=['.json','.log','.err','.pickle','.npz']):
     if os.path.isfile(corpus_path):
         print "Constructing toy corpus, each line is a document"
         c = toy_corpus(corpus_path, is_filename=True, nltk_stop=nltk_stop, 
                        stop_freq=stop_freq, context_type=context_type)
     elif os.path.isdir(corpus_path):
         contents = os.listdir(corpus_path)
-        count_dirs = filter(os.path.isdir, contents)
-        count_files = filter(os.path.isfile, contents)
+        contents = [os.path.join(corpus_path,obj) for obj in contents 
+            if not any([obj.endswith(suffix) for suffix in ignore])]
+        count_dirs = len(filter(os.path.isdir, contents))
+        count_files = len(filter(os.path.isfile, contents))
 
-        if count_files > 0:
+        print "Detected %d folders and %d files in %s" %\
+            (count_dirs, count_files, corpus_path)
+
+        if count_files > 0 and count_dirs == 0:
             print "Constructing directory corpus, each file is a document"
             c = dir_corpus(corpus_path, nltk_stop=nltk_stop,
-                           stop_freq=stop_freq, chunk_name=context_type)
-        elif count_dirs > 0:
+                           stop_freq=stop_freq, chunk_name=context_type,
+                           ignore=ignore)
+        elif count_dirs > 0 and count_files == 0:
             print "Constructing collection corpus, each folder is a document"
             context_type='book'
             c = coll_corpus(corpus_path, nltk_stop=nltk_stop,
-                            stop_freq=stop_freq)
+                            stop_freq=stop_freq, ignore=ignore)
         else:
             raise IOError("Invalid Path: empty directory")
     else:
