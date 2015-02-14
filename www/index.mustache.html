@@ -179,7 +179,7 @@ h1 a, h1 a:hover {
   <script>var mail = $('.iumail').text();
   $('.iumail').html('<a href="mailto:'+mail+'@indiana.edu">'+mail+'@indiana.edu</a>')</script>
   
-  <form action="/" method="GET" class="form-inline">
+  <form action="/" method="GET" class="form-inline" id="searchForm">
   <div class="input-append">
     <input type="hidden" name="doc" id="hidden_id">
     <input type="text" id="doc" class="typeahead input-xlarge" placeholder="Document" autocomplete="off">
@@ -208,6 +208,9 @@ h1 a, h1 a:hover {
   
 </div>
 <script>
+var q = inpho.util.getValueForURLParam('q') || null;
+if (q) q = q.replace(/\|/g, ' ');
+
 var docid = inpho.util.getValueForURLParam('doc') || null;
 if (docid) {
   docid = decodeURIComponent(docid);
@@ -222,7 +225,7 @@ if (roottopic) {
   $('.twitter-share-button').attr('data-text', "Check out topic "+ roottopic+" at the #InPhO Topic Explorer!");
 }
 
-if (docid || roottopic)
+if (docid || roottopic || q)
   $('.non-null').show()
 else
   $('.null').show();
@@ -230,7 +233,11 @@ else
 function visualize(port) {
   var url = "http://inphodata.cogs.indiana.edu:{0}/".format(port);
 
-  url += "?doc=" + encodeURIComponent($("#hidden_id").val() || docid) ;
+  if ($("#autocompleteDoc").hasClass('active') && !($("#autoCompleteDoc").attr("disabled") == 'disabled')) {
+    url += "?doc=" + encodeURIComponent($("#hidden_id").val() || docid) ;
+  } else {
+    url += "?q=" + encodeURIComponent($("#doc").val()).replace(/%20/g, '|');
+  }
   window.location = url;
 }
 
@@ -265,9 +272,13 @@ $.getJSON('/docs.json', function(data) {
       }
     },
     sorter: function(items) {
-      if (items.length > 0) 
+      if (items.length == 1) {
+        $('#hidden_id').val(mapped[items[0]].id);
+        console.log("setting hidden_id" + $('#hidden_id').val());
+        items.length = 0;
+      } else if(items.length > 0) { 
         $('#autocompleteDoc').removeAttr('disabled');
-      else if (items.length == 0) {
+      } else if (items.length == 0) {
         if ($('#autocompleteDoc').hasClass('active'))
           $('#autocompleteDoc').button('toggle');
         $('#autocompleteDoc').attr('disabled','disabled');
@@ -303,10 +314,21 @@ $.getJSON('/docs.json', function(data) {
       $('.title').html('{{doc_title_format}}'.format(docid,'{{doc_url_format}}'.format(docid)));
       $('#doc').val(docid);
     }
+  } else if (q) {
+    console.log("adding");
+    console.log(q);
+    title = data.filter(function(item) { return item.label.toLowerCase().indexOf(q.toLowerCase()) >= 0 });
+    if (title.length) {
+      $('#autocompleteDoc').removeAttr('disabled');
+    }
+    $('.title').html('the query "'+q+'"');
+    $('#doc').val(q);  
   }
 
   $('#autocompleteDoc').click(function() {
-      $('.typeahead').typeahead('lookup'); console.log("trigger") });
+      if (!$('#autocompleteDoc').hasClass('active'))
+        $('.typeahead').typeahead('lookup');
+      });
 });
 </script>
 
@@ -407,12 +429,16 @@ function calculateTopicMap(data, scale, sortFn){
 
 var url;
 if (roottopic) url = "/topics/" + roottopic + '.json';
-else url = "/docs_topics/" + docid + '.json'
+else if (q) url = "/word_docs.json?q=" + q.replace(/ /g, '|');
+else if (docid) url = "/docs_topics/" + docid + '.json';
+else url = null;
+
 
 var n = inpho.util.getValueForURLParam('n');
 if (n) url += "?n=" + n;
 
 var tops;
+if (url) 
 d3.json(url, function(error, data) {
   $('#status .bar').css('width', '50%').text('Loading topics...');
   if (error) {
@@ -420,6 +446,7 @@ d3.json(url, function(error, data) {
     var errormsg;
     
     if (roottopic) errormsg = "Invalid topic: " + roottopic + ".";
+    else if (q) errormsg = "Search terms not in model, try a different query."
     else errormsg = "Invalid document: " + docid + ".";
 
     $('#status .bar').addClass('bar-danger').text(errormsg);
@@ -435,6 +462,10 @@ d3.json(url, function(error, data) {
     }
       console.log(topics);
     $('#submit').text(d3.keys(topics).length + ' Topics');
+    $('#searchForm').submit(function(event) {
+      visualize(location.port); 
+      event.preventDefault();
+    });
     
   
     var legendCols = Math.max(Math.ceil(d3.keys(topics).length / Math.min(data.length, maxRows)), minCols);
@@ -465,7 +496,7 @@ d3.json(url, function(error, data) {
         .attr("class", "axis_label")
         .attr("dy", "-2em")
         .style("text-anchor", "start")
-        .text("Similarity to " + (roottopic ? ("Topic " + roottopic) : '"'+original_root['label']+'"'));
+        .text("Similarity to " + $('.title').first().text());
   
     svg.append("g")
         .attr("class", "y axis")
@@ -701,7 +732,7 @@ d3.json(url, function(error, data) {
 
     svg.selectAll(".x.axis text.axis_label").text(this.checked ? 
       "Proportion of document assigned to topic" : 
-      ("Similarity to " + (roottopic ? ("Topic " + roottopic) : '"'+original_root.label+'"')));
+      ("Similarity to " + $('.title').first().text()));
   }
 
   d3.select(".scale").on("change", scaleTopics);
