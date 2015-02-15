@@ -182,8 +182,8 @@ h1 a, h1 a:hover {
   <form action="/" method="GET" class="form-inline" id="searchForm">
   <div class="input-append">
     <input type="hidden" name="doc" id="hidden_id">
-    <input type="text" id="doc" class="typeahead input-xlarge" placeholder="Document" autocomplete="off">
-    <button disabled class="btn" type="button" id="autocompleteDoc" data-toggle="button"><span class="icon-file"></span></button>
+    <input type="text" id="doc" class="typeahead input-xlarge" placeholder="Document or Search Terms" autocomplete="off">
+    <button disabled class="btn" type="button" id="autocompleteDoc"><span class="icon-file"></span></button>
     <button class="btn" type="button" id="randomDoc"><span class="icon-random"></span></button>
   </div>
   <div class="btn-group">
@@ -230,6 +230,11 @@ if (docid || roottopic || q)
 else
   $('.null').show();
 
+$('#searchForm').submit(function(event) {
+  visualize(location.port); 
+  event.preventDefault();
+});
+
 function visualize(port) {
   var url = "http://inphodata.cogs.indiana.edu:{0}/".format(port);
 
@@ -257,15 +262,15 @@ $.getJSON('/docs.json', function(data) {
     updater: function(item) {
       if (!item) { 
         if ($('#autocompleteDoc').hasClass('active'))
-          $('#autocompleteDoc').button('toggle');
-        $('#autocompleteDoc').attr('disabled','disabled');
-
+          $('#autocompleteDoc').removeClass('active');
+        console.log('!item');
         $('#hidden_id').val('');
         return this.$element.val();
       } else {
         if (!$('#autocompleteDoc').hasClass('active'))
-          $('#autocompleteDoc').button('toggle');
+          $('#autocompleteDoc').addClass('active');
         $('#autocompleteDoc').removeAttr('disabled');
+        console.log('item');
 
         $('#hidden_id').val(mapped[item].id);
         return item;
@@ -275,12 +280,14 @@ $.getJSON('/docs.json', function(data) {
       if (items.length == 1) {
         $('#hidden_id').val(mapped[items[0]].id);
         console.log("setting hidden_id" + $('#hidden_id').val());
+        if (!$('#autocompleteDoc').hasClass('active'))
+          $('#autocompleteDoc').addClass('active');
         items.length = 0;
       } else if(items.length > 0) { 
         $('#autocompleteDoc').removeAttr('disabled');
       } else if (items.length == 0) {
         if ($('#autocompleteDoc').hasClass('active'))
-          $('#autocompleteDoc').button('toggle');
+          $('#autocompleteDoc').removeClass('active');
         $('#autocompleteDoc').attr('disabled','disabled');
       }
       var query = this.query;
@@ -315,8 +322,6 @@ $.getJSON('/docs.json', function(data) {
       $('#doc').val(docid);
     }
   } else if (q) {
-    console.log("adding");
-    console.log(q);
     title = data.filter(function(item) { return item.label.toLowerCase().indexOf(q.toLowerCase()) >= 0 });
     if (title.length) {
       $('#autocompleteDoc').removeAttr('disabled');
@@ -327,7 +332,11 @@ $.getJSON('/docs.json', function(data) {
 
   $('#autocompleteDoc').click(function() {
       if (!$('#autocompleteDoc').hasClass('active'))
-        $('.typeahead').typeahead('lookup');
+        $('.typeahead').typeahead('lookup').focus();
+      else {
+        $('#autocompleteDoc').removeClass('active');
+        $('#hidden_id').val('');
+      }
       });
 });
 </script>
@@ -462,10 +471,6 @@ d3.json(url, function(error, data) {
     }
       console.log(topics);
     $('#submit').text(d3.keys(topics).length + ' Topics');
-    $('#searchForm').submit(function(event) {
-      visualize(location.port); 
-      event.preventDefault();
-    });
     
   
     var legendCols = Math.max(Math.ceil(d3.keys(topics).length / Math.min(data.length, maxRows)), minCols);
