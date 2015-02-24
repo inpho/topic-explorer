@@ -2,7 +2,7 @@
 Program to build a Corpus object, train LDA models and finally build a config
 file for the topic explorer.
 """
-
+import multiprocessing
 import os
 import os.path
 import sys
@@ -57,7 +57,8 @@ def build_corpus(corpus_path, model_path, nltk_stop=True, stop_freq=1,
     c.save(filename)
     return filename 
 
-def build_models(corpus_filename, model_path, krange, n_iterations=200):
+def build_models(corpus_filename, model_path, krange, n_iterations=200,
+                 n_proc=2):
 
     corpus = Corpus.load(corpus_filename)
     if 'book' in corpus.context_types:
@@ -71,9 +72,10 @@ def build_models(corpus_filename, model_path, krange, n_iterations=200):
 
 
     for k in krange:
-        print "Training model for k={0} Topics".format(k)
+        print "Training model for k={0} Topics with {1} Processes"\
+            .format(k, n_proc)
         m = LDA(corpus, corpus_type, K=k)
-        m.train(n_iterations=n_iterations)
+        m.train(n_iterations=n_iterations, n_proc=n_proc)
         m.save(basefilename.format(k))
 
     return basefilename
@@ -86,6 +88,8 @@ if __name__ == '__main__':
     parser.add_argument("--model-path", dest="model_path",
         help="Model Path [Default: [corpus_path]/../models]")
     parser.add_argument("--htrc", action="store_true")
+    parser.add_argument("-p", "--processes", default=-2, type=int,
+        help="Number of CPU cores for training [Default: total - 2]")
     parser.add_argument("-k", nargs='+',
         help="K values to train upon", type=int)
     parser.add_argument('--iter', type=int,
@@ -114,7 +118,9 @@ if __name__ == '__main__':
         print "\nTIP: number of training iterations can be specified with argument '--iter N':"
         print "python train.py --iter %d %s\n" % (args.iter, args.corpus_path)
 
-
+    if args.processes < 0:
+        args.processes = multiprocessing.cpu_count() + args.processes
+    
     corpus_name = os.path.basename(args.corpus_path)
     if not corpus_name:
         corpus_name = os.path.basename(os.path.dirname(args.corpus_path))
@@ -132,7 +138,7 @@ if __name__ == '__main__':
         sys.exit(74)
         
     model_pattern = build_models(corpus_filename, args.model_path, args.k,
-                 n_iterations=args.iter)
+                                 n_iterations=args.iter, n_proc=args.processes)
 
     corpus = Corpus.load(corpus_filename)
     if 'book' in corpus.context_types:
