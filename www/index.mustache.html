@@ -540,13 +540,14 @@ d3.json(url, function(error, data) {
   
     // draw total bar
     var doc = svg.selectAll("doc")
-        .data(data)
-      .enter().append("g")
+        .data(data);
+
+    doc.enter().append("g")
         .attr("class", function(d) { return d.doc == docid ? "doc primary" : "doc"})
         .attr("transform", function(d) { return "translate(10," + y(d.doc) + ")"; })
         .on("mouseover", function(d) {
             var tick = $("text:contains(" + d.doc +")")
-              .filter(function() {return $(this).text().trim() == d.doc })
+              .filter(function() { return $(this).text().trim() == d.doc })
               .attr("font-weight", "bold");
             icons.reduce(function(prev,cur) {
               return prev.next(".{0}Icon".format(cur)).css('opacity', '1.0');
@@ -560,6 +561,7 @@ d3.json(url, function(error, data) {
               return prev.next(".{0}Icon".format(cur)).css('opacity', '');
             }, tick);
           });
+
   
     // Draw topic bars
     doc.selectAll("rect")
@@ -593,7 +595,20 @@ d3.json(url, function(error, data) {
           .text(function(d) { return d.label; })
           .attr("class","docLabel")
           .attr("dx", "3")
-          .attr("dy", "13");
+          .attr("dy", "13") 
+        .filter(function(d) { return q && (d.label.indexOf(q) >= 0);})
+        .each(function(d) {
+            if (q) {
+              var splits = q.split(' ');
+              var new_html = d.label;
+              for (var i = 0; i < splits.length; i++) {
+                var myRe = new RegExp(splits[i], 'gi');
+                new_html = new_html.replace(myRe, '<tspan style="font-weight: bold">$&</tspan>');
+                $("text:contains("+d.label+")").html(new_html);
+              }
+            }
+          });
+
     var legendElts = legend.selectAll(".legend")
         .data(data[0].topicMap.map(function(t) { return t.name;}))
       .enter().append("g")
