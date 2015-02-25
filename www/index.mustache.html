@@ -722,6 +722,7 @@ d3.json(url, function(error, data) {
     $('.sort').removeAttr('checked');
     if (topic) {
       sortDataset(function(a, b) { return b.topics[topic] - a.topics[topic]; });
+      $('.selected').removeClass('selected');
       $(".top_" + topic).addClass('selected');
       $('.reset').removeAttr('disabled');
       $('.topdoc').text('Top Documents for Topic ' + topic);
