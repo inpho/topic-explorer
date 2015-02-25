@@ -4,6 +4,7 @@
 <title>InPhO Topic Explorer</title>
 <script src="lib/jquery-1.11.0.min.js"></script>
 <script src="lib/jquery.superdom.min.js"></script>
+<script src="lib/jquery.cookie.min.js"></script>
 <script src="lib/bootstrap-2.3.2/js/bootstrap.min.js"></script>
 <script src="lib/d3.v3.min.js"></script>
 <script src="lib/mustache.js"></script>
@@ -163,23 +164,17 @@ h1 a, h1 a:hover {
   <div class="row">
   <div class="span12">
   <h1><a href="http://inphodata.cogs.indiana.edu"><span class="logo-word">InPhO</span> Topic Explorer</a></h1>
-  <!--<h2 class="title"></h2>-->
+  <!--<h2 class="title non-null"></h2>-->
   <p class="null">This visualization shows the similarity of {{context_type}}s in the 
   {{#corpus_link}}<a href="{{corpus_link}}">{{corpus_name}}</a>{{/corpus_link}} 
-  {{^corpus_link}}{{corpus_name}}{{/corpus_link}}. 
-  Use the search box below to select an entry or click the <span class="icon-random"></span> button to populate the box with a random {{context_type}}.</p>
+  {{^corpus_link}}{{corpus_name}}{{/corpus_link}}. </p>
   <p class="non-null">This visualization shows the similarity of {{context_type}}s in the 
   {{#corpus_link}}<a href="{{corpus_link}}">{{corpus_name}}</a>{{/corpus_link}} 
   {{^corpus_link}}{{corpus_name}}{{/corpus_link}} to <span class="title"></span>.</p>
-  <p class="non-null">The color bands within each article's row show the topic distribution within that article, and the relative sizes of each band indicates the weight of that topic in the article. The total width of each row indicates similarity to the focal topic or document, measured by the quantity <span class="formula">sim(<em>doc</em>) = 1 &ndash; JSD(<em>doc</em>, <span class="title"></span>)</span>, where <span class="formula">JSD</span> is the <a href="http://en.wikipedia.org/wiki/Jensen–Shannon_divergence">Jensen-Shannon distance</a> between the word probability distributions of each item. Each topic's label is arbitrarily assigned, while the color corresponds to the topic's oscillation across documents. Both label and color are consistent across articles in the browser.</p>
-  <p class="non-null">Display options include topic normalization, alphabetical sort and topic sort. By normalizing topics, the combined width of each bar expands so that topic weights per document can be compared. By clicking a topic, the documents will reorder acoording to that topic's weight and topic bars will reorder according to the topic weights in the highest weighted document. When a topic is selected, clicking "Top Documents for [Topic]" will take you to a new page showing the most similar documents to that topic's word distribution. The original sort order can be restored with the "Reset Topic Sort" button.</p>
-  
-  <p>The underlying dataset was generated using the <a href="http://github.com/inpho/vsm" target="_blank">InPhO VSM module's</a> LDA implementation.  See <a href="http://en.wikipedia.org/wiki/Latent_Dirichlet_allocation" target="_blank">Wikipedia: Latent Dirichlet Allocation</a> for more on the LDA topic modeling approach or <a href="http://dl.acm.org/citation.cfm?id=2133826" target="_blank">"Probabilistic Topic Models" (Blei, 2012)</a> for a recent review.</p>
-  <p><a href="http://github.com/inpho/topic-explorer/" target="_blank">Source code</a> and <a href="http://github.com/inpho/topic-explorer/issues/" target="_blank">issue tracking</a> for this page available at <a href="http://github.com/inpho/topic-explorer/" target="_blank">GitHub</a>. Contact Jaimie Murdock (<span class="iumail">jammurdo</span>) with further comments.</p>
-  <script>var mail = $('.iumail').text();
-  $('.iumail').html('<a href="mailto:'+mail+'@indiana.edu">'+mail+'@indiana.edu</a>')</script>
+
   
   <form action="/" method="GET" class="form-inline">
+  <button class="btn" type="button" id="helpBtn"><span class="icon-question-sign"></span></button>
   <div class="input-append">
     <input type="hidden" name="doc" id="hidden_id">
     <input type="text" id="doc" class="typeahead input-xlarge" placeholder="Document" autocomplete="off">
@@ -197,6 +192,46 @@ h1 a, h1 a:hover {
   <a href="https://twitter.com/share" class="twitter-share-button pull-right" style="padding-top: 10px" data-text="InPhO Topic Explorer" data-via="JaimieMurdock" data-size="large" data-hashtags="dighum" data-counturl="inphodata.cogs.indiana.edu">Tweet</a>
   <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
   </form>
+
+  <div class="help alert alert-info">
+    <p>Use the search box below to select an entry or click the <span class="icon-random"></span> button to populate the box with a random {{context_type}}.</p>
+    <p>The color bands within each article's row show the topic distribution within that article, and the relative sizes of each band indicates the weight of that topic in the article. The total width of each row indicates similarity to the focal topic or document, measured by the quantity <span class="formula">sim(<em>doc</em>) = 1 &ndash; JSD(<em>doc</em>, <span class="title"></span>)</span>, where <span class="formula">JSD</span> is the <a href="http://en.wikipedia.org/wiki/Jensen–Shannon_divergence">Jensen-Shannon distance</a> between the word probability distributions of each item. Each topic's label is arbitrarily assigned, while the color corresponds to the topic's oscillation across documents. Both label and color are consistent across articles in the browser.</p>
+    <p>Display options include topic normalization, alphabetical sort and topic sort. By normalizing topics, the combined width of each bar expands so that topic weights per document can be compared. By clicking a topic, the documents will reorder acoording to that topic's weight and topic bars will reorder according to the topic weights in the highest weighted document. When a topic is selected, clicking "Top Documents for [Topic]" will take you to a new page showing the most similar documents to that topic's word distribution. The original sort order can be restored with the "Reset Topic Sort" button.</p>
+    <p>This data was generated using the <a href="http://github.com/inpho/vsm" target="_blank">InPhO VSM module's</a> LDA implementation.  See <a href="http://en.wikipedia.org/wiki/Latent_Dirichlet_allocation" target="_blank">Wikipedia: Latent Dirichlet Allocation</a> for more on the LDA topic modeling approach or <a href="http://dl.acm.org/citation.cfm?id=2133826" target="_blank">"Probabilistic Topic Models" (Blei, 2012)</a> for a recent review.</p>
+    <p><a href="http://github.com/inpho/topic-explorer/" target="_blank">Source code</a> and <a href="http://github.com/inpho/topic-explorer/issues/" target="_blank">issue tracking</a> for this page available at <a href="http://github.com/inpho/topic-explorer/" target="_blank">GitHub</a>. Contact Jaimie Murdock (<span class="iumail">jammurdo</span>) with further comments.</p>
+    <script>var mail = $('.iumail').text();
+      $('.iumail').html('<a href="mailto:'+mail+'@indiana.edu">'+mail+'@indiana.edu</a>');</script>
+  </div>
+  <script>
+
+  $(document).ready(function () {
+    var visited = $.cookie('visited')
+    if (visited != null) {
+      $('.help').hide();
+      $('#helpBtn').tooltip({title: "Show help", placement: 'bottom'});
+    }
+    else {
+      $('#helpBtn').tooltip({title: "Hide help", placement: 'bottom'});
+      $('#helpBtn').addClass('active');
+    }
+    $.cookie('visited', 'yes_visited', {
+        expires: 1,
+        path: '/'
+    });
+  });
+  var scrollLegend;
+  $('#helpBtn').click(function() {
+      $('.help').toggle();
+      if (!$('#helpBtn').hasClass('active')) {
+        $('#helpBtn').data('tooltip').options.title = "Hide help";
+        $('#helpBtn').addClass('active');
+      } else {
+        $('#helpBtn').data('tooltip').options.title = "Show help";
+        $('#helpBtn').removeClass('active');
+      }
+      scrollLegend();
+    });
+  </script>
   </div>
   </div>
   <div class="non-null" id="status" style="width:100%">
@@ -609,7 +644,7 @@ d3.json(url, function(error, data) {
       } , 500);
   
     $(window).on("scroll", scrollLegend);
-    function scrollLegend() {
+    scrollLegend = function() {
       var scrollPos = $(window).scrollTop();
       var chartHeight = $('#chart').position().top;
       var legendHeight = $('#legend').height();
