@@ -94,6 +94,8 @@ if __name__ == '__main__':
         help="K values to train upon", type=int)
     parser.add_argument('--iter', type=int,
         help="Number of training iterations")
+    parser.add_argument('--dry-run', action="store_true",
+        help="Only create corpus object and config file, not models")
     args = parser.parse_args()
 
     if args.model_path is None:
@@ -104,7 +106,7 @@ if __name__ == '__main__':
     if args.k is None:
         args.k = range(120,0,-20)
     
-    if args.iter is None:
+    if args.iter is None and not args.dry_run:
         while args.iter is None:
             iters = raw_input("Number of Training Iterations [Default 200]: ")
             try:
@@ -136,9 +138,13 @@ if __name__ == '__main__':
         print "  * a folder of folders of plain-text files."
         print "\nExiting..."
         sys.exit(74)
-        
-    model_pattern = build_models(corpus_filename, args.model_path, args.k,
-                                 n_iterations=args.iter, n_proc=args.processes)
+    
+    if args.dry_run:
+        model_pattern = build_models(corpus_filename, args.model_path, list(),
+                                     n_iterations=args.iter, n_proc=args.processes)
+    else:
+        model_pattern = build_models(corpus_filename, args.model_path, args.k,
+                                     n_iterations=args.iter, n_proc=args.processes)
 
     corpus = Corpus.load(corpus_filename)
     if 'book' in corpus.context_types:
@@ -178,6 +184,11 @@ if __name__ == '__main__':
     print "\nWriting configuration file", configfile
     with open(configfile, "wb") as configfh:
         config.write(configfh)
-
-    print "\nTIP: launch the topic explorer with:"
-    print "python launch.py", configfile
+    
+    if args.dry_run:
+        print "\nTIP: Dry run, only initalizing corpus object and config file."
+        print "     Next prepare the corpus using:"
+        print "python corpus_prep.py", configfile
+    else:
+        print "\nTIP: launch the topic explorer with:"
+        print "python launch.py", configfile
