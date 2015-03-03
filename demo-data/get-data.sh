@@ -1,5 +1,5 @@
 #!/bin/sh
-wget -q http://www.cs.princeton.edu/~blei/lda-c/ap.tgz
-tar -xf ap.tgz
-rm ap.tgz
 python ap.py
+cd ..
+python train.py demo-data/ap
+python launch.py ap.ini
