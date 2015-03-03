@@ -32,9 +32,6 @@ setup(
         'brewer2mpl>=1.4',
         'pystache>=0.5.4',
         'vsm==0.2',
-        'unidecode',
-        'nltk>=3.0.0',
-        'wget'
         ],
     dependency_links=[
         'https://github.com/inpho/vsm/archive/master.zip#egg=vsm',

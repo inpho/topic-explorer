@@ -11,9 +11,10 @@ install:
   - conda create -p $HOME/py --yes pip numpy scipy "python=$TRAVIS_PYTHON_VERSION"
   - export PATH=$HOME/py/bin:$PATH
   # command to install dependencies
-  - pip install unidecode nltk
+  - pip install unidecode nltk wget
   - pip install -r requirements.txt
   - pip install .
+  - python -e "import nltk; nltk.download('punkt'); nltk.download('stopwords');"
 # command to run tests
 script: 
   - cd demo-data

@@ -12,6 +12,7 @@ import os, os.path
 from StringIO import StringIO
 import tarfile
 import xml.etree.ElementTree as ET
+import sys
 
 import wget
 
@@ -42,8 +43,12 @@ for doc in docs:
     text = doc.find('TEXT').text.strip().replace('&#038;', '&')
     corpus[docno] = text
 
-if not os.path.exists("ap"):
+if os.path.exists("ap"):
+    print "ap folder already exists!"
+    sys.exit(74)
+else:
     os.mkdir("ap")
+
 
 for doc,text in corpus.items():
     with open('ap/'+doc, 'w') as outfile:
