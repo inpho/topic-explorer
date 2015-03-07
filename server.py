@@ -181,6 +181,7 @@ if __name__ == '__main__':
         help="Number of Topics")
     parser.add_argument('-p', dest='port', type=int, 
         help="Port Number", default=None)
+    parser.add_argument('--host', default=None, help='Hostname')
     parser.add_argument('--ssl', action='store_true',
         help="Use SSL (must specify certfile, keyfile, and ca_certs in config)")
     parser.add_argument('--ssl-certfile', dest='certfile', nargs="?",
@@ -202,6 +203,7 @@ if __name__ == '__main__':
         'ca_certs' : None,
         'ssl' : False,
         'port' : '8{0:03d}',
+        'host' : '0.0.0.0',
         'topic_range' : '{0},{1},1'.format(args.k, args.k+1),
         'icons': 'link',
         'corpus_link' : None,
@@ -224,6 +226,12 @@ if __name__ == '__main__':
     else:
         port = config.get('main','port').format(args.k)
         print port
+
+    # hostname assignment
+    if args.host:
+        host = args.host
+    else:
+        host = config.get('main','host')
 
     # LDA objects
     lda_c = Corpus.load(corpus_file)
@@ -295,8 +303,8 @@ if __name__ == '__main__':
         keyfile = args.keyfile or config.get('ssl', 'keyfile')
         ca_certs = args.ca_certs or config.get('ssl', 'ca_certs')
 
-        run(host='0.0.0.0', port=port, server=SSLWSGIRefServer,
+        run(host=host, port=port, server=SSLWSGIRefServer,
             certfile=certfile, keyfile=keyfile, ca_certs=ca_certs)
     else:
-        run(host='0.0.0.0', port=port)
+        run(host=host, port=port)
 

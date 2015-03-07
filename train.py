@@ -159,6 +159,7 @@ if __name__ == '__main__':
     config.set("main", "context_type", corpus_type)
     config.set("main", "model_pattern", model_pattern)
     config.set("main", "port", "16{0:03d}")
+    config.set("main", "host", "0.0.0.0")
     args.k.sort()
     config.set("main", "topics", args.k)
     config.add_section("www")

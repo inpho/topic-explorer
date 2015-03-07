@@ -30,6 +30,7 @@ if __name__ == '__main__':
         'ca_certs' : None,
         'ssl' : False,
         'port' : '8{0:03d}',
+        'host' : '0.0.0.0',
         'icons': 'link',
         'corpus_link' : None,
         'doc_title_format' : None,
@@ -70,7 +71,8 @@ if __name__ == '__main__':
     print "pid","port"
     for proc,k in zip(procs, topic_range):
         port = config.get("main","port").format(k)
-        print proc.pid, "http://localhost:{0}/".format(port)
+        host = config.get("main","host")
+        print proc.pid, "http://{host}:{port}/".format(host=host,port=port)
 
 
     # CLEAN EXIT AND SHUTDOWN OF SERVERS
