@@ -20,19 +20,18 @@ Display options include topic normalization, alphabetical sort and topic sort. B
     cd topic-explorer
     python setup.py develop --user
     ```
-3.  Setup the Associated Press sample corpus released with [Blei (2003)](www.cs.princeton.edu/~blei/lda-c/):
+3.  Setup the Associated Press sample corpus released with [Blei (2003)](www.cs.princeton.edu/~blei/lda-c/) and train the corpus:
 
     ```
-    cd demo-data
-    sh get-data.sh
+    ./demo.sh
     ```
 
-4.  Start the Topic Explorer for the given number of topics:
+4.  Launch the Topic Explorer server:
 
     ```
-    cd ..
-    python server.py -k 20 config/ap.ini
+    python launch.py ap.ini
     ```
+
 5.  Access at [http://localhost:18020](http://localhost:18020).
 
 ## Usage
