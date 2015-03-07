@@ -32,7 +32,7 @@ Display options include topic normalization, alphabetical sort and topic sort. B
     python launch.py ap.ini
     ```
 
-5.  Access at [http://localhost:18020](http://localhost:18020).
+5.  Access at [http://localhost:16020](http://localhost:16020).
 
 ## Usage
 1.  Train LDA models on a file, folder of text files, or folder of folders of text files:
