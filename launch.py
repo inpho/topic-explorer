@@ -95,7 +95,10 @@ if __name__ == '__main__':
     import urllib, webbrowser
     import time
     port = config.get("main","port").format(topic_range[0])
-    url = "http://localhost:{0}/".format(port)
+    host = config.get("main","host")
+    if host == '0.0.0.0':
+        host = 'localhost'
+    url = "http://{host}:{port}/".format(host=host,port=port)
 
     while True:
         try:
