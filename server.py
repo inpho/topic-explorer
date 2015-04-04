@@ -140,8 +140,7 @@ def topics():
     # populate word values
     data = lda_v.topics()
     for i,topic in enumerate(data):
-        for word, prob in topic[:10]:
-            js[str(i)].update({'words' : dict([(w, p) for w,p in topic[:10]])})
+        js[str(i)].update({'words' : dict([(w, p) for w,p in topic[:10]])})
 
     return json.dumps(js)
 

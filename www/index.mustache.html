@@ -578,7 +578,14 @@ d3.json(url, function(error, data) {
         .attr("data-placement", "right")
         .attr("title", function(d) { 
           return "<strong>Topic {0}:</strong> <!--H(T<sub>{0}</sub>)={1}-->".format(d, topics[d].H.toFixed(2)) + "<br />"
-            + d3.keys(topics[d].words).join(", ") + ", ..."; })
+            + d3.keys(topics[d].words).sort(function(a,b) {
+              if (topics[d].words[a] > topics[d].words[b])
+                return -1;
+              else if (topics[d].words[a] < topics[d].words[b])
+                return 1;
+              else
+                return 0;
+            }).join(", ") + ", ..."; })
         .on("click", function(d) { topicSort(d); })
         .on("mouseover", function(d) {
             $(".top_" + d).addClass('hover').tooltip('show');
