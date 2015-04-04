@@ -12,6 +12,20 @@ from vsm.corpus.util.corpusbuilders import coll_corpus, dir_corpus, toy_corpus
 from vsm.model.ldacgsmulti import LdaCgsMulti as LDA
 from vsm.viewer.ldagibbsviewer import LDAGibbsViewer
 
+def get_corpus_filename(corpus_path, model_path, nltk_stop=True, stop_freq=1,
+			context_type='document'):
+    corpus_name = os.path.basename(corpus_path)
+    if not corpus_name:
+        corpus_name = os.path.basename(os.path.dirname(corpus_path))
+    if nltk_stop and stop_freq:
+        filename = '%s-nltk-en-freq%d.npz' % (corpus_name, stop_freq)
+    elif stop_freq:
+        filename = '%s-freq%d.npz' % (corpus_name, stop_freq)
+    else:
+        filename = '%s.npz' % corpus_name
+    return os.path.join(model_path, filename)
+
+
 def build_corpus(corpus_path, model_path, nltk_stop=True, stop_freq=1,
     context_type='document', ignore=['.json','.log','.err','.pickle','.npz']):
     if os.path.isfile(corpus_path):
@@ -43,17 +57,8 @@ def build_corpus(corpus_path, model_path, nltk_stop=True, stop_freq=1,
     else:
         raise IOError("Invalid path")
 
-    corpus_name = os.path.basename(corpus_path)
-    if not corpus_name:
-        corpus_name = os.path.basename(os.path.dirname(corpus_path))
-    if nltk_stop and stop_freq:
-        filename = '%s-nltk-en-freq%d.npz' % (corpus_name, stop_freq)
-    elif stop_freq:
-        filename = '%s-freq%d.npz' % (corpus_name, stop_freq)
-    else:
-        filename = '%s.npz' % corpus_name
-    filename = os.path.join(model_path, filename)
-
+    filename = get_corpus_filename(
+        corpus_path, model_path, nltk_stop, stop_freq, context_type)
     c.save(filename)
     return filename 
 
@@ -126,18 +131,26 @@ if __name__ == '__main__':
     corpus_name = os.path.basename(args.corpus_path)
     if not corpus_name:
         corpus_name = os.path.basename(os.path.dirname(args.corpus_path))
-    
-
-    try:
-        corpus_filename = build_corpus(args.corpus_path, args.model_path, 
-                                       stop_freq=5)
-    except IOError:
-        print "ERROR: invalid path, please specify either:"
-        print "  * a single plain-text file,"
-        print "  * a folder of plain-text files, or"
-        print "  * a folder of folders of plain-text files."
-        print "\nExiting..."
-        sys.exit(74)
+  
+    retrain = None
+    corpus_filename = get_corpus_filename(
+        args.corpus_path, args.model_path, stop_freq=5)
+    if os.path.exists(corpus_filename): 
+        while retrain not in ['y', 'n']:
+            retrain = raw_input("\nCorpus file found. Rebuild? [y/n] ")
+            if retrain == 'y':
+	        retrain = True
+    if retrain == True:
+        try:
+            corpus_filename = build_corpus(args.corpus_path, args.model_path, 
+                                           stop_freq=5)
+        except IOError:
+            print "ERROR: invalid path, please specify either:"
+            print "  * a single plain-text file,"
+            print "  * a folder of plain-text files, or"
+            print "  * a folder of folders of plain-text files."
+            print "\nExiting..."
+            sys.exit(74)
     
     if args.dry_run:
         model_pattern = build_models(corpus_filename, args.model_path, list(),
