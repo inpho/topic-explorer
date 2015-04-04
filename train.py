@@ -93,10 +93,13 @@ if __name__ == '__main__':
     parser.add_argument("--model-path", dest="model_path",
         help="Model Path [Default: [corpus_path]/../models]")
     parser.add_argument("--htrc", action="store_true")
-    parser.add_argument("-p", "--processes", default=-2, type=int,
-        help="Number of CPU cores for training [Default: total - 2]")
+    parser.add_argument("-p", "--processes", default=2, type=int,
+        help="Number of CPU cores for training [Default: 2]")
+    parser.add_argument("--port", default=16000, type=int,
+        help="Default port [Default: 16000]")
     parser.add_argument("-k", nargs='+',
         help="K values to train upon", type=int)
+    parser.add_argument("--retrain", action="store_true")
     parser.add_argument('--iter', type=int,
         help="Number of training iterations")
     parser.add_argument('--dry-run', action="store_true",
@@ -135,11 +138,13 @@ if __name__ == '__main__':
     retrain = None
     corpus_filename = get_corpus_filename(
         args.corpus_path, args.model_path, stop_freq=5)
-    if os.path.exists(corpus_filename): 
+    if not args.retrain and os.path.exists(corpus_filename): 
         while retrain not in ['y', 'n']:
             retrain = raw_input("\nCorpus file found. Rebuild? [y/n] ")
             if retrain == 'y':
 	        retrain = True
+    else:
+        retrain = True
     if retrain == True:
         try:
             corpus_filename = build_corpus(args.corpus_path, args.model_path, 
