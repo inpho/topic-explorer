@@ -63,7 +63,7 @@ def build_corpus(corpus_path, model_path, nltk_stop=True, stop_freq=1,
     return filename 
 
 def build_models(corpus_filename, model_path, krange, n_iterations=200,
-                 n_proc=2):
+                 n_proc=2, seed=None):
 
     corpus = Corpus.load(corpus_filename)
     if 'book' in corpus.context_types:
@@ -75,12 +75,19 @@ def build_models(corpus_filename, model_path, krange, n_iterations=200,
     basefilename += "-LDA-K%s-%s-%d.npz" % ('{0}', corpus_type, n_iterations)
     basefilename = os.path.join(model_path, basefilename)
 
+    if type(seed) == int:
+        seeds = [seed + p for p in range(n_proc)]
+        fileparts = basefilename.split('-')
+        fileparts.insert(-1, str(seed))
+        basefilename = '-'.join(fileparts)
+    else:
+        seeds = None
 
     for k in krange:
         print "Training model for k={0} Topics with {1} Processes"\
             .format(k, n_proc)
         m = LDA(corpus, corpus_type, K=k)
-        m.train(n_iterations=n_iterations, n_proc=n_proc)
+        m.train(n_iterations=n_iterations, n_proc=n_proc, seeds=seeds)
         m.save(basefilename.format(k))
 
     return basefilename
@@ -97,6 +104,8 @@ if __name__ == '__main__':
         help="Number of CPU cores for training [Default: 2]")
     parser.add_argument("--port", default=16000, type=int,
         help="Default port [Default: 16000]")
+    parser.add_argument("--seed", default=None, type=int,
+        help="Random seed for topic modeling [Default: None]")
     parser.add_argument("-k", nargs='+',
         help="K values to train upon", type=int)
     parser.add_argument("--retrain", action="store_true")
@@ -159,10 +168,12 @@ if __name__ == '__main__':
     
     if args.dry_run:
         model_pattern = build_models(corpus_filename, args.model_path, list(),
-                                     n_iterations=args.iter, n_proc=args.processes)
+                                     n_iterations=args.iter,
+                                     n_proc=args.processes, seed=args.seed)
     else:
         model_pattern = build_models(corpus_filename, args.model_path, args.k,
-                                     n_iterations=args.iter, n_proc=args.processes)
+                                     n_iterations=args.iter,
+                                     n_proc=args.processes, seed=args.seed)
 
     corpus = Corpus.load(corpus_filename)
     if 'book' in corpus.context_types:
