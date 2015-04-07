@@ -144,17 +144,16 @@ if __name__ == '__main__':
     if not corpus_name:
         corpus_name = os.path.basename(os.path.dirname(args.corpus_path))
   
-    retrain = None
     corpus_filename = get_corpus_filename(
         args.corpus_path, args.model_path, stop_freq=5)
     if not args.retrain and os.path.exists(corpus_filename): 
-        while retrain not in ['y', 'n']:
-            retrain = raw_input("\nCorpus file found. Rebuild? [y/n] ")
-            if retrain == 'y':
-	        retrain = True
+        while args.retrain not in ['y', 'n']:
+            args.retrain = raw_input("\nCorpus file found. Rebuild? [y/n] ")
+            if args.retrain == 'y':
+	        args.retrain = True
     else:
-        retrain = True
-    if retrain == True:
+        args.retrain = True
+    if args.retrain == True:
         try:
             corpus_filename = build_corpus(args.corpus_path, args.model_path, 
                                            stop_freq=5)
