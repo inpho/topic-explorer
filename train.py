@@ -9,7 +9,7 @@ import sys
 
 from vsm.corpus import Corpus
 from vsm.corpus.util.corpusbuilders import coll_corpus, dir_corpus, toy_corpus
-from vsm.model.ldacgsmulti import LdaCgsMulti as LDA
+from vsm.model.lda import LDA
 from vsm.viewer.ldagibbsviewer import LDAGibbsViewer
 
 def get_corpus_filename(corpus_path, model_path, nltk_stop=True, stop_freq=1,
@@ -86,7 +86,7 @@ def build_models(corpus_filename, model_path, krange, n_iterations=200,
     for k in krange:
         print "Training model for k={0} Topics with {1} Processes"\
             .format(k, n_proc)
-        m = LDA(corpus, corpus_type, K=k)
+        m = LDA(corpus, corpus_type, K=k, multiprocessing=True)
         m.train(n_iterations=n_iterations, n_proc=n_proc, seeds=seeds)
         m.save(basefilename.format(k))
 
