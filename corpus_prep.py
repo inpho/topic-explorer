@@ -9,6 +9,7 @@ from scipy.stats import itemfreq
 
 from vsm import *
 from codecs import open 
+from unidecode import unidecode
 
 parser = ArgumentParser()
 parser.add_argument("corpus_path", help="Path to Existing Corpus File")
@@ -66,7 +67,7 @@ for lang in args.lang:
 if args.stopword_file:
     print "Applying custom stopword file"
     with open(args.stopword_file, encoding='utf8') as swf:
-        c = c.apply_stoplist([word.strip() for word in swf])
+        c = c.apply_stoplist([unidecode(word.strip()) for word in swf])
 
 
 print "\n\n*** FILTER HIGH FREQUENCY WORDS ***"

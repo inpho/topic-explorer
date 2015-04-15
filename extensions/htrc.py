@@ -1,9 +1,11 @@
 import json
+import os.path
 
 metadata = None
 def init(model_path):
     global metadata
-    filename = model_path + '../metadata.json'
+    filename = os.path.join(model_path,'../metadata.json')
+    print "Loading HTRC metadata from", filename
 
     with open(filename) as f:
         metadata = json.load(f)
