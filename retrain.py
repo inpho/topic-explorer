@@ -134,7 +134,10 @@ if __name__ == '__main__':
         config.set("www","corpus_name","HTRC Data Capsule")
         config.set("www","doc_title_format",'<a href="{1}">{0}</a>')
         config.set("www","doc_url_format", 'http://hdl.handle.net/2027/{0}')
-        config.set("www", "icons", "htrc,link")
+        if args.corpus_type == 'page':
+            config.set("www", "icons", "htrc,htrcbook,link")
+        else:
+            config.set("www", "icons", "htrc,link")
 
     configfile = corpus_name + ".ini"
     config_i = 0
