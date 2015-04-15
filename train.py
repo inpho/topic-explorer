@@ -143,6 +143,18 @@ if __name__ == '__main__':
     corpus_name = os.path.basename(args.corpus_path)
     if not corpus_name:
         corpus_name = os.path.basename(os.path.dirname(args.corpus_path))
+
+    if args.htrc:
+        import vsm.extensions.htrc as htrc
+        htrc.proc_htrc_coll(args.corpus_path)
+        
+        import json
+        data = [(id, htrc.metadata(id)) for id in os.listdir(args.corpus_path)
+                    if os.path.isdir(id)]
+        data = dict(data)
+        md_filename = os.path.join(args.corpus_path, '../metadata.json')
+        with open(md_filename, 'wb') as outfile:
+            json.dump(data, outfile)
   
     corpus_filename = get_corpus_filename(
         args.corpus_path, args.model_path, stop_freq=5)
