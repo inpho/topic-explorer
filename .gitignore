@@ -2,10 +2,13 @@
 sandbox
 config.*
 
+*.ini
+
 start-servers.sh
 logs/*
 
 demo-data/*.npz
+demo-data/*.tgz
 demo-data/ap/*
 demo-data/models/*
 
