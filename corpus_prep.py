@@ -12,6 +12,8 @@ from vsm import *
 parser = ArgumentParser()
 parser.add_argument("corpus_path", help="Path to Existing Corpus File")
 parser.add_argument("--htrc", action="store_true")
+parser.add_argument("--stopword-file", dest="stopword_file",
+    help="File with custom stopwords")
 parser.add_argument("--lang", nargs='+', help="Languages to stoplist")
 args = parser.parse_args()
 
@@ -59,6 +61,11 @@ if args.lang is None:
 for lang in args.lang:
     print "Applying", langs[lang], "stopwords"
     c = stop_language(c, langs[lang])
+
+if args.stopword_file:
+    print "Applying custom stopword file"
+    with open(args.stopword_file) as swf:
+        c = c.apply_stoplist([word.strip() for word in swf])
 
 
 print "\n\n*** FILTER HIGH FREQUENCY WORDS ***"
