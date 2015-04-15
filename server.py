@@ -247,6 +247,10 @@ if __name__ == '__main__':
     try:
         label_module = config.get('main', 'label_module')
         label_module = import_module(label_module)
+        try:
+            label_module.init(config.get('main','path'))
+        except:
+            pass
         label = label_module.label
     except:
         label = lambda x: x
