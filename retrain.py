@@ -13,13 +13,11 @@ from vsm.model.lda import LDA
 from vsm.viewer.ldagibbsviewer import LDAGibbsViewer
 
 def build_models(corpus_filename, model_path, krange, n_iterations=200,
-                 n_proc=2, seed=None):
+                 n_proc=2, seed=None, corpus_type=None):
 
     corpus = Corpus.load(corpus_filename)
-    if 'book' in corpus.context_types:
-        corpus_type = 'book'
-    else:
-        corpus_type = 'document'
+    if corpus_type is None:
+        corpus_type = 'book' if 'book' in corpus.context_types else 'document'
 
     basefilename = os.path.basename(corpus_filename).replace('.npz','')
     basefilename += "-LDA-K%s-%s-%d.npz" % ('{0}', corpus_type, n_iterations)
@@ -50,6 +48,7 @@ if __name__ == '__main__':
     parser.add_argument("--model-path", dest="model_path",
         help="Model Path [Default: [corpus_path]/../models]")
     parser.add_argument("--htrc", action="store_true")
+    parser.add_argument("--corpus-type", dest="corpus_type")
     parser.add_argument("-p", "--processes", default=2, type=int,
         help="Number of CPU cores for training [Default: 2]")
     parser.add_argument("--port", default=16000, type=int,
@@ -74,6 +73,10 @@ if __name__ == '__main__':
     if not os.path.exists(args.model_path):
         os.makedirs(args.model_path)
 
+    if args.corpus_type is None:
+        # TODO: Prompt for corpus type selection
+        pass
+
     if args.k is None:
         args.k = range(120,0,-20)
     
@@ -97,17 +100,15 @@ if __name__ == '__main__':
     if args.dry_run:
         model_pattern = build_models(args.corpus_filename, args.model_path, list(),
                                      n_iterations=args.iter,
-                                     n_proc=args.processes, seed=args.seed)
+                                     n_proc=args.processes, seed=args.seed,
+                                     corpus_type=args.corpus_type)
     else:
         model_pattern = build_models(args.corpus_filename, args.model_path, args.k,
                                      n_iterations=args.iter,
-                                     n_proc=args.processes, seed=args.seed)
+                                     n_proc=args.processes, seed=args.seed,
+                                     corpus_type=args.corpus_type)
 
     corpus = Corpus.load(args.corpus_filename)
-    if 'book' in corpus.context_types:
-        corpus_type = 'book'
-    else:
-        corpus_type = 'document'
 
     corpus_name = os.path.basename(args.corpus_filename).split('-')[0]
 
@@ -115,7 +116,7 @@ if __name__ == '__main__':
     config.add_section("main")
     config.set("main", "path", args.model_path)
     config.set("main", "corpus_file", args.corpus_filename)
-    config.set("main", "context_type", corpus_type)
+    config.set("main", "context_type", args.corpus_type)
     config.set("main", "model_pattern", model_pattern)
     config.set("main", "port", "16{0:03d}")
     config.set("main", "host", "0.0.0.0")

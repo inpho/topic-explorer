@@ -10,11 +10,12 @@ from StringIO import StringIO
 from vsm.corpus import Corpus
 from vsm.model.ldacgsmulti import LdaCgsMulti as LCM
 from vsm.viewer.ldagibbsviewer import LDAGibbsViewer as LDAViewer
-from vsm.viewer.wrappers import doc_label_name
+from vsm.viewer.wrappers import doc_label_name, def_label_fn
 
 
 from bottle import request, response, route, run, static_file
 from bottle_ssl import SSLWSGIRefServer
+import numpy as np
 
 import pystache
 
@@ -55,7 +56,7 @@ def doc_topic_csv(doc_id):
 def doc_csv(doc_id, threshold=0.2):
     response.content_type = 'text/csv; charset=UTF8'
 
-    data = lda_v.sim_doc_doc(doc_id)
+    data = lda_v.sim_doc_doc(doc_id, label_fn=id_fn)
 
     output=StringIO()
     writer = csv.writer(output)
@@ -74,9 +75,9 @@ def topic_json(topic_no, N=40):
         pass
 
     if N > 0:
-        data = lda_v.dist_top_doc([int(topic_no)])[:N]
+        data = lda_v.dist_top_doc([int(topic_no)], label_fn=id_fn)[:N]
     else:
-        data = lda_v.dist_top_doc([int(topic_no)])[N:]
+        data = lda_v.dist_top_doc([int(topic_no)], label_fn=id_fn)[N:]
         data = reversed(data)
     
     docs = [doc for doc,prob in data]
@@ -101,12 +102,13 @@ def doc_topics(doc_id, N=40):
     response.content_type = 'application/json; charset=UTF8'
 
     if N > 0:
-        data = lda_v.dist_doc_doc(doc_id)[:N]
+        data = lda_v.dist_doc_doc(doc_id, label_fn=id_fn)[:N]
     else:
-        data = lda_v.dist_doc_doc(doc_id)[N:]
+        data = lda_v.dist_doc_doc(doc_id, label_fn=id_fn)[N:]
         data = reversed(data)
    
     docs = [doc for doc,prob in data]
+    print 'docs list from data', docs
     doc_topics_mat = lda_v.doc_topics(docs)
 
     js = []
@@ -248,11 +250,19 @@ if __name__ == '__main__':
         label_module = config.get('main', 'label_module')
         label_module = import_module(label_module)
         try:
-            label_module.init(config.get('main','path'))
+            label_module.init(config.get('main','path'), lda_v, context_type)
         except:
             pass
         label = label_module.label
+        try:
+            id_fn = label_module.id_fn
+        except:
+            id_fn = def_label_fn
     except:
+        from vsm.viewer.wrappers import def_label_fn
+        context_md = lda_c.view_metadata(context_type)
+        ctx_label = doc_label_name(context_type)
+        id_fn = lambda md: context_md[ctx_label] 
         label = lambda x: x
 
     config_icons = config.get('www','icons').split(",")
