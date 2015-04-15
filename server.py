@@ -108,7 +108,6 @@ def doc_topics(doc_id, N=40):
         data = reversed(data)
    
     docs = [doc for doc,prob in data]
-    print 'docs list from data', docs
     doc_topics_mat = lda_v.doc_topics(docs)
 
     js = []
@@ -153,11 +152,13 @@ def docs():
     response.set_header('Expires', _cache_date())
 
     docs = lda_v.corpus.view_metadata(context_type)[doc_label_name(context_type)]
+    ctx_md = lda_v.corpus.view_metadata(context_type)
     js = list()
-    for doc in docs:
+    for doc, md in zip(docs, ctx_md):
         js.append({
             'id': doc,
-            'label' : label(doc)
+            'label' : label(doc),
+            'metadata' : dict(zip(md.dtype.names, [str(m) for m in md]))
         })
 
     return json.dumps(js)
