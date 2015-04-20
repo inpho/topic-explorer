@@ -247,7 +247,17 @@ if (docid) {
   docid = decodeURIComponent(docid);
   $('#hidden_id').val(docid);
   $('.twitter-share-button').attr('data-text', "What's similar to " +docid+"? Discover with the #InPhO Topic Explorer");
-
+  $.getJSON('/docs.json?id='+encodeURIComponent(docid), function(title) {
+    if (title.length) {
+      title = title[0].label;
+      $('.title').html('{{doc_title_format}}'.format(title,'{{doc_url_format}}'.format(docid)));
+      $('#doc').val(title);
+      $('.twitter-share-button').attr('data-text', "What's similar to " + title +"? Discover with the #InPhO Topic Explorer!");
+    } else {
+      $('.title').html('{{doc_title_format}}'.format(docid,'{{doc_url_format}}'.format(docid)));
+      $('#doc').val(docid);
+    }
+  });
 }
 var roottopic = inpho.util.getValueForURLParam('topic') || null;
 
@@ -267,6 +277,48 @@ function visualize(port) {
   url += "?doc=" + encodeURIComponent($("#hidden_id").val() || docid) ;
   window.location = url;
 }
+
+var taTimeout;
+$(".typeahead").typeahead({items: 12,
+  source: function(query, process) {
+    if (taTimeout)
+      clearTimeout(taTimeout);
+
+    this.$menu.find('.active').removeClass('active');
+    taTimeout = setTimeout(function () {
+      $.getJSON('/docs.json?q=' + encodeURIComponent(query), function(data) {
+        labels = [];
+        mapped = {};
+        $.each(data, function(i, item) {
+          mapped[item.label] = item;
+          labels.push(item.label);
+        });
+      
+        process(labels);
+    })}, 300);
+  },
+  updater: function(item) {
+    if (!item) return this.$element.val();
+    else $('#hidden_id').val(mapped[item].id);
+    return item;
+  },
+  sorter: function(items) {
+    var query = this.query;
+    items = items.sort();
+    var start = items.filter(function(item) { return item.lastIndexOf(query, 0) == 0;});
+    var elsewhere = items.filter(function(item) { return item.lastIndexOf(query, 0) != 0;});
+    return start.concat(elsewhere);
+  }
+});
+
+$('#randomDoc').click(function() { 
+    $.getJSON('/docs.json?random=1', function(rand) {
+      $('#hidden_id').val(rand[0].id);
+      $('#doc').val(rand[0].label);
+  });
+});
+$('#randomDoc').tooltip({title: "Random Document", placement: 'bottom'});
+
 </script>
 
 
@@ -372,52 +424,6 @@ var n = inpho.util.getValueForURLParam('n');
 if (n) url += "?n=" + n;
 
 var tops;
-
-$.getJSON('/docs.json', function(data) {
-  var docs = data;
-  $(".typeahead").typeahead({items: 12,
-    source: function(query, process) {
-      labels = [];
-      mapped = {};
-      $.each(data, function(i, item) {
-        mapped[item.label] = item;
-        labels.push(item.label);
-      });
-        
-      process(labels);
-      this.$menu.find('.active').removeClass('active');
-    },
-    updater: function(item) {
-      if (!item) return this.$element.val();
-      else $('#hidden_id').val(mapped[item].id);
-      return item;
-    },
-    sorter: function(items) {
-      var query = this.query;
-      items = items.sort();
-      var start = items.filter(function(item) { return item.lastIndexOf(query, 0) == 0;});
-      var elsewhere = items.filter(function(item) { return item.lastIndexOf(query, 0) != 0;});
-      return start.concat(elsewhere);
-      }});
-  $('#randomDoc').click(function() { 
-      var rand = data[Math.floor(Math.random() * data.length)];
-      $('#hidden_id').val(rand.id);
-      $('#doc').val(rand.label);
-    });
-  $('#randomDoc').tooltip({title: "Random Document", placement: 'bottom'});
-
-  if (docid) {
-    title = data.filter(function(item) { return item.id == docid });
-    if (title.length) {
-      title = title[0].label;
-      $('.title').html('{{doc_title_format}}'.format(title,'{{doc_url_format}}'.format(docid)));
-      $('#doc').val(title);
-      $('.twitter-share-button').attr('data-text', "What's similar to " + title +"? Discover with the #InPhO Topic Explorer!");
-    } else {
-      $('.title').html('{{doc_title_format}}'.format(docid,'{{doc_url_format}}'.format(docid)));
-      $('#doc').val(docid);
-    }
-  }
   d3.json(url, function(error, data) {
     $('#status .bar').css('width', '50%').text('Loading topics...');
     if (error) {
@@ -504,7 +510,7 @@ $.getJSON('/docs.json', function(data) {
             });
     
       for (var i = 0; i < icons.length; i++) {
-        icon_fns[icons[i]](ticks,i, docs);
+        icon_fns[icons[i]](ticks,i, data);
       }
     
       // draw total bar
@@ -672,7 +678,6 @@ $.getJSON('/docs.json', function(data) {
       }
     }); 
   });
-});
 
   function scaleTopics() {
     var numTopics = dataset[0].topics.length;

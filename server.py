@@ -5,6 +5,7 @@ import json
 import itertools
 import os.path
 import re
+from urllib2 import unquote
 from StringIO import StringIO
 
 from vsm.corpus import Corpus
@@ -153,37 +154,58 @@ def topics():
 
 @route('/docs.json')
 @_set_acao_headers
-def docs(docs=None, query=None):
+def docs(docs=None, q=None):
     response.content_type = 'application/json; charset=UTF8'
     response.set_header('Expires', _cache_date())
+    
+    try:
+        if request.query.q:
+            q = unquote(request.query.q)
+    except:
+        pass
 
-    js = get_docs(docs)
+    try: 
+        if request.query.id:
+            docs = [unquote(request.query.id)]
+    except:
+        pass
+    
+    try: 
+        response.set_header('Expires', 0)
+        response.set_header('Pragma', 'no-cache')
+        response.set_header('Cache-Control', 'no-cache, no-store, must-revalidate')
+        if request.query.random:
+            docs = [np.random.choice(lda_v.corpus.view_metadata(context_type)[doc_label_name(context_type)])]
+    except:
+        pass
+
+    js = get_docs(docs, query=q)
 
     return json.dumps(js)
 
-def get_docs(docs=None, id_as_key=False):
+def get_docs(docs=None, id_as_key=False, query=None):
     ctx_md = lda_v.corpus.view_metadata(context_type)
     
-    # get metadata for all documents
-    if docs is None:
-        docs = lda_v.corpus.view_metadata(context_type)[doc_label_name(context_type)]
-
-    # filter to metadata for selected docs
-    if docs is not None:
+    if docs:
+        # filter to metadata for selected docs
         ids = [lda_v.corpus.meta_int(context_type, {doc_label_name(context_type) : doc} ) for doc in docs]
         ctx_md = ctx_md[ids]
+    else:
+        #get metadata for all documents
+        docs = lda_v.corpus.view_metadata(context_type)[doc_label_name(context_type)]
     
     js = dict() if id_as_key else list()
 
     for doc, md in zip(docs, ctx_md):
-        struct = {
-            'id': doc,
-            'label' : label(doc),
-            'metadata' : dict(zip(md.dtype.names, [str(m) for m in md])) }
-        if id_as_key:
-            js[doc] = struct
-        else:
-            js.append(struct)
+        if query is None or query in label(doc):
+            struct = {
+                'id': doc,
+                'label' : label(doc),
+                'metadata' : dict(zip(md.dtype.names, [str(m) for m in md])) }
+            if id_as_key:
+                js[doc] = struct
+            else:
+                js.append(struct)
 
     return js
 
