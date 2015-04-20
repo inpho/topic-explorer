@@ -13,16 +13,15 @@ def metadata(id, sleep_time=1):
         data = json.load(urlopen(solr))
         print id
         return data['response']['docs'][0]
-    except ValueError :
+    except (ValueError, IndexError):
         print "No result found for " + id 
         return dict()
 
 import os.path,os
 import sys
 ids = os.listdir(sys.argv[-1])
-print ids
-data = [(id.strip(), metadata(id.strip())) for id in ids]
-print data
+data = [(id.strip(), metadata(id.strip())) for id in ids 
+    if os.path.isdir(os.path.join(sys.argv[-1],id))]
 data = dict(data)
 with open(os.path.join(sys.argv[-1], '../metadata.json'),'wb') as outfile:
     json.dump(data, outfile)

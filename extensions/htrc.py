@@ -34,7 +34,10 @@ def label(doc):
 
         book_label = context_md[where]['book_label']
         md = metadata[book_label]
-        return "p%s of %s" % (page_no, md['title'][0])
+        try:
+            return "p%s of %s" % (page_no, md['title'][0])
+        except:
+            return doc
 
 def id_fn(md):
     context_md = lda_v.corpus.view_metadata(context_type)
