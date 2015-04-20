@@ -82,12 +82,15 @@ def topic_json(topic_no, N=40):
     
     docs = [doc for doc,prob in data]
     doc_topics_mat = lda_v.doc_topics(docs)
+    docs = get_docs(docs, id_as_key=True)
 
     js = []
     for doc_prob, topics in zip(data, doc_topics_mat):
         doc, prob = doc_prob
-        js.append({'doc' : doc, 'label': label(doc), 'prob' : 1-prob,
+        struct = docs[doc]
+        struct.update({'prob' : 1-prob,
             'topics' : dict([(str(t), p) for t,p in topics])})
+        js.append(struct)
 
     return json.dumps(js)
 
@@ -109,12 +112,15 @@ def doc_topics(doc_id, N=40):
    
     docs = [doc for doc,prob in data]
     doc_topics_mat = lda_v.doc_topics(docs)
+    docs = get_docs(docs, id_as_key=True)
 
     js = []
     for doc_prob, topics in zip(data, doc_topics_mat):
         doc, prob = doc_prob
-        js.append({'doc' : doc, 'label': label(doc), 'prob' : 1-prob,
+        struct = docs[doc]
+        struct.update({'prob' : 1-prob,
             'topics' : dict([(str(t), p) for t,p in topics])})
+        js.append(struct)
 
     return json.dumps(js)
 
@@ -147,21 +153,40 @@ def topics():
 
 @route('/docs.json')
 @_set_acao_headers
-def docs():
+def docs(docs=None, query=None):
     response.content_type = 'application/json; charset=UTF8'
     response.set_header('Expires', _cache_date())
 
-    docs = lda_v.corpus.view_metadata(context_type)[doc_label_name(context_type)]
-    ctx_md = lda_v.corpus.view_metadata(context_type)
-    js = list()
-    for doc, md in zip(docs, ctx_md):
-        js.append({
-            'id': doc,
-            'label' : label(doc),
-            'metadata' : dict(zip(md.dtype.names, [str(m) for m in md]))
-        })
+    js = get_docs(docs)
 
     return json.dumps(js)
+
+def get_docs(docs=None, id_as_key=False):
+    ctx_md = lda_v.corpus.view_metadata(context_type)
+    
+    # get metadata for all documents
+    if docs is None:
+        docs = lda_v.corpus.view_metadata(context_type)[doc_label_name(context_type)]
+
+    # filter to metadata for selected docs
+    if docs is not None:
+        ids = [lda_v.corpus.meta_int(context_type, {doc_label_name(context_type) : doc} ) for doc in docs]
+        ctx_md = ctx_md[ids]
+    
+    js = dict() if id_as_key else list()
+
+    for doc, md in zip(docs, ctx_md):
+        struct = {
+            'id': doc,
+            'label' : label(doc),
+            'metadata' : dict(zip(md.dtype.names, [str(m) for m in md])) }
+        if id_as_key:
+            js[doc] = struct
+        else:
+            js.append(struct)
+
+    return js
+
 
 if __name__ == '__main__':
     from argparse import ArgumentParser

@@ -323,7 +323,7 @@ function computeHeight(data, numLegendRows) {
   height = (data.length * 20);// - margin.top - margin.bottom;
   y = d3.scale.ordinal()
    .rangeRoundBands([0, height], .1, 0);
-  y.domain(data.map(function(d) { return d.doc; }));
+  y.domain(data.map(function(d) { return d.id; }));
   yAxis = d3.svg.axis()
     .scale(y)
     .orient("left");
@@ -492,15 +492,15 @@ $.getJSON('/docs.json', function(data) {
             $('text', this).attr('text-decoration', 'underline')
               .attr('font-weight', 'bold');     
             svg.selectAll(".doc")
-              .filter(function(doc,i) { return doc.doc == d})
-              .attr("class", function(d) { return (d.doc == docid ? "doc primary" : "doc") + " hover"}); 
+              .filter(function(doc,i) { return doc.id == d})
+              .attr("class", function(d) { return (d.id == docid ? "doc primary" : "doc") + " hover"}); 
             })
           .on("mouseleave", function(d) { 
             $('text',this).removeAttr('text-decoration')
               .removeAttr('font-weight'); 
             svg.selectAll(".doc")
-              .filter(function(doc,i) { return doc.doc == d})
-              .attr("class", function(d) { return d.doc == docid ? "doc primary" : "doc"}); 
+              .filter(function(doc,i) { return doc.id == d})
+              .attr("class", function(d) { return d.id == docid ? "doc primary" : "doc"}); 
             });
     
       for (var i = 0; i < icons.length; i++) {
@@ -511,19 +511,19 @@ $.getJSON('/docs.json', function(data) {
       var doc = svg.selectAll("doc")
           .data(data)
         .enter().append("g")
-          .attr("class", function(d) { return d.doc == docid ? "doc primary" : "doc"})
-          .attr("transform", function(d) { return "translate(10," + y(d.doc) + ")"; })
+          .attr("class", function(d) { return d.id == docid ? "doc primary" : "doc"})
+          .attr("transform", function(d) { return "translate(10," + y(d.id) + ")"; })
           .on("mouseover", function(d) {
-              var tick = $("text:contains(" + d.doc +")")
-                .filter(function() {return $(this).text().trim() == d.doc })
+              var tick = $("text:contains(" + d.id +")")
+                .filter(function() {return $(this).text().trim() == d.id })
                 .attr("font-weight", "bold");
               icons.reduce(function(prev,cur) {
                 return prev.next(".{0}Icon".format(cur)).css('opacity', '1.0');
               }, tick);
             })
           .on("mouseout", function(d) {
-              var tick = $("text:contains(" + d.doc +")")
-                .filter(function() {return $(this).text().trim() == d.doc })
+              var tick = $("text:contains(" + d.id +")")
+                .filter(function() {return $(this).text().trim() == d.id })
                 .attr("font-weight", "normal");
               icons.reduce(function(prev, cur) {
                 return prev.next(".{0}Icon".format(cur)).css('opacity', '');
@@ -722,7 +722,7 @@ $.getJSON('/docs.json', function(data) {
     dataset = dataset.sort(sortFn);
 
     var y0 = y.domain(dataset
-        .map(function(d) { return d.doc; }))
+        .map(function(d) { return d.id; }))
         .copy();
 
     var transition = svg.transition().duration(500),
@@ -730,8 +730,8 @@ $.getJSON('/docs.json', function(data) {
 
     transition.selectAll(".doc")
         .delay(delay)
-        .attr("transform", function(d) { return "translate(10," + y(d.doc) + ")"; });
-        //.attr("y", function(d) { return y(d.doc); });
+        .attr("transform", function(d) { return "translate(10," + y(d.id) + ")"; });
+        //.attr("y", function(d) { return y(d.id); });
 
     transition.select(".y.axis")
         .call(yAxis)
@@ -743,7 +743,7 @@ $.getJSON('/docs.json', function(data) {
   function alphabetSort() {
     // Copy-on-write since tweens are evaluated after a delay.
     if (this.checked)
-      sortDataset(function(a, b) { return d3.ascending(a.doc, b.doc); });
+      sortDataset(function(a, b) { return d3.ascending(a.id, b.id); });
     else
       sortDataset(function(a, b) { return b.prob - a.prob; });
   }
