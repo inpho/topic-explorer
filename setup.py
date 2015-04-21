@@ -27,11 +27,14 @@ setup(
         "Topic :: Software Development :: User Interfaces",
         "Topic :: Text Processing :: Linguistic",
         ],
+    packages=['topicexplorer'],
     install_requires=[
         'bottle>=0.12', 
         'brewer2mpl>=1.4',
         'pystache>=0.5.4',
         'vsm==0.2',
+        'wget',
+        'unidecode',
         ],
     dependency_links=[
         'https://github.com/inpho/vsm/archive/master.zip#egg=vsm-0.2',

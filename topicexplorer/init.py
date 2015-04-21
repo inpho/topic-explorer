@@ -1,0 +1,157 @@
+from ConfigParser import RawConfigParser as ConfigParser
+import os
+import os.path
+
+from vsm.corpus import Corpus
+from vsm.corpus.util.corpusbuilders import coll_corpus, dir_corpus, toy_corpus
+
+def get_corpus_filename(corpus_path, model_path, nltk_stop=True, stop_freq=1,
+			context_type='document'):
+    corpus_name = os.path.basename(corpus_path)
+    if not corpus_name:
+        corpus_name = os.path.basename(os.path.dirname(corpus_path))
+    if nltk_stop and stop_freq:
+        filename = '%s-nltk-en-freq%d.npz' % (corpus_name, stop_freq)
+    elif stop_freq:
+        filename = '%s-freq%d.npz' % (corpus_name, stop_freq)
+    else:
+        filename = '%s.npz' % corpus_name
+    return os.path.join(model_path, filename)
+
+
+def build_corpus(corpus_path, model_path, nltk_stop=True, stop_freq=1,
+    context_type='document', ignore=['.json','.log','.err','.pickle','.npz']):
+    if os.path.isfile(corpus_path):
+        print "Constructing toy corpus, each line is a document"
+        c = toy_corpus(corpus_path, is_filename=True, nltk_stop=nltk_stop, 
+                       stop_freq=stop_freq, context_type=context_type)
+    elif os.path.isdir(corpus_path):
+        contents = os.listdir(corpus_path)
+        contents = [os.path.join(corpus_path,obj) for obj in contents 
+            if not any([obj.endswith(suffix) for suffix in ignore])]
+        count_dirs = len(filter(os.path.isdir, contents))
+        count_files = len(filter(os.path.isfile, contents))
+
+        print "Detected %d folders and %d files in %s" %\
+            (count_dirs, count_files, corpus_path)
+
+        if count_files > 0 and count_dirs == 0:
+            print "Constructing directory corpus, each file is a document"
+            c = dir_corpus(corpus_path, nltk_stop=nltk_stop,
+                           stop_freq=stop_freq, chunk_name=context_type,
+                           ignore=ignore)
+        elif count_dirs > 0 and count_files == 0:
+            print "Constructing collection corpus, each folder is a document"
+            context_type='book'
+            c = coll_corpus(corpus_path, nltk_stop=nltk_stop,
+                            stop_freq=stop_freq, ignore=ignore)
+        else:
+            raise IOError("Invalid Path: empty directory")
+    else:
+        raise IOError("Invalid path")
+
+    filename = get_corpus_filename(
+        corpus_path, model_path, nltk_stop, stop_freq, context_type)
+    c.save(filename)
+    return filename 
+
+def main(args):
+    if args.model_path is None:
+        args.model_path = os.path.join(args.corpus_path, '../models/')
+    if not os.path.exists(args.model_path):
+        os.makedirs(args.model_path)
+
+    corpus_name = os.path.basename(args.corpus_path)
+    if not corpus_name:
+        corpus_name = os.path.basename(os.path.dirname(args.corpus_path))
+
+    if args.htrc:
+        import vsm.extensions.htrc as htrc
+        htrc.proc_htrc_coll(args.corpus_path)
+        
+        import json
+        data = [(id, htrc.metadata(id)) for id in os.listdir(args.corpus_path)
+                    if os.path.isdir(id)]
+        data = dict(data)
+        md_filename = os.path.join(args.corpus_path, '../metadata.json')
+        with open(md_filename, 'wb') as outfile:
+            json.dump(data, outfile)
+  
+    args.corpus_filename = get_corpus_filename(
+        args.corpus_path, args.model_path, stop_freq=5)
+    if not args.rebuild and os.path.exists(args.corpus_filename): 
+        while args.rebuild not in ['y', 'n', True]:
+            args.rebuild = raw_input("\nCorpus file found. Rebuild? [y/N] ")
+            if args.rebuild == 'y':
+	        args.rebuild = True
+            elif args.rebuild.strip() == '':
+                args.rebuild = 'n'
+    else:
+        args.rebuild = True
+    if args.rebuild == True:
+        try:
+            args.corpus_filename = build_corpus(args.corpus_path, args.model_path, 
+                                           stop_freq=5)
+        except IOError:
+            print "ERROR: invalid path, please specify either:"
+            print "  * a single plain-text file,"
+            print "  * a folder of plain-text files, or"
+            print "  * a folder of folders of plain-text files."
+            print "\nExiting..."
+            sys.exit(74)
+    
+    args.corpus_name = os.path.basename(args.corpus_path)
+    if not corpus_name:
+        args.corpus_name = os.path.basename(os.path.dirname(args.corpus_path))
+
+    write_config(args, args.config_file)
+
+
+def write_config(args, config_file=None):
+    """
+    If config_file is None, then a name is automatically generated
+    """
+    config = ConfigParser()
+    config.add_section("main")
+    config.set("main", "path", args.model_path)
+    config.set("main", "corpus_file", args.corpus_filename)
+    
+    config.add_section("www")
+    config.set("www", "corpus_name", "Deafult")
+    config.set("www", "icons", "link")
+    
+    config.add_section("logging")
+    config.set("logging","path","logs/%s/{0}.log" % args.corpus_name)
+
+    if args.htrc:
+        config.set("main","label_module","extensions.htrc")
+        config.set("www","corpus_name","HTRC Data Capsule")
+        config.set("www","doc_title_format",'<a href="{1}">{0}</a>')
+        config.set("www","doc_url_format", 'http://hdl.handle.net/2027/{0}')
+        config.set("www", "icons", "htrc,link")
+
+    if config_file is None:
+        config_file = args.corpus_name + ".ini"
+
+        config_i = 0
+        while os.path.exists(config_file):
+            config_file = args.corpus_name + ".%d.ini" % config_i
+            config_i += 1
+
+    print "Writing configuration file", config_file
+    with open(config_file, "wb") as configfh:
+        config.write(configfh)
+    
+
+if __name__ == '__main__': 
+    from argparse import ArgumentParser
+    parser = ArgumentParser()
+    parser.add_argument("corpus_path", help="Path to Corpus")
+    parser.add_argument("--config_path", 
+        help="Configuration file path [Default: [corpus_path]/../[corpus].ini")
+    parser.add_argument("--model-path", dest="model_path",
+        help="Model Path [Default: [corpus_path]/../models]")
+    parser.add_argument("--htrc", action="store_true")
+    args = parser.parse_args()
+    
+    main(args)

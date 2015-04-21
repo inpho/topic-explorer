@@ -1,4 +1,5 @@
 #!/usr/bin/python27
+from topicexplorer import init, train
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
@@ -10,12 +11,49 @@ if __name__ == '__main__':
     # Init Parser
     parser_init = parsers.add_parser('init', help="Initialize the topic explorer")
     parser_init.add_argument("corpus_path", help="Path to Corpus")
+    parser_init.add_argument("config_file", nargs="?", 
+        help="Path to Config [optional]")
+    parser_init.add_argument("--model-path", dest="model_path",
+        help="Model Path [Default: [corpus_path]/../models]")
+    parser_init.add_argument("--rebuild", action="store_true")
+    parser_init.add_argument("--htrc", action="store_true")
     parser_init.set_defaults(func="init")
     
     # Prep Parser
-    parser_prep = parsers.add_parser('prep', help="Prep the topic explorer")
-    parser_prep.add_argument("config_path", help="Path to Config")
+    parser_prep = parsers.add_parser('prep', help="Prep the corpus")
+    parser_prep.add_argument("config_file", help="Path to Config")
     parser_prep.set_defaults(func="prep")
+
+    # Train Parser
+    parser_train = parsers.add_parser('train', help="Train the LDA models")
+    parser_train.add_argument("config_file", help="Path to Config")
+    parser_train.add_argument("--context-type", dest='context_type',
+        help="Level of corpus modeling, prompts if not set")
+    parser_train.add_argument("-p", "--processes", default=2, type=int,
+        help="Number of CPU cores for training [Default: 2]")
+    parser_train.add_argument("--seed", default=None, type=int,
+        help="Random seed for topic modeling [Default: None]")
+    parser_train.add_argument("-k", nargs='+',
+        help="K values to train upon", type=int)
+    parser_train.add_argument('--iter', type=int,
+        help="Number of training iterations")
+    parser_train.set_defaults(func="train")
+    
+    # Launch Parser
+    parser_train = parsers.add_parser('launch', help="Train the LDA models")
     
     args = parser.parse_args()
-    print "Running vsm", args.func
+
+    if args.func == 'init':
+        init.main(args)
+        
+        print "\nTIP: Only initalizing corpus object and config file."
+        print "     Next prepare the corpus using:"
+        print "     vsm prep", args.config_file
+
+
+    elif args.func == 'train':
+        train.main(args)
+        
+        print "\nTIP: launch the topic explorer with:"
+        print "     vsm launch", args.config_file

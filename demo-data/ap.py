@@ -72,9 +72,9 @@ for doc in docs:
 if os.path.exists("ap"):
     print "Folder 'ap' already exists!"
     remove = None
-    while remove is None or not (remove.startswith('y') or remove.startwith('n')):
+    while remove is None or not (remove.startswith('y') or remove.startswith('n')):
         remove = raw_input("Remove? [Y/n] ")
-        remove = remove.lower()
+        remove = remove.strip().lower()
         if remove == '' or remove.startswith('y'):
             shutil.rmtree("ap")
         elif remove.startswith('n'):
