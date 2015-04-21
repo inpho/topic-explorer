@@ -15,10 +15,10 @@ from vsm.viewer.ldagibbsviewer import LDAGibbsViewer as LDAViewer
 from vsm.viewer.wrappers import doc_label_name
 
 from bottle import request, response, route, run, static_file
-from bottle_ssl import SSLWSGIRefServer
+from topicexplorer.lib.ssl import SSLWSGIRefServer
 
 import pystache
-import colorlib
+import topicexplorer.lib.color as colorlib
 
 def _set_acao_headers(f):
     """

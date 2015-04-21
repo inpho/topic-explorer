@@ -27,7 +27,7 @@ setup(
         "Topic :: Software Development :: User Interfaces",
         "Topic :: Text Processing :: Linguistic",
         ],
-    packages=['topicexplorer'],
+    packages=['topicexplorer', 'topicexplorer.lib'],
     install_requires=[
         'bottle>=0.12', 
         'brewer2mpl>=1.4',
