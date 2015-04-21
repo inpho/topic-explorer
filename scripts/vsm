@@ -1,0 +1,21 @@
+#!/usr/bin/python27
+
+if __name__ == '__main__':
+    from argparse import ArgumentParser
+    from ConfigParser import RawConfigParser as ConfigParser
+
+    parser = ArgumentParser()
+    parsers = parser.add_subparsers(help="select a command")
+
+    # Init Parser
+    parser_init = parsers.add_parser('init', help="Initialize the topic explorer")
+    parser_init.add_argument("corpus_path", help="Path to Corpus")
+    parser_init.set_defaults(func="init")
+    
+    # Prep Parser
+    parser_prep = parsers.add_parser('prep', help="Prep the topic explorer")
+    parser_prep.add_argument("config_path", help="Path to Config")
+    parser_prep.set_defaults(func="prep")
+    
+    args = parser.parse_args()
+    print "Running vsm", args.func

@@ -36,5 +36,6 @@ setup(
     dependency_links=[
         'https://github.com/inpho/vsm/archive/master.zip#egg=vsm-0.2',
         ],
+    scripts=['scripts/vsm']
 )
 
