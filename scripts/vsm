@@ -45,15 +45,15 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.func == 'init':
-        init.main(args)
+        args.config_file = init.main(args)
         
         print "\nTIP: Only initalizing corpus object and config file."
         print "     Next prepare the corpus using:"
-        print "     vsm prep", args.config_file
+        print "         vsm prep", args.config_file
 
 
     elif args.func == 'train':
         train.main(args)
         
         print "\nTIP: launch the topic explorer with:"
-        print "     vsm launch", args.config_file
+        print "         vsm launch", args.config_file

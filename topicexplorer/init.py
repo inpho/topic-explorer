@@ -104,7 +104,7 @@ def main(args):
     if not corpus_name:
         args.corpus_name = os.path.basename(os.path.dirname(args.corpus_path))
 
-    write_config(args, args.config_file)
+    return write_config(args, args.config_file)
 
 
 def write_config(args, config_file=None):
@@ -133,15 +133,26 @@ def write_config(args, config_file=None):
     if config_file is None:
         config_file = args.corpus_name + ".ini"
 
-        config_i = 0
-        while os.path.exists(config_file):
-            config_file = args.corpus_name + ".%d.ini" % config_i
-            config_i += 1
+        overwrite = None if os.path.exists(config_file) else True
+        while not overwrite:
+            overwrite = raw_input("\nConfig file {0} exists. Overwrite? [Y/n] ".format(config_file))
+            overwrite = overwrite.lower().strip()
+            if overwrite == 'n':
+                config_i = 0
+                while os.path.exists(config_file):
+                    config_file = args.corpus_name + ".%d.ini" % config_i
+                    config_i += 1
+                config_file = raw_input("Enter new filename [default: {0}]: ".format(config_file))\
+                    or config_file
+            elif overwrite == '' or overwrite == 'y':
+                overwrite=True
+
+
 
     print "Writing configuration file", config_file
     with open(config_file, "wb") as configfh:
         config.write(configfh)
-    
+    return config_file
 
 if __name__ == '__main__': 
     from argparse import ArgumentParser
