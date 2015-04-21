@@ -1,5 +1,12 @@
 #!/usr/bin/python27
-from topicexplorer import init, train
+from topicexplorer import init, train, launch, server
+import os.path
+
+def is_valid_filepath(parser, arg):
+    if not os.path.exists(arg):
+        parser.error("The file %s does not exist!" % arg)
+    else:
+        return arg
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
@@ -12,6 +19,7 @@ if __name__ == '__main__':
     parser_init = parsers.add_parser('init', help="Initialize the topic explorer")
     parser_init.add_argument("corpus_path", help="Path to Corpus")
     parser_init.add_argument("config_file", nargs="?", 
+        type=lambda x: is_valid_filepath(parser_init, x),
         help="Path to Config [optional]")
     parser_init.add_argument("--model-path", dest="model_path",
         help="Model Path [Default: [corpus_path]/../models]")
@@ -21,12 +29,14 @@ if __name__ == '__main__':
     
     # Prep Parser
     parser_prep = parsers.add_parser('prep', help="Prep the corpus")
-    parser_prep.add_argument("config_file", help="Path to Config")
+    parser_prep.add_argument("config_file", help="Path to Config",
+        type=lambda x: is_valid_filepath(parser_prep, x))
     parser_prep.set_defaults(func="prep")
 
     # Train Parser
     parser_train = parsers.add_parser('train', help="Train the LDA models")
-    parser_train.add_argument("config_file", help="Path to Config")
+    parser_train.add_argument("config_file", help="Path to Config",
+        type=lambda x: is_valid_filepath(parser_train, x))
     parser_train.add_argument("--context-type", dest='context_type',
         help="Level of corpus modeling, prompts if not set")
     parser_train.add_argument("-p", "--processes", default=2, type=int,
@@ -40,7 +50,36 @@ if __name__ == '__main__':
     parser_train.set_defaults(func="train")
     
     # Launch Parser
-    parser_train = parsers.add_parser('launch', help="Train the LDA models")
+    parser_launch = parsers.add_parser('launch', help="Serve the trained LDA models")
+    parser_launch.add_argument('config_file', help="Configuration file path",
+        type=lambda x: is_valid_filepath(parser_launch, x))
+    parser_launch.add_argument('--no-browser', dest='browser', action='store_false')
+    parser_launch.set_defaults(func="launch")
+
+    # Serve Parser
+    parser_serve = parsers.add_parser('serve', 
+        help="Serve a single LDA model, helper for `vsm launch`,"+
+             "rarely called directly")
+    parser_serve.add_argument('config', type=lambda x: is_valid_filepath(parser_serve, x),
+        help="Configuration file path")
+    parser_serve.add_argument('-k', type=int, required=True,
+        help="Number of Topics")
+    parser_serve.add_argument('-p', dest='port', type=int, 
+        help="Port Number", default=None)
+    parser_serve.add_argument('--host', default=None, help='Hostname')
+    parser_serve.add_argument('--ssl', action='store_true',
+        help="Use SSL (must specify certfile, keyfile, and ca_certs in config)")
+    parser_serve.add_argument('--ssl-certfile', dest='certfile', nargs="?",
+        const='server.pem', default=None,
+        type=lambda x: is_valid_filepath(parser_serve, x),
+        help="SSL certificate file")
+    parser_serve.add_argument('--ssl-keyfile', dest='keyfile', default=None,
+        type=lambda x: is_valid_filepath(parser_serve, x),
+        help="SSL certificate key file")
+    parser_serve.add_argument('--ssl-ca', dest='ca_certs', default=None,
+        type=lambda x: is_valid_filepath(parser_serve, x),
+        help="SSL certificate authority file")
+    parser_serve.set_defaults(func="serve")
     
     args = parser.parse_args()
 
@@ -57,3 +96,9 @@ if __name__ == '__main__':
         
         print "\nTIP: launch the topic explorer with:"
         print "         vsm launch", args.config_file
+
+    elif args.func == 'launch':
+        launch.main(args)
+
+    elif args.func == 'serve':
+        server.main(args)

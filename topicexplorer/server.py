@@ -1,6 +1,8 @@
 from codecs import open
+from ConfigParser import ConfigParser
 import csv
 from datetime import datetime, timedelta
+from importlib import import_module
 import json
 import itertools
 import os.path
@@ -12,12 +14,10 @@ from vsm.model.ldacgsmulti import LdaCgsMulti as LCM
 from vsm.viewer.ldagibbsviewer import LDAGibbsViewer as LDAViewer
 from vsm.viewer.wrappers import doc_label_name
 
-
 from bottle import request, response, route, run, static_file
 from bottle_ssl import SSLWSGIRefServer
 
 import pystache
-
 import colorlib
 
 def _set_acao_headers(f):
@@ -160,41 +160,8 @@ def docs():
 
     return json.dumps(js)
 
-if __name__ == '__main__':
-    from argparse import ArgumentParser
-    from ConfigParser import ConfigParser
-    from importlib import import_module
-    import os.path
-
-    def is_valid_filepath(parser, arg):
-        if not os.path.exists(arg):
-            parser.error("The file %s does not exist!" % arg)
-        else:
-            return arg
-    
-    # argument parsing
-    parser = ArgumentParser()
-    parser.add_argument('config', type=lambda x: is_valid_filepath(parser, x),
-        help="Configuration file path")
-    parser.add_argument('-k', type=int, required=True,
-        help="Number of Topics")
-    parser.add_argument('-p', dest='port', type=int, 
-        help="Port Number", default=None)
-    parser.add_argument('--host', default=None, help='Hostname')
-    parser.add_argument('--ssl', action='store_true',
-        help="Use SSL (must specify certfile, keyfile, and ca_certs in config)")
-    parser.add_argument('--ssl-certfile', dest='certfile', nargs="?",
-        const='server.pem', default=None,
-        type=lambda x: is_valid_filepath(parser, x),
-        help="SSL certificate file")
-    parser.add_argument('--ssl-keyfile', dest='keyfile', default=None,
-        type=lambda x: is_valid_filepath(parser, x),
-        help="SSL certificate key file")
-    parser.add_argument('--ssl-ca', dest='ca_certs', default=None,
-        type=lambda x: is_valid_filepath(parser, x),
-        help="SSL certificate authority file")
-    args = parser.parse_args()
-
+def main(args):
+    global context_type, lda_c, lda_m, lda_v, label
     # load in the configuration file
     config = ConfigParser({
         'certfile' : None,
@@ -311,3 +278,37 @@ if __name__ == '__main__':
     else:
         run(host=host, port=port)
 
+
+if __name__ == '__main__':
+    from argparse import ArgumentParser
+
+    def is_valid_filepath(parser, arg):
+        if not os.path.exists(arg):
+            parser.error("The file %s does not exist!" % arg)
+        else:
+            return arg
+    
+    # argument parsing
+    parser = ArgumentParser()
+    parser.add_argument('config', type=lambda x: is_valid_filepath(parser, x),
+        help="Configuration file path")
+    parser.add_argument('-k', type=int, required=True,
+        help="Number of Topics")
+    parser.add_argument('-p', dest='port', type=int, 
+        help="Port Number", default=None)
+    parser.add_argument('--host', default=None, help='Hostname')
+    parser.add_argument('--ssl', action='store_true',
+        help="Use SSL (must specify certfile, keyfile, and ca_certs in config)")
+    parser.add_argument('--ssl-certfile', dest='certfile', nargs="?",
+        const='server.pem', default=None,
+        type=lambda x: is_valid_filepath(parser, x),
+        help="SSL certificate file")
+    parser.add_argument('--ssl-keyfile', dest='keyfile', default=None,
+        type=lambda x: is_valid_filepath(parser, x),
+        help="SSL certificate key file")
+    parser.add_argument('--ssl-ca', dest='ca_certs', default=None,
+        type=lambda x: is_valid_filepath(parser, x),
+        help="SSL certificate authority file")
+    args = parser.parse_args()
+    
+    main(args)

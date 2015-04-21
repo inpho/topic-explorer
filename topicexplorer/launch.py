@@ -1,27 +1,12 @@
-if __name__ == '__main__':
-    from argparse import ArgumentParser
-    from ConfigParser import ConfigParser
-    from importlib import import_module
-    import os, os.path
-    import subprocess
+from ConfigParser import ConfigParser
+import os, os.path
+import signal, sys
+import subprocess
+import time
+import urllib
+import webbrowser
 
-
-
-    # ARGUMENT PARSING
-    def is_valid_filepath(parser, arg):
-        if not os.path.exists(arg):
-            parser.error("The file %s does not exist!" % arg)
-        else:
-            return arg
-    
-    parser = ArgumentParser()
-    parser.add_argument('config', type=lambda x: is_valid_filepath(parser, x),
-        help="Configuration file path")
-    parser.add_argument('--no-browser', dest='browser', action='store_false')
-    args = parser.parse_args()
-
-
-
+def main(args):
     # CONFIGURATION PARSING
     # load in the configuration file
     config = ConfigParser({
@@ -37,15 +22,13 @@ if __name__ == '__main__':
         'doc_url_format' : None,
         'topic_range': None,
         'topics': None})
-    config.read(args.config)
+    config.read(args.config_file)
 
     if config.get('main', 'topic_range'):
         topic_range = map(int, config.get('main', 'topic_range').split(','))
         topic_range = range(*topic_range)
     if config.get('main', 'topics'):
         topic_range = eval(config.get('main', 'topics'))
-
-
 
     # LAUNCHING SERVERS
     # Cross-platform compatability
@@ -64,7 +47,7 @@ if __name__ == '__main__':
         grp_fn = os.setsid
     except AttributeError:
         grp_fn = None
-    procs = [subprocess.Popen("python server.py -k %d %s" % (k, args.config),
+    procs = [subprocess.Popen("vsm serve -k %d %s" % (k, args.config_file),
         shell=True, stdout=get_log_file(k), stderr=subprocess.STDOUT,
         preexec_fn=grp_fn) for k in topic_range]
 
@@ -76,7 +59,6 @@ if __name__ == '__main__':
 
 
     # CLEAN EXIT AND SHUTDOWN OF SERVERS
-    import signal,sys
     def signal_handler(signal,frame):
         print "\n"
         for p in procs:
@@ -92,14 +74,13 @@ if __name__ == '__main__':
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
 
-    import urllib, webbrowser
-    import time
     port = config.get("main","port").format(topic_range[0])
     host = config.get("main","host")
     if host == '0.0.0.0':
         host = 'localhost'
     url = "http://{host}:{port}/".format(host=host,port=port)
 
+    # TODO: Add enhanced port checking
     while True:
         try:
             urllib.urlopen(url)
@@ -110,7 +91,7 @@ if __name__ == '__main__':
     if args.browser:
         webbrowser.open(url)
         print "TIP: Browser launch can be disabled with the '--no-browser' argument:"
-        print "python launch.py --no-browser", args.config, "\n"
+        print "vsm launch --no-browser", args.config_file, "\n"
 
     print "Press Ctrl+C to shutdown the Topic Explorer server"
     # Cross-platform Compatability
@@ -120,3 +101,21 @@ if __name__ == '__main__':
         # Windows hack
         while True:
             time.sleep(1)
+
+if __name__ == '__main__':
+    from argparse import ArgumentParser
+
+    # ARGUMENT PARSING
+    def is_valid_filepath(parser, arg):
+        if not os.path.exists(arg):
+            parser.error("The file %s does not exist!" % arg)
+        else:
+            return arg
+    
+    parser = ArgumentParser()
+    parser.add_argument('config', type=lambda x: is_valid_filepath(parser, x),
+        help="Configuration file path")
+    parser.add_argument('--no-browser', dest='browser', action='store_false')
+    args = parser.parse_args()
+
+    main(args)
