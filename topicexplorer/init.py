@@ -1,6 +1,7 @@
 from ConfigParser import RawConfigParser as ConfigParser
 import os
 import os.path
+import sys
 
 from vsm.corpus import Corpus
 from vsm.corpus.util.corpusbuilders import coll_corpus, dir_corpus, toy_corpus

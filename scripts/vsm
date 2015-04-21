@@ -1,5 +1,5 @@
 #!/usr/bin/python27
-from topicexplorer import init, prep, train, server, launch
+from topicexplorer import init, prep, train, server, launch, notebook
 import os.path
 
 def is_valid_filepath(parser, arg):
@@ -17,9 +17,9 @@ if __name__ == '__main__':
 
     # Init Parser
     parser_init = parsers.add_parser('init', help="Initialize the topic explorer")
-    parser_init.add_argument("corpus_path", help="Path to Corpus")
+    parser_init.add_argument("corpus_path", help="Path to Corpus",
+        type=lambda x: is_valid_filepath(parser_init, x))
     parser_init.add_argument("config_file", nargs="?", 
-        type=lambda x: is_valid_filepath(parser_init, x),
         help="Path to Config [optional]")
     parser_init.add_argument("--model-path", dest="model_path",
         help="Model Path [Default: [corpus_path]/../models]")
@@ -85,6 +85,11 @@ if __name__ == '__main__':
         help="SSL certificate authority file")
     parser_serve.set_defaults(func="serve")
     
+    parser_nb = parsers.add_parser('notebook', 
+        help="Create a set of IPython Notebooks")
+    parser_nb.add_argument("config_file", help="Path to Config File")
+    parser_nb.set_defaults(func="notebook")
+    
     args = parser.parse_args()
 
     if args.func == 'init':
@@ -115,4 +120,4 @@ if __name__ == '__main__':
         server.main(args)
 
     elif args.func == 'notebook':
-        pass
+        notebook.main(args)
