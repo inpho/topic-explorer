@@ -218,6 +218,7 @@ def main(args):
             label_module.init(config.get('main','path'))
         except:
             pass
+
         label = label_module.label
     except:
         label = lambda x: x
