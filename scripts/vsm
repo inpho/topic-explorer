@@ -1,5 +1,5 @@
 #!/usr/bin/python27
-from topicexplorer import init, train, launch, server
+from topicexplorer import init, prep, train, server, launch
 import os.path
 
 def is_valid_filepath(parser, arg):
@@ -31,6 +31,10 @@ if __name__ == '__main__':
     parser_prep = parsers.add_parser('prep', help="Prep the corpus")
     parser_prep.add_argument("config_file", help="Path to Config",
         type=lambda x: is_valid_filepath(parser_prep, x))
+    parser_prep.add_argument("--htrc", action="store_true")
+    parser_prep.add_argument("--stopword-file", dest="stopword_file",
+        help="File with custom stopwords")
+    parser_prep.add_argument("--lang", nargs='+', help="Languages to stoplist")
     parser_prep.set_defaults(func="prep")
 
     # Train Parser
@@ -89,7 +93,14 @@ if __name__ == '__main__':
         print "\nTIP: Only initalizing corpus object and config file."
         print "     Next prepare the corpus using:"
         print "         vsm prep", args.config_file
+        print "     Or skip directly to training LDA models using:"
+        print "         vsm train", args.config_file
 
+    elif args.func == 'prep':
+        prep.main(args)
+        
+        print "\nTIP: Train the LDA models with:"
+        print "         vsm train", args.config_file
 
     elif args.func == 'train':
         train.main(args)
@@ -102,3 +113,6 @@ if __name__ == '__main__':
 
     elif args.func == 'serve':
         server.main(args)
+
+    elif args.func == 'notebook':
+        pass
