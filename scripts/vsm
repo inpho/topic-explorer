@@ -84,7 +84,8 @@ if __name__ == '__main__':
         type=lambda x: is_valid_filepath(parser_serve, x),
         help="SSL certificate authority file")
     parser_serve.set_defaults(func="serve")
-    
+   
+    # Notebook Parser
     parser_nb = parsers.add_parser('notebook', 
         help="Create a set of IPython Notebooks")
     parser_nb.add_argument("config_file", help="Path to Config File")

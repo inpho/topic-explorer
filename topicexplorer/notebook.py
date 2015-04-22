@@ -6,8 +6,11 @@ from string import Template
 
 def main(args):
     args.config_file = os.path.abspath(args.config_file)
-    
-    with open("ipynb/corpus.tmpl.py") as corpustmpl:
+   
+    template_dir = os.path.dirname(__file__)
+    template_dir = os.path.join(template_dir, '../ipynb/')
+    template_dir = os.path.normpath(template_dir)
+    with open(os.path.join(template_dir, 'corpus.tmpl.py')) as corpustmpl:
         corpus_py = corpustmpl.read()
         corpus_py = Template(corpus_py)
         corpus_py = corpus_py.safe_substitute(config_file=args.config_file)
@@ -31,7 +34,7 @@ def main(args):
     with open(filename,'w') as corpusloader:
         corpusloader.write(corpus_py)
 
-    for notebook in glob('ipynb/*.ipynb'):
+    for notebook in glob(os.path.join(template_dir, '*.ipynb')):
         print "Copying", notebook
         shutil.copy(notebook, ipynb_path)
 
