@@ -16,7 +16,7 @@ def stop_language(c, language):
     return c.apply_stoplist(words)
 
 def main(args):
-    config = ConfigParser()
+    config = ConfigParser({"htrc": False})
     config.read(args.config_file)
     args.corpus_path = config.get("main", "corpus_file")
 
@@ -34,7 +34,7 @@ def main(args):
         args.lang = []
     
     # check for htrc metadata
-    if args.htrc:
+    if args.htrc or config.get("main","htrc"):
         metadata_path = os.path.dirname(args.corpus_path)
         metadata_path = os.path.join(metadata_path, '../metadata.json')
         if os.path.exists(metadata_path):

@@ -131,6 +131,7 @@ def write_config(args, config_file=None):
         config.set("www","doc_title_format",'<a href="{1}">{0}</a>')
         config.set("www","doc_url_format", 'http://hdl.handle.net/2027/{0}')
         config.set("www", "icons", "htrc,link")
+        config.set("main", "htrc", True)
 
     if config_file is None:
         config_file = args.corpus_name + ".ini"
