@@ -2,6 +2,9 @@
 [![Build Status](https://travis-ci.org/inpho/topic-explorer.svg?branch=master)](https://travis-ci.org/inpho/topic-explorer)
 [![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/inpho/topic-explorer/blob/master/LICENSE.txt)
 
+[![PyPI](https://img.shields.io/pypi/v/topicexplorer.svg)](https://pypi.python.org/pypi/topicexplorer)
+[![PyPI](https://img.shields.io/pypi/dm/topicexplorer.svg)](https://pypi.python.org/pypi/topicexplorer)
+
 This interactive visualization displays information from the LDA topic models generated using the [InPhO VSM module](http://github.com/inpho/vsm/). Live demos trained on the Stanford Encyclopedia of Philosophy, a selection of books from the HathiTrust Digital Library, and the original LDA training set of Associated Press articles are available at [http://inphodata.cogs.indiana.edu](http://inphodata.cogs.indiana.edu/).
 
 The color bands within each article's row show the topic distribution within that article, and the relative sizes of each band indicates the weight of that topic in the article. The total width of each row indicates similarity to the focal topic or document, measured by the quantity sim(doc) = 1 – JSD(doc, focus entity), where JSD is the Jensen-Shannon distance between the word probability distributions of each item. Each topic's label and color is arbitrarily assigned, but is consistent across articles in the browser.
@@ -10,8 +13,9 @@ Display options include topic normalization, alphabetical sort and topic sort. B
 
 ## Installation
 **Quick Install**
+
 1.  Install the [Anaconda Python 2.7 Distribution](http://contiuum.io/downloads). 
-2.  Open a terminal and run `pip install topicexplorer`.
+2.  Open a terminal and run `pip install topicexplorer==1.0b1`.
 
 ## Usage
 1.  Initialize the Topic Explorer on a file, folder of text files, or folder of folders:
