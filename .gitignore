@@ -13,4 +13,5 @@ demo-data/ap/*
 demo-data/models/*
 
 build/
+dist/
 topicexplorer.egg-info
