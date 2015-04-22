@@ -38,6 +38,17 @@ def main(args):
         print "Copying", notebook
         shutil.copy(notebook, ipynb_path)
 
+    if args.launch:
+        import subprocess, sys
+        os.chdir(ipynb_path)
+        try:
+            # TODO: Fix KeyboardInterrupt errors
+            subprocess.call(["ipython","notebook"])
+        except OSError:
+            print "ERROR: Command `ipython notebook` not found."
+            print "       If IPython or Anaconda is installed, check your PATH variable."
+            sys.exit(1)
+
 if __name__ == '__main__':
     from argparse import ArgumentParser
     parser = ArgumentParser()

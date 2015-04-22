@@ -89,6 +89,7 @@ if __name__ == '__main__':
     parser_nb = parsers.add_parser('notebook', 
         help="Create a set of IPython Notebooks")
     parser_nb.add_argument("config_file", help="Path to Config File")
+    parser_nb.add_argument('--no-launch', dest='launch', action='store_false')
     parser_nb.set_defaults(func="notebook")
     
     args = parser.parse_args()
