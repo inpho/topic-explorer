@@ -127,7 +127,7 @@ def main(args):
     args.corpus_path = os.path.join(model_path, corpus_name) 
     c.save(args.corpus_path)
 
-    config.set("main", "corpus_path", args.corpus_path)
+    config.set("main", "corpus_file", args.corpus_path)
     with open(args.config_file, 'wb') as configfh:
         config.write(configfh)
 
