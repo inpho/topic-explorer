@@ -4,8 +4,8 @@ from vsm.viewer.wrappers import doc_label_name
 import os.path
 
 # load in the configuration file
-from ConfigParser import SafeConfigParser as ConfigParser
-config_file = "$config_file" 
+from ConfigParser import ConfigParser as ConfigParser
+config_file = r"$config_file" 
 config = ConfigParser({
         'topic_range': None,
         'topics': None})
