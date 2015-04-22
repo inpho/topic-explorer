@@ -12,7 +12,7 @@ Display options include topic normalization, alphabetical sort and topic sort. B
 ## Installation
 **Quick Install**
 
-1.  Install the [Anaconda Python 2.7 Distribution](http://contiuum.io/downloads). 
+1.  Install the [Anaconda Python 2.7 Distribution](http://continuum.io/downloads). 
 2.  Open a terminal and run `pip install topicexplorer==1.0b1`.
 
 ## Usage
