@@ -83,9 +83,10 @@ def main(args):
     if not args.rebuild and os.path.exists(args.corpus_filename): 
         while args.rebuild not in ['y', 'n', True]:
             args.rebuild = raw_input("\nCorpus file found. Rebuild? [y/N] ")
+            args.rebuild = args.rebuild.lower().strip()
             if args.rebuild == 'y':
 	        args.rebuild = True
-            elif args.rebuild.strip() == '':
+            elif args.rebuild == '':
                 args.rebuild = 'n'
     else:
         args.rebuild = True
