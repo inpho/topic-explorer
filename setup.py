@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='topicexplorer',
-    version='0.2',
+    version='1.0b1',
     description='InPhO Topic Explorer',
     author = "The Indiana Philosophy Ontology (InPhO) Project",
     author_email = "inpho@indiana.edu",
@@ -17,9 +17,8 @@ setup(
         "Development Status :: 4 - Beta",
         "Environment :: Web Environment",
         "Framework :: Bottle",
-        "Intended Audience :: Developers",
         "Intended Audience :: Science/Research",
-        # "License :: OSI Approved :: MIT License", TBD
+        "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
