@@ -6,6 +6,20 @@ import sys
 import time
 from string import Template
 
+def overwrite_prompt(filename):
+    if os.path.exists(filename):
+        overwrite = False
+        while overwrite not in ['y', 'n', True]:
+            overwrite = raw_input("\nOverwrite {0}? [Y/n] ".format(filename))
+            overwrite = overwrite.lower().strip()
+            if overwrite == 'y' or overwrite == '':
+                return True
+        return False
+    else:
+        return True
+
+    
+
 def main(args):
     args.config_file = os.path.abspath(args.config_file)
    
@@ -23,23 +37,17 @@ def main(args):
         os.makedirs(ipynb_path)
 
     filename = os.path.join(ipynb_path, "corpus.py")
-    
-    if os.path.exists(filename):
-        overwrite = False
-        while overwrite not in ['y', 'n', True]:
-            overwrite = raw_input("\nOverwrite {0}? [Y/n] ".format(filename))
-            overwrite = overwrite.lower().strip()
-            if overwrite == 'y' or overwrite == '':
-                overwrite = True
 
-    if overwrite == True:
+    if overwrite_prompt(filename):
         print "Writing", filename
         with open(filename,'w') as corpusloader:
             corpusloader.write(corpus_py)
 
     for notebook in glob(os.path.join(template_dir, '*.ipynb')):
-        print "Copying", notebook
-        shutil.copy(notebook, ipynb_path)
+        new_nb_path = os.path.join(ipynb_path, os.path.basename(notebook))
+        if overwrite_prompt(new_nb_path):
+            print "Copying", notebook
+            shutil.copy(notebook, ipynb_path)
 
     if args.launch:
         import subprocess, sys
@@ -70,7 +78,8 @@ def main(args):
     
         signal.signal(signal.SIGINT, signal_handler)
         signal.signal(signal.SIGTERM, signal_handler)
-        print "Press Ctrl+C to shutdown the IPython notebook server\n"
+
+        print "\nPress Ctrl+C to shutdown the IPython notebook server\n"
 
         # Cross-platform Compatability
         try:
