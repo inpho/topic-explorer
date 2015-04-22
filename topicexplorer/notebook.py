@@ -1,4 +1,6 @@
+from glob import glob
 import os, os.path
+import shutil
 import sys
 from string import Template
 
@@ -29,7 +31,9 @@ def main(args):
     with open(filename,'w') as corpusloader:
         corpusloader.write(corpus_py)
 
-    # TODO: copy over notebook templates
+    for notebook in glob('ipynb/*.ipynb'):
+        print "Copying", notebook
+        shutil.copy(notebook, ipynb_path)
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
