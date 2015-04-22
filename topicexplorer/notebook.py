@@ -1,7 +1,9 @@
 from glob import glob
 import os, os.path
+import signal
 import shutil
 import sys
+import time
 from string import Template
 
 def main(args):
@@ -24,15 +26,16 @@ def main(args):
     
     if os.path.exists(filename):
         overwrite = False
-        while overwrite not in ['y', 'n']:
-            overwrite = raw_input("\nOverwrite {0}? [y/n] ".format(filename))
-            if overwrite == 'n':
-                print "Exiting."
-                sys.exit()
+        while overwrite not in ['y', 'n', True]:
+            overwrite = raw_input("\nOverwrite {0}? [Y/n] ".format(filename))
+            overwrite = overwrite.lower().strip()
+            if overwrite == 'y' or overwrite == '':
+                overwrite = True
 
-    print "Writing", filename
-    with open(filename,'w') as corpusloader:
-        corpusloader.write(corpus_py)
+    if overwrite == True:
+        print "Writing", filename
+        with open(filename,'w') as corpusloader:
+            corpusloader.write(corpus_py)
 
     for notebook in glob(os.path.join(template_dir, '*.ipynb')):
         print "Copying", notebook
@@ -43,11 +46,40 @@ def main(args):
         os.chdir(ipynb_path)
         try:
             # TODO: Fix KeyboardInterrupt errors
-            subprocess.call(["ipython","notebook"])
+            try:
+                grp_fn = os.setsid
+            except AttributeError:
+                grp_fn = None
+            proc = subprocess.Popen("ipython notebook", shell=True, preexec_fn=grp_fn)
+                #stdin=subprocess.PIPE, preexec_fn=grp_fn)
+                #stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+
         except OSError:
             print "ERROR: Command `ipython notebook` not found."
             print "       If IPython or Anaconda is installed, check your PATH variable."
             sys.exit(1)
+
+        # CLEAN EXIT AND SHUTDOWN OF IPYTHON NOTEBOOK
+        def signal_handler(signal,frame):
+            # Cross-Platform Compatability
+            try:
+                os.killpg(proc.pid, signal)
+                proc.communicate()
+            except AttributeError:
+                subprocess.call(['taskkill', '/F', '/T', '/PID', str(p.pid)])    
+    
+        signal.signal(signal.SIGINT, signal_handler)
+        signal.signal(signal.SIGTERM, signal_handler)
+        print "Press Ctrl+C to shutdown the IPython notebook server\n"
+
+        # Cross-platform Compatability
+        try:
+            signal.pause()
+        except AttributeError:
+            # Windows hack
+            while True:
+                time.sleep(1)
+    
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
