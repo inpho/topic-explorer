@@ -8,11 +8,9 @@ install:
   # install deps
   - sudo conda init
   # sudo conda update conda --yes
-  - conda create -p $HOME/py --yes pip numpy scipy "python=$TRAVIS_PYTHON_VERSION"
+  - conda create -p $HOME/py --yes pip numpy scipy nltk unidecode "python=$TRAVIS_PYTHON_VERSION"
   - export PATH=$HOME/py/bin:$PATH
   # command to install dependencies
-  - pip install unidecode nltk wget
-  - pip install -r requirements.txt
   - pip install .
 # command to run tests
 script: 
