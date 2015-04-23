@@ -1,10 +1,19 @@
 #!/usr/bin/env python
 
 from setuptools import setup
+import os
+
+datadir = 'www'
+def get_datafiles(datadir):
+    return [(root, [os.path.join(root, f) for f in files])
+                for root, dirs, files in os.walk(datadir)]
+
+datafiles = get_datafiles('www')
+datafiles.extend(get_datafiles('ipynb'))
 
 setup(
     name='topicexplorer',
-    version='1.0b3',
+    version='1.0b4',
     description='InPhO Topic Explorer',
     author = "The Indiana Philosophy Ontology (InPhO) Project",
     author_email = "inpho@indiana.edu",
@@ -27,6 +36,7 @@ setup(
         "Topic :: Text Processing :: Linguistic",
         ],
     packages=['topicexplorer', 'topicexplorer.lib', 'topicexplorer.extensions'],
+    data_files=datafiles,
     install_requires=[
         'bottle>=0.12', 
         'brewer2mpl>=1.4',

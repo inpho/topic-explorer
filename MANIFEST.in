@@ -1,6 +1,0 @@
-include www/*
-include ipynb/*
-include README.md
-include LICENSE.txt
-include citation.bib
-include requirements.txt
