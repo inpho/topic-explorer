@@ -227,7 +227,7 @@ def main(args):
 
     @route('/icons.js')
     def icons():
-        with open('www/icons.js') as icons:
+        with open('../www/icons.js') as icons:
             text = '{0}\n var icons = {1};'\
                 .format(icons.read(), json.dumps(config_icons))
         return text
@@ -253,7 +253,7 @@ def main(args):
     def index():
         response.set_header('Expires', _cache_date())
 
-        with open('www/index.mustache.html', encoding='utf8') as tmpl_file:
+        with open('../www/index.mustache.html', encoding='utf8') as tmpl_file:
             template = tmpl_file.read()
         return renderer.render(template, 
             {'corpus_name' : corpus_name,
@@ -267,7 +267,7 @@ def main(args):
     @route('/<filename:path>')
     @_set_acao_headers
     def send_static(filename):
-        return static_file(filename, root='www/')
+        return static_file(filename, root='../www/')
 
     if args.ssl or config.get('main', 'ssl'):
         certfile = args.certfile or config.get('ssl', 'certfile')
