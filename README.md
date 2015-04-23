@@ -16,6 +16,8 @@ Display options include topic normalization, alphabetical sort and topic sort. B
 2.  Open a terminal and run `pip install topicexplorer==1.0b1`.
 
 ## Usage
+![Workflow](http://inphodata.cogs.indiana.edu/img/workflow.png)
+
 1.  Initialize the Topic Explorer on a file, folder of text files, or folder of folders:
 
     ```
