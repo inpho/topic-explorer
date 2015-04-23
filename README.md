@@ -41,26 +41,19 @@ Display options include topic normalization, alphabetical sort and topic sort. B
 See the sample configuration files in the `config` directory for examples of how to extend the topic explorer.
 
 ## Development and Testing
-1.  Clone the [repository](http://github.com/inpho/topic-explorer):
+1.  Clone the [repository](http://github.com/inpho/topic-explorer) and install dependencies:
     
     ```
-    git clone git@github.com:inpho/topic-explorer.git
+    pip install -e git+https://github.com/inpho/topic-explorer#egg=topicexplorer
     ```
 
-2.  Setup the topic-explorer package and install dependencies.
-
-    ```
-    cd topic-explorer
-    python setup.py develop --user
-    ```
-
-3.  Setup the Associated Press sample corpus released with [Blei (2003)](www.cs.princeton.edu/~blei/lda-c/) and train the corpus:
+2.  Setup the Associated Press sample corpus released with [Blei (2003)](www.cs.princeton.edu/~blei/lda-c/) and train the corpus:
 
     ```
     ./demo.sh
     ```
 
-4.  Launch the demo:
+3.  Launch the demo:
 
     ```
     vsm launch ap.ini
