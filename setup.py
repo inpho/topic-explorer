@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='topicexplorer',
-    version='1.0b2',
+    version='1.0b3',
     description='InPhO Topic Explorer',
     author = "The Indiana Philosophy Ontology (InPhO) Project",
     author_email = "inpho@indiana.edu",
@@ -38,6 +38,7 @@ setup(
     dependency_links=[
         'https://github.com/inpho/vsm/archive/master.zip#egg=vsm-0.2',
         ],
-    scripts=['scripts/vsm', 'scripts/htutils']
+    scripts=['scripts/vsm', 'scripts/htutils'],
+    include_package_data=True
 )
 
