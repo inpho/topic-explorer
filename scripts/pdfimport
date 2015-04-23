@@ -1,0 +1,79 @@
+#!/usr/bin/env python
+from cStringIO import StringIO
+from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
+from pdfminer.converter import TextConverter
+from pdfminer.layout import LAParams
+from pdfminer.pdfpage import PDFPage
+
+import os.path
+from glob import glob
+
+def is_valid_filepath(parser, arg):
+    if not os.path.exists(arg):
+        parser.error("The file %s does not exist!" % arg)
+    else:
+        return arg
+
+def overwrite_prompt(filename):
+    if os.path.exists(filename):
+        overwrite = False
+        while overwrite not in ['y', 'n', True]:
+            overwrite = raw_input("\nOverwrite {0}? [Y/n] ".format(filename))
+            overwrite = overwrite.lower().strip()
+            if overwrite == 'y' or overwrite == '':
+                return True
+        return False
+    else:
+        return True
+
+def convert(fname, pages=None):
+    if not pages:
+        pagenums = set()
+    else:
+        pagenums = set(pages)
+
+    output = StringIO()
+    manager = PDFResourceManager()
+    converter = TextConverter(manager, output, laparams=LAParams())
+    interpreter = PDFPageInterpreter(manager, converter)
+
+    infile = file(fname, 'rb')
+    for page in PDFPage.get_pages(infile, pagenums):
+        interpreter.process_page(page)
+    infile.close()
+    converter.close()
+    text = output.getvalue()
+    output.close
+    return text 
+
+def convert_and_write(fname, output_dir=None):
+    output = fname.replace('.pdf','.txt')
+    output = os.path.join(output_dir, output)
+    if output_dir is not None and not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    if overwrite_prompt(output):
+        with open(output, 'w') as outfile:
+            outfile.write(convert(fname))
+        print "converted", fname, "->", output
+
+
+
+if __name__ == '__main__':
+    from argparse import ArgumentParser
+    parser = ArgumentParser()
+
+    parser.add_argument("path", nargs='+', help="PDF file or folder to parse",
+        type=lambda x: is_valid_filepath(parser, x))
+    parser.add_argument("-o", '--output',
+        help="output path [default: same as filename]")
+
+    args = parser.parse_args()
+
+    for path in args.path:
+        if os.path.isdir(path):
+            for pdffile in glob(os.path.join(path, '*.pdf')):
+                convert_and_write(os.path.join(path, pdffile), args.output)
+        else:
+            convert_and_write(path, args.output)
+            

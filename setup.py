@@ -44,11 +44,12 @@ setup(
         'vsm==0.2',
         'wget',
         'unidecode',
+        'pdfminer'
         ],
     dependency_links=[
         'https://github.com/inpho/vsm/archive/master.zip#egg=vsm-0.2',
         ],
-    scripts=['scripts/vsm', 'scripts/htutils'],
+    scripts=['scripts/vsm', 'scripts/htutils', 'scripts/pdfimport'],
     include_package_data=True
 )
 
