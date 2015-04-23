@@ -11,8 +11,8 @@ import re
 from StringIO import StringIO
 
 from vsm.corpus import Corpus
-from vsm.model.ldacgsmulti import LdaCgsMulti as LCM
-from vsm.viewer.ldagibbsviewer import LDAGibbsViewer as LDAViewer
+from vsm.model.lda import LDA
+from vsm.viewer.ldacgsviewer import LdaCgsViewer as LDAViewer
 from vsm.viewer.wrappers import doc_label_name
 
 from bottle import request, response, route, run, static_file
@@ -206,7 +206,7 @@ def main(args):
     lda_v = None
     def load_model(k):
         global lda_m, lda_v
-        lda_m = LCM.load(model_pattern.format(k))
+        lda_m = LDA.load(model_pattern.format(k))
         lda_v = LDAViewer(lda_c, lda_m)
 
     load_model(args.k)
