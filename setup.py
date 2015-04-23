@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='topicexplorer',
-    version='1.0b1',
+    version='1.0b2',
     description='InPhO Topic Explorer',
     author = "The Indiana Philosophy Ontology (InPhO) Project",
     author_email = "inpho@indiana.edu",
