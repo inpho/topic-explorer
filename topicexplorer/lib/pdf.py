@@ -5,6 +5,7 @@ from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
 from pdfminer.pdfpage import PDFPage
 from pdfminer.pdftypes import PDFException
+from pdfminer.psparser import PSException
 
 import os.path
 from glob import glob
@@ -62,7 +63,7 @@ def main(path_or_paths, output_dir=None, verbose=1):
             for file_n, pdffile in enumerate(util.find_files(p, '*.pdf')):
                 try:
                     convert_and_write(pdffile, output_dir, overwrite=True)
-                except PDFException:
+                except (PDFException, PSException):
                     print "Skipping {0} due to PDF Exception".format(pdffile)
 
                 if verbose == 1:
