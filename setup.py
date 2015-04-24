@@ -13,7 +13,7 @@ datafiles.extend(get_datafiles('ipynb'))
 
 setup(
     name='topicexplorer',
-    version='1.0b5',
+    version='1.0b6',
     description='InPhO Topic Explorer',
     author = "The Indiana Philosophy Ontology (InPhO) Project",
     author_email = "inpho@indiana.edu",
@@ -49,7 +49,7 @@ setup(
     dependency_links=[
         'https://github.com/inpho/vsm/archive/master.zip#egg=vsm-0.2',
         ],
-    scripts=['scripts/vsm', 'scripts/htutils'],
-    include_package_data=True
+    scripts=['scripts/vsm', 'scripts/htutils', 'scripts/vsm.bat'],
+    include_package_data=True,
 )
 
