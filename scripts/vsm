@@ -114,6 +114,8 @@ if __name__ == '__main__':
         
         print "\nTIP: launch the topic explorer with:"
         print "         vsm launch", args.config_file
+        print "     or the notebook server with:"
+        print "         vsm notebook", args.config_file
 
     elif args.func == 'launch':
         launch.main(args)

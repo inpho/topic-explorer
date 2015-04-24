@@ -11,9 +11,10 @@ def get_datafiles(datadir):
 datafiles = get_datafiles('www')
 datafiles.extend(get_datafiles('ipynb'))
 
+print datafiles
 setup(
     name='topicexplorer',
-    version='1.0b6',
+    version='1.0b7',
     description='InPhO Topic Explorer',
     author = "The Indiana Philosophy Ontology (InPhO) Project",
     author_email = "inpho@indiana.edu",
