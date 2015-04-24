@@ -21,7 +21,7 @@ class wx_smart_install_data(distutils.command.install_data.install_data):
 
 setup(
     name='topicexplorer',
-    version='1.0b9',
+    version='1.0b10',
     description='InPhO Topic Explorer',
     author = "The Indiana Philosophy Ontology (InPhO) Project",
     author_email = "inpho@indiana.edu",

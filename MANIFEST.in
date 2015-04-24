@@ -1,6 +1,4 @@
-include www/*
-include www/img/*
-include www/lib/*
+recursive-include www *
 include ipynb/*
 include README.md
 include LICENSE.txt
