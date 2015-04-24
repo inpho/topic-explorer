@@ -12,6 +12,7 @@ demo-data/*.tgz
 demo-data/ap/*
 demo-data/models/*
 
+notebooks/
 build/
 dist/
 topicexplorer.egg-info
