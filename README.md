@@ -1,5 +1,5 @@
 # InPhO Topic Explorer
-[![Build Status](https://travis-ci.org/inpho/topic-explorer.svg?branch=master)](https://travis-ci.org/inpho/topic-explorer)
+[![Travis](https://img.shields.io/travis/inpho/topic-explorer.svg)](https://travis-ci.org/inpho/topic-explorer)
 [![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/inpho/topic-explorer/blob/master/LICENSE.txt)
 [![PyPI](https://img.shields.io/pypi/v/topicexplorer.svg)](https://pypi.python.org/pypi/topicexplorer)
 
@@ -13,7 +13,7 @@ Display options include topic normalization, alphabetical sort and topic sort. B
 **Quick Install**
 
 1.  Install the [Anaconda Python 2.7 Distribution](http://continuum.io/downloads). 
-2.  Open a terminal and run `pip install topicexplorer==1.0b6`.
+2.  Open a terminal and run `pip install topicexplorer==1.0b10`.
 
 ## Usage
 ![Workflow](http://inphodata.cogs.indiana.edu/img/workflow.png)
