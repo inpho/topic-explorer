@@ -4,6 +4,7 @@ from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
 from pdfminer.pdfpage import PDFPage
+from pdfminer.pdftypes import PDFException
 
 import os.path
 from glob import glob
@@ -11,7 +12,7 @@ from codecs import open
 
 from topicexplorer.lib import util
 
-import chardet
+from progressbar import ProgressBar, Percentage, Bar
 
 def convert(fname, pages=None):
     if not pages:
@@ -34,28 +35,44 @@ def convert(fname, pages=None):
     text += '\n'
     return text 
 
-def convert_and_write(fname, output_dir=None, overwrite=False):
-    if output_dir is not None and not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-    
-    output = fname.replace('.pdf','.txt')
+def convert_and_write(fname, output_dir=None, overwrite=False, verbose=False):
+    output = os.path.basename(fname) 
+    output = output.replace('.pdf','.txt')
     if output_dir:
         output = os.path.join(output_dir, output)
+    if output_dir is not None and not os.path.exists(output_dir):
+        os.makedirs(output_dir)
 
     if overwrite or util.overwrite_prompt(output):
         with open(output, 'wb') as outfile:
             outfile.write(convert(fname))
-        print "converted", fname, "->", output
+            if verbose:
+                print "converted", fname, "->", output
 
-def main(path_or_paths, output_dir=None):
+def main(path_or_paths, output_dir=None, verbose=1):
     if isinstance(path_or_paths, basestring):
         path_or_paths = [path_or_paths]
+
     for p in path_or_paths:
         if os.path.isdir(p):
-            for pdffile in util.find_files(p, '*.pdf'):
-                convert_and_write(os.path.join(p, pdffile), output_dir)
+            num_files = len(list(util.find_files(p, '*.pdf')))
+            if verbose == 1:
+                pbar = ProgressBar(widgets=[Percentage(), Bar()],
+                                   maxval=num_files).start()
+            for file_n, pdffile in enumerate(util.find_files(p, '*.pdf')):
+                try:
+                    convert_and_write(pdffile, output_dir, overwrite=True)
+                except PDFException:
+                    print "Skipping {0} due to PDF Exception".format(pdffile)
+
+                if verbose == 1:
+                    pbar.update(file_n)
+
+            if verbose == 1:
+                pbar.finish()
         else:
-            convert_and_write(p, output_dir)
+            convert_and_write(p, output_dir, overwrite=True, verbose=True)
+
     
 
 if __name__ == '__main__':

@@ -33,6 +33,8 @@ def build_corpus(corpus_path, model_path, nltk_stop=True, stop_freq=1,
     if corpus_path[-4:] == '.pdf' or util.contains_pattern(corpus_path, '*.pdf'):
         if os.path.isdir(corpus_path):
             print "PDF files detected, extracting plaintext to", corpus_path + '-txt'
+            if corpus_path.endswith('/'):
+                corpus_path = corpus_path[:-1]
             pdf.main(corpus_path, corpus_path + '-txt')
             corpus_path += '-txt'
         else:
@@ -40,6 +42,8 @@ def build_corpus(corpus_path, model_path, nltk_stop=True, stop_freq=1,
                 corpus_path.replace('.pdf','.txt')
             pdf.main(corpus_path)
             corpus_path = corpus_path.replace('.pdf','.txt')
+
+    print "Building corpus from", corpus_path
 
     if os.path.isfile(corpus_path):
         print "Constructing toy corpus, each line is a document"
@@ -115,7 +119,7 @@ def main(args):
     if args.rebuild == True:
         try:
             args.corpus_filename = build_corpus(args.corpus_path, args.model_path, 
-                                           stop_freq=5)
+                                                stop_freq=5)
         except IOError:
             print "ERROR: invalid path, please specify either:"
             print "  * a single plain-text file,"
