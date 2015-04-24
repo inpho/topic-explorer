@@ -47,7 +47,8 @@ def convert(fname, pages=None):
     return text 
 
 def convert_and_write(fname, output_dir=None):
-    output = fname.replace('.pdf','.txt')
+    output = os.path.basename(fname)
+    output = output.replace('.pdf','.txt')
     output = os.path.join(output_dir, output)
     if output_dir is not None and not os.path.exists(output_dir):
         os.makedirs(output_dir)
@@ -73,7 +74,7 @@ if __name__ == '__main__':
     for path in args.path:
         if os.path.isdir(path):
             for pdffile in glob(os.path.join(path, '*.pdf')):
-                convert_and_write(os.path.join(path, pdffile), args.output)
+                convert_and_write(pdffile, args.output)
         else:
             convert_and_write(path, args.output)
             
