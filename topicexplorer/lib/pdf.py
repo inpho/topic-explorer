@@ -7,24 +7,11 @@ from pdfminer.pdfpage import PDFPage
 
 import os.path
 from glob import glob
+from codecs import open
 
-def is_valid_filepath(parser, arg):
-    if not os.path.exists(arg):
-        parser.error("The file %s does not exist!" % arg)
-    else:
-        return arg
+from topicexplorer.lib import util
 
-def overwrite_prompt(filename):
-    if os.path.exists(filename):
-        overwrite = False
-        while overwrite not in ['y', 'n', True]:
-            overwrite = raw_input("\nOverwrite {0}? [Y/n] ".format(filename))
-            overwrite = overwrite.lower().strip()
-            if overwrite == 'y' or overwrite == '':
-                return True
-        return False
-    else:
-        return True
+import chardet
 
 def convert(fname, pages=None):
     if not pages:
@@ -43,37 +30,43 @@ def convert(fname, pages=None):
     infile.close()
     converter.close()
     text = output.getvalue()
-    output.close
+    output.close()
+    text += '\n'
     return text 
 
-def convert_and_write(fname, output_dir=None):
-    output = fname.replace('.pdf','.txt')
-    output = os.path.join(output_dir, output)
+def convert_and_write(fname, output_dir=None, overwrite=False):
     if output_dir is not None and not os.path.exists(output_dir):
         os.makedirs(output_dir)
+    
+    output = fname.replace('.pdf','.txt')
+    if output_dir:
+        output = os.path.join(output_dir, output)
 
-    if overwrite_prompt(output):
-        with open(output, 'w') as outfile:
+    if overwrite or util.overwrite_prompt(output):
+        with open(output, 'wb') as outfile:
             outfile.write(convert(fname))
         print "converted", fname, "->", output
 
-
+def main(path_or_paths, output_dir=None):
+    if isinstance(path_or_paths, basestring):
+        path_or_paths = [path_or_paths]
+    for p in path_or_paths:
+        if os.path.isdir(p):
+            for pdffile in util.find_files(p, '*.pdf'):
+                convert_and_write(os.path.join(p, pdffile), output_dir)
+        else:
+            convert_and_write(p, output_dir)
+    
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
     parser = ArgumentParser()
 
     parser.add_argument("path", nargs='+', help="PDF file or folder to parse",
-        type=lambda x: is_valid_filepath(parser, x))
+        type=lambda x: util.is_valid_filepath(parser, x))
     parser.add_argument("-o", '--output',
         help="output path [default: same as filename]")
 
     args = parser.parse_args()
 
-    for path in args.path:
-        if os.path.isdir(path):
-            for pdffile in glob(os.path.join(path, '*.pdf')):
-                convert_and_write(os.path.join(path, pdffile), args.output)
-        else:
-            convert_and_write(path, args.output)
-            
+    main(args.path, args.output)

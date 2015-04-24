@@ -1,16 +1,22 @@
 from ConfigParser import RawConfigParser as ConfigParser
 import os
 import os.path
+import shutil
 import sys
 
 from vsm.corpus import Corpus
 from vsm.corpus.util.corpusbuilders import coll_corpus, dir_corpus, toy_corpus
+
+from topicexplorer.lib import pdf, util
 
 def get_corpus_filename(corpus_path, model_path, nltk_stop=True, stop_freq=1,
 			context_type='document'):
     corpus_name = os.path.basename(corpus_path)
     if not corpus_name:
         corpus_name = os.path.basename(os.path.dirname(corpus_path))
+    
+    corpus_name.replace('-txt', '')
+
     if nltk_stop and stop_freq:
         filename = '%s-nltk-en-freq%d.npz' % (corpus_name, stop_freq)
     elif stop_freq:
@@ -22,10 +28,23 @@ def get_corpus_filename(corpus_path, model_path, nltk_stop=True, stop_freq=1,
 
 def build_corpus(corpus_path, model_path, nltk_stop=True, stop_freq=1,
     context_type='document', ignore=['.json','.log','.err','.pickle','.npz']):
+   
+    # pre-process PDF files
+    if corpus_path[-4:] == '.pdf' or util.contains_pattern(corpus_path, '*.pdf'):
+        if os.path.isdir(corpus_path):
+            print "PDF files detected, extracting plaintext to", corpus_path + '-txt'
+            pdf.main(corpus_path, corpus_path + '-txt')
+            corpus_path += '-txt'
+        else:
+            print "PDF files detected, extracting plaintext to",\
+                corpus_path.replace('.pdf','.txt')
+            pdf.main(corpus_path)
+            corpus_path = corpus_path.replace('.pdf','.txt')
+
     if os.path.isfile(corpus_path):
         print "Constructing toy corpus, each line is a document"
         c = toy_corpus(corpus_path, is_filename=True, nltk_stop=nltk_stop, 
-                       stop_freq=stop_freq, context_type=context_type)
+                       stop_freq=stop_freq, autolabel=True)
     elif os.path.isdir(corpus_path):
         contents = os.listdir(corpus_path)
         contents = [os.path.join(corpus_path,obj) for obj in contents 
@@ -58,8 +77,11 @@ def build_corpus(corpus_path, model_path, nltk_stop=True, stop_freq=1,
 
 def main(args):
     if args.model_path is None:
-        args.model_path = os.path.join(args.corpus_path, '../models/')
-    if not os.path.exists(args.model_path):
+        if os.path.isdir(args.corpus_path):
+            args.model_path = os.path.join(args.corpus_path, '../models/')
+        else:
+            args.model_path = os.path.dirname(args.corpus_path)
+    if args.model_path and not os.path.exists(args.model_path):
         os.makedirs(args.model_path)
 
     corpus_name = os.path.basename(args.corpus_path)

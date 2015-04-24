@@ -9,6 +9,7 @@ import os.path
 from pkg_resources import resource_filename
 import re
 from StringIO import StringIO
+from urllib import unquote_plus
 
 from vsm.corpus import Corpus
 from vsm.model.lda import LDA
@@ -42,6 +43,8 @@ def _cache_date(days=1):
 def doc_topic_csv(doc_id):
     response.content_type = 'text/csv; charset=UTF8'
 
+    doc_id = unquote_plus(doc_id)
+
     data = lda_v.doc_topics(doc_id)
 
     output=StringIO()
@@ -55,6 +58,8 @@ def doc_topic_csv(doc_id):
 @_set_acao_headers
 def doc_csv(doc_id, threshold=0.2):
     response.content_type = 'text/csv; charset=UTF8'
+    
+    doc_id = unquote_plus(doc_id)
 
     data = lda_v.sim_doc_doc(doc_id)
 
@@ -98,6 +103,8 @@ def doc_topics(doc_id, N=40):
         N = int(request.query.n)
     except:
         pass
+
+    doc_id = unquote_plus(doc_id)
 
     response.content_type = 'application/json; charset=UTF8'
 
