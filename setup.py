@@ -3,6 +3,8 @@ import distutils.command.install_data
 from setuptools import setup
 import os
 
+
+
 datadir = 'www'
 def get_datafiles(datadir):
     return [(root, [os.path.join(root, f) for f in files])
@@ -19,10 +21,19 @@ class wx_smart_install_data(distutils.command.install_data.install_data):
         self.install_dir = getattr(install_cmd, 'install_lib')
         return distutils.command.install_data.install_data.run(self)
 
+# PyPandoc
+import os
+long_description = 'Add a fallback short description here'
+if os.path.exists('README.txt'):
+    long_description = open('README.txt').read()
+else:
+    long_description = '' 
+
 setup(
     name='topicexplorer',
     version='1.0b10',
     description='InPhO Topic Explorer',
+    long_description = long_description,
     author = "The Indiana Philosophy Ontology (InPhO) Project",
     author_email = "inpho@indiana.edu",
     url='http://inphodata.cogs.indiana.edu',

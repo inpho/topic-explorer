@@ -43,6 +43,7 @@ Display options include topic normalization, alphabetical sort and topic sort. B
 See the sample configuration files in the `config` directory for examples of how to extend the topic explorer.
 
 ## Development and Testing
+
 1.  Clone the [repository](http://github.com/inpho/topic-explorer) and install dependencies:
     
     ```
@@ -66,12 +67,14 @@ See the sample configuration files in the `config` directory for examples of how
 The project is released under an [Open-Source Initiative-approved MIT License](http://opensource.org/licenses/MIT).
 
 The InPhO Topic Explorer may be cited as:
+
  -  Jaimie Murdock and Colin Allen. (2015) *Visualization Techniques for Topic Model Checking* in Proceedings of the 29th AAAI Conference on Artificial Intelligence (AAAI-15). Austin, Texas, USA, January 25-29, 2015. [http://inphodata.cogs.indiana.edu/](http://inphodata.cogs.indiana.edu/)
 
 A [BibTeX file](https://github.com/inpho/topic-explorer/blob/master/citation.bib) is included in the repository for easier attribution.
 
 ## Collaboration and Maintenance
 The InPhO Topic Explorer is maintained by [Jaimie Murdock](http://jamram.net/):
+
  -  E-mail: jammurdo@indiana.edu
  -  Twitter: [@JaimieMurdock](http://twitter.com/JaimieMurdock)
  -  GitHub: [@JaimieMurdock](http://github.com/JaimieMurdock)
