@@ -10,42 +10,12 @@ The color bands within each article's row show the topic distribution within tha
 Display options include topic normalization, alphabetical sort and topic sort. By normalizing topics, the combined width of each bar expands so that topic weights per document can be compared. By clicking a topic, the documents will reorder acoording to that topic's weight and topic bars will reorder according to the topic weights in the highest weighted document. When a topic is selected, clicking "Top Documents for [Topic]" will take you to a new page showing the most similar documents to that topic's word distribution. The original sort order can be restored with the "Reset Topic Sort" button.
 
 ## Installation
-### Quick Install
 
 1.  Install the [Anaconda Python 2.7 Distribution](http://continuum.io/downloads). 
 2.  Open a terminal and run `pip install topicexplorer==1.0b10`.
 3.  Test installation by typing `vsm -h` to print usage instructions.
 
-### Developer Install
-
-We **highly recommend** installing the [Anaconda Python 2.7 Distribution](http://continuum.io/downloads) first. Straightforward instructions are provided for Anaconda. If you want to roll your own install, some notes on dependencies are included below.
-
-1. [Set up Git](https://help.github.com/articles/set-up-git/)
-
-2.  Install Anaconda packages:
-  
-    ```
-    conda install numpy scipy nltk matplotplib ipython
-    ```
-
-3.  `pip install -e git+https://github.com/inpho/topic-explorer#egg=topicexplorer`
-
-#### Dependencies
-Some notes on non-Anaconda dependencies are included below, but are unsupported.
-
- - **Debian/Ubuntu** (non-Anaconda) 
-   1.  `sudo apt-get-install build-essential python-dev python-pip python-numpy python-matplotlib python-scipy python-ipython` 
-   
-   2.  [IPython Notebooks](http://ipython.org/install.html)
-
- - **Windows** 
-   1.  Install [Microsoft Visual C++ Compiler for Python 2.7](http://www.microsoft.com/en-us/download/details.aspx?id=44266)
-   2.  Install the python wheels for:
-        -  [Numpy](http://sourceforge.net/projects/numpy/files/NumPy/)
-        -  [Scipy](http://sourceforge.net/projects/scipy/files/scipy/)
-        -  [matplotlib](http://matplotlib.org/downloads.html)
-        -  [IPython Notebooks](http://ipython.org/install.html)
-
+See below for notes on developer installation.
 
 ## Usage
 ![Workflow](http://inphodata.cogs.indiana.edu/img/workflow.png)
@@ -73,6 +43,36 @@ Some notes on non-Anaconda dependencies are included below, but are unsupported.
 4.  Press Ctrl+C to quit all servers.
 
 See the sample configuration files in the `config` directory for examples of how to extend the topic explorer.
+
+
+## Developer Install
+
+We **highly recommend** installing the [Anaconda Python 2.7 Distribution](http://continuum.io/downloads) first. Straightforward instructions are provided for Anaconda. If you want to roll your own install, some notes on dependencies are included below.
+
+1. [Set up Git](https://help.github.com/articles/set-up-git/)
+
+2.  Install Anaconda packages:
+  
+    ```
+    conda install numpy scipy nltk matplotplib ipython
+    ```
+
+3.  `pip install -e git+https://github.com/inpho/topic-explorer#egg=topicexplorer`
+
+### Dependencies
+
+ - **Debian/Ubuntu** (non-Anaconda) 
+   1.  `sudo apt-get-install build-essential python-dev python-pip python-numpy python-matplotlib python-scipy python-ipython` 
+   
+   2.  [IPython Notebooks](http://ipython.org/install.html)
+
+ - **Windows** 
+   1.  Install [Microsoft Visual C++ Compiler for Python 2.7](http://www.microsoft.com/en-us/download/details.aspx?id=44266)
+   2.  Install the python wheels for:
+        -  [Numpy](http://sourceforge.net/projects/numpy/files/NumPy/)
+        -  [Scipy](http://sourceforge.net/projects/scipy/files/scipy/)
+        -  [matplotlib](http://matplotlib.org/downloads.html)
+        -  [IPython Notebooks](http://ipython.org/install.html)
 
 ## Licensing and Attribution
 The project is released under an [Open-Source Initiative-approved MIT License](http://opensource.org/licenses/MIT).
