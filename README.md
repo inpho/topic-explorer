@@ -12,7 +12,7 @@ Display options include topic normalization, alphabetical sort and topic sort. B
 ## Installation
 
 1.  Install the [Anaconda Python 2.7 Distribution](http://continuum.io/downloads). 
-2.  Open a terminal and run `pip install topicexplorer==1.0b10`.
+2.  Open a terminal and run `pip install topicexplorer==1.0b11`.
 3.  Test installation by typing `vsm -h` to print usage instructions.
 
 See below for notes on developer installation.
@@ -57,7 +57,11 @@ We **highly recommend** installing the [Anaconda Python 2.7 Distribution](http:/
     conda install numpy scipy nltk matplotplib ipython
     ```
 
-3.  `pip install -e git+https://github.com/inpho/topic-explorer#egg=topicexplorer`
+3.  Clone the repo and install in developer mode (`-e` flag):
+
+    ```
+    pip install -e git+https://github.com/inpho/topic-explorer#egg=topicexplorer
+    ```
 
 ### Dependencies
 
@@ -68,11 +72,12 @@ We **highly recommend** installing the [Anaconda Python 2.7 Distribution](http:/
 
  - **Windows** 
    1.  Install [Microsoft Visual C++ Compiler for Python 2.7](http://www.microsoft.com/en-us/download/details.aspx?id=44266)
-   2.  Install the python wheels for:
-        -  [Numpy](http://sourceforge.net/projects/numpy/files/NumPy/)
-        -  [Scipy](http://sourceforge.net/projects/scipy/files/scipy/)
-        -  [matplotlib](http://matplotlib.org/downloads.html)
-        -  [IPython Notebooks](http://ipython.org/install.html)
+
+   2.  Install the Python packages below:
+       *   [Numpy](http://sourceforge.net/projects/numpy/files/NumPy/)
+       *   [Scipy](http://sourceforge.net/projects/scipy/files/scipy/)
+       *   [matplotlib](http://matplotlib.org/downloads.html)
+       *   [IPython Notebooks](http://ipython.org/install.html)
 
 ## Licensing and Attribution
 The project is released under an [Open-Source Initiative-approved MIT License](http://opensource.org/licenses/MIT).

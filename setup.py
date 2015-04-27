@@ -1,10 +1,11 @@
 #!/usr/bin/env python
-import distutils.command.install_data
+from distutils.command.install_data import install_data as _install_data
+from distutils.command.install import install as _install
 from setuptools import setup
 import os
 
 
-
+# building datafiles list
 datadir = 'www'
 def get_datafiles(datadir):
     return [(root, [os.path.join(root, f) for f in files])
@@ -14,12 +15,25 @@ datafiles = get_datafiles('www')
 datafiles.extend(get_datafiles('ipynb'))
 
 # Specializations of some distutils command classes
-class wx_smart_install_data(distutils.command.install_data.install_data):
+# first install data files to actual library directory
+class wx_smart_install_data(_install_data):
     """need to change self.install_dir to the actual library dir"""
     def run(self):
         install_cmd = self.get_finalized_command('install')
         self.install_dir = getattr(install_cmd, 'install_lib')
-        return distutils.command.install_data.install_data.run(self)
+        return _install_data.run(self)
+
+# After install, download nltk packages 'punkt' and 'stopwords'
+def _post_install(dir):
+    import nltk
+    nltk.download('punkt')
+    nltk.download('stopwords')
+
+class run_post_install(_install):
+    def run(self):
+        _install.run(self)
+        self.execute(_post_install, (self.install_lib,),
+                     msg="Running post install task")
 
 # PyPandoc
 import os
@@ -30,7 +44,7 @@ else:
 
 setup(
     name='topicexplorer',
-    version='1.0b10',
+    version='1.0b11',
     description='InPhO Topic Explorer',
     long_description = long_description,
     author = "The Indiana Philosophy Ontology (InPhO) Project",
@@ -66,10 +80,11 @@ setup(
         'pyenchant'
         ],
     dependency_links=[
-        'https://github.com/inpho/vsm/archive/master.zip#egg=vsm-0.2',
+        'https://github.com/inpho/vsm/archive/master.zip#egg=vsm-0.2.1',
         ],
     include_package_data=True,
-    cmdclass = { 'install_data': wx_smart_install_data },
+    cmdclass = { 'install_data': wx_smart_install_data, 
+        'install': run_post_install},
     entry_points={
         'console_scripts' : ['vsm = topicexplorer.__main__:main',
                 'htutils = topicexplorer.lib.hathitrust:main']
