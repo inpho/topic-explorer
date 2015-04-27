@@ -1,17 +1,12 @@
 #!/usr/bin/env python
-from topicexplorer import init, prep, train, server, launch, notebook
+from argparse import ArgumentParser
+from ConfigParser import RawConfigParser as ConfigParser
 import os.path
 
-def is_valid_filepath(parser, arg):
-    if not os.path.exists(arg):
-        parser.error("The file %s does not exist!" % arg)
-    else:
-        return arg
+from topicexplorer import init, prep, train, server, launch, notebook
+from topicexplorer.lib.util import is_valid_filepath
 
-if __name__ == '__main__':
-    from argparse import ArgumentParser
-    from ConfigParser import RawConfigParser as ConfigParser
-
+def main():
     parser = ArgumentParser()
     parsers = parser.add_subparsers(help="select a command")
 
@@ -125,3 +120,6 @@ if __name__ == '__main__':
 
     elif args.func == 'notebook':
         notebook.main(args)
+
+if __name__ == '__main__':
+    main()

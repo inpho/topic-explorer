@@ -32,7 +32,7 @@ def is_valid_filepath(parser, arg):
     else:
         return arg
 
-if __name__ == '__main__':
+def main():
     from argparse import ArgumentParser
 
     parser = ArgumentParser()
@@ -49,3 +49,6 @@ if __name__ == '__main__':
 
     if args.func == 'getmd':
         get_metadata(args.folder)
+
+if __name__ == '__main__':
+    main()

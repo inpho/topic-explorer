@@ -23,7 +23,6 @@ class wx_smart_install_data(distutils.command.install_data.install_data):
 
 # PyPandoc
 import os
-long_description = 'Add a fallback short description here'
 if os.path.exists('README.txt'):
     long_description = open('README.txt').read()
 else:
@@ -63,13 +62,17 @@ setup(
         'vsm>=0.2.1',
         'wget',
         'unidecode',
-        'pdfminer'
+        'pdfminer',
+        'pyenchant'
         ],
     dependency_links=[
         'https://github.com/inpho/vsm/archive/master.zip#egg=vsm-0.2',
         ],
-    scripts=['scripts/vsm', 'scripts/htutils', 'scripts/vsm.bat'],
     include_package_data=True,
-    cmdclass = { 'install_data':    wx_smart_install_data },
+    cmdclass = { 'install_data': wx_smart_install_data },
+    entry_points={
+        'console_scripts' : ['vsm = topicexplorer.__main__:main',
+                'htutils = topicexplorer.lib.hathitrust:main']
+    }
 )
 
