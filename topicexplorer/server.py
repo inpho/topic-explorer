@@ -8,16 +8,18 @@ import itertools
 import os.path
 from pkg_resources import resource_filename
 import re
+from urllib2 import unquote
 from StringIO import StringIO
 from urllib import unquote_plus
 
 from vsm.corpus import Corpus
 from vsm.model.lda import LDA
 from vsm.viewer.ldacgsviewer import LdaCgsViewer as LDAViewer
-from vsm.viewer.wrappers import doc_label_name
+from vsm.viewer.wrappers import doc_label_name, def_label_fn
 
 from bottle import request, response, route, run, static_file
 from topicexplorer.lib.ssl import SSLWSGIRefServer
+import numpy as np
 
 import pystache
 import topicexplorer.lib.color as colorlib
@@ -61,7 +63,7 @@ def doc_csv(doc_id, threshold=0.2):
     
     doc_id = unquote_plus(doc_id)
 
-    data = lda_v.sim_doc_doc(doc_id)
+    data = lda_v.sim_doc_doc(doc_id, label_fn=id_fn)
 
     output=StringIO()
     writer = csv.writer(output)
@@ -80,19 +82,22 @@ def topic_json(topic_no, N=40):
         pass
 
     if N > 0:
-        data = lda_v.dist_top_doc([int(topic_no)])[:N]
+        data = lda_v.dist_top_doc([int(topic_no)], label_fn=id_fn)[:N]
     else:
-        data = lda_v.dist_top_doc([int(topic_no)])[N:]
+        data = lda_v.dist_top_doc([int(topic_no)], label_fn=id_fn)[N:]
         data = reversed(data)
     
     docs = [doc for doc,prob in data]
     doc_topics_mat = lda_v.doc_topics(docs)
+    docs = get_docs(docs, id_as_key=True)
 
     js = []
     for doc_prob, topics in zip(data, doc_topics_mat):
         doc, prob = doc_prob
-        js.append({'doc' : doc, 'label': label(doc), 'prob' : 1-prob,
+        struct = docs[doc]
+        struct.update({'prob' : 1-prob,
             'topics' : dict([(str(t), p) for t,p in topics])})
+        js.append(struct)
 
     return json.dumps(js)
 
@@ -108,20 +113,24 @@ def doc_topics(doc_id, N=40):
 
     response.content_type = 'application/json; charset=UTF8'
 
+
     if N > 0:
-        data = lda_v.dist_doc_doc(doc_id)[:N]
+        data = lda_v.dist_doc_doc(doc_id, label_fn=id_fn)[:N]
     else:
-        data = lda_v.dist_doc_doc(doc_id)[N:]
+        data = lda_v.dist_doc_doc(doc_id, label_fn=id_fn)[N:]
         data = reversed(data)
    
     docs = [doc for doc,prob in data]
     doc_topics_mat = lda_v.doc_topics(docs)
+    docs = get_docs(docs, id_as_key=True)
 
     js = []
     for doc_prob, topics in zip(data, doc_topics_mat):
         doc, prob = doc_prob
-        js.append({'doc' : doc, 'label': label(doc), 'prob' : 1-prob,
+        struct = docs[doc]
+        struct.update({'prob' : 1-prob,
             'topics' : dict([(str(t), p) for t,p in topics])})
+        js.append(struct)
 
     return json.dumps(js)
 
@@ -191,22 +200,64 @@ def topics():
 
 @route('/docs.json')
 @_set_acao_headers
-def docs():
+def docs(docs=None, q=None):
     response.content_type = 'application/json; charset=UTF8'
     response.set_header('Expires', _cache_date())
+    
+    try:
+        if request.query.q:
+            q = unquote(request.query.q)
+    except:
+        pass
 
-    docs = lda_v.corpus.view_metadata(context_type)[doc_label_name(context_type)]
-    js = list()
-    for doc in docs:
-        js.append({
-            'id': doc,
-            'label' : label(doc)
-        })
+    try: 
+        if request.query.id:
+            docs = [unquote(request.query.id)]
+    except:
+        pass
+    
+    try: 
+        response.set_header('Expires', 0)
+        response.set_header('Pragma', 'no-cache')
+        response.set_header('Cache-Control', 'no-cache, no-store, must-revalidate')
+        if request.query.random:
+            docs = [np.random.choice(lda_v.corpus.view_metadata(context_type)[doc_label_name(context_type)])]
+    except:
+        pass
+
+    js = get_docs(docs, query=q)
 
     return json.dumps(js)
 
+def get_docs(docs=None, id_as_key=False, query=None):
+    ctx_md = lda_v.corpus.view_metadata(context_type)
+    
+    if docs:
+        # filter to metadata for selected docs
+        ids = [lda_v.corpus.meta_int(context_type, {doc_label_name(context_type) : doc} ) for doc in docs]
+        ctx_md = ctx_md[ids]
+    else:
+        #get metadata for all documents
+        docs = lda_v.corpus.view_metadata(context_type)[doc_label_name(context_type)]
+    
+    js = dict() if id_as_key else list()
+
+    for doc, md in zip(docs, ctx_md):
+        if query is None or query in label(doc):
+            struct = {
+                'id': doc,
+                'label' : label(doc),
+                'metadata' : dict(zip(md.dtype.names, [str(m) for m in md])) }
+            if id_as_key:
+                js[doc] = struct
+            else:
+                js.append(struct)
+
+    return js
+
 def main(args):
-    global context_type, lda_c, lda_m, lda_v, label
+    global context_type, lda_c, lda_m, lda_v, label, id_fn
+    
     # load in the configuration file
     config = ConfigParser({
         'certfile' : None,
@@ -260,12 +311,20 @@ def main(args):
         label_module = config.get('main', 'label_module')
         label_module = import_module(label_module)
         try:
-            label_module.init(config.get('main','path'))
+            label_module.init(config.get('main','path'), lda_v, context_type)
         except:
             pass
 
         label = label_module.label
+        try:
+            id_fn = label_module.id_fn
+        except:
+            id_fn = def_label_fn
     except:
+        from vsm.viewer.wrappers import def_label_fn
+        context_md = lda_c.view_metadata(context_type)
+        ctx_label = doc_label_name(context_type)
+        id_fn = lambda md: context_md[ctx_label] 
         label = lambda x: x
 
     config_icons = config.get('www','icons').split(",")

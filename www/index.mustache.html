@@ -283,6 +283,28 @@ if (docid) {
   docid = decodeURIComponent(docid);
   $('#hidden_id').val(docid);
   $('.twitter-share-button').attr('data-text', "What's similar to " +docid+"? Discover with the #InPhO Topic Explorer");
+  $.getJSON('/docs.json?id='+encodeURIComponent(docid), function(title) {
+    if (title.length) {
+      title = title[0].label;
+      $('.title').html('{{doc_title_format}}'.format(title,'{{doc_url_format}}'.format(docid)));
+      $('#doc').val(title);
+      $('#autocompleteDoc').removeAttr('disabled').button('toggle');
+      $('span.icon-font', '#autocompleteDoc').removeClass('icon-font').addClass('icon-file');
+      $('.twitter-share-button').attr('data-text', "What's similar to " + title +"? Discover with the #InPhO Topic Explorer!");
+    } else {
+      $('.title').html('{{doc_title_format}}'.format(docid,'{{doc_url_format}}'.format(docid)));
+      $('#doc').val(docid);
+    }
+  });
+} else if (q) {
+    $('.title').html('the query "'+q+'"');
+    $('#doc').val(q);  
+/*  TODO: Migrate to call /docs.json?q=q
+    title = data.filter(function(item) { return item.label.toLowerCase().indexOf(q.toLowerCase()) >= 0 });
+    if (title.length) {
+      $('#autocompleteDoc').removeAttr('disabled');
+    }
+    */
 
 }
 var roottopic = inpho.util.getValueForURLParam('topic') || null;
@@ -313,26 +335,31 @@ function visualize(port) {
   window.location = url;
 }
 
-$.getJSON('/docs.json', function(data) {
-  $(".typeahead").typeahead({items: 12,
-    source: function(query, process) {
-      labels = [];
-      mapped = {};
-      $.each(data, function(i, item) {
-        mapped[item.label] = item;
-        labels.push(item.label);
-      });
-        
-      process(labels);
-      this.$menu.find('.active').removeClass('active');
-    },
-    updater: function(item) {
+var taTimeout;
+$(".typeahead").typeahead({items: 12,
+  source: function(query, process) {
+    if (taTimeout)
+      clearTimeout(taTimeout);
+
+    this.$menu.find('.active').removeClass('active');
+    taTimeout = setTimeout(function () {
+      $.getJSON('/docs.json?q=' + encodeURIComponent(query), function(data) {
+        labels = [];
+        mapped = {};
+        $.each(data, function(i, item) {
+          mapped[item.label] = item;
+          labels.push(item.label);
+        });
+      
+        process(labels);
+    })}, 300);
+  },
+  updater: function(item) {
       if (!item) { 
         if ($('#autocompleteDoc').hasClass('active')) {
           $('#autocompleteDoc').removeClass('active');
           $('span.icon-file', '#autocompleteDoc').removeClass('icon-file').addClass('icon-font');
         }
-        console.log('!item');
         $('#hidden_id').val('');
         return this.$element.val();
       } else {
@@ -341,13 +368,12 @@ $.getJSON('/docs.json', function(data) {
           $('span.icon-font', '#autocompleteDoc').removeClass('icon-font').addClass('icon-file');
         }
         $('#autocompleteDoc').removeAttr('disabled');
-        console.log('item');
 
         $('#hidden_id').val(mapped[item].id);
         return item;
       }
-    },
-    sorter: function(items) {
+  },
+  sorter: function(items) {
       if (items.length == 1) {
         $('#hidden_id').val(mapped[items[0]].id);
         console.log("setting hidden_id" + $('#hidden_id').val());
@@ -370,54 +396,33 @@ $.getJSON('/docs.json', function(data) {
       var start = items.filter(function(item) { return item.lastIndexOf(query, 0) == 0;});
       var elsewhere = items.filter(function(item) { return item.lastIndexOf(query, 0) != 0;});
       return start.concat(elsewhere);
-      }});
+  }
+});
+  
+$('#autocompleteDoc').click(function() {
+  if (!$('#autocompleteDoc').hasClass('active'))
+    $('.typeahead').typeahead('lookup').focus();
+  else {
+    $('#autocompleteDoc').removeClass('active');
+    $('span.icon-file', '#autocompleteDoc').removeClass('icon-file').addClass('icon-font');
+    $('#hidden_id').val('');
+  }
+});
 
-  $('#randomDoc').click(function() { 
-      var rand = data[Math.floor(Math.random() * data.length)];
+
+$('#randomDoc').click(function() { 
+    $.getJSON('/docs.json?random=1', function(rand) {
       if (!$('#autocompleteDoc').hasClass('active')) {
         $('#autocompleteDoc').button('toggle');
         $('span.icon-font', '#autocompleteDoc').removeClass('icon-font').addClass('icon-file');
       }
       $('#autocompleteDoc').removeAttr('disabled');
-
-      $('#hidden_id').val(rand.id);
-      $('#doc').val(rand.label);
-    });
-  $('#randomDoc').tooltip({title: "Random Document", placement: 'bottom'});
-
-  if (docid) {
-    title = data.filter(function(item) { return item.id == docid });
-    if (title.length) {
-      title = title[0].label;
-      $('.title').html('{{doc_title_format}}'.format(title,'{{doc_url_format}}'.format(docid)));
-      $('#doc').val(title);
-      $('#hidden_id').val(docid);
-      $('#autocompleteDoc').removeAttr('disabled').button('toggle');
-      $('span.icon-font', '#autocompleteDoc').removeClass('icon-font').addClass('icon-file');
-      $('.twitter-share-button').attr('data-text', "What's similar to " + title +"? Discover with the #InPhO Topic Explorer!");
-    } else {
-      $('.title').html('{{doc_title_format}}'.format(docid,'{{doc_url_format}}'.format(docid)));
-      $('#doc').val(docid);
-    }
-  } else if (q) {
-    title = data.filter(function(item) { return item.label.toLowerCase().indexOf(q.toLowerCase()) >= 0 });
-    if (title.length) {
-      $('#autocompleteDoc').removeAttr('disabled');
-    }
-    $('.title').html('the query "'+q+'"');
-    $('#doc').val(q);  
-  }
-
-  $('#autocompleteDoc').click(function() {
-      if (!$('#autocompleteDoc').hasClass('active'))
-        $('.typeahead').typeahead('lookup').focus();
-      else {
-        $('#autocompleteDoc').removeClass('active');
-        $('span.icon-file', '#autocompleteDoc').removeClass('icon-file').addClass('icon-font');
-        $('#hidden_id').val('');
-      }
-      });
+      $('#hidden_id').val(rand[0].id);
+      $('#doc').val(rand[0].label);
+  });
 });
+$('#randomDoc').tooltip({title: "Random Document", placement: 'bottom'});
+
 </script>
 
 
@@ -474,7 +479,7 @@ function computeHeight(data, numLegendRows) {
   height = (data.length * 20);// - margin.top - margin.bottom;
   y = d3.scale.ordinal()
    .rangeRoundBands([0, height], .1, 0);
-  y.domain(data.map(function(d) { return d.doc; }));
+  y.domain(data.map(function(d) { return d.id; }));
   yAxis = d3.svg.axis()
     .scale(y)
     .orient("left");
@@ -544,13 +549,13 @@ d3.json(url, function(error, data) {
   d3.json("/topics.json", function(error_top, topics) {
     $('#status .bar').css('width', '75%').text('Rendering chart...');
     if (error_top) {
-      $('#status .progress').removeClass('active progress-striped');
-      $('#status .bar-danger').addClass('bar-error').text('Could not load topic list.');
-      return false;
-    }
-      console.log(topics);
-    $('#submit').text(d3.keys(topics).length + ' Topics');
-    
+        $('#status .progress').removeClass('active progress-striped');
+        $('#status .bar-danger').addClass('bar-error').text('Could not load topic list.');
+        return false;
+      }
+        console.log(topics);
+      $('#submit').text(d3.keys(topics).length + ' Topics');
+      
   
     var legendCols = Math.max(Math.ceil(d3.keys(topics).length / Math.min(data.length, maxRows)), minCols);
     var legendFactor = Math.ceil(d3.keys(topics).length / legendCols);
@@ -619,11 +624,10 @@ d3.json(url, function(error, data) {
   
     // draw total bar
     var doc = svg.selectAll("doc")
-        .data(data);
-
-    doc.enter().append("g")
+        .data(data)
+      .enter().append("g")
         .attr("class", function(d) { return d.doc == docid ? "doc primary" : "doc"})
-        .attr("transform", function(d) { return "translate(10," + y(d.doc) + ")"; })
+        .attr("transform", function(d) { return "translate(10," + y(d.id) + ")"; })
         .on("mouseover", function(d) {
             var tick = $("text:contains(" + d.doc +")")
               .filter(function() { return $(this).text().trim() == d.doc })
@@ -765,38 +769,36 @@ d3.json(url, function(error, data) {
         .attr("width", function(d) { return x(d.x1) - x(d.x0); });
     }
   
-  
-  
-    d3.select(".sort").on("change", alphabetSort);
+      d3.select(".sort").on("change", alphabetSort);
+      
+      $('#status .bar').addClass('bar-success').css('width', '100%').text("Complete!");
+      setTimeout(function() { 
+        $('#status').hide(500);
+        setTimeout(function() {$('#controls').css({'top' : $('#legend').height() + $('#legend').position().top}).show();}, 500);
+        } , 500);
     
-    $('#status .bar').addClass('bar-success').css('width', '100%').text("Complete!");
-    setTimeout(function() { 
-      $('#status').hide(500);
-      setTimeout(function() {$('#controls').css({'top' : $('#legend').height() + $('#legend').position().top}).show();}, 500);
-      } , 500);
-  
-    $(window).on("scroll", scrollLegend);
-    scrollLegend = function() {
-      var scrollPos = $(window).scrollTop();
-      var chartHeight = $('#chart').position().top;
-      var legendHeight = $('#legend').height();
-      var heightFac = -60;
-      if((scrollPos - chartHeight - margin.top - heightFac) <= 0) {
-        $('#legend').css({'position': 'absolute', 'top' : chartHeight});
-        $('#controls').css({'position': 'absolute', 'top' : legendHeight + chartHeight});
-      } else if ((scrollPos - chartHeight - heightFac) < (margin.top)) {
-        $('#legend').css({'position': 'absolute', 'top' : scrollPos + heightFac});
-        $('#controls').css({'position': 'absolute', 'top' : legendHeight+ scrollPos + heightFac});
-      } else {
-        $('#legend').css({'position': 'fixed', 'top' : heightFac});
-        $('#controls').css({'position': 'fixed', 'top' : legendHeight + heightFac});
-      }}
-  
-    for (var i = 0; i < icons.length; i++) {
-      $(".{0}Icon".format(icons[i])).tooltip({placement: 'top', title: icon_tooltips[icons[i]], container: 'body', html: true, animation: false});
-    }
-  }); 
-});
+      $(window).on("scroll", scrollLegend);
+      scrollLegend = function() {
+        var scrollPos = $(window).scrollTop();
+        var chartHeight = $('#chart').position().top;
+        var legendHeight = $('#legend').height();
+        var heightFac = -60;
+        if((scrollPos - chartHeight - margin.top - heightFac) <= 0) {
+          $('#legend').css({'position': 'absolute', 'top' : chartHeight});
+          $('#controls').css({'position': 'absolute', 'top' : legendHeight + chartHeight});
+        } else if ((scrollPos - chartHeight - heightFac) < (margin.top)) {
+          $('#legend').css({'position': 'absolute', 'top' : scrollPos + heightFac});
+          $('#controls').css({'position': 'absolute', 'top' : legendHeight+ scrollPos + heightFac});
+        } else {
+          $('#legend').css({'position': 'fixed', 'top' : heightFac});
+          $('#controls').css({'position': 'fixed', 'top' : legendHeight + heightFac});
+        }}
+    
+      for (var i = 0; i < icons.length; i++) {
+        $(".{0}Icon".format(icons[i])).tooltip({placement: 'top', title: icon_tooltips[icons[i]], container: 'body', html: true, animation: false});
+      }
+    }); 
+  });
 
   function scaleTopics() {
     var numTopics = dataset[0].topics.length;
@@ -846,7 +848,7 @@ d3.json(url, function(error, data) {
     dataset = dataset.sort(sortFn);
 
     var y0 = y.domain(dataset
-        .map(function(d) { return d.doc; }))
+        .map(function(d) { return d.id; }))
         .copy();
 
     var transition = svg.transition().duration(500),
@@ -854,8 +856,8 @@ d3.json(url, function(error, data) {
 
     transition.selectAll(".doc")
         .delay(delay)
-        .attr("transform", function(d) { return "translate(10," + y(d.doc) + ")"; });
-        //.attr("y", function(d) { return y(d.doc); });
+        .attr("transform", function(d) { return "translate(10," + y(d.id) + ")"; });
+        //.attr("y", function(d) { return y(d.id); });
 
     transition.select(".y.axis")
         .call(yAxis)
@@ -867,7 +869,7 @@ d3.json(url, function(error, data) {
   function alphabetSort() {
     // Copy-on-write since tweens are evaluated after a delay.
     if (this.checked)
-      sortDataset(function(a, b) { return d3.ascending(a.doc, b.doc); });
+      sortDataset(function(a, b) { return d3.ascending(a.id, b.id); });
     else
       sortDataset(function(a, b) { return b.prob - a.prob; });
   }

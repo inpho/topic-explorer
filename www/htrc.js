@@ -34,11 +34,15 @@ $.ajax({
   success: function(template) { 
     htrc.popover = function(elt) {
       if (!($(elt).data('popover'))) {
-        htrc.solr.get($(elt).data('htrc-id'), function (data) {
+        var id = $(elt).data('htrc-id');
+        var page = $(elt).data('htrc-page');
+
+        htrc.solr.get(id, function (data) {
           data = data.response.docs[0];
           if (data.oclc)
             data.oclc = data.oclc[0].replace("(OCoLC)","").replace("ocm","");
-
+          if (page)
+            data.page = page;
 
           title = (data.title_ab && data.title_ab[0]) || data.title[0];
           var html = Mustache.to_html(template, data);

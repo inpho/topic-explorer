@@ -27,12 +27,37 @@ var icon_fns = {"link" : function(ticks, i) {
         .attr("class", "fulltextIcon icon")
         .attr("onclick", function(d) { return (d) ? "fulltext.popover(this)" : ""; });
   },
- "htrc" : function(ticks, i) {
+ "htrc" : function(ticks, i, docs) {
       base_fn(ticks,i)
         .attr("xlink:href","/img/htrc.png")
         .attr("class", "htrcIcon icon")
-        .attr("data-htrc-id", function(d) { return d; })
+        .attr("data-htrc-page", function(d) { 
+          if (Number(d) == NaN)
+            return '';
+          else {
+            data = docs.filter(function(doc, i) { return doc.id == d})[0]
+            try {
+              return data.metadata.seq_number
+            } catch (e) {
+              return '';  
+            }; 
+          }})
+        .attr("data-htrc-id", function(d) { 
+          data = docs.filter(function(doc, i) { return doc.id == d})[0]
+          return data.metadata.book_label; 
+        })
         .attr("onclick", function(d) { return (d) ? "htrc.popover(this)" : ""; });
+  },
+ "htrcbook" : function(ticks, i, docs) {
+      base_fn(ticks,i)
+        .attr("xlink:href","/img/icon-book.png")
+        .attr("class", "htrcbookIcon icon")
+        .on("click", function(d) { 
+          data = docs.filter(function(doc, i) { return doc.id == d})[0]
+          id = data.metadata.book_label;
+          page = data.metadata.seq_number;
+          url = "http://babel.hathitrust.org/cgi/pt?id={0};seq={1}".format(id, page)
+          window.open(url, "_blank");});
   },
  "inpho" : function(ticks, i) { 
       base_fn(ticks,i)
@@ -63,6 +88,7 @@ var icon_tooltips = {
     "ap" : 'Click for the full-text.',
     "fulltext" : 'Click for the full-text.',
     "htrc" : 'Click for the HathiTrust Details.',
+    "htrcbook" : 'Click for the HathiTrust PageTurner.',
     "inpho" : 'Click to see more information<br /> at the InPhO Project.',
     "sep" : 'Click for the SEP article.'
     };
