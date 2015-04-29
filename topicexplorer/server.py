@@ -125,6 +125,42 @@ def doc_topics(doc_id, N=40):
 
     return json.dumps(js)
 
+@route('/word_docs.json')
+@_set_acao_headers
+def word_docs(N=40):
+    try:
+        N = int(request.query.n)
+    except:
+        pass
+    try: 
+        query = request.query.q.lower().split('|')
+    
+    except:
+        raise Exception('Must specify a query') 
+
+    response.content_type = 'application/json; charset=UTF8'
+    
+    topics = lda_v.dist_word_top(query, show_topics=False)
+    data = lda_v.dist_top_doc(topics['i'], 
+               weights=(topics['value'].max() - topics['value']))
+
+    if N > 0:
+        data = data[:N]
+    else:
+        data = data[N:]
+        data = reversed(data)
+   
+    docs = [doc for doc,prob in data]
+    doc_topics_mat = lda_v.doc_topics(docs)
+
+    js = []
+    for doc_prob, topics in zip(data, doc_topics_mat):
+        doc, prob = doc_prob
+        js.append({'doc' : doc, 'label': label(doc), 'prob' : 1-prob,
+            'topics' : dict([(str(t), p) for t,p in topics])})
+
+    return json.dumps(js)
+
 @route('/topics.json')
 @_set_acao_headers
 def topics():
