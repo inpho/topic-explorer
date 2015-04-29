@@ -162,12 +162,15 @@ def word_docs(N=40):
    
     docs = [doc for doc,prob in data]
     doc_topics_mat = lda_v.doc_topics(docs)
+    docs = get_docs(docs, id_as_key=True)
 
     js = []
     for doc_prob, topics in zip(data, doc_topics_mat):
         doc, prob = doc_prob
-        js.append({'doc' : doc, 'label': label(doc), 'prob' : 1-prob,
+        struct = docs[doc]
+        struct.update({'prob' : 1-prob,
             'topics' : dict([(str(t), p) for t,p in topics])})
+	js.append(struct)
 
     return json.dumps(js)
 

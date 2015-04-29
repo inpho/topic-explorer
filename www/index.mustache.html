@@ -629,16 +629,16 @@ d3.json(url, function(error, data) {
         .attr("class", function(d) { return d.doc == docid ? "doc primary" : "doc"})
         .attr("transform", function(d) { return "translate(10," + y(d.id) + ")"; })
         .on("mouseover", function(d) {
-            var tick = $("text:contains(" + d.doc +")")
-              .filter(function() { return $(this).text().trim() == d.doc })
+            var tick = $("text:contains(" + d.id +")")
+              .filter(function() { return $(this).text().trim() == d.id })
               .attr("font-weight", "bold");
             icons.reduce(function(prev,cur) {
               return prev.next(".{0}Icon".format(cur)).css('opacity', '1.0');
             }, tick);
           })
         .on("mouseout", function(d) {
-            var tick = $("text:contains(" + d.doc +")")
-              .filter(function() {return $(this).text().trim() == d.doc })
+            var tick = $("text:contains(" + d.id +")")
+              .filter(function() {return $(this).text().trim() == d.id })
               .attr("font-weight", "normal");
             icons.reduce(function(prev, cur) {
               return prev.next(".{0}Icon".format(cur)).css('opacity', '');
