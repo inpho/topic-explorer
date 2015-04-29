@@ -3,7 +3,7 @@ from argparse import ArgumentParser
 from ConfigParser import RawConfigParser as ConfigParser
 import os.path
 
-from topicexplorer import init, prep, train, server, launch, notebook
+from topicexplorer import init, prep, train, server, launch, notebook, demo
 from topicexplorer.lib.util import is_valid_filepath
 
 def main():
@@ -86,6 +86,11 @@ def main():
     parser_nb.add_argument("config_file", help="Path to Config File")
     parser_nb.add_argument('--no-launch', dest='launch', action='store_false')
     parser_nb.set_defaults(func="notebook")
+
+    # Demo Parser
+    parser_nb = parsers.add_parser('demo', 
+        help="Download and run the AP demo")
+    parser_nb.set_defaults(func="demo")
     
     args = parser.parse_args()
 
@@ -120,6 +125,9 @@ def main():
 
     elif args.func == 'notebook':
         notebook.main(args)
+
+    elif args.func == 'demo':
+        demo.main()
 
 if __name__ == '__main__':
     main()
