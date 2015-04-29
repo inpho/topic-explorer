@@ -134,11 +134,12 @@ def word_docs(N=40):
         pass
     try: 
         query = request.query.q.lower().split('|')
-    
     except:
         raise Exception('Must specify a query') 
 
     response.content_type = 'application/json; charset=UTF8'
+
+    query = [word for word in query if word in lda_c.words]
     
     topics = lda_v.dist_word_top(query, show_topics=False)
     data = lda_v.dist_top_doc(topics['i'], 
