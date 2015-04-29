@@ -72,15 +72,12 @@ def main(args):
     counts = items[:,1]
     high_filter = False
     while not high_filter:
-        bin_counts, bins = np.histogram(items[:,1][items[:,1].argsort()[::-1]], range=(0,len(c.words)/4.))
-        print "Freq   ",
-        for bin in bins:
-            print "%10.0f" % bin,
-        print "\nWords   ",
-        for count in bin_counts:
-            print "%10.0f" % count,
-        print "\n"
-        print counts.sum(), "total words"
+        bin_counts, bins = np.histogram(counts[counts.argsort()[::-1]], range=(0,len(c.words)/4.))
+	print "{0:>10s} {1:>10s}".format("# Tokens", "# Words")
+	for bin, count in zip(bins[1:], bin_counts):
+	    print "{0:10.0f} {1:10.0f}".format(bin, count)
+        print counts.sum(), "total tokens"
+	print len(c.words), "total words"
     
         input_filter = 0
         while not input_filter:
@@ -88,9 +85,8 @@ def main(args):
                 input_filter = int(raw_input("Enter a top filter: "))
                 candidates = c.words[items[:,0][counts > input_filter][counts[counts > input_filter].argsort()[::-1]]]
     
-                print counts[counts > input_filter].sum(), "Words"
+                print "filtering", counts[counts > input_filter].sum(), "tokens", "of these", len(counts[counts > input_filter]), "words:"
                 print ' '.join(candidates)
-                print counts[counts > input_filter].sum(), "Words"
     
                 accept = None
                 while accept not in ['y', 'n', 'c']:
