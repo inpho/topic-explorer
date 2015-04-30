@@ -81,7 +81,7 @@ setup(
     include_package_data=True,
     cmdclass = { 'install_data': wx_smart_install_data },
     entry_points={
-        'console_scripts' : ['vsm = topicexplorer:main',
+        'console_scripts' : ['vsm = topicexplorer.__main__:main',
                 'htutils = topicexplorer.lib.hathitrust:main']
     }
 )
