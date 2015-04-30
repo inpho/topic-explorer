@@ -7,6 +7,7 @@ install:
   - sudo pip install conda
   # install deps
   - sudo conda init
+  - sudo apt-get install libenchant-dev
   # sudo conda update conda --yes
   - conda create -p $HOME/py --yes pip numpy scipy nltk unidecode "python=$TRAVIS_PYTHON_VERSION"
   - export PATH=$HOME/py/bin:$PATH
