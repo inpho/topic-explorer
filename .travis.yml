@@ -10,8 +10,8 @@ install:
   # sudo conda update conda --yes
   - conda create -p $HOME/py --yes pip numpy scipy nltk unidecode "python=$TRAVIS_PYTHON_VERSION"
   - export PATH=$HOME/py/bin:$PATH
-  # command to install dependencies
-  - pip install .
+  # install topic explorer
+  - python setup.py install
 # command to run tests
 script: 
   - vsm demo
