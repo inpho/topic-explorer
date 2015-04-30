@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from distutils.command.install_data import install_data as _install_data
 from distutils.command.install import install as _install
-from setuptools import setup
+from setuptools import setup, find_packages
 import os
 
 
@@ -14,6 +14,12 @@ def get_datafiles(datadir):
 datafiles = get_datafiles('www')
 datafiles.extend(get_datafiles('ipynb'))
 
+# After install, download nltk packages 'punkt' and 'stopwords'
+def _post_install(dir):
+    import nltk
+    nltk.download('punkt')
+    nltk.download('stopwords')
+
 # Specializations of some distutils command classes
 # first install data files to actual library directory
 class wx_smart_install_data(_install_data):
@@ -21,19 +27,9 @@ class wx_smart_install_data(_install_data):
     def run(self):
         install_cmd = self.get_finalized_command('install')
         self.install_dir = getattr(install_cmd, 'install_lib')
-        return _install_data.run(self)
-
-# After install, download nltk packages 'punkt' and 'stopwords'
-def _post_install(dir):
-    import nltk
-    nltk.download('punkt')
-    nltk.download('stopwords')
-
-class run_post_install(_install):
-    def run(self):
-        _install.run(self)
         self.execute(_post_install, (self.install_lib,),
                      msg="Running post install task")
+        return _install_data.run(self)
 
 # PyPandoc
 import os
@@ -44,7 +40,7 @@ else:
 
 setup(
     name='topicexplorer',
-    version='1.0b11',
+    version='1.0b12',
     description='InPhO Topic Explorer',
     long_description = long_description,
     author = "The Indiana Philosophy Ontology (InPhO) Project",
@@ -67,7 +63,7 @@ setup(
         "Topic :: Software Development :: User Interfaces",
         "Topic :: Text Processing :: Linguistic",
         ],
-    packages=['topicexplorer', 'topicexplorer.lib', 'topicexplorer.extensions'],
+    packages=find_packages(),
     data_files=datafiles,
     install_requires=[
         'bottle>=0.12', 
@@ -83,10 +79,9 @@ setup(
         'https://github.com/inpho/vsm/archive/master.zip#egg=vsm-0.2.1',
         ],
     include_package_data=True,
-    cmdclass = { 'install_data': wx_smart_install_data, 
-        'install': run_post_install},
+    cmdclass = { 'install_data': wx_smart_install_data },
     entry_points={
-        'console_scripts' : ['vsm = topicexplorer.__main__:main',
+        'console_scripts' : ['vsm = topicexplorer:main',
                 'htutils = topicexplorer.lib.hathitrust:main']
     }
 )
