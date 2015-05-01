@@ -145,7 +145,7 @@ def write_config(args, config_file=None):
     config.set("main", "corpus_file", os.path.abspath(args.corpus_filename))
     
     config.add_section("www")
-    config.set("www", "corpus_name", "Deafult")
+    config.set("www", "corpus_name", "Default")
     config.set("www", "icons", "link")
     
     config.add_section("logging")
