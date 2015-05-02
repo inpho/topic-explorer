@@ -1,6 +1,7 @@
 #!/usr/bin/env python
+from __future__ import absolute_import
 from ConfigParser import RawConfigParser as ConfigParser
-import httplib
+import httplib, ssl
 import json
 import os.path
 from StringIO import StringIO ## used to stream http response into zipfile.
@@ -41,7 +42,7 @@ Code to download volumes
 """
 host = "silvermaple.pti.indiana.edu" # use over HTTPS
 port = 25443
-oauth2EPRurl = "/oauth2endpoints/token"
+oauth2EPRurl = "/oauth2/token"
 oauth2port = 9443
 dataapiEPR = "/data-api/"
 
@@ -61,7 +62,12 @@ def getVolumesFromDataAPI(token, volumeIDs, concat=False):
     headers = {"Authorization" : "Bearer " + token,
                "Content-type" : "application/x-www-form-urlencoded"}
 
-    httpsConnection = httplib.HTTPSConnection(host, port)
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+
+    httpsConnection = httplib.HTTPSConnection(host, port,
+        context=ctx)
     httpsConnection.request("POST", url, urlencode(data), headers)
 
     response = httpsConnection.getresponse()
@@ -91,8 +97,11 @@ def getPagesFromDataAPI(token, pageIDs, concat):
         url = url + "&concat=true"
 
     print "data api URL: ", url
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
 
-    httpsConnection = httplib.HTTPSConnection(host, port)
+    httpsConnection = httplib.HTTPSConnection(host, port, context=ctx)
 
     headers = {"Authorization" : "Bearer " + token}
     httpsConnection.request("GET", url, headers=headers)
@@ -117,7 +126,10 @@ def obtainOAuth2Token(username, password):
     url = None
     httpsConnection = None
     
-    httpsConnection = httplib.HTTPSConnection(host, oauth2port)
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+    httpsConnection = httplib.HTTPSConnection(host, oauth2port, context=ctx)
 
     url = oauth2EPRurl
     ## make sure to set the request content-type as application/x-www-form-urlencoded
