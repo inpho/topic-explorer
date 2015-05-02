@@ -40,7 +40,7 @@ else:
 
 setup(
     name='topicexplorer',
-    version='1.0b12',
+    version='1.0b13',
     description='InPhO Topic Explorer',
     long_description = long_description,
     author = "The Indiana Philosophy Ontology (InPhO) Project",
