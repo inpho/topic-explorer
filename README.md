@@ -12,7 +12,7 @@ Display options include topic normalization, alphabetical sort and topic sort. B
 ## Installation
 
 1.  Install the [Anaconda Python 2.7 Distribution](http://continuum.io/downloads). 
-2.  Open a terminal and run `pip install topicexplorer==1.0b11`.
+2.  Open a terminal and run `pip install topicexplorer==1.0b13`.
 3.  Test installation by typing `vsm -h` to print usage instructions.
 
 See below for notes on developer installation.
