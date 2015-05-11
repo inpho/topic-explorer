@@ -150,6 +150,11 @@ def word_docs(N=40):
 
     query = [word for word in query if word in lda_c.words]
     
+    # abort if there are no terms in the query
+    if not query:
+        response.status = 400 # Bad Request
+        return "Search terms not in model"
+
     topics = lda_v.dist_word_top(query, show_topics=False)
     data = lda_v.dist_top_doc(topics['i'], 
                weights=(topics['value'].max() - topics['value']))
