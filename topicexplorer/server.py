@@ -157,7 +157,7 @@ def word_docs(N=40):
 
     topics = lda_v.dist_word_top(query, show_topics=False)
     data = lda_v.dist_top_doc(topics['i'], 
-               weights=(topics['value'].max() - topics['value']))
+               weights=(topics['value'].max() - topics['value']), label_fn=id_fn)
 
     if N > 0:
         data = data[:N]
