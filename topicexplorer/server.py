@@ -326,14 +326,14 @@ def main(args):
     try:
         label = label_module.label
         print "imported label function"
-    except AttributeError:
+    except (AttributeError, UnboundLocalError):
         label = lambda x: x
         print "using default label function"
         
     try:
         id_fn = label_module.id_fn
         print "imported id function"
-    except AttributeError:
+    except (AttributeError, UnboundLocalError):
         id_fn = def_label_fn
         print "using default id function"
 
