@@ -91,6 +91,9 @@ rect:hover, .legend.hover rect, .legend.selected rect {
 .selected text, .hover text {
   font-weight: bold;
 }
+.doc text {
+  font-size: 18px;
+  }
 #legend, #controls {
   position: absolute;
   overflow: visible;
@@ -476,7 +479,7 @@ function computeWidth(numCols) {
 }
 
 function computeHeight(data, numLegendRows) { 
-  height = (data.length * 20);// - margin.top - margin.bottom;
+  height = (data.length * 30);// - margin.top - margin.bottom;
   y = d3.scale.ordinal()
    .rangeRoundBands([0, height], .1, 0);
   y.domain(data.map(function(d) { return d.id; }));
@@ -619,7 +622,7 @@ d3.json(url, function(error, data) {
           });
   
     for (var i = 0; i < icons.length; i++) {
-      icon_fns[icons[i]](ticks,i);
+      icon_fns[icons[i]](ticks,i, data);
     }
   
     // draw total bar
@@ -678,7 +681,7 @@ d3.json(url, function(error, data) {
           .text(function(d) { return d.label; })
           .attr("class","docLabel")
           .attr("dx", "3")
-          .attr("dy", "13") 
+          .attr("dy", "20") 
         .filter(function(d) { return q && (d.label.indexOf(q) >= 0);})
         .each(function(d) {
             if (q) {
@@ -696,7 +699,7 @@ d3.json(url, function(error, data) {
         .data(data[0].topicMap.map(function(t) { return t.name;}))
       .enter().append("g")
         .attr("class", function(d) { return "legend top_" + d; })
-        .attr("transform", function(d, i) { return "translate("+(55 * Math.floor(i / legendFactor))+"," + y(i % legendFactor) + ")"; });
+        .attr("transform", function(d, i) { return "translate("+(55 * Math.floor(i / legendFactor))+"," + (y(i % legendFactor) - 10*(i % legendFactor)) + ")"; });
   
     legendElts.append("rect")
         .attr("width", 18)
