@@ -1,5 +1,5 @@
 from codecs import open
-from ConfigParser import ConfigParser
+from ConfigParser import ConfigParser, NoOptionError
 import csv
 from datetime import datetime, timedelta
 from importlib import import_module
@@ -188,7 +188,7 @@ def topics():
     # populate entropy values
     data = lda_v.topic_oscillations()
 
-    colors = [itertools.cycle(cs) for cs in zip(*colorlib.brew(3,n_cls=4))]
+    colors = [itertools.cycle(cs) for cs in zip(*colorlib.brew(5,n_cls=6))]
     factor = len(data) / len(colors)
 
     js = {}
@@ -251,7 +251,7 @@ def get_docs(docs=None, id_as_key=False, query=None):
     js = dict() if id_as_key else list()
 
     for doc, md in zip(docs, ctx_md):
-        if query is None or query in label(doc):
+        if query is None or query.lower() in label(doc).lower():
             struct = {
                 'id': doc,
                 'label' : label(doc),
@@ -318,22 +318,24 @@ def main(args):
     try:
         label_module = config.get('main', 'label_module')
         label_module = import_module(label_module)
-        try:
-            label_module.init(config.get('main','path'), lda_v, context_type)
-        except:
-            pass
+        print "imported label module"
+        label_module.init(config.get('main','path'), lda_v, context_type)
+    except (ImportError, NoOptionError, AttributeError):
+        pass
 
+    try:
         label = label_module.label
-        try:
-            id_fn = label_module.id_fn
-        except:
-            id_fn = def_label_fn
-    except:
-        from vsm.viewer.wrappers import def_label_fn
-        context_md = lda_c.view_metadata(context_type)
-        ctx_label = doc_label_name(context_type)
-        id_fn = lambda md: context_md[ctx_label] 
+        print "imported label function"
+    except AttributeError:
         label = lambda x: x
+        print "using default label function"
+        
+    try:
+        id_fn = label_module.id_fn
+        print "imported id function"
+    except AttributeError:
+        id_fn = def_label_fn
+        print "using default id function"
 
     config_icons = config.get('www','icons').split(",")
 

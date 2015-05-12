@@ -23,7 +23,7 @@ def metadata(id, sleep_time=1):
         data = json.load(urlopen(solr))
         print id
         return data['response']['docs'][0]
-    except ValueError :
+    except (ValueError,IndexError):
         print "No result found for " + id 
         return dict()
 
