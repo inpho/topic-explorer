@@ -380,7 +380,7 @@ $(".typeahead").typeahead({items: 12,
       }
   },
   sorter: function(items) {
-      if (items.length == 1) {
+      /*if (items.length == 1) {
         $('#hidden_id').val(mapped[items[0]].id);
         console.log("setting hidden_id" + $('#hidden_id').val());
         if (!$('#autocompleteDoc').hasClass('active')) {
@@ -388,7 +388,8 @@ $(".typeahead").typeahead({items: 12,
           $('span.icon-font', '#autocompleteDoc').removeClass('icon-font').addClass('icon-file');
         }
         items.length = 0;
-      } else if(items.length > 0) { 
+      } else*/
+      if(items.length > 0) { 
         $('#autocompleteDoc').removeAttr('disabled');
       } else if (items.length == 0) {
         if ($('#autocompleteDoc').hasClass('active')) {
