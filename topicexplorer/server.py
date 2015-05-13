@@ -19,11 +19,14 @@ from vsm.viewer.wrappers import doc_label_name, def_label_fn
 
 from bottle import request, response, route, run, static_file
 from topicexplorer.lib.ssl import SSLWSGIRefServer
+from topicexplorer.lib.util import filter_until
 import numpy as np
 
 import pystache
 import topicexplorer.lib.color as colorlib
 
+
+stopwords = None
 def _set_acao_headers(f):
     """
     Decorator to set Access-Control-Allow-Origin headers to enable cross-InPhO
@@ -202,7 +205,11 @@ def topics():
     # populate word values
     data = lda_v.topics()
     for i,topic in enumerate(data):
-        js[str(i)].update({'words' : dict([(w, p) for w,p in topic[:10]])})
+        if stopwords:
+            js[str(i)].update({'words' : dict([(w, p) for w,p in
+                filter_until(lambda w_p: w_p[0] not in stopwords, 20, topic)])})
+        else:
+            js[str(i)].update({'words' : dict([(w, p) for w,p in topic[:20]])})
 
     return json.dumps(js)
 
@@ -265,7 +272,12 @@ def get_docs(docs=None, id_as_key=False, query=None):
 
 def main(args):
     global context_type, lda_c, lda_m, lda_v, label, id_fn
-    
+    global stopwords
+    with open('../corpus.stopwords') as swfile:
+        stopwords = []
+        for line in swfile:
+            stopwords.append(line.strip())
+
     # load in the configuration file
     config = ConfigParser({
         'certfile' : None,

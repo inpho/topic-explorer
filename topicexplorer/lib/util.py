@@ -72,3 +72,12 @@ def contains_pattern(directory, pattern):
         return True
     except StopIteration:
         return False
+
+def filter_until(predicate, n, ls):
+    ls = list(ls)
+    while n > 0 and ls:
+        item = ls.pop(0)
+        if predicate(item):
+            yield item
+            n -= 1
+
