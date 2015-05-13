@@ -35,6 +35,17 @@ var icon_fns = {"link" : function(ticks, i) {
         .attr("class", "fulltextIcon icon")
         .attr("onclick", function(d) { return (d) ? "fulltext.popover(this)" : ""; });
   },
+ "oldbailey" : function(ticks, i, docs) {
+      base_fn(ticks,i)
+        .attr("data-doc-id", function (d) {return d})
+        .attr("xlink:href","/img/icon-law.png")
+        .attr("class", "oldbaileyIcon icon")
+        .on("click", function(d) { 
+          data = docs.filter(function(doc, i) { return doc.id == d})[0];
+          d = data.metadata.trial_id;
+          window.open("http://www.oldbaileyonline.org/browse.jsp?id="+d+"&div="+d, "_blank");
+        });
+  },
  "htrc" : function(ticks, i, docs) {
       base_fn(ticks,i)
         .attr("xlink:href","/img/htrc.png")
@@ -95,6 +106,7 @@ var icon_tooltips = {
     "link" : 'Click to refocus the Topic Explorer on this document.',
     "ap" : 'Click for the full-text.',
     "fulltext" : 'Click for the full-text.',
+    "oldbailey" : 'Click to open Old Bailey Online Record.',
     "htrc" : 'Click for the HathiTrust Details.',
     "htrcbook" : 'Click for the HathiTrust PageTurner.',
     "inpho" : 'Click to see more information<br /> at the InPhO Project.',
