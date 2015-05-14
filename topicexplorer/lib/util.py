@@ -72,3 +72,10 @@ def contains_pattern(directory, pattern):
         return True
     except StopIteration:
         return False
+
+def isint(x):
+    try:
+        int(x)
+        return True
+    except (ValueError, TypeError):
+        return False

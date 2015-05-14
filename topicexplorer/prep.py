@@ -9,6 +9,7 @@ from scipy.stats import itemfreq
 from vsm import *
 from codecs import open 
 from unidecode import unidecode
+from topicexplorer.lib.util import isint
 
 def stop_language(c, language):
     words = nltk.corpus.stopwords.words(language)
@@ -80,21 +81,32 @@ def main(args):
 	print len(c.words), "total words"
     
         input_filter = 0
+        accept = None
         while not input_filter:
             try:
-                input_filter = int(raw_input("Enter a top filter: "))
+                if high_filter:
+                    input_filter = high_filter
+                else:
+                    input_filter = int(raw_input("Enter a top filter: "))
                 candidates = c.words[items[:,0][counts > input_filter][counts[counts > input_filter].argsort()[::-1]]]
     
-                print "filtering", counts[counts > input_filter].sum(), "tokens", "of these", len(counts[counts > input_filter]), "words:"
+                print "Filter will remove", counts[counts > input_filter].sum(), "tokens", "of these", len(counts[counts > input_filter]), "words:"
                 print ' '.join(candidates)
+
+                print "\nFilter will remove", counts[counts > input_filter].sum(), "tokens", "of these", len(counts[counts > input_filter]), "words.",
     
                 accept = None
                 while accept not in ['y', 'n', 'c']:
-                    accept = raw_input("\nAccept filter? [y/n/c] ")
-                    if accept == 'y':
+                    accept = raw_input("\nAccept filter? [y/n/c/#] ")
+                    if isint(accept):
+                        high_filter = int(accept)
+                        input_filter = 0
+                        accept = 'n'
+                    elif accept == 'y':
                         high_filter = input_filter
-                    if accept == 'c':
+                    elif accept == 'c':
                         high_filter = -1
+                        
             except ValueError:
                 input_filter = 0 
     
