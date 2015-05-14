@@ -181,40 +181,37 @@ def printZipStream(data):
 
     myzip.close()
 
-def download(args):
-    # extract files
-    with open(args.file) as IDfile:
-        volumeIDs = [line.strip() for line in IDfile]
+def download_vols(volumeIDs, output, username=None, password=None):
     # create output folder, if nonexistant
-    if not os.path.isdir(args.output):
-        os.makedirs(args.output)
+    if not os.path.isdir(output):
+        os.makedirs(output)
 
-    if not args.username and not args.password:
+    if not username and not password:
         path = os.path.expanduser('~')
         path = os.path.join(path, '.htrc')
 	config = ConfigParser(allow_no_value=True)
         if os.path.exists(path):
 	    config.read(path)
             if config.has_section('main'):
-                args.username = config.get("main", "username")
-                args.password = config.get("main", "password")
+                username = config.get("main", "username")
+                password = config.get("main", "password")
 
         # If config file is blank, still prompt!
-        if not args.username and not args.password:
+        if not username and not password:
             print "Please enter your HathiTrust credentials."
-            args.username = raw_input("Token: ")
-            args.password = raw_input("Password: ")
+            username = raw_input("Token: ")
+            password = raw_input("Password: ")
             save = bool_prompt("Save credentials?", default=True)
             if save:
                 with open(path, 'w') as credential_file:
                     if not config.has_section('main'):
                         config.add_section('main')
-                    config.set('main', 'username', args.username)
-                    config.set('main', 'password', args.password)
+                    config.set('main', 'username', username)
+                    config.set('main', 'password', password)
                     config.write(credential_file)
     
 
-    token = obtainOAuth2Token(args.username, args.password)
+    token = obtainOAuth2Token(username, password)
     if token is not None:
         print "obtained token: %s\n" % token
         ## to get volumes, uncomment next line
@@ -224,11 +221,19 @@ def download(args):
         #data = getPagesFromDataAPI(token, pageIDs, False) 
 
         myzip = ZipFile(StringIO(data))
-        myzip.extractall(args.output)
+        myzip.extractall(output)
         myzip.close()
     else:
         print "Failed to obtain oauth token."
         sys.exit(1)
+
+
+def download(args):
+    # extract files
+    with open(args.file) as IDfile:
+        volumeIDs = [line.strip() for line in IDfile]
+
+    return download_vols(volumeIDs, args.output, args.username, args.password)
 
 
 def main():
