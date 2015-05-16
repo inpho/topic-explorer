@@ -69,7 +69,7 @@ setup(
         'bottle>=0.12', 
         'brewer2mpl>=1.4',
         'pystache>=0.5.4',
-        'vsm>=0.2.1',
+        'vsm>=0.3a1',
         'wget',
         'unidecode',
         'pdfminer',
