@@ -24,8 +24,8 @@ def build_models(corpus, corpus_filename, model_path, context_type, krange, n_it
     for k in krange:
         print "Training model for k={0} Topics with {1} Processes"\
             .format(k, n_proc)
-        m = LDA(corpus, context_type, K=k, multiprocessing=True)
-        m.train(n_iterations=n_iterations, n_proc=n_proc, seeds=seeds)
+        m = LDA(corpus, context_type, K=k, multiprocessing=True, n_proc=n_proc, seeds=seeds)
+        m.train(n_iterations=n_iterations)
         m.save(basefilename.format(k))
 
     return basefilename
