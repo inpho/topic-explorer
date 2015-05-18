@@ -40,7 +40,7 @@ else:
 
 setup(
     name='topicexplorer',
-    version='1.0b13',
+    version='1.0b14',
     description='InPhO Topic Explorer',
     long_description = long_description,
     author = "The Indiana Philosophy Ontology (InPhO) Project",
@@ -69,7 +69,7 @@ setup(
         'bottle>=0.12', 
         'brewer2mpl>=1.4',
         'pystache>=0.5.4',
-        'vsm>=0.3a2',
+        'vsm>=0.3a3',
         'wget',
         'unidecode',
         'pdfminer',
