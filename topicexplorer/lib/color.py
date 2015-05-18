@@ -6,8 +6,8 @@ def brew(N, n_cls, reverse=True):
         brewer.get_map('Oranges', 'Sequential', N+1, reverse=reverse).hex_colors[:N],
         brewer.get_map('Greens', 'Sequential', N+1, reverse=reverse).hex_colors[:N],
         brewer.get_map('Purples', 'Sequential', N+1, reverse=reverse).hex_colors[:N],
+        brewer.get_map('Reds', 'Sequential', N+1, reverse=reverse).hex_colors[:N],
         brewer.get_map('Greys', 'Sequential', N+1, reverse=reverse).hex_colors[:N],
-        brewer.get_map('Reds', 'Sequential', N+1, reverse=reverse).hex_colors[:N]
     ]
     return b[:n_cls]
 

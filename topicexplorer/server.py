@@ -185,10 +185,10 @@ def topics():
     response.content_type = 'application/json; charset=UTF8'
     response.set_header('Expires', _cache_date())
 
-    # populate entropy values
-    data = lda_v.topic_oscillations()
+    # populate partial jsd values
+    data = lda_v.topic_jsds()
 
-    colors = [itertools.cycle(cs) for cs in zip(*colorlib.brew(5,n_cls=6))]
+    colors = [itertools.cycle(cs) for cs in zip(*colorlib.brew(4,n_cls=5))]
     factor = len(data) / len(colors)
 
     js = {}
