@@ -11,6 +11,14 @@ from codecs import open
 from unidecode import unidecode
 from topicexplorer.lib.util import isint
 
+# NLTK Langauges
+langs = dict(da='danish', nl='dutch', en='english', fi='finnish', fr='french',
+             de='german', hu='hungarian', it='italian', no='norwegian',
+             pt='portuguese', ru='russian', es='spanish', sv='swedish',
+             tr='turkish')
+
+langs_rev = dict((v, k) for k, v in langs.items())
+
 def stop_language(c, language):
     words = nltk.corpus.stopwords.words(language)
     words = [word for word in words if word in c.words]
@@ -22,14 +30,6 @@ def main(args):
     args.corpus_path = config.get("main", "corpus_file")
 
     c = Corpus.load(args.corpus_path)
-    
-    # NLTK Langauges
-    langs = dict(da='danish', nl='dutch', en='english', fi='finnish', fr='french',
-                 de='german', hu='hungarian', it='italian', no='norwegian',
-                 pt='portuguese', ru='russian', es='spanish', sv='swedish',
-                 tr='turkish')
-    
-    langs_rev = dict((v, k) for k, v in langs.items())
     
     if args.lang is None:
         args.lang = []
@@ -140,14 +140,21 @@ def main(args):
         config.write(configfh)
 
 if __name__ == '__main__':
+    import argparse
     from argparse import ArgumentParser
-    parser = ArgumentParser()
+    parser = ArgumentParser(
+        epilog='Available language stoplists (use 2-letter code): \n\t' + 
+            '\n\t'.join(['{k}    {v}'.format(k=k, v=v.capitalize()) 
+                          for k,v in sorted(prep.langs.items(), 
+                              key=lambda x: x[1])]), 
+        formatter_class=argparse.RawDescriptionHelpFormatter)
     parser_prep.add_argument("config_file", help="Path to Config",
         type=lambda x: is_valid_filepath(parser_prep, x))
     parser.add_argument("--htrc", action="store_true")
     parser.add_argument("--stopword-file", dest="stopword_file",
         help="File with custom stopwords")
-    parser.add_argument("--lang", nargs='+', help="Languages to stoplist")
+    parser.add_argument("--lang", nargs='+', choices=prep.langs.keys(),
+        help="Languages to stoplist. See options below.", metavar='xx')
     args = parser.parse_args()
     
     main(args)
