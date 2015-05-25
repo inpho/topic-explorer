@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import argparse
 from argparse import ArgumentParser
 from ConfigParser import RawConfigParser as ConfigParser
 import os.path
@@ -23,13 +24,19 @@ def main():
     parser_init.set_defaults(func="init")
     
     # Prep Parser
-    parser_prep = parsers.add_parser('prep', help="Prep the corpus")
+    parser_prep = parsers.add_parser('prep', help="Prep the corpus", 
+        epilog='Available language stoplists (use 2-letter code): \n\t' + 
+            '\n\t'.join(['{k}    {v}'.format(k=k, v=v.capitalize()) 
+                          for k,v in sorted(prep.langs.items(), 
+                              key=lambda x: x[1])]), 
+        formatter_class=argparse.RawDescriptionHelpFormatter)
     parser_prep.add_argument("config_file", help="Path to Config",
         type=lambda x: is_valid_filepath(parser_prep, x))
     parser_prep.add_argument("--htrc", action="store_true")
     parser_prep.add_argument("--stopword-file", dest="stopword_file",
         help="File with custom stopwords")
-    parser_prep.add_argument("--lang", nargs='+', help="Languages to stoplist")
+    parser_prep.add_argument("--lang", nargs='+', choices=prep.langs.keys(),
+        help="Languages to stoplist. See options below.", metavar='xx')
     parser_prep.set_defaults(func="prep")
 
     # Train Parser

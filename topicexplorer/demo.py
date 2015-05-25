@@ -54,11 +54,14 @@ def download_and_extract():
     for doc,text in corpus.items():
         with open('ap/'+doc, 'w') as outfile:
             outfile.write(text)
+
+
+
 def main():
     download_and_extract()
-    os.system("vsm init ap")
+    subprocess.check_call("vsm init ap", shell=True)
     # TODO: Catch RuntimeWarning event on Windows
-    os.system("vsm train ap.ini -k 20 40 60 --context-type document --iter 20")
+    subprocess.check_call("vsm train ap.ini -k 20 40 60 --context-type document --iter 20", shell=True)
 
 if __name__ == '__main__':
     main()

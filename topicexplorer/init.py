@@ -9,7 +9,7 @@ from vsm.corpus.util.corpusbuilders import coll_corpus, dir_corpus, toy_corpus
 
 from topicexplorer.lib import pdf, util
 
-def get_corpus_filename(corpus_path, model_path, nltk_stop=True, stop_freq=1,
+def get_corpus_filename(corpus_path, model_path, nltk_stop=False, stop_freq=1,
 			context_type='document'):
     corpus_name = os.path.basename(corpus_path)
     if not corpus_name:
@@ -26,7 +26,7 @@ def get_corpus_filename(corpus_path, model_path, nltk_stop=True, stop_freq=1,
     return os.path.join(model_path, filename)
 
 
-def build_corpus(corpus_path, model_path, nltk_stop=True, stop_freq=1,
+def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=1,
     context_type='document', ignore=['.json','.log','.err','.pickle','.npz']):
    
     # pre-process PDF files
