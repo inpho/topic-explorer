@@ -53,8 +53,8 @@ def main(args):
 
     print "pid","port"
     for proc,k in zip(procs, topic_range):
-        port = config.get("main","port").format(k)
-        host = config.get("main","host")
+        port = int(config.get("www","port").format(0)) + k
+        host = config.get("www","host")
         print proc.pid, "http://{host}:{port}/".format(host=host,port=port)
 
 
@@ -74,8 +74,8 @@ def main(args):
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
 
-    port = config.get("main","port").format(topic_range[0])
-    host = config.get("main","host")
+    port = int(config.get("www","port").format(0)) + topic_range[0]
+    host = config.get("www","host")
     if host == '0.0.0.0':
         host = 'localhost'
     url = "http://{host}:{port}/".format(host=host,port=port)

@@ -294,14 +294,14 @@ def main(args):
         port = args.port
         print port, "auto port"
     else:
-        port = config.get('main','port').format(args.k)
+        port = int(config.get('www','port').format(0)) + args.k
         print port
 
     # hostname assignment
     if args.host:
         host = args.host
     else:
-        host = config.get('main','host')
+        host = config.get('www','host')
 
     # LDA objects
     lda_c = Corpus.load(corpus_file)
@@ -358,7 +358,7 @@ def main(args):
         topic_range = range(*topic_range)
     if config.get('main', 'topics'):
         topic_range = eval(config.get('main', 'topics'))
-    topic_range = [{'k' : k, 'port' : config.get('main','port').format(k)} 
+    topic_range = [{'k' : k, 'port' : int(config.get('www','port').format(0)) + k} 
             for k in topic_range] 
 
     renderer = pystache.Renderer(escape=lambda u: u)
