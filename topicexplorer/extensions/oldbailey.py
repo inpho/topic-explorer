@@ -32,11 +32,10 @@ def label(doc):
 
     context_md = ctx_md['page']
     where = np.squeeze(np.where(np.in1d(context_md['page_label'], [str(doc)])))
-    try:
-        page_no = context_md[where]['trial_id']
-        return page_no
-    except:
-        return doc
+    print where, context_md
+    page_no = context_md[where]
+    print where, page_no['title']
+    return page_no['title']
 
 
 def id_fn(md):
