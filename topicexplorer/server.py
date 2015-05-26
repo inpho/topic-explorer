@@ -1,5 +1,5 @@
 from codecs import open
-from ConfigParser import ConfigParser, NoOptionError
+from ConfigParser import RawConfigParser as ConfigParser, NoOptionError
 import csv
 from datetime import datetime, timedelta
 from importlib import import_module
@@ -8,6 +8,7 @@ import itertools
 import os.path
 from pkg_resources import resource_filename
 import re
+import socket
 from urllib2 import unquote
 from StringIO import StringIO
 from urllib import unquote_plus
@@ -19,6 +20,7 @@ from vsm.viewer.wrappers import doc_label_name, def_label_fn
 
 from bottle import request, response, route, run, static_file
 from topicexplorer.lib.ssl import SSLWSGIRefServer
+from topicexplorer.lib.util import int_prompt, bool_prompt
 import numpy as np
 
 import pystache
@@ -272,7 +274,7 @@ def main(args):
         'keyfile' : None,
         'ca_certs' : None,
         'ssl' : False,
-        'port' : '8{0:03d}',
+        'port' : '8000',
         'host' : '0.0.0.0',
         'topic_range' : '{0},{1},1'.format(args.k, args.k+1),
         'icons': 'link',
@@ -290,18 +292,54 @@ def main(args):
     model_pattern = config.get('main', 'model_pattern') 
 
     # automatic port assignment
-    if args.port:
-        port = args.port
-        print port, "auto port"
-    else:
-        port = int(config.get('www','port').format(0)) + args.k
-        print port
+
+    def test_port(port):
+        try:
+            host = args.host or config.get("www","host")
+            if host == '0.0.0.0':
+                host = 'localhost'
+            try:
+                s = socket.create_connection((host,port), 2)
+                s.close()
+                raise IOError("Socket connectable on port {0}".format(port))
+            except socket.error:
+                pass
+            return port
+        except IOError:
+            port = int_prompt(
+                "Conflict on port {0}. Change port? ".format(port)) 
+            return test_port(port)
+
+    port = args.port or int(config.get('www','port').format(0)) + args.k
+    port = test_port(port)
+    
+    # prompt to save
+    if (int(config.get("www","port").format(0)) + args.k) != port:
+        if bool_prompt("Set default baseport to {0}? ".format(port - args.k)):
+            config.set("www","port", str(port - args.k))
+
+            # create deep copy of configuration
+            # see http://stackoverflow.com/a/24343297
+            config_string = StringIO()
+            config.write(config_string)
+
+            # skip DEFAULT section
+            config_string.seek(0)
+            idx = config_string.getvalue().index("[main]")
+            config_string.seek(idx)
+
+            # read deep copy
+            new_config = ConfigParser()
+            new_config.readfp(config_string)
+
+            # write deep copy without DEFAULT section
+            # this preserves DEFAULT for rest of program
+            with open(args.config, 'wb') as configfh:
+                new_config.write(configfh)
+
 
     # hostname assignment
-    if args.host:
-        host = args.host
-    else:
-        host = config.get('www','host')
+    host = args.host or config.get('www','host')
 
     # LDA objects
     lda_c = Corpus.load(corpus_file)
@@ -358,8 +396,9 @@ def main(args):
         topic_range = range(*topic_range)
     if config.get('main', 'topics'):
         topic_range = eval(config.get('main', 'topics'))
+    print topic_range
     topic_range = [{'k' : k, 'port' : int(config.get('www','port').format(0)) + k} 
-            for k in topic_range] 
+                        for k in topic_range] 
 
     renderer = pystache.Renderer(escape=lambda u: u)
 

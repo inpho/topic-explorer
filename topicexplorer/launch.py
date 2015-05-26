@@ -82,7 +82,8 @@ def main(args):
         grp_fn = os.setsid
     except AttributeError:
         grp_fn = None
-    procs = [subprocess.Popen("vsm serve -k %d %s" % (k, args.config_file),
+    procs = [subprocess.Popen("vsm serve -k {k} -p {port} {config_file}".format(
+        k=k, port=(baseport+k), config_file=args.config_file),
         shell=True, stdout=get_log_file(k), stderr=subprocess.STDOUT,
         preexec_fn=grp_fn) for k in topic_range]
 
