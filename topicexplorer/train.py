@@ -58,15 +58,17 @@ def main(args):
 
     if args.k is None:
         if config.get("main", "topics"):
-            args.k = eval(config.get("main", "topics"))
+            default = ' '.join(map(str, eval(config.get("main", "topics"))))
+        else:
+            default = ' '.join(map(str, range(20,100,20)))
 
         while args.k is None:
-            ks = raw_input("Number of Topics [Default '20 40 60 80']: ")
+            ks = raw_input("Number of Topics [Default '{0}']: ".format(default))
             try:
                 if ks:
                     args.k = [int(n) for n in ks.split()]
                 elif not ks.strip():
-                    args.k = range(20,100,20) 
+                    args.k = [int(n) for n in default.split()]
 
                 if args.k:
                     print "\nTIP: number of topics can be specified with argument '-k N N N ...':"
@@ -85,12 +87,17 @@ def main(args):
     if model_pattern is not None and\
         bool_prompt("Existing model found. Continue training?", default=True):
     
+        m = LDA.load(model_pattern.format(args.k[0]))
+
+
         if args.iter is None:
-            args.iter = int_prompt("Total number of training iterations:", default=200)
+            args.iter = int_prompt("Total number of training iterations:",
+                                   default=int(m.iteration*1.5), min=m.iteration)
     
             print "\nTIP: number of training iterations can be specified with argument '--iter N':"
             print "         vsm train --iter %d %s\n" % (args.iter, args.config_file)
 
+        del m
         # continue training
         model_pattern = continue_training(model_pattern, args.k, args.iter)
 
@@ -135,7 +142,9 @@ def main(args):
                                      n_proc=args.processes, seed=args.seed)
 
     config.set("main", "model_pattern", model_pattern)
-    config.set("main", "context_type", args.context_type)
+    if args.context_type:
+        # test for presence, since continuing doesn't require context_type
+        config.set("main", "context_type", args.context_type)
     args.k.sort()
     config.set("main", "topics", str(args.k))
     
