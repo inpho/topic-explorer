@@ -34,17 +34,18 @@ def build_models(corpus, corpus_filename, model_path, context_type, krange,
 
     return basefilename
 
-def continue_training(model_pattern, krange, n_iterations=200):
+def continue_training(model_pattern, krange, total_iterations=200):
     for k in krange:
         m = LDA.load(model_pattern.format(k))
 
         print "Continue training model for k={0} Topics".format(k)
-        m.train(n_iterations=n_iterations)
+        orig_iterations = m.iteration
+        m.train(n_iterations=total_iterations - orig_iterations)
 
         # save new file
         basefilename = model_pattern.replace(
-            "-{orig}.npz".format(orig=(m.iteration - n_iterations)),
-            "-{new}.npz".format(new=m.iteration))
+            "-{orig}.npz".format(orig=orig_iterations),
+            "-{new}.npz".format(new=total_iterations))
         m.save(basefilename.format(k))
 
     return basefilename
@@ -74,12 +75,6 @@ def main(args):
             except ValueError:
                 print "Enter valid integers, separated by spaces!"
         
-    
-    if args.iter is None:
-        args.iter = int_prompt("Number of Training Iterations:", default=200)
-
-        print "\nTIP: number of training iterations can be specified with argument '--iter N':"
-        print "         vsm train --iter %d %s\n" % (args.iter, args.config_file)
 
 
     try:
@@ -89,11 +84,24 @@ def main(args):
 
     if model_pattern is not None and\
         bool_prompt("Existing model found. Continue training?", default=True):
+    
+        if args.iter is None:
+            args.iter = int_prompt("Total number of training iterations:", default=200)
+    
+            print "\nTIP: number of training iterations can be specified with argument '--iter N':"
+            print "         vsm train --iter %d %s\n" % (args.iter, args.config_file)
+
         # continue training
         model_pattern = continue_training(model_pattern, args.k, args.iter)
 
     else:
         # build a new model
+        if args.iter is None:
+            args.iter = int_prompt("Number of training iterations:", default=200)
+    
+            print "\nTIP: number of training iterations can be specified with argument '--iter N':"
+            print "         vsm train --iter %d %s\n" % (args.iter, args.config_file)
+
         corpus = Corpus.load(corpus_filename)
     
         ctxs = corpus.context_types
