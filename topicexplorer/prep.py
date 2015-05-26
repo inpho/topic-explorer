@@ -115,7 +115,11 @@ def main(args):
         c = c.apply_stoplist(candidates)
     
     dirname = os.path.basename(args.corpus_path).split('-nltk-')[0]
-    lowfreq = os.path.basename(args.corpus_path).split('-freq')[1].split('-')[0].split('.npz')[0]
+    try:
+        lowfreq = os.path.basename(args.corpus_path).split('-freq')[1].split('-')[0].split('.npz')[0]
+    except:
+        lowfreq = 5 
+
     def name_corpus(dirname, languages, lowfreq=5, highfreq=None):
         corpus_name = [dirname]
         if args.lang:
