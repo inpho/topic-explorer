@@ -7,7 +7,7 @@ import os.path
 from vsm.corpus import Corpus
 from vsm.model.lda import LDA
 
-from topicexplorer.lib.util import bool_prompt
+from topicexplorer.lib.util import bool_prompt, int_prompt
 
 def build_models(corpus, corpus_filename, model_path, context_type, krange, 
                  n_iterations=200, n_proc=2, seed=None):
@@ -76,15 +76,7 @@ def main(args):
         
     
     if args.iter is None:
-        while args.iter is None:
-            iters = raw_input("Number of Training Iterations [Default 200]: ")
-            try:
-                args.iter = int(iters)
-            except ValueError:
-                if iters.strip() == '':
-                    args.iter = 200
-                else:
-                    print "Enter a valid integer!"
+        args.iter = int_prompt("Number of Training Iterations:", default=200)
 
         print "\nTIP: number of training iterations can be specified with argument '--iter N':"
         print "         vsm train --iter %d %s\n" % (args.iter, args.config_file)

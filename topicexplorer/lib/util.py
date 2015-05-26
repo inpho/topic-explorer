@@ -34,9 +34,9 @@ def bool_prompt(prompt_str, default=None):
     elif result == 'n':
         return False
 
-def int_prompt(prompt_str):
-    result = prompt(prompt_str)
-    
+def int_prompt(prompt_str, default=None):
+    result = prompt(prompt_str, default=default)
+
     try:
         return int(result)
     except:
