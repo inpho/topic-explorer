@@ -34,6 +34,16 @@ def bool_prompt(prompt_str, default=None):
     elif result == 'n':
         return False
 
+def int_prompt(prompt_str):
+    result = prompt(prompt_str)
+    
+    try:
+        return int(result)
+    except:
+        print "ERROR: You must enter a number."
+        return int_prompt(prompt_str)
+
+
 def prompt(prompt, options=None, default=None):
     # Construct prompt
     prompt = "\n"+prompt

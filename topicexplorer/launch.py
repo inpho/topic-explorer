@@ -1,10 +1,13 @@
 from ConfigParser import ConfigParser
 import os, os.path
+import socket
 import signal, sys
 import subprocess
 import time
 import urllib
 import webbrowser
+
+from topicexplorer.lib.util import int_prompt, bool_prompt
 
 def main(args):
     # CONFIGURATION PARSING
@@ -14,7 +17,7 @@ def main(args):
         'keyfile' : None,
         'ca_certs' : None,
         'ssl' : False,
-        'port' : '8{0:03d}',
+        'port' : '8000',
         'host' : '0.0.0.0',
         'icons': 'link',
         'corpus_link' : None,
@@ -43,6 +46,38 @@ def main(args):
         else:
             return subprocess.PIPE
 
+
+    def test_baseport(baseport):
+        try:
+            host = config.get("www","host")
+            if host == '0.0.0.0':
+                host = 'localhost'
+            for k in topic_range:
+                port = baseport + k
+                try:
+                    s = socket.create_connection((host,port), 2)
+                    s.close()
+                    raise IOError("Socket connectable on port {0}".format(port))
+                except socket.error:
+                    pass
+            return baseport
+        except IOError:
+            baseport = int_prompt(
+                "Conflict on port {0}. Change base port? [CURRENT: {1}] "\
+                    .format(port, baseport)) 
+            return test_baseport(baseport)
+
+    baseport = test_baseport(int(config.get("www","port").format(0)))
+
+    # prompt to save
+    if int(config.get("www","port").format(0)) != baseport:
+        if bool_prompt("Set default baseport to {0}? ".format(baseport)):
+            config.set("www","port", baseport)
+            with open(args.config_file,'wb') as configfh:
+                config.remove_section('DEFAULT')
+                config.write(configfh)
+
+
     try:
         grp_fn = os.setsid
     except AttributeError:
@@ -53,7 +88,7 @@ def main(args):
 
     print "pid","port"
     for proc,k in zip(procs, topic_range):
-        port = int(config.get("www","port").format(0)) + k
+        port = baseport + k
         host = config.get("www","host")
         print proc.pid, "http://{host}:{port}/".format(host=host,port=port)
 
@@ -74,7 +109,7 @@ def main(args):
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
 
-    port = int(config.get("www","port").format(0)) + topic_range[0]
+    port = baseport + topic_range[0]
     host = config.get("www","host")
     if host == '0.0.0.0':
         host = 'localhost'
