@@ -56,6 +56,7 @@ def prompt(prompt, options=None, default=None):
         prompt += " [{0}]".format('/'.join(choices))
     elif default:
         prompt += " [Default: {0}]".format(default)
+    prompt += " "
 
     # Wait for valid response
     result = None

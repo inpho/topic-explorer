@@ -2,6 +2,7 @@ from ConfigParser import ConfigParser
 import os, os.path
 import socket
 import signal, sys
+from StringIO import StringIO
 import subprocess
 import time
 import urllib
@@ -63,7 +64,7 @@ def main(args):
             return baseport
         except IOError:
             baseport = int_prompt(
-                "Conflict on port {0}. Change base port? [CURRENT: {1}] "\
+                "Conflict on port {0}. Enter new base port: [CURRENT: {1}]"\
                     .format(port, baseport)) 
             return test_baseport(baseport)
 
@@ -71,11 +72,28 @@ def main(args):
 
     # prompt to save
     if int(config.get("www","port").format(0)) != baseport:
-        if bool_prompt("Set default baseport to {0}? ".format(baseport)):
+        if bool_prompt("Change default baseport to {0}?".format(baseport),
+                       default=True):
             config.set("www","port", baseport)
+
+            # create deep copy of configuration
+            # see http://stackoverflow.com/a/24343297
+            config_string = StringIO()
+            config.write(config_string)
+
+            # skip DEFAULT section
+            config_string.seek(0)
+            idx = config_string.getvalue().index("[main]")
+            config_string.seek(idx)
+
+            # read deep copy
+            new_config = ConfigParser()
+            new_config.readfp(config_string)
+
+            # write deep copy without DEFAULT section
+            # this preserves DEFAULT for rest of program
             with open(args.config_file,'wb') as configfh:
-                config.remove_section('DEFAULT')
-                config.write(configfh)
+                new_config.write(configfh)
 
 
     try:

@@ -281,7 +281,6 @@ def main(args):
         'corpus_link' : None,
         'doc_title_format' : None,
         'doc_url_format' : None,
-        'topic_range': None,
         'topics': None})
     config.read(args.config)
 
@@ -307,7 +306,7 @@ def main(args):
             return port
         except IOError:
             port = int_prompt(
-                "Conflict on port {0}. Change port? ".format(port)) 
+                "Conflict on port {0}. Enter new port:".format(port)) 
             return test_port(port)
 
     port = args.port or int(config.get('www','port').format(0)) + args.k
@@ -315,7 +314,8 @@ def main(args):
     
     # prompt to save
     if (int(config.get("www","port").format(0)) + args.k) != port:
-        if bool_prompt("Set default baseport to {0}? ".format(port - args.k)):
+        if bool_prompt("Change default baseport to {0}?".format(port - args.k),
+                       default=True):
             config.set("www","port", str(port - args.k))
 
             # create deep copy of configuration
@@ -396,7 +396,6 @@ def main(args):
         topic_range = range(*topic_range)
     if config.get('main', 'topics'):
         topic_range = eval(config.get('main', 'topics'))
-    print topic_range
     topic_range = [{'k' : k, 'port' : int(config.get('www','port').format(0)) + k} 
                         for k in topic_range] 
 
