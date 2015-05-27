@@ -57,9 +57,12 @@ def main(args):
     model_path = config.get("main", "path")
 
     if args.k is None:
-        if config.get("main", "topics"):
-            default = ' '.join(map(str, eval(config.get("main", "topics"))))
-        else:
+        try:
+            if config.get("main", "topics"):
+                default = ' '.join(map(str, eval(config.get("main", "topics"))))
+            else:
+                raise NoOptionError
+        except NoOptionError:
             default = ' '.join(map(str, range(20,100,20)))
 
         while args.k is None:
