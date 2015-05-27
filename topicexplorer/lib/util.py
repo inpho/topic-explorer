@@ -18,6 +18,7 @@ def overwrite_prompt(filename, default=True):
     if os.path.exists(filename):
         prompt_str = 'Overwrite {0}?'.format(filename)
         overwrite = bool_prompt(prompt_str, default=default)
+        return overwrite
     else:
         return default
 
