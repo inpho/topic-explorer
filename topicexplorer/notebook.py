@@ -6,19 +6,7 @@ import sys
 import time
 from string import Template
 
-def overwrite_prompt(filename):
-    if os.path.exists(filename):
-        overwrite = False
-        while overwrite not in ['y', 'n', True]:
-            overwrite = raw_input("\nOverwrite {0}? [Y/n] ".format(filename))
-            overwrite = overwrite.lower().strip()
-            if overwrite == 'y' or overwrite == '':
-                return True
-        return False
-    else:
-        return True
-
-    
+from topicexplorer.lib.util import overwrite_prompt    
 
 def main(args):
     args.config_file = os.path.abspath(args.config_file)
