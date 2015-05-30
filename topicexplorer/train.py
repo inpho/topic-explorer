@@ -34,9 +34,10 @@ def build_models(corpus, corpus_filename, model_path, context_type, krange,
 
     return basefilename
 
-def continue_training(model_pattern, krange, total_iterations=200):
+def continue_training(model_pattern, krange, total_iterations=200, n_proc=2):
     for k in krange:
-        m = LDA.load(model_pattern.format(k))
+        m = LDA.load(model_pattern.format(k), multiprocessing=True, 
+                     n_proc=n_proc)
 
         print "Continue training model for k={0} Topics".format(k)
         orig_iterations = m.iteration
@@ -80,7 +81,10 @@ def main(args):
             except ValueError:
                 print "Enter valid integers, separated by spaces!"
         
+    if args.processes < 0:
+        args.processes = multiprocessing.cpu_count() + args.processes
 
+    corpus = Corpus.load(corpus_filename)
 
     try:
         model_pattern = config.get("main", "model_pattern")
@@ -88,10 +92,10 @@ def main(args):
         model_pattern = None
 
     if model_pattern is not None and\
-        bool_prompt("Existing model found. Continue training?", default=True):
+        bool_prompt("Existing models found. Continue training?", default=True):
     
-        m = LDA.load(model_pattern.format(args.k[0]))
-
+        m = LDA.load(model_pattern.format(args.k[0]), multiprocessing=True,
+                     n_proc=args.processes)
 
         if args.iter is None:
             args.iter = int_prompt("Total number of training iterations:",
@@ -101,8 +105,25 @@ def main(args):
             print "         vsm train --iter %d %s\n" % (args.iter, args.config_file)
 
         del m
-        # continue training
-        model_pattern = continue_training(model_pattern, args.k, args.iter)
+
+        # if the set changes, build some new models and continue some old ones
+
+        config_topics = eval(config.get("main","topics"))
+        if args.k != config_topics :
+            new_models = set(args.k) - set(config_topics)
+            continuing_models = set(args.k) & set(config_topics)
+        
+            build_models(corpus, corpus_filename, model_path, 
+                                         config.get("main", "context_type"),
+                                         new_models, n_iterations=args.iter,
+                                         n_proc=args.processes, seed=args.seed)
+
+            model_pattern = continue_training(model_pattern, continuing_models,
+                                              args.iter, n_proc=args.processes)
+
+        else:
+            model_pattern = continue_training(model_pattern, args.k, args.iter,
+                                              n_proc=args.processes)
 
     else:
         # build a new model
@@ -111,8 +132,6 @@ def main(args):
     
             print "\nTIP: number of training iterations can be specified with argument '--iter N':"
             print "         vsm train --iter %d %s\n" % (args.iter, args.config_file)
-
-        corpus = Corpus.load(corpus_filename)
     
         ctxs = corpus.context_types
         ctxs = sorted(ctxs, key=lambda ctx: len(corpus.view_contexts(ctx)))
@@ -135,9 +154,6 @@ def main(args):
         print "         vsm train %s --iter %d --context-type %s -k %s\n" %\
             (args.config_file, args.iter, args.context_type, 
                 ' '.join(map(str, args.k)))
-    
-        if args.processes < 0:
-            args.processes = multiprocessing.cpu_count() + args.processes
     
         model_pattern = build_models(corpus, corpus_filename, model_path, 
                                      args.context_type, args.k,
