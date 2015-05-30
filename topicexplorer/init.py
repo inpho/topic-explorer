@@ -8,6 +8,7 @@ from vsm.corpus import Corpus
 from vsm.corpus.util.corpusbuilders import coll_corpus, dir_corpus, toy_corpus
 
 from topicexplorer.lib import pdf, util
+from topicexplorer.lib.util import prompt
 
 def get_corpus_filename(corpus_path, model_path, nltk_stop=False, stop_freq=1,
 			context_type='document'):
@@ -88,9 +89,12 @@ def main(args):
     if args.model_path and not os.path.exists(args.model_path):
         os.makedirs(args.model_path)
 
-    corpus_name = os.path.basename(args.corpus_path)
-    if not corpus_name:
-        corpus_name = os.path.basename(os.path.dirname(args.corpus_path))
+    args.corpus_name = os.path.basename(args.corpus_path)
+    if not args.corpus_name:
+        args.corpus_name = os.path.basename(os.path.dirname(args.corpus_path))
+
+    if not args.corpus_print_name:
+        args.corpus_print_name = prompt("Corpus Name", default=args.corpus_name)
 
     if args.htrc:
         import vsm.extensions.htrc as htrc
@@ -127,10 +131,6 @@ def main(args):
             print "  * a folder of folders of plain-text files."
             print "\nExiting..."
             sys.exit(74)
-    
-    args.corpus_name = os.path.basename(args.corpus_path)
-    if not corpus_name:
-        args.corpus_name = os.path.basename(os.path.dirname(args.corpus_path))
 
     return write_config(args, args.config_file)
 
@@ -145,7 +145,7 @@ def write_config(args, config_file=None):
     config.set("main", "corpus_file", os.path.abspath(args.corpus_filename))
     
     config.add_section("www")
-    config.set("www", "corpus_name", "Default")
+    config.set("www", "corpus_name", args.corpus_print_name)
     config.set("www", "icons", "link")
     
     config.add_section("logging")
@@ -187,7 +187,10 @@ if __name__ == '__main__':
     from argparse import ArgumentParser
     parser = ArgumentParser()
     parser.add_argument("corpus_path", help="Path to Corpus")
-    parser.add_argument("--config_path", 
+    parser.add_argument("--name", dest="corpus_print_name", 
+        metavar="\"CORPUS NAME\"",
+        help="Corpus name (for web interface) [Default: [corpus_path]]")
+    parser.add_argument("--config-path", dest="config_path",
         help="Configuration file path [Default: [corpus_path]/../[corpus].ini")
     parser.add_argument("--model-path", dest="model_path",
         help="Model Path [Default: [corpus_path]/../models]")

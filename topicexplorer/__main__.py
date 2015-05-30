@@ -13,6 +13,9 @@ def main():
 
     # Init Parser
     parser_init = parsers.add_parser('init', help="Initialize the topic explorer")
+    parser_init.add_argument("--name", dest="corpus_print_name",
+        metavar="\"CORPUS NAME\"",
+        help="Corpus name (for web interface) [Default: [corpus_path]]")
     parser_init.add_argument("corpus_path", help="Path to Corpus",
         type=lambda x: is_valid_filepath(parser_init, x))
     parser_init.add_argument("config_file", nargs="?", 
