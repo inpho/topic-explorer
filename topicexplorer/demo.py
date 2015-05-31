@@ -59,7 +59,7 @@ def download_and_extract():
 
 def main():
     download_and_extract()
-    subprocess.check_call("vsm init ap", shell=True)
+    subprocess.check_call('vsm init ap --name "Associated Press 88-90 sample"', shell=True)
     # TODO: Catch RuntimeWarning event on Windows
     subprocess.check_call("vsm train ap.ini -k 20 40 60 --context-type document --iter 20", shell=True)
 
