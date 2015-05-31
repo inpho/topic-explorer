@@ -1,3 +1,7 @@
+import platform
+if platform.system() == 'Windows':
+    import topicexplorer.lib.win32
+
 from glob import glob
 import os, os.path
 import signal
@@ -62,7 +66,8 @@ def main(args):
                 os.killpg(proc.pid, signal)
                 proc.communicate()
             except AttributeError:
-                subprocess.call(['taskkill', '/F', '/T', '/PID', str(p.pid)])    
+                subprocess.call(['taskkill', '/F', '/T', '/PID', str(proc.pid)])    
+                sys.exit(0)
     
         signal.signal(signal.SIGINT, signal_handler)
         signal.signal(signal.SIGTERM, signal_handler)
@@ -76,7 +81,6 @@ def main(args):
             # Windows hack
             while True:
                 time.sleep(1)
-    
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
