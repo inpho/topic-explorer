@@ -10,13 +10,15 @@ from vsm.model.lda import LDA
 from topicexplorer.lib.util import bool_prompt, int_prompt
 
 def build_models(corpus, corpus_filename, model_path, context_type, krange, 
-                 n_iterations=200, n_proc=2, seed=None):
+                 n_iterations=200, n_proc=1, seed=None):
 
     basefilename = os.path.basename(corpus_filename).replace('.npz','')
     basefilename += "-LDA-K%s-%s-%d.npz" % ('{0}', context_type, n_iterations)
     basefilename = os.path.join(model_path, basefilename)
 
-    if type(seed) == int:
+    if n_proc == 1 and type(seed) == int:
+        seeds = seed
+    elif type(seed) == int:
         seeds = [seed + p for p in range(n_proc)]
         fileparts = basefilename.split('-')
         fileparts.insert(-1, str(seed))
@@ -27,17 +29,16 @@ def build_models(corpus, corpus_filename, model_path, context_type, krange,
     for k in krange:
         print "Training model for k={0} Topics with {1} Processes"\
             .format(k, n_proc)
-        m = LDA(corpus, context_type, K=k, multiprocessing=True, n_proc=n_proc,
+        m = LDA(corpus, context_type, K=k, multiprocessing=(n_proc > 1),
                 seed_or_seeds=seeds)
         m.train(n_iterations=n_iterations)
         m.save(basefilename.format(k))
 
     return basefilename
 
-def continue_training(model_pattern, krange, total_iterations=200, n_proc=2):
+def continue_training(model_pattern, krange, total_iterations=200, n_proc=1):
     for k in krange:
-        m = LDA.load(model_pattern.format(k), multiprocessing=True, 
-                     n_proc=n_proc)
+        m = LDA.load(model_pattern.format(k), multiprocessing=(n_proc > 1))
 
         print "Continue training model for k={0} Topics".format(k)
         orig_iterations = m.iteration
@@ -94,7 +95,8 @@ def main(args):
     if model_pattern is not None and\
         bool_prompt("Existing models found. Continue training?", default=True):
     
-        m = LDA.load(model_pattern.format(args.k[0]), multiprocessing=True,
+        m = LDA.load(model_pattern.format(args.k[0]),
+                     multiprocessing=args.processes > 1,
                      n_proc=args.processes)
 
         if args.iter is None:
