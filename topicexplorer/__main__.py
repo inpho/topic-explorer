@@ -13,6 +13,9 @@ def main():
 
     # Init Parser
     parser_init = parsers.add_parser('init', help="Initialize the topic explorer")
+    parser_init.add_argument("--name", dest="corpus_print_name",
+        metavar="\"CORPUS NAME\"",
+        help="Corpus name (for web interface) [Default: [corpus_path]]")
     parser_init.add_argument("corpus_path", help="Path to Corpus",
         type=lambda x: is_valid_filepath(parser_init, x))
     parser_init.add_argument("config_file", nargs="?", 
@@ -45,8 +48,8 @@ def main():
         type=lambda x: is_valid_filepath(parser_train, x))
     parser_train.add_argument("--context-type", dest='context_type',
         help="Level of corpus modeling, prompts if not set")
-    parser_train.add_argument("-p", "--processes", default=2, type=int,
-        help="Number of CPU cores for training [Default: 2]")
+    parser_train.add_argument("-p", "--processes", default=1, type=int,
+        help="Number of CPU cores for training [Default: 1]")
     parser_train.add_argument("--seed", default=None, type=int,
         help="Random seed for topic modeling [Default: None]")
     parser_train.add_argument("-k", nargs='+',

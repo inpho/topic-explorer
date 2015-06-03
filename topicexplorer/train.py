@@ -10,13 +10,15 @@ from vsm.model.lda import LDA
 from topicexplorer.lib.util import bool_prompt, int_prompt
 
 def build_models(corpus, corpus_filename, model_path, context_type, krange, 
-                 n_iterations=200, n_proc=2, seed=None):
+                 n_iterations=200, n_proc=1, seed=None):
 
     basefilename = os.path.basename(corpus_filename).replace('.npz','')
     basefilename += "-LDA-K%s-%s-%d.npz" % ('{0}', context_type, n_iterations)
     basefilename = os.path.join(model_path, basefilename)
 
-    if type(seed) == int:
+    if n_proc == 1 and type(seed) == int:
+        seeds = seed
+    elif type(seed) == int:
         seeds = [seed + p for p in range(n_proc)]
         fileparts = basefilename.split('-')
         fileparts.insert(-1, str(seed))
@@ -27,16 +29,16 @@ def build_models(corpus, corpus_filename, model_path, context_type, krange,
     for k in krange:
         print "Training model for k={0} Topics with {1} Processes"\
             .format(k, n_proc)
-        m = LDA(corpus, context_type, K=k, multiprocessing=True, n_proc=n_proc,
+        m = LDA(corpus, context_type, K=k, multiprocessing=(n_proc > 1),
                 seed_or_seeds=seeds)
         m.train(n_iterations=n_iterations)
         m.save(basefilename.format(k))
 
     return basefilename
 
-def continue_training(model_pattern, krange, total_iterations=200):
+def continue_training(model_pattern, krange, total_iterations=200, n_proc=1):
     for k in krange:
-        m = LDA.load(model_pattern.format(k))
+        m = LDA.load(model_pattern.format(k), multiprocessing=(n_proc > 1))
 
         print "Continue training model for k={0} Topics".format(k)
         orig_iterations = m.iteration
@@ -57,16 +59,21 @@ def main(args):
     model_path = config.get("main", "path")
 
     if args.k is None:
-        if config.get("main", "topics"):
-            args.k = eval(config.get("main", "topics"))
+        try:
+            if config.get("main", "topics"):
+                default = ' '.join(map(str, eval(config.get("main", "topics"))))
+            else:
+                raise NoOptionError
+        except NoOptionError:
+            default = ' '.join(map(str, range(20,100,20)))
 
         while args.k is None:
-            ks = raw_input("Number of Topics [Default '20 40 60 80']: ")
+            ks = raw_input("Number of Topics [Default '{0}']: ".format(default))
             try:
                 if ks:
                     args.k = [int(n) for n in ks.split()]
                 elif not ks.strip():
-                    args.k = range(20,100,20) 
+                    args.k = [int(n) for n in default.split()]
 
                 if args.k:
                     print "\nTIP: number of topics can be specified with argument '-k N N N ...':"
@@ -75,7 +82,10 @@ def main(args):
             except ValueError:
                 print "Enter valid integers, separated by spaces!"
         
+    if args.processes < 0:
+        args.processes = multiprocessing.cpu_count() + args.processes
 
+    corpus = Corpus.load(corpus_filename)
 
     try:
         model_pattern = config.get("main", "model_pattern")
@@ -83,16 +93,39 @@ def main(args):
         model_pattern = None
 
     if model_pattern is not None and\
-        bool_prompt("Existing model found. Continue training?", default=True):
+        bool_prompt("Existing models found. Continue training?", default=True):
     
+        m = LDA.load(model_pattern.format(args.k[0]),
+                     multiprocessing=args.processes > 1,
+                     n_proc=args.processes)
+
         if args.iter is None:
-            args.iter = int_prompt("Total number of training iterations:", default=200)
+            args.iter = int_prompt("Total number of training iterations:",
+                                   default=int(m.iteration*1.5), min=m.iteration)
     
             print "\nTIP: number of training iterations can be specified with argument '--iter N':"
             print "         vsm train --iter %d %s\n" % (args.iter, args.config_file)
 
-        # continue training
-        model_pattern = continue_training(model_pattern, args.k, args.iter)
+        del m
+
+        # if the set changes, build some new models and continue some old ones
+
+        config_topics = eval(config.get("main","topics"))
+        if args.k != config_topics :
+            new_models = set(args.k) - set(config_topics)
+            continuing_models = set(args.k) & set(config_topics)
+        
+            build_models(corpus, corpus_filename, model_path, 
+                                         config.get("main", "context_type"),
+                                         new_models, n_iterations=args.iter,
+                                         n_proc=args.processes, seed=args.seed)
+
+            model_pattern = continue_training(model_pattern, continuing_models,
+                                              args.iter, n_proc=args.processes)
+
+        else:
+            model_pattern = continue_training(model_pattern, args.k, args.iter,
+                                              n_proc=args.processes)
 
     else:
         # build a new model
@@ -101,8 +134,6 @@ def main(args):
     
             print "\nTIP: number of training iterations can be specified with argument '--iter N':"
             print "         vsm train --iter %d %s\n" % (args.iter, args.config_file)
-
-        corpus = Corpus.load(corpus_filename)
     
         ctxs = corpus.context_types
         ctxs = sorted(ctxs, key=lambda ctx: len(corpus.view_contexts(ctx)))
@@ -126,16 +157,15 @@ def main(args):
             (args.config_file, args.iter, args.context_type, 
                 ' '.join(map(str, args.k)))
     
-        if args.processes < 0:
-            args.processes = multiprocessing.cpu_count() + args.processes
-    
         model_pattern = build_models(corpus, corpus_filename, model_path, 
                                      args.context_type, args.k,
                                      n_iterations=args.iter,
                                      n_proc=args.processes, seed=args.seed)
 
     config.set("main", "model_pattern", model_pattern)
-    config.set("main", "context_type", args.context_type)
+    if args.context_type:
+        # test for presence, since continuing doesn't require context_type
+        config.set("main", "context_type", args.context_type)
     args.k.sort()
     config.set("main", "topics", str(args.k))
     

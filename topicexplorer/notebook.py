@@ -1,3 +1,7 @@
+import platform
+if platform.system() == 'Windows':
+    import topicexplorer.lib.win32
+
 from glob import glob
 import os, os.path
 import signal
@@ -6,19 +10,7 @@ import sys
 import time
 from string import Template
 
-def overwrite_prompt(filename):
-    if os.path.exists(filename):
-        overwrite = False
-        while overwrite not in ['y', 'n', True]:
-            overwrite = raw_input("\nOverwrite {0}? [Y/n] ".format(filename))
-            overwrite = overwrite.lower().strip()
-            if overwrite == 'y' or overwrite == '':
-                return True
-        return False
-    else:
-        return True
-
-    
+from topicexplorer.lib.util import overwrite_prompt    
 
 def main(args):
     args.config_file = os.path.abspath(args.config_file)
@@ -74,7 +66,8 @@ def main(args):
                 os.killpg(proc.pid, signal)
                 proc.communicate()
             except AttributeError:
-                subprocess.call(['taskkill', '/F', '/T', '/PID', str(p.pid)])    
+                subprocess.call(['taskkill', '/F', '/T', '/PID', str(proc.pid)])    
+                sys.exit(0)
     
         signal.signal(signal.SIGINT, signal_handler)
         signal.signal(signal.SIGTERM, signal_handler)
@@ -88,7 +81,6 @@ def main(args):
             # Windows hack
             while True:
                 time.sleep(1)
-    
 
 if __name__ == '__main__':
     from argparse import ArgumentParser

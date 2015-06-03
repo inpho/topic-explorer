@@ -3,7 +3,7 @@ from distutils.command.install_data import install_data as _install_data
 from distutils.command.install import install as _install
 from setuptools import setup, find_packages
 import os
-
+import platform
 
 # building datafiles list
 datadir = 'www'
@@ -15,7 +15,11 @@ datafiles = get_datafiles('www')
 datafiles.extend(get_datafiles('ipynb'))
 
 # After install, download nltk packages 'punkt' and 'stopwords'
+# http://blog.diffbrent.com/correctly-adding-nltk-to-your-python-package-using-setup-py-post-install-commands/
 def _post_install(dir):
+    import site
+    reload(site)
+
     import nltk
     nltk.download('punkt')
     nltk.download('stopwords')
@@ -27,7 +31,7 @@ class wx_smart_install_data(_install_data):
     def run(self):
         install_cmd = self.get_finalized_command('install')
         self.install_dir = getattr(install_cmd, 'install_lib')
-        self.execute(_post_install, (self.install_lib,),
+        self.execute(_post_install, (self.install_dir,),
                      msg="Running post install task")
         return _install_data.run(self)
 
@@ -38,9 +42,23 @@ if os.path.exists('README.txt'):
 else:
     long_description = '' 
 
+install_requires = [
+        'bottle>=0.12', 
+        'brewer2mpl>=1.4',
+        'pystache>=0.5.4',
+        'vsm>=0.3.2',
+        'wget',
+        'unidecode',
+        'pdfminer',
+        'pyenchant'
+        ]
+
+if platform.system() == 'Windows':
+    install_requires.append('pywin32')
+
 setup(
     name='topicexplorer',
-    version='1.0b16',
+    version='1.0b23',
     description='InPhO Topic Explorer',
     long_description = long_description,
     author = "The Indiana Philosophy Ontology (InPhO) Project",
@@ -65,18 +83,9 @@ setup(
         ],
     packages=find_packages(),
     data_files=datafiles,
-    install_requires=[
-        'bottle>=0.12', 
-        'brewer2mpl>=1.4',
-        'pystache>=0.5.4',
-        'vsm>=0.3',
-        'wget',
-        'unidecode',
-        'pdfminer',
-        'pyenchant'
-        ],
+    install_requires=install_requires,
     dependency_links=[
-        'https://github.com/inpho/vsm/archive/master.zip#egg=vsm-0.2.1',
+        'https://github.com/inpho/vsm/archive/master.zip#egg=vsm-0.3.2',
         ],
     include_package_data=True,
     cmdclass = { 'install_data': wx_smart_install_data },

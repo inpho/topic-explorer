@@ -18,6 +18,7 @@ def overwrite_prompt(filename, default=True):
     if os.path.exists(filename):
         prompt_str = 'Overwrite {0}?'.format(filename)
         overwrite = bool_prompt(prompt_str, default=default)
+        return overwrite
     else:
         return default
 
@@ -34,14 +35,29 @@ def bool_prompt(prompt_str, default=None):
     elif result == 'n':
         return False
 
-def int_prompt(prompt_str, default=None):
+def int_prompt(prompt_str, default=None, min=None, max=None):
     result = prompt(prompt_str, default=default)
 
     try:
-        return int(result)
+        result = int(result)
     except:
         print "ERROR: You must enter a number."
-        return int_prompt(prompt_str)
+        return int_prompt(prompt_str, default=default, min=min, max=max)
+    if max and min and not (result <= max and result > min):
+        print "ERROR: You must enter a number between {min} and {max}."\
+             .format(min=min, max=max)
+        return int_prompt(prompt_str, default=default, min=min, max=max)
+    elif max and result > max:
+        print "ERROR: You must enter a number less than {max}."\
+             .format(min=min, max=max)
+        return int_prompt(prompt_str, default=default, min=min, max=max)
+    elif min and result <= min:
+        print "ERROR: You must enter a number greater than {min}."\
+             .format(min=min, max=max)
+        return int_prompt(prompt_str, default=default, min=min, max=max)
+    else:
+        return result
+            
 
 
 def prompt(prompt, options=None, default=None):
