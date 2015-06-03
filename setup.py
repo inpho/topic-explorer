@@ -15,19 +15,24 @@ datafiles = get_datafiles('www')
 datafiles.extend(get_datafiles('ipynb'))
 
 # After install, download nltk packages 'punkt' and 'stopwords'
+# http://blog.diffbrent.com/correctly-adding-nltk-to-your-python-package-using-setup-py-post-install-commands/
 def _post_install(dir):
+    import site
+    reload(site)
+
     import nltk
     nltk.download('punkt')
     nltk.download('stopwords')
 
 # Specializations of some distutils command classes
 # first install data files to actual library directory
-# https://wiki.python.org/moin/Distutils/Tutorial 
 class wx_smart_install_data(_install_data):
     """need to change self.install_dir to the actual library dir"""
     def run(self):
         install_cmd = self.get_finalized_command('install')
         self.install_dir = getattr(install_cmd, 'install_lib')
+        self.execute(_post_install, (self.install_dir,),
+                     msg="Running post install task")
         return _install_data.run(self)
 
 # PyPandoc
