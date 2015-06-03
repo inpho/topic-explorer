@@ -11,7 +11,7 @@ import re
 import socket
 from urllib2 import unquote
 from StringIO import StringIO
-from urllib import unquote_plus
+from urllib import unquote_plus as _unquote_plus
 
 from vsm.corpus import Corpus
 from vsm.model.lda import LDA
@@ -25,6 +25,9 @@ import numpy as np
 
 import pystache
 import topicexplorer.lib.color as colorlib
+
+def unquote_plus(s):
+    return _unquote_plus(s).replace(' ', '+')
 
 def _set_acao_headers(f):
     """
