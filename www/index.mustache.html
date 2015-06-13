@@ -604,7 +604,7 @@ d3.json(url, function(error, data) {
         .call(yAxis)
         .selectAll("text")
         .attr("class", function(d) { return (d == docid && roottopic == null) ? "primary" : "" })
-        .on("click", function(d) { window.location.href = "/?doc=" + d;})
+        .on("click", function(d) { window.location.href = window.location.origin + window.location.pathname + "?doc=" + d;})
   
     svg.select(".y.axis").selectAll("g")
         .insert("rect", ":first-child")
@@ -908,7 +908,7 @@ d3.json(url, function(error, data) {
       $('.reset').removeAttr('disabled');
       $('.topdoc').text('Top Documents for Topic ' + topic);
       $('.topdoc').show();
-      $('.topdoc').click(function URL() {location.href = location.origin + '?topic=' + topic;});
+      $('.topdoc').click(function URL() {location.href = location.origin + location.pathname + '?topic=' + topic;});
       $('.topdoc').mouseenter(function() {
           $('.legend rect').not('.top_' + topic).tooltip('hide');
           $(".legend rect.top_" + topic).tooltip('show'); });
