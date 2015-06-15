@@ -40,12 +40,12 @@ def label(doc):
     elif context_type == 'page':
         context_md = ctx_md['page']
         where = np.squeeze(np.where(np.in1d(context_md['page_label'], [doc])))
-        page_no = context_md[where]['file']
+        page_no = context_md['file'][where]
         page_no = page_no.split('/')[-1]
         page_no = page_no.replace('.txt','')
         page_no = int(page_no)
 
-        book_label = context_md[where]['book_label']
+        book_label = context_md['book_label'][where]
         md = metadata[book_label]
         try:
             return "p%s of %s" % (page_no, md['title'][0])
