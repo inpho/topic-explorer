@@ -7,7 +7,7 @@ import os.path
 from vsm.corpus import Corpus
 from vsm.model.lda import LDA
 
-from topicexplorer.lib.util import bool_prompt, int_prompt
+from topicexplorer.lib.util import bool_prompt, int_prompt, is_valid_filepath
 
 def build_models(corpus, corpus_filename, model_path, context_type, krange, 
                  n_iterations=200, n_proc=1, seed=None):
@@ -172,3 +172,26 @@ def main(args):
     with open(args.config_file, "wb") as configfh:
         config.write(configfh)
 
+def populate_parser(parser):
+    parser.add_argument("config_file", help="Path to Config",
+        type=lambda x: is_valid_filepath(parser, x))
+    parser.add_argument("--context-type", dest='context_type',
+        help="Level of corpus modeling, prompts if not set")
+    parser.add_argument("-p", "--processes", default=1, type=int,
+        help="Number of CPU cores for training [Default: 1]")
+    parser.add_argument("--seed", default=None, type=int,
+        help="Random seed for topic modeling [Default: None]")
+    parser.add_argument("-k", nargs='+',
+        help="K values to train upon", type=int)
+    parser.add_argument('--iter', type=int,
+        help="Number of training iterations")
+
+
+if __name__ == '__main__':
+    from argparse import ArgumentParser
+    
+    parser = ArgumentParser()
+    populate_parser(parser)
+    args = parser.parse_args()
+
+    main(args)

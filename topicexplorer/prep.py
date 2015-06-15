@@ -9,7 +9,7 @@ from scipy.stats import itemfreq
 from vsm import *
 from codecs import open 
 from unidecode import unidecode
-from topicexplorer.lib.util import isint
+from topicexplorer.lib.util import isint, is_valid_filepath
 
 # NLTK Langauges
 langs = dict(da='danish', nl='dutch', en='english', fi='finnish', fr='french',
@@ -143,22 +143,24 @@ def main(args):
     with open(args.config_file, 'wb') as configfh:
         config.write(configfh)
 
-if __name__ == '__main__':
-    import argparse
-    from argparse import ArgumentParser
-    parser = ArgumentParser(
-        epilog='Available language stoplists (use 2-letter code): \n\t' + 
+def populate_parser(parser):
+    parser.epilog = ('Available language stoplists (use 2-letter code): \n\t' + 
             '\n\t'.join(['{k}    {v}'.format(k=k, v=v.capitalize()) 
-                          for k,v in sorted(prep.langs.items(), 
-                              key=lambda x: x[1])]), 
-        formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser_prep.add_argument("config_file", help="Path to Config",
-        type=lambda x: is_valid_filepath(parser_prep, x))
+                          for k,v in sorted(langs.items(), 
+                              key=lambda x: x[1])]))
+    parser.add_argument("config_file", help="Path to Config",
+        type=lambda x: is_valid_filepath(parser, x))
     parser.add_argument("--htrc", action="store_true")
     parser.add_argument("--stopword-file", dest="stopword_file",
         help="File with custom stopwords")
-    parser.add_argument("--lang", nargs='+', choices=prep.langs.keys(),
+    parser.add_argument("--lang", nargs='+', choices=langs.keys(),
         help="Languages to stoplist. See options below.", metavar='xx')
+
+if __name__ == '__main__':
+    import argparse
+    from argparse import ArgumentParser
+    parser = ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter)
+    populate_parser(parser)
     args = parser.parse_args()
     
     main(args)

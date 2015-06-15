@@ -20,7 +20,7 @@ from vsm.viewer.wrappers import doc_label_name, def_label_fn
 
 from bottle import request, response, route, run, static_file
 from topicexplorer.lib.ssl import SSLWSGIRefServer
-from topicexplorer.lib.util import int_prompt, bool_prompt
+from topicexplorer.lib.util import int_prompt, bool_prompt, is_valid_filepath
 import numpy as np
 
 import pystache
@@ -435,18 +435,7 @@ def main(args):
     else:
         run(host=host, port=port)
 
-
-if __name__ == '__main__':
-    from argparse import ArgumentParser
-
-    def is_valid_filepath(parser, arg):
-        if not os.path.exists(arg):
-            parser.error("The file %s does not exist!" % arg)
-        else:
-            return arg
-    
-    # argument parsing
-    parser = ArgumentParser()
+def populate_parser(parser):
     parser.add_argument('config', type=lambda x: is_valid_filepath(parser, x),
         help="Configuration file path")
     parser.add_argument('-k', type=int, required=True,
@@ -466,6 +455,19 @@ if __name__ == '__main__':
     parser.add_argument('--ssl-ca', dest='ca_certs', default=None,
         type=lambda x: is_valid_filepath(parser, x),
         help="SSL certificate authority file")
+
+if __name__ == '__main__':
+    from argparse import ArgumentParser
+
+    def is_valid_filepath(parser, arg):
+        if not os.path.exists(arg):
+            parser.error("The file %s does not exist!" % arg)
+        else:
+            return arg
+    
+    # argument parsing
+    parser = ArgumentParser()
+    populate_parser(parser)
     args = parser.parse_args()
     
     main(args)

@@ -8,7 +8,7 @@ from vsm.corpus import Corpus
 from vsm.corpus.util.corpusbuilders import coll_corpus, dir_corpus, toy_corpus
 
 from topicexplorer.lib import pdf, util
-from topicexplorer.lib.util import prompt
+from topicexplorer.lib.util import prompt, is_valid_filepath
 
 def get_corpus_filename(corpus_path, model_path, nltk_stop=False, stop_freq=1,
 			context_type='document'):
@@ -183,18 +183,23 @@ def write_config(args, config_file=None):
         config.write(configfh)
     return config_file
 
-if __name__ == '__main__': 
-    from argparse import ArgumentParser
-    parser = ArgumentParser()
-    parser.add_argument("corpus_path", help="Path to Corpus")
+def populate_parser(parser):
+    parser.add_argument("corpus_path", help="Path to Corpus",
+        type=lambda x: is_valid_filepath(parser, x))
     parser.add_argument("--name", dest="corpus_print_name", 
         metavar="\"CORPUS NAME\"",
         help="Corpus name (for web interface) [Default: [corpus_path]]")
-    parser.add_argument("--config-path", dest="config_path",
-        help="Configuration file path [Default: [corpus_path]/../[corpus].ini")
+    parser.add_argument("config_file", nargs="?",
+        help="Path to Config [optional]")
     parser.add_argument("--model-path", dest="model_path",
         help="Model Path [Default: [corpus_path]/../models]")
     parser.add_argument("--htrc", action="store_true")
+    parser.add_argument("--rebuild", action="store_true")
+
+if __name__ == '__main__': 
+    from argparse import ArgumentParser
+    parser = ArgumentParser()
+    populate_parser(parser)
     args = parser.parse_args()
     
     main(args)

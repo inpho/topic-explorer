@@ -82,8 +82,16 @@ def main(args):
             while True:
                 time.sleep(1)
 
+def populate_parser(parser):
+    parser.add_argument("config_file", help="Path to Config File",
+        type=lambda x: is_valid_filepath(parser_serve, x))
+    parser.add_argument('--no-launch', dest='launch', action='store_false')
+
 if __name__ == '__main__':
     from argparse import ArgumentParser
+
     parser = ArgumentParser()
-    parser.add_argument("config_file", help="Path to Config File")
+    populate_parser(parser)
     args = parser.parse_args()
+
+    main(args)

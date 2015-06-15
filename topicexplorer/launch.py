@@ -8,7 +8,7 @@ import time
 import urllib
 import webbrowser
 
-from topicexplorer.lib.util import int_prompt, bool_prompt
+from topicexplorer.lib.util import int_prompt, bool_prompt, is_valid_filepath
 
 def main(args):
     # CONFIGURATION PARSING
@@ -33,6 +33,7 @@ def main(args):
         topic_range = range(*topic_range)
     if config.get('main', 'topics'):
         topic_range = eval(config.get('main', 'topics'))
+    print topic_range
 
     # LAUNCHING SERVERS
     # Cross-platform compatability
@@ -48,7 +49,7 @@ def main(args):
             return subprocess.PIPE
 
 
-    def test_baseport(baseport):
+    def test_baseport(baseport, topic_range):
         try:
             host = config.get("www","host")
             if host == '0.0.0.0':
@@ -68,7 +69,8 @@ def main(args):
                     .format(port, baseport)) 
             return test_baseport(baseport)
 
-    baseport = test_baseport(int(config.get("www","port").format(0)))
+    baseport = test_baseport(int(config.get("www","port").format(0)),
+                             topic_range)
 
     # prompt to save
     if int(config.get("www","port").format(0)) != baseport:
@@ -156,6 +158,11 @@ def main(args):
         while True:
             time.sleep(1)
 
+def populate_parser(parser):
+    parser.add_argument('config_file', help="Configuration file path",
+        type=lambda x: is_valid_filepath(parser, x))
+    parser.add_argument('--no-browser', dest='browser', action='store_false')
+
 if __name__ == '__main__':
     from argparse import ArgumentParser
 
@@ -167,9 +174,7 @@ if __name__ == '__main__':
             return arg
     
     parser = ArgumentParser()
-    parser.add_argument('config', type=lambda x: is_valid_filepath(parser, x),
-        help="Configuration file path")
-    parser.add_argument('--no-browser', dest='browser', action='store_false')
+    populate_parser(parser)
     args = parser.parse_args()
 
     main(args)
