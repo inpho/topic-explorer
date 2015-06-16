@@ -152,11 +152,12 @@ def write_config(args, config_file=None):
     config.set("logging","path","logs/%s/{0}.log" % args.corpus_name)
 
     if args.htrc:
-        config.set("main","label_module","extensions.htrc")
-        config.set("www","corpus_name","HTRC Data Capsule")
+        config.set("main","label_module","topicexplorer.extensions.htrc")
+        if not args.corpus_print_name:
+            config.set("www","corpus_name","HTRC Data Capsule")
         config.set("www","doc_title_format",'<a href="{1}">{0}</a>')
         config.set("www","doc_url_format", 'http://hdl.handle.net/2027/{0}')
-        config.set("www", "icons", "htrc,link")
+        config.set("www", "icons", "htrc,htrcbook,link")
         config.set("main", "htrc", True)
 
     if config_file is None:
