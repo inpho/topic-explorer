@@ -46,7 +46,7 @@ install_requires = [
         'bottle>=0.12', 
         'brewer2mpl>=1.4',
         'pystache>=0.5.4',
-        'vsm>=0.3.2',
+        'vsm>=0.3.3',
         'wget',
         'unidecode',
         'pdfminer',
@@ -58,7 +58,7 @@ if platform.system() == 'Windows':
 
 setup(
     name='topicexplorer',
-    version='1.0b23',
+    version='1.0b24',
     description='InPhO Topic Explorer',
     long_description = long_description,
     author = "The Indiana Philosophy Ontology (InPhO) Project",
@@ -85,7 +85,7 @@ setup(
     data_files=datafiles,
     install_requires=install_requires,
     dependency_links=[
-        'https://github.com/inpho/vsm/archive/master.zip#egg=vsm-0.3.2',
+        'https://github.com/inpho/vsm/archive/master.zip#egg=vsm-0.3.3',
         ],
     include_package_data=True,
     cmdclass = { 'install_data': wx_smart_install_data },
