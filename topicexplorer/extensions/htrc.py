@@ -4,6 +4,7 @@ import os.path
 import numpy as np
 
 from vsm.viewer.wrappers import doc_label_name, def_label_fn
+from topicexplorer.lib.hathitrust import parse_marc, get_volume_from_marc
 
 lda_v = None
 metadata = None
@@ -47,6 +48,12 @@ def label(doc):
 
         book_label = context_md['book_label'][where]
         md = metadata[book_label]
+        try:
+            xml = parse_marc(md['fullrecord'].encode('utf8'))
+            vol = get_volume_from_marc(xml[0])
+            return "p%s of %s of %s" % (page_no, vol, md['title'][0])
+        except:
+            pass
         try:
             return "p%s of %s" % (page_no, md['title'][0])
         except:
