@@ -64,5 +64,13 @@ def main():
     subprocess.check_call("vsm prep ap.ini --lang en", shell=True)
     subprocess.check_call("vsm train ap.ini -k 20 40 60 --context-type document --iter 20", shell=True)
 
+    from ConfigParser import RawConfigParser as ConfigParser
+    config = ConfigParser()
+    config.read('ap.ini')
+    config.set("main","label_module", "topicexplorer.extensions.ap")
+    config.set("www","icons", "ap,link")
+    with open("ap.ini", "wb") as configfh:
+        config.write(configfh)
+
 if __name__ == '__main__':
     main()
