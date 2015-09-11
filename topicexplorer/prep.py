@@ -91,16 +91,16 @@ def get_high_filter(args, c):
                 print "\nFilter will remove", counts[counts > input_filter].sum(), "occurrences", "of these", len(counts[counts > input_filter]), "words.",
     
                 accept = None
-                while accept not in ['y', 'n', 'c']:
-                    accept = raw_input("\nAccept filter? [y/n/c/#] ")
+                while accept not in ['y', 'n']:
+                    accept = raw_input("\nAccept filter? [y/n/[different max number]] ")
                     if isint(accept):
                         high_filter = int(accept)
                         input_filter = 0
                         accept = 'n'
                     elif accept == 'y':
                         high_filter = input_filter
-                    elif accept == 'c':
-                        high_filter = -1
+                    elif accept == 'n':
+                        high_filter = 0
                         
             except ValueError:
                 input_filter = 0 
@@ -137,16 +137,16 @@ def get_low_filter(args, c):
                 print "\nFilter will remove", counts[counts < input_filter].sum(), "tokens", "of these", len(counts[counts < input_filter]), "words.",
     
                 accept = None
-                while accept not in ['y', 'n', 'c']:
-                    accept = raw_input("\nAccept filter? [y/n/c/#] ")
+                while accept not in ['y', 'n']:
+                    accept = raw_input("\nAccept filter? [y/n/[different min. number] ")
                     if isint(accept):
                         low_filter = int(accept)
                         input_filter = 0
                         accept = 'n'
                     elif accept == 'y':
                         low_filter = input_filter
-                    elif accept == 'c':
-                        low_filter = -1
+                    elif accept == 'n':
+                        low_filter = 0
                         
             except ValueError:
                 input_filter = 0 
