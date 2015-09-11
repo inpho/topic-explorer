@@ -89,18 +89,23 @@ def get_high_filter(args, c):
                 print ' '.join(candidates)
 
                 print "\nFilter will remove", counts[counts > input_filter].sum(), "occurrences", "of these", len(counts[counts > input_filter]), "words.",
-    
-                accept = None
-                while accept not in ['y', 'n']:
-                    accept = raw_input("\nAccept filter? [y/n/[different max number]] ")
-                    if isint(accept):
-                        high_filter = int(accept)
-                        input_filter = 0
-                        accept = 'n'
-                    elif accept == 'y':
-                        high_filter = input_filter
-                    elif accept == 'n':
-                        high_filter = 0
+                if len(candidates) == len(c.words):
+                    print "\n\nChoice of",input_filter, "will remove ALL words from the corpus."
+                    print "Please choose a different filter."
+                    high_filter = 0
+                    input_filter = 0
+                else:
+                    accept = None
+                    while accept not in ['y', 'n']:
+                        accept = raw_input("\nAccept filter? [y/n/[different max number]] ")
+                        if isint(accept):
+                            high_filter = int(accept)
+                            input_filter = 0
+                            accept = 'n'
+                        elif accept == 'y':
+                            high_filter = input_filter
+                        elif accept == 'n':
+                            high_filter = 0
                         
             except ValueError:
                 input_filter = 0 
@@ -135,18 +140,24 @@ def get_low_filter(args, c):
                 print ' '.join(candidates)
 
                 print "\nFilter will remove", counts[counts < input_filter].sum(), "tokens", "of these", len(counts[counts < input_filter]), "words.",
-    
-                accept = None
-                while accept not in ['y', 'n']:
-                    accept = raw_input("\nAccept filter? [y/n/[different min. number] ")
-                    if isint(accept):
-                        low_filter = int(accept)
-                        input_filter = 0
-                        accept = 'n'
-                    elif accept == 'y':
-                        low_filter = input_filter
-                    elif accept == 'n':
-                        low_filter = 0
+                
+                if len(candidates) == len(c.words):
+                    print "\n\nChoice of",input_filter, "will remove ALL words from the corpus."
+                    print "Please choose a different filter."
+                    low_filter = 0
+                    input_filter = 0
+                else:
+                    accept = None
+                    while accept not in ['y', 'n']:
+                        accept = raw_input("\nAccept filter? [y/n/[different min. number] ")
+                        if isint(accept):
+                            low_filter = int(accept)
+                            input_filter = 0
+                            accept = 'n'
+                        elif accept == 'y':
+                            low_filter = input_filter
+                        elif accept == 'n':
+                            low_filter = 0
                         
             except ValueError:
                 input_filter = 0 
