@@ -50,6 +50,18 @@ def get_htrc_langs(args):
                 if code not in args.lang:
                     langs.append(code)
 
+def get_candidate_words(c, n_filter):
+    """ Takes a corpus and a filter and reutrns the candidate words. 
+    If n_filter > 0, filter words occuring at least n_filter times.
+    If n_filter < 0, filter words occuring less than n_filter times.
+    """
+    items=itemfreq(c.corpus)
+    counts = items[:,1]
+    if n_filter > 0:
+        return c.words[items[:,0][counts > n_filter][counts[counts > n_filter].argsort()[::-1]]]
+    if n_filter < 0:
+        return c.words[items[:,0][counts < -n_filter][counts[counts < -n_filter].argsort()[::-1]]]
+
 def get_high_filter(args, c):
     print "\n\n*** FILTER HIGH FREQUENCY WORDS ***"
     items=itemfreq(c.corpus)
@@ -71,7 +83,7 @@ def get_high_filter(args, c):
                     input_filter = high_filter
                 else:
                     input_filter = int(raw_input("Enter the maximum word occurence rate: "))
-                candidates = c.words[items[:,0][counts > input_filter][counts[counts > input_filter].argsort()[::-1]]]
+                candidates = get_candidate_words(c, input_filter)
     
                 print "Filter will remove", counts[counts > input_filter].sum(), "occurrences", "of these", len(counts[counts > input_filter]), "words:"
                 print ' '.join(candidates)
@@ -117,7 +129,7 @@ def get_low_filter(args, c):
                     input_filter = low_filter
                 else:
                     input_filter = int(raw_input("Enter the minimum word occurrence rate: "))
-                candidates = c.words[items[:,0][counts < input_filter][counts[counts < input_filter].argsort()[::-1]]]
+                candidates = get_candidate_words(c, -input_filter)
     
                 print "Filter will remove", counts[counts < input_filter].sum(), "tokens", "of these", len(counts[counts < input_filter]), "words:"
                 print ' '.join(candidates)
@@ -171,13 +183,21 @@ def main(args):
         with open(args.stopword_file, encoding='utf8') as swf:
             c = c.apply_stoplist([unidecode(word.strip()) for word in swf])
    
-    high_filter, candidates = get_high_filter(args, c)
     
+    if not args.high_filter:
+        high_filter, candidates = get_high_filter(args, c)
+    else:
+        high_filter = args.high_filter
+        candidates = get_candidate_words(c,args.high_filter)
     if high_filter > 0:
         print "Applying frequency filter > ", high_filter
         c = c.apply_stoplist(candidates)
-    
-    low_filter, candidates = get_low_filter(args, c)
+   
+    if not args.low_filter:
+        low_filter, candidates = get_low_filter(args, c)
+    else:
+        low_filter = args.low_filter
+        candidates  = get_candidate_words(c, -1*args.low_filter)
     if low_filter > 0:
         print "Applying frequency filter > ", low_filter
         c = c.apply_stoplist(candidates)
@@ -226,9 +246,9 @@ def populate_parser(parser):
     parser.add_argument("--stopword-file", dest="stopword_file",
         help="File with custom stopwords")
     parser.add_argument("--high", type=int, dest="high_filter",
-        help="High frequency word filter")
+        help="High frequency word filter", default=None)
     parser.add_argument("--low", type=int, dest="low_filter",
-        default=5, help="Low frequency word filter [Default: 5]")
+        default=None, help="Low frequency word filter [Default: 5]")
     parser.add_argument("--lang", nargs='+', choices=langs.keys(),
         help="Languages to stoplist. See options below.", metavar='xx')
 
