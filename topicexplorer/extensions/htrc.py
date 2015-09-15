@@ -37,7 +37,10 @@ def init(model_path, viewer, ctx_type):
 def label(doc):
     if context_type == 'book':
         md = metadata[doc]
-        return md['title'][0]
+        try:
+            return md['title'][0]
+        except:
+            return doc
     elif context_type == 'page':
         context_md = ctx_md['page']
         where = np.squeeze(np.where(np.in1d(context_md['page_label'], [doc])))
