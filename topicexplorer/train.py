@@ -18,6 +18,9 @@ def build_models(corpus, corpus_filename, model_path, context_type, krange,
 
     if n_proc == 1 and type(seed) == int:
         seeds = seed
+        fileparts = basefilename.split('-')
+        fileparts.insert(-1, str(seed))
+        basefilename = '-'.join(fileparts)
     elif type(seed) == int:
         seeds = [seed + p for p in range(n_proc)]
         fileparts = basefilename.split('-')

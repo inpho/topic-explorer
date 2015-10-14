@@ -28,7 +28,8 @@ def stop_language(c, language):
     return c.apply_stoplist(words)
 
 def get_htrc_langs(args):
-    langs = []
+    global langs
+    out_langs = []
 
     metadata_path = os.path.dirname(args.corpus_path)
     metadata_path = os.path.join(metadata_path, '../metadata.json')
@@ -48,7 +49,7 @@ def get_htrc_langs(args):
             if accept == 'y':
                 code = langs_rev[lang.lower()]
                 if code not in args.lang:
-                    langs.append(code)
+                    out_langs.append(code)
 
 def get_candidate_words(c, n_filter):
     """ Takes a corpus and a filter and reutrns the candidate words. 
@@ -172,16 +173,15 @@ def main(args):
         args.lang = []
 
     
+    
+    args.corpus_path = config.get("main", "corpus_file")
+    c = Corpus.load(args.corpus_path)
+    
     # check for htrc metadata
-    """
     if args.htrc or config.get("main","htrc"):
         htrc_langs = get_htrc_langs(args)
         if htrc_langs:
             args.lang.extend(htrc_langs)
-    """
-    
-    args.corpus_path = config.get("main", "corpus_file")
-    c = Corpus.load(args.corpus_path)
 
     # Apply stop words
     for lang in args.lang:
