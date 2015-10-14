@@ -15,7 +15,25 @@ from topicexplorer.lib import util
 
 from progressbar import ProgressBar, Percentage, Bar
 
+import os 
+import platform
+import subprocess
+
+
 def convert(fname, pages=None):
+    cmd = "where" if platform.system() == "Windows" else "which"
+    try: 
+        subprocess.call([cmd, 'pdftotext'])
+    except: 
+        print "pdftotext not found, defaulting to pdfminer."
+        return convert_miner(fname, pages=pages)
+
+    return subprocess.check_output(['pdftotext', fname, '-'])
+
+    
+
+
+def convert_miner(fname, pages=None):
     if not pages:
         pagenums = set()
     else:
