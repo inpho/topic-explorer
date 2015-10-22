@@ -27,7 +27,7 @@ import pystache
 import topicexplorer.lib.color as colorlib
 
 def unquote_plus(s):
-    return _unquote_plus(s).replace(' ', '+')
+    return _unquote_plus(s)#.replace(' ', '+')
 
 def _set_acao_headers(f):
     """
