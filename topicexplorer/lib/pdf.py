@@ -24,11 +24,10 @@ def convert(fname, pages=None):
     cmd = "where" if platform.system() == "Windows" else "which"
     try: 
         subprocess.call([cmd, 'pdftotext'])
+        return subprocess.check_output(['pdftotext', fname, '-'])
     except: 
         print "pdftotext not found, defaulting to pdfminer."
         return convert_miner(fname, pages=pages)
-
-    return subprocess.check_output(['pdftotext', fname, '-'])
 
     
 
