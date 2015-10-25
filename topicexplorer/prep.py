@@ -25,8 +25,7 @@ def stop_language(c, language):
         words = [unidecode(word.strip()) for word in words if word in c.words]
     else:
         words = [word for word in words if word in c.words]
-    c.in_place_stoplist(words)
-    return c
+    return words
 
 def get_htrc_langs(args):
     global langs
@@ -52,7 +51,7 @@ def get_htrc_langs(args):
                 if code not in args.lang:
                     out_langs.append(code)
 
-def get_candidate_words(c, n_filter):
+def get_candidate_words(c, n_filter, sort=True):
     """ Takes a corpus and a filter and reutrns the candidate words. 
     If n_filter > 0, filter words occuring at least n_filter times.
     If n_filter < 0, filter words occuring less than n_filter times.
@@ -60,9 +59,16 @@ def get_candidate_words(c, n_filter):
     items=itemfreq(c.corpus)
     counts = items[:,1]
     if n_filter > 0:
-        return c.words[items[:,0][counts > n_filter][counts[counts > n_filter].argsort()[::-1]]]
-    if n_filter < 0:
-        return c.words[items[:,0][counts < -n_filter][counts[counts < -n_filter].argsort()[::-1]]]
+        filter = items[:,0][counts > n_filter]
+        if sort:
+            filter = filter[counts[counts > n_filter].argsort()[::-1]]
+
+    elif n_filter < 0:
+        filter = items[:,0][counts < -n_filter]
+        if sort:
+            filter = filter[counts[counts < -n_filter].argsort()[::-1]]
+
+    return c.words[filter]
 
 def get_high_filter(args, c):
     print "\n\n*** FILTER HIGH FREQUENCY WORDS ***"
@@ -184,35 +190,51 @@ def main(args):
         if htrc_langs:
             args.lang.extend(htrc_langs)
 
+    stoplist = set() 
     # Apply stop words
     for lang in args.lang:
         print "Applying", langs[lang], "stopwords"
-        c = stop_language(c, langs[lang])
-    
+        candidates = stop_language(c, langs[lang])
+        if len(candidates):
+            stoplist.update(candidates)
+    print len(candidates), len(stoplist) 
+
     # Apply custom stopwords file
     if args.stopword_file:
         print "Applying custom stopword file"
         with open(args.stopword_file, encoding='utf8') as swf:
-            c.in_place_stoplist([unidecode(word.strip()) for word in swf])
+            candidates = [unidecode(word.strip()) for word in swf]
+            if len(candidates):
+                stoplist.update(candidates)
+    print len(candidates), len(stoplist) 
    
-    
+    print "adding high frequency filter" 
     if not args.high_filter:
         high_filter, candidates = get_high_filter(args, c)
+        if len(candidates):
+            stoplist.update(candidates)
     else:
         high_filter = args.high_filter
-        candidates = get_candidate_words(c,args.high_filter)
-    if high_filter > 0:
-        print "Applying frequency filter > ", high_filter
-        c.in_place_stoplist(candidates)
-   
+        candidates = get_candidate_words(c,args.high_filter, sort=False)
+        if len(candidates):
+            stoplist.update(candidates)
+    print len(candidates), len(stoplist) 
+
+    print "adding low frequency filter" 
     if not args.low_filter:
         low_filter, candidates = get_low_filter(args, c)
+        if len(candidates):
+            stoplist.update(candidates)
     else:
         low_filter = args.low_filter
-        candidates  = get_candidate_words(c, -1*args.low_filter)
-    if low_filter > 0:
-        print "Applying frequency filter > ", low_filter
-        c.in_place_stoplist(candidates)
+        candidates  = get_candidate_words(c, -1*args.low_filter, sort=False)
+        if len(candidates):
+            stoplist.update(candidates)
+    print len(candidates), len(stoplist) 
+
+    if stoplist:
+        print "applying {} stopwords".format(len(stoplist))
+        c.in_place_stoplist(stoplist)
 
     def name_corpus(dirname, languages, lowfreq=None, highfreq=None):
         items=itemfreq(c.corpus)
