@@ -25,7 +25,8 @@ def stop_language(c, language):
         words = [unidecode(word.strip()) for word in words if word in c.words]
     else:
         words = [word for word in words if word in c.words]
-    return c.apply_stoplist(words)
+    c.in_place_stoplist(words)
+    return c
 
 def get_htrc_langs(args):
     global langs
@@ -192,7 +193,7 @@ def main(args):
     if args.stopword_file:
         print "Applying custom stopword file"
         with open(args.stopword_file, encoding='utf8') as swf:
-            c = c.apply_stoplist([unidecode(word.strip()) for word in swf])
+            c.in_place_stoplist([unidecode(word.strip()) for word in swf])
    
     
     if not args.high_filter:
@@ -202,7 +203,7 @@ def main(args):
         candidates = get_candidate_words(c,args.high_filter)
     if high_filter > 0:
         print "Applying frequency filter > ", high_filter
-        c = c.apply_stoplist(candidates)
+        c.in_place_stoplist(candidates)
    
     if not args.low_filter:
         low_filter, candidates = get_low_filter(args, c)
@@ -211,7 +212,7 @@ def main(args):
         candidates  = get_candidate_words(c, -1*args.low_filter)
     if low_filter > 0:
         print "Applying frequency filter > ", low_filter
-        c = c.apply_stoplist(candidates)
+        c.in_place_stoplist(candidates)
 
     def name_corpus(dirname, languages, lowfreq=None, highfreq=None):
         items=itemfreq(c.corpus)
