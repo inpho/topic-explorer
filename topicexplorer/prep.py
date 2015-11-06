@@ -215,7 +215,7 @@ def main(args):
         candidates = stop_language(c, langs[lang])
         if len(candidates):
             stoplist.update(candidates)
-    print len(candidates), len(stoplist) 
+        print len(candidates), len(stoplist) 
 
     # Apply custom stopwords file
     if args.stopword_file:
@@ -224,7 +224,7 @@ def main(args):
             candidates = [unidecode(word.strip()) for word in swf]
             if len(candidates):
                 stoplist.update(candidates)
-    print len(candidates), len(stoplist) 
+        print len(candidates), len(stoplist) 
 
     if args.min_word_len:
         print "filtering small words"
