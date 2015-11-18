@@ -35,7 +35,7 @@ def main(args):
         with open(filename,'w') as corpusloader:
             corpusloader.write(corpus_py)
 
-    for notebook in glob(os.path.join(template_dir, '*.ipynb')):
+    for notebook in glob(template_dir +'/*.ipynb'):
         new_nb_path = os.path.join(ipynb_path, os.path.basename(notebook))
         if overwrite_prompt(new_nb_path, default=False):
             print "Copying", notebook

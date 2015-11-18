@@ -20,7 +20,7 @@ def overwrite_prompt(filename, default=True):
         overwrite = bool_prompt(prompt_str, default=default)
         return overwrite
     else:
-        return default
+        return True
 
 def bool_prompt(prompt_str, default=None):
     if default == True:
