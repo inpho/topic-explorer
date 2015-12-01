@@ -46,7 +46,7 @@ install_requires = [
         'bottle>=0.12', 
         'brewer2mpl>=1.4',
         'pystache>=0.5.4',
-        'vsm>=0.4.0a1',
+        'vsm>=0.4.0a4',
         'wget',
         'unidecode',
         'pdfminer',
@@ -58,7 +58,7 @@ if platform.system() == 'Windows':
 
 setup(
     name='topicexplorer',
-    version='1.0b31',
+    version='1.0b32',
     description='InPhO Topic Explorer',
     long_description = long_description,
     author = "The Indiana Philosophy Ontology (InPhO) Project",
