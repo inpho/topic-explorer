@@ -28,7 +28,8 @@ def get_corpus_filename(corpus_path, model_path, nltk_stop=False, stop_freq=1,
 
 
 def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=1,
-    context_type='document', ignore=['.json','.log','.err','.pickle','.npz']):
+    context_type='document', ignore=['.json','.log','.err','.pickle','.npz'],
+    decode=True):
    
     # pre-process PDF files
     if corpus_path[-4:] == '.pdf' or util.contains_pattern(corpus_path, '*.pdf'):
@@ -49,7 +50,7 @@ def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=1,
     if os.path.isfile(corpus_path):
         print "Constructing toy corpus, each line is a document"
         c = toy_corpus(corpus_path, is_filename=True, nltk_stop=nltk_stop, 
-                       stop_freq=stop_freq, autolabel=True)
+                       stop_freq=stop_freq, autolabel=True, decode=decode)
     elif os.path.isdir(corpus_path):
         contents = os.listdir(corpus_path)
         contents = [os.path.join(corpus_path,obj) for obj in contents 
@@ -64,12 +65,12 @@ def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=1,
             print "Constructing directory corpus, each file is a document"
             c = dir_corpus(corpus_path, nltk_stop=nltk_stop,
                            stop_freq=stop_freq, chunk_name=context_type,
-                           ignore=ignore)
+                           ignore=ignore, decode=decode)
         elif count_dirs > 0 and count_files == 0:
             print "Constructing collection corpus, each folder is a document"
             context_type='book'
             c = coll_corpus(corpus_path, nltk_stop=nltk_stop,
-                            stop_freq=stop_freq, ignore=ignore)
+                            stop_freq=stop_freq, ignore=ignore, decode=decode)
         else:
             raise IOError("Invalid Path: empty directory")
     else:
@@ -123,7 +124,7 @@ def main(args):
     if args.rebuild == True:
         try:
             args.corpus_filename = build_corpus(args.corpus_path, args.model_path, 
-                                                stop_freq=5)
+                                                stop_freq=5, decode=args.decode)
         except IOError:
             print "ERROR: invalid path, please specify either:"
             print "  * a single plain-text file,"
@@ -194,6 +195,11 @@ def populate_parser(parser):
         help="Path to Config [optional]")
     parser.add_argument("--model-path", dest="model_path",
         help="Model Path [Default: [corpus_path]/../models]")
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument("--decode", action="store_true", dest='decode',
+        help="Convert unicode characters to ascii. [Default]")
+    group.add_argument("--unicode", action="store_true", dest='decode',
+        help="Store unicode characters.")
     parser.add_argument("--htrc", action="store_true")
     parser.add_argument("--rebuild", action="store_true")
 

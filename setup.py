@@ -58,7 +58,7 @@ if platform.system() == 'Windows':
 
 setup(
     name='topicexplorer',
-    version='1.0b30',
+    version='1.0b31',
     description='InPhO Topic Explorer',
     long_description = long_description,
     author = "The Indiana Philosophy Ontology (InPhO) Project",
