@@ -196,6 +196,7 @@ def populate_parser(parser):
         help="Model Path [Default: [corpus_path]/../models]")
     parser.add_argument("--htrc", action="store_true")
     parser.add_argument("--rebuild", action="store_true")
+    parser.add_argument("--tokenizer", choices=['inpho', 'default'], default="default")
 
 if __name__ == '__main__': 
     from argparse import ArgumentParser
