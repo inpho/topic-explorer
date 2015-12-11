@@ -67,7 +67,7 @@ def main(args):
             baseport = int_prompt(
                 "Conflict on port {0}. Enter new base port: [CURRENT: {1}]"\
                     .format(port, baseport)) 
-            return test_baseport(baseport)
+            return test_baseport(baseport, topic_range)
 
     baseport = test_baseport(int(config.get("www","port").format(0)),
                              topic_range)
