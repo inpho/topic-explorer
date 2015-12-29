@@ -8,7 +8,7 @@ from vsm.corpus import Corpus
 from vsm.corpus.util.corpusbuilders import coll_corpus, dir_corpus, toy_corpus
 
 from topicexplorer.lib import pdf, util
-from topicexplorer.lib.util import prompt, is_valid_filepath
+from topicexplorer.lib.util import prompt, is_valid_filepath, listdir_nohidden
 
 def get_corpus_filename(corpus_path, model_path, nltk_stop=False, stop_freq=1,
 			context_type='document'):
@@ -27,23 +27,48 @@ def get_corpus_filename(corpus_path, model_path, nltk_stop=False, stop_freq=1,
     return os.path.join(model_path, filename)
 
 
+def process_pdfs(corpus_path, ignore=['.json','.log','.err','.pickle','.npz']):
+    if os.path.isfile(corpus_path):
+        print "PDF file detected, extracting plaintext to",\
+            corpus_path.replace('.pdf','.txt')
+        pdf.main(corpus_path)
+        corpus_path = corpus_path.replace('.pdf','.txt')
+    elif os.path.isdir(corpus_path):
+        print "PDF files detected, extracting plaintext to", corpus_path + '-txt'
+
+        if corpus_path.endswith('/'):
+            corpus_path = corpus_path[:-1]
+
+        # TODO: Add processing of collections
+        contents = listdir_nohidden(corpus_path)
+        contents = [os.path.join(corpus_path,obj) for obj in contents 
+            if not any([obj.endswith(suffix) for suffix in ignore])]
+        count_dirs = len(filter(os.path.isdir, contents))
+        count_files = len(filter(os.path.isfile, contents))
+
+        if count_files > 0 and count_dirs == 0:
+            # process all files
+            pdf.main(corpus_path, corpus_path + '-txt')
+        elif count_dirs > 0 and count_files == 0:
+            # process each subdirectoryV
+            for directory in contents:
+                pdf.main(directory, 
+                         directory.replace(corpus_path, corpus_path+'-txt'))
+        else:
+            raise IOError("Invalid Path: empty directory")
+        
+        corpus_path += '-txt'
+
+    return corpus_path
+
+
 def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=1,
     context_type='document', ignore=['.json','.log','.err','.pickle','.npz'],
     decode=True):
    
     # pre-process PDF files
     if corpus_path[-4:] == '.pdf' or util.contains_pattern(corpus_path, '*.pdf'):
-        if os.path.isdir(corpus_path):
-            print "PDF files detected, extracting plaintext to", corpus_path + '-txt'
-            if corpus_path.endswith('/'):
-                corpus_path = corpus_path[:-1]
-            pdf.main(corpus_path, corpus_path + '-txt')
-            corpus_path += '-txt'
-        else:
-            print "PDF files detected, extracting plaintext to",\
-                corpus_path.replace('.pdf','.txt')
-            pdf.main(corpus_path)
-            corpus_path = corpus_path.replace('.pdf','.txt')
+        corpus_path = process_pdfs(corpus_path)
 
     print "Building corpus from", corpus_path
 
@@ -52,7 +77,7 @@ def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=1,
         c = toy_corpus(corpus_path, is_filename=True, nltk_stop=nltk_stop, 
                        stop_freq=stop_freq, autolabel=True, decode=decode)
     elif os.path.isdir(corpus_path):
-        contents = os.listdir(corpus_path)
+        contents = listdir_nohidden(corpus_path)
         contents = [os.path.join(corpus_path,obj) for obj in contents 
             if not any([obj.endswith(suffix) for suffix in ignore])]
         count_dirs = len(filter(os.path.isdir, contents))
@@ -102,7 +127,7 @@ def main(args):
         htrc.proc_htrc_coll(args.corpus_path)
         
         import json
-        data = [(id, htrc.metadata(id)) for id in os.listdir(args.corpus_path)
+        data = [(id, htrc.metadata(id)) for id in listdir_nohidden(args.corpus_path)
                     if os.path.isdir(id)]
         data = dict(data)
         md_filename = os.path.join(args.corpus_path, '../metadata.json')

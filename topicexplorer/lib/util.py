@@ -12,6 +12,10 @@ def is_valid_filepath(parser, arg):
     else:
         return arg
 
+def listdir_nohidden(path):
+    for f in os.listdir(path):
+        if not f.startswith('.'):
+            yield f
 
 ## Command Line Prompts
 def overwrite_prompt(filename, default=True):
@@ -86,12 +90,15 @@ def prompt(prompt, options=None, default=None):
 
 
 
-def find_files(directory, pattern):
+def find_files(directory, pattern, include_hidden=False):
     for root, dirs, files in os.walk(directory):
         for basename in files:
             if fnmatch.fnmatch(basename, pattern):
                 filename = os.path.join(root, basename)
-                yield filename
+                if not include_hidden and basename.startswith('.'):
+                    pass
+                else:
+                    yield filename
 
 def contains_pattern(directory, pattern):
     try:
