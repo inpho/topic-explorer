@@ -50,29 +50,4 @@ lda_v = keydefaultdict(load_viewer)
 print topic_range
 print pattern
 
-## Colors
-import itertools
-import brewer2mpl as brewer
-
-def brew(N, n_cls, reverse=True):
-    b = [
-        brewer.get_map('Blues', 'Sequential', N+1, reverse=reverse).mpl_colors[:N],
-        brewer.get_map('Oranges', 'Sequential', N+1, reverse=reverse).mpl_colors[:N],
-        brewer.get_map('Greens', 'Sequential', N+1, reverse=reverse).mpl_colors[:N],
-        brewer.get_map('Purples', 'Sequential', N+1, reverse=reverse).mpl_colors[:N],
-        brewer.get_map('Greys', 'Sequential', N+1, reverse=reverse).mpl_colors[:N],
-        brewer.get_map('Reds', 'Sequential', N+1, reverse=reverse).mpl_colors[:N]
-    ]
-    return b[:n_cls]
-
-def get_topic_colors(v):
-    data = v.topic_oscillations()
-    
-    colors = [itertools.cycle(cs) for cs in zip(*brew(3,n_cls=4))]
-    factor = len(data) / len(colors)
-    
-    topic_colors =  [(topic_datum[0], colors[min(rank / factor, len(colors)-1)].next()) 
-                 for rank, topic_datum in enumerate(data)]
-    topic_colors.sort(key=lambda x: x[0])
-    return topic_colors
-
+from topicexplorer.lib.color import get_topic_colors

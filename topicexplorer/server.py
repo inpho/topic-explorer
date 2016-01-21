@@ -21,10 +21,11 @@ from vsm.viewer.wrappers import doc_label_name, def_label_fn
 from bottle import request, response, route, run, static_file
 from topicexplorer.lib.ssl import SSLWSGIRefServer
 from topicexplorer.lib.util import int_prompt, bool_prompt, is_valid_filepath
+
+from topicexplorer.lib.color import get_topic_colors, rgb2hex
 import numpy as np
 
 import pystache
-import topicexplorer.lib.color as colorlib
 
 def unquote_plus(s):
     return _unquote_plus(s)#.replace(' ', '+')
@@ -193,15 +194,12 @@ def topics():
     # populate partial jsd values
     data = lda_v.topic_jsds()
 
-    colors = [itertools.cycle(cs) for cs in zip(*colorlib.brew(4,n_cls=5))]
-    factor = len(data) / len(colors)
-
     js = {}
     for rank,topic_H in enumerate(data):
         topic, H = topic_H
         js[str(topic)] = {
             "H" : H, 
-            "color" : colors[min(rank / factor, len(colors)-1)].next()
+            "color" : rgb2hex(colors[topic])
         }
     
     # populate word values
@@ -348,10 +346,12 @@ def main(args):
     lda_c = Corpus.load(corpus_file)
     lda_m = None
     lda_v = None
+    colors = None
     def load_model(k):
-        global lda_m, lda_v
+        global lda_m, lda_v, colors
         lda_m = LDA.load(model_pattern.format(k))
         lda_v = LDAViewer(lda_c, lda_m)
+        colors = dict(get_topic_colors(lda_v))
 
     load_model(args.k)
 
