@@ -95,10 +95,9 @@ def get_topic_colors(v):
     
     # initialize base variables
     weight = 0 #int((cs + cse) / (4*k*k))
-    ncolors = k
-    colors = defaultdict(int)
+    ncolors = None
     
-    while ncolors > 9:
+    while ncolors is None or ncolors > 9:
         # clean previous color assignments and edges
         colors = defaultdict(int)
         G.remove_edges_from(G.edges())
