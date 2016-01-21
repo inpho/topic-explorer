@@ -96,12 +96,17 @@ def get_topic_colors(v):
     # initialize base variables
     weight = 0 #int((cs + cse) / (4*k*k))
     ncolors = k
+    colors = defaultdict(int)
+    
     while ncolors > 9:
+        # clean previous color assignments and edges
+        colors = defaultdict(int)
         G.remove_edges_from(G.edges())
         for e1, e2 in zip(*np.where(adj > weight)):
             G.add_edge(e1,e2, weight=adj[e1,e2])
     
-        colors = defaultdict(int)
+        
+        # assign colors
         for n in sorted(G.nodes(), key=G.degree, reverse=True):
             neighbor_colors = [colors[nbr] for nbr in G.neighbors(n)]
             # print colors[n], neighbor_colors
