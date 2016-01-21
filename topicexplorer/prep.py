@@ -1,6 +1,7 @@
 from ConfigParser import RawConfigParser as ConfigParser
 import json
 import os.path
+import re
 
 import nltk
 import numpy as np
@@ -19,13 +20,26 @@ langs = dict(da='danish', nl='dutch', en='english', fi='finnish', fr='french',
 
 langs_rev = dict((v, k) for k, v in langs.items())
 
+def get_items_counts(x):
+    try:
+        # for speed increase with numpy >= 1.9.0
+        items, counts = np.unique(x, return_counts=True)
+    except:
+        # for compatability
+        ifreq = itemfreq(x)
+        items = ifreq[:,0]
+        counts = ifreq[:,1]
+    return items, counts
+
+
+
 def stop_language(c, language):
     words = nltk.corpus.stopwords.words(language)
     if c.words.dtype.char == 'S':
         words = [unidecode(word.strip()) for word in words if word in c.words]
     else:
         words = [word for word in words if word in c.words]
-    return c.apply_stoplist(words)
+    return words
 
 def get_htrc_langs(args):
     global langs
@@ -51,22 +65,34 @@ def get_htrc_langs(args):
                 if code not in args.lang:
                     out_langs.append(code)
 
-def get_candidate_words(c, n_filter):
+def get_candidate_words(c, n_filter, sort=True):
     """ Takes a corpus and a filter and reutrns the candidate words. 
     If n_filter > 0, filter words occuring at least n_filter times.
     If n_filter < 0, filter words occuring less than n_filter times.
     """
-    items=itemfreq(c.corpus)
-    counts = items[:,1]
+    items, counts = get_items_counts(c.corpus)
     if n_filter > 0:
-        return c.words[items[:,0][counts > n_filter][counts[counts > n_filter].argsort()[::-1]]]
-    if n_filter < 0:
-        return c.words[items[:,0][counts < -n_filter][counts[counts < -n_filter].argsort()[::-1]]]
+        filter = items[counts > n_filter]
+        if sort:
+            filter = filter[counts[counts > n_filter].argsort()[::-1]]
+
+    elif n_filter < 0:
+        filter = items[counts < -n_filter]
+        if sort:
+            filter = filter[counts[counts < -n_filter].argsort()[::-1]]
+
+    return c.words[filter]
+
+def get_small_words(c, min_len):
+    return [word for word in c.words if len(word) < min_len]
+
+def get_special_chars(c):
+    return [word for word in c.words if re.findall('[^A-Za-z\-\']', word)]
+
 
 def get_high_filter(args, c):
     print "\n\n*** FILTER HIGH FREQUENCY WORDS ***"
-    items=itemfreq(c.corpus)
-    counts = items[:,1]
+    items, counts = get_items_counts(c.corpus)
     high_filter = False
     while not high_filter:
         bin_counts, bins = np.histogram(counts[counts.argsort()[::-1]], range=(0,len(c.words)/4.))
@@ -115,10 +141,9 @@ def get_high_filter(args, c):
 
 def get_low_filter(args, c):
     print "\n\n*** FILTER LOW FREQUENCY WORDS ***"
-    items=itemfreq(c.corpus)
-    counts = items[:,1]
-    low_filter = False
+    items, counts = get_items_counts(c.corpus)
 
+    low_filter = False
     while not low_filter:
         bin_counts, bins = np.histogram(counts[counts.argsort()[::-1]], range=(0,len(c.words)/20.))
 	#print "{0:>10s} {1:>10s}".format("# Tokens", "# Words")
@@ -183,39 +208,68 @@ def main(args):
         if htrc_langs:
             args.lang.extend(htrc_langs)
 
+    stoplist = set() 
     # Apply stop words
     for lang in args.lang:
         print "Applying", langs[lang], "stopwords"
-        c = stop_language(c, langs[lang])
-    
+        candidates = stop_language(c, langs[lang])
+        if len(candidates):
+            stoplist.update(candidates)
+        print len(candidates), len(stoplist) 
+
     # Apply custom stopwords file
     if args.stopword_file:
         print "Applying custom stopword file"
         with open(args.stopword_file, encoding='utf8') as swf:
-            c = c.apply_stoplist([unidecode(word.strip()) for word in swf])
-   
+            candidates = [unidecode(word.strip()) for word in swf]
+            if len(candidates):
+                stoplist.update(candidates)
+        print len(candidates), len(stoplist) 
+
+    if args.min_word_len:
+        print "filtering small words"
+        candidates = get_small_words(c, args.min_word_len)
+        if len(candidates):
+            stoplist.update(candidates)
+        print len(candidates), len(stoplist) 
     
+    if not args.special_chars:
+        print "filtering words with special chars"
+        candidates = get_special_chars(c)
+        if len(candidates):
+            stoplist.update(candidates)
+        print len(candidates), len(stoplist)
+   
+    print "adding high frequency filter" 
     if not args.high_filter:
         high_filter, candidates = get_high_filter(args, c)
+        if len(candidates):
+            stoplist.update(candidates)
     else:
         high_filter = args.high_filter
-        candidates = get_candidate_words(c,args.high_filter)
-    if high_filter > 0:
-        print "Applying frequency filter > ", high_filter
-        c = c.apply_stoplist(candidates)
-   
+        candidates = get_candidate_words(c,args.high_filter, sort=False)
+        if len(candidates):
+            stoplist.update(candidates)
+    print len(candidates), len(stoplist) 
+
+    print "adding low frequency filter" 
     if not args.low_filter:
         low_filter, candidates = get_low_filter(args, c)
+        if len(candidates):
+            stoplist.update(candidates)
     else:
         low_filter = args.low_filter
-        candidates  = get_candidate_words(c, -1*args.low_filter)
-    if low_filter > 0:
-        print "Applying frequency filter > ", low_filter
-        c = c.apply_stoplist(candidates)
+        candidates  = get_candidate_words(c, -1*args.low_filter, sort=False)
+        if len(candidates):
+            stoplist.update(candidates)
+    print len(candidates), len(stoplist) 
+
+    if stoplist:
+        print "applying {} stopwords".format(len(stoplist))
+        c.in_place_stoplist(stoplist)
 
     def name_corpus(dirname, languages, lowfreq=None, highfreq=None):
-        items=itemfreq(c.corpus)
-        counts = items[:,1]
+        items, counts = get_items_counts(c.corpus)
 
         corpus_name = [dirname]
         if args.lang:
@@ -259,7 +313,11 @@ def populate_parser(parser):
     parser.add_argument("--high", type=int, dest="high_filter",
         help="High frequency word filter", default=None)
     parser.add_argument("--low", type=int, dest="low_filter",
-        default=None, help="Low frequency word filter [Default: 5]")
+        default=5, help="Low frequency word filter [Default: 5]")
+    parser.add_argument("--min-word-len", type=int, dest="min_word_len",
+        default=3, help="Low frequency word filter [Default: 3]")
+    parser.add_argument("--exclude-special-chars", action="store_false",
+        dest='special_chars')
     parser.add_argument("--lang", nargs='+', choices=langs.keys(),
         help="Languages to stoplist. See options below.", metavar='xx')
 

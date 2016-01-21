@@ -18,18 +18,17 @@ from progressbar import ProgressBar, Percentage, Bar
 import os 
 import platform
 import subprocess
+import logging
 
 
 def convert(fname, pages=None):
     cmd = "where" if platform.system() == "Windows" else "which"
     try: 
-        subprocess.call([cmd, 'pdftotext'])
-        return subprocess.check_output(['pdftotext', fname, '-'])
+        cmd = subprocess.check_output([cmd, 'pdftotext']).strip()
+        return subprocess.check_output([cmd, fname, '-'])
     except: 
-        print "pdftotext not found, defaulting to pdfminer."
+        logging.warning("pdftotext not found, defaulting to pdfminer.")
         return convert_miner(fname, pages=pages)
-
-    
 
 
 def convert_miner(fname, pages=None):

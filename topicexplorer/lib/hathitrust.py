@@ -11,6 +11,8 @@ from urllib2 import urlopen, HTTPError
 from urllib import quote_plus, urlencode
 import xml.etree.ElementTree as ET
 from zipfile import ZipFile  ## used to decompress requested zip archives.
+import requests
+import re
 
 
 from topicexplorer.lib.util import *
@@ -35,6 +37,31 @@ def get_metadata(folder):
     data = dict(data)
     with open(os.path.join(folder, '../metadata.json'),'wb') as outfile:
         json.dump(data, outfile)
+
+def record_data(id, sleep_time=1):
+    regex = re.compile('\W')
+    url = "http://catalog.hathitrust.org/api/volumes/brief/recordnumber/{0}.json"
+
+    url = url.format(id)
+    r = requests.get(url)
+    data = r.json()
+
+    #data = data['items'][id]
+    items = []
+    if data:
+        for item in data['items']:
+            enum = regex.sub('', str(item.get('enumcron','')).lower())
+            htid = item.get('htid','')
+            items.append((enum,htid))
+    else:
+        items = []
+    
+    sleep(sleep_time)
+    return items
+
+
+
+
 
 """
 MARC CODE HANDLING

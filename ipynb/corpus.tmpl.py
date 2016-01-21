@@ -2,6 +2,7 @@ from vsm import *
 from vsm.viewer.wrappers import doc_label_name
 
 import os.path
+from collections import defaultdict
 
 # load in the configuration file
 from ConfigParser import ConfigParser as ConfigParser
@@ -26,13 +27,28 @@ if config.get('main', 'topics'):
     topic_range = eval(config.get('main', 'topics'))
 
 # load the topic models
-lda_m = dict()
-lda_v = dict()
+class keydefaultdict(defaultdict):
+    """ Solution from: http://stackoverflow.com/a/2912455 """
+    def __missing__(self, key):
+        if self.default_factory is None:
+            raise KeyError( key )
+        else:
+            ret = self[key] = self.default_factory(key)
+            return ret
+def load_model(k):
+    if k in topic_range:
+        return LdaCgsSeq.load(pattern.format(k))
+    else:
+        raise KeyError("No model trained for k={}.".format(k))
+def load_viewer(k):
+    """ Function to dynamically load the LdaCgsViewer. 
+        Failure handling for missing keys is handled by `load_model`"""
+    return LdaCgsViewer(c,lda_m[k])
+
+lda_m = keydefaultdict(load_model)
+lda_v = keydefaultdict(load_viewer)
 print topic_range
 print pattern
-for k in topic_range:
-    lda_m[k] = LdaCgsSeq.load(pattern.format(k))
-    lda_v[k] = LdaCgsViewer(c,lda_m[k])
 
 ## Colors
 import itertools
