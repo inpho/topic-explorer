@@ -23,7 +23,13 @@ category20c = [
 ## Colors
 import itertools
 import brewer2mpl as brewer
-from matplotlib.colors import rgb2hex
+
+
+def rgb2hex(rgb):
+    'Given an rgb or rgba sequence of 0-1 floats, return the hex string'
+    a = '#%02x%02x%02x' % tuple([int(np.round(val * 255)) for val in rgb[:3]])
+    return a
+
 
 from collections import defaultdict
 import networkx as nx
