@@ -50,7 +50,8 @@ install_requires = [
         'wget',
         'unidecode',
         'pdfminer',
-        'pyenchant'
+        'pyenchant',
+        'networkx>=1.9.1'
         ]
 
 if platform.system() == 'Windows':
@@ -58,7 +59,7 @@ if platform.system() == 'Windows':
 
 setup(
     name='topicexplorer',
-    version='1.0b33',
+    version='1.0b34',
     description='InPhO Topic Explorer',
     long_description = long_description,
     author = "The Indiana Philosophy Ontology (InPhO) Project",
