@@ -375,7 +375,7 @@ def main(args):
         id_fn = label_module.id_fn
         print "imported id function"
     except (AttributeError, UnboundLocalError):
-        id_fn = def_label_fn
+        id_fn = lambda metadata: metadata[doc_label_name(lda_v.model.context_type)]
         print "using default id function"
 
     config_icons = config.get('www','icons').split(",")
