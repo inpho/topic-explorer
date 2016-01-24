@@ -881,7 +881,7 @@ d3.json(url, function(error, data) {
   function alphabetSort() {
     // Copy-on-write since tweens are evaluated after a delay.
     if (this.checked)
-      sortDataset(function(a, b) { return d3.ascending(a.id, b.id); });
+      sortDataset(function(a, b) { return d3.ascending(a.label, b.label); });
     else
       sortDataset(function(a, b) { return b.prob - a.prob; });
   }
