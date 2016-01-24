@@ -603,7 +603,7 @@ d3.json(url, function(error, data) {
         .attr("class", "y axis")
         .call(yAxis)
         .selectAll("text")
-        .attr("class", function(d) { return (d == docid && roottopic == null) ? "primary" : "" })
+        .attr("class", function(d) { return (q == null && d == docid && roottopic == null) ? "primary" : "" })
         .on("click", function(d) { window.location.href = window.location.origin + window.location.pathname + "?doc=" + d;})
   
     svg.select(".y.axis").selectAll("g")
@@ -620,14 +620,14 @@ d3.json(url, function(error, data) {
             .attr('font-weight', 'bold');     
           svg.selectAll(".doc")
             .filter(function(doc,i) { return doc.doc == d})
-            .attr("class", function(d) { return ((d.doc == docid && roottopic == null) ? "doc primary" : "doc") + " hover"}); 
+            .attr("class", function(d) { return ((q == null && d.doc == docid && roottopic == null) ? "doc primary" : "doc") + " hover"}); 
           })
         .on("mouseleave", function(d) { 
           $('text',this).removeAttr('text-decoration')
             .removeAttr('font-weight'); 
           svg.selectAll(".doc")
             .filter(function(doc,i) { return doc.doc == d})
-            .attr("class", function(d) { return (d.doc == docid && roottopic == null) ? "doc primary" : "doc"}); 
+            .attr("class", function(d) { return (q == null && d.doc == docid && roottopic == null) ? "doc primary" : "doc"}); 
           });
   
     for (var i = 0; i < icons.length; i++) {
@@ -638,7 +638,7 @@ d3.json(url, function(error, data) {
     var doc = svg.selectAll("doc")
         .data(data)
       .enter().append("g")
-        .attr("class", function(d) { return (d.doc == docid && roottopic == null) ? "doc primary" : "doc"})
+        .attr("class", function(d) { return (q == null && d.doc == docid && roottopic == null) ? "doc primary" : "doc"})
         .attr("transform", function(d) { return "translate(10," + y(d.id) + ")"; })
         .on("mouseover", function(d) {
             var tick = $("text:contains(" + d.id +")")
