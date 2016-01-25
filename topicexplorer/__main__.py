@@ -5,10 +5,13 @@ from ConfigParser import RawConfigParser as ConfigParser
 import os.path
 
 from topicexplorer import init, prep, train, server, launch, notebook, demo
+from topicexplorer import __version__
 from topicexplorer.lib.util import is_valid_filepath
 
 def main():
     parser = ArgumentParser()
+    parser.add_argument('--version', help="Print the version and exit",
+        action='version', version=__version__)
     parsers = parser.add_subparsers(help="select a command")
 
     # Init Parser
@@ -51,6 +54,7 @@ def main():
     parser_demo.set_defaults(func="demo")
     
     args = parser.parse_args()
+
 
     if args.func == 'init':
         args.config_file = init.main(args)

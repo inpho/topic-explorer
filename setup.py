@@ -5,6 +5,10 @@ from setuptools import setup, find_packages
 import os
 import platform
 
+# get version from package through manual read
+# see http://stackoverflow.com/a/17626524 
+__version__ = open("topicexplorer/__version__.py").readlines()[-1].split()[-1].strip("\"'")
+
 # building datafiles list
 datadir = 'www'
 def get_datafiles(datadir):
@@ -59,7 +63,7 @@ if platform.system() == 'Windows':
 
 setup(
     name='topicexplorer',
-    version='1.0b34',
+    version=__version__,
     description='InPhO Topic Explorer',
     long_description = long_description,
     author = "The Indiana Philosophy Ontology (InPhO) Project",
