@@ -29,10 +29,9 @@ def get_dist(dist_name):
 
 
 def update():
-    te_dist = get_dist('topicexplorer')
-    vsm_dist = get_dist('vsm')
+    dist = get_dist('topicexplorer')
 
-    if dist_is_editable(te_dist):
+    if dist_is_editable(dist):
         print "You have an editable install, so updates will be pulled from git."
         for attempt in range(2):
             try:
@@ -41,7 +40,7 @@ def update():
                 break
             except ImportError:
                 install = raw_input(
-                    "GitPython is required, but is not installed. Install? [Y/n]")
+                    "GitPython is required, but is not installed. Install? [Y/n] ")
                 if install == '' or install.lower()[0] == 'y':
                     subprocess.check_call('pip install gitpython', shell=True)
                     # TODO: Add error handling for failed gitpython install
@@ -60,17 +59,17 @@ def update():
             return
 
         try:
-            repo = git.Repo(te_dist.location)
+            repo = git.Repo(dist.location)
         except InvalidGitRepositoryError:
             print "pip has detected an editable install, but the install directory"
             print "is not a valid git repository."
-            print "Your install directory is: {}".format(te_dist.location)
+            print "Your install directory is: {}".format(dist.location)
             return
 
         if repo.is_dirty():
             print "There are uncommitted changes in your local repository."
             print "Please commit before running `vsm update`."
-            print "Your local repository is: {}".format(te_dist.location)
+            print "Your local repository is: {}".format(dist.location)
             return
 
         if not repo.bare:
@@ -86,11 +85,11 @@ def update():
 
                 # reinstall, just in case dependencies or version have updated
                 subprocess.check_call('python setup.py develop',
-                    cwd=te_dist.location, shell=True)
+                    cwd=dist.location, shell=True)
 
             elif commits_ahead:
-                print "Your branch is {} commits ahead of GitHub.".format(len(commits_behind))
-                push = raw_input("Do you want to push? [Y/n]")
+                print "Your branch is {} commits ahead of GitHub.".format(len(commits_ahead))
+                push = raw_input("Do you want to push? [Y/n] ")
                 if push == '' or push.lower()[0] == 'y':
                     repo.remotes.origin.push()
             else:
@@ -98,6 +97,8 @@ def update():
 
 
     else:
+        # TODO: Check if pre-release, if so, then continue beta updates. 
+        # If not, then wait for stable release. Allow for override flag.
         installed_version = parse_version(get_installed_version('topicexplorer'))
         pypi_version = parse_version(pypi_versions('topicexplorer')[-1])
         update_available = pypi_version > installed_version
@@ -106,5 +107,6 @@ def update():
             subprocess.check_call(
                 'pip install topicexplorer=={}'.format(pypi_version), 
                 shell=True)
+        else:
+            print "You have the most recent release. No updates available."
 
-update()
