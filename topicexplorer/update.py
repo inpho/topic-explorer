@@ -82,11 +82,20 @@ def update():
                 'origin/{BRANCH}..{BRANCH}'.format(BRANCH=branch.name)))
             if commits_behind:
                 print "Your branch is {} commits behind GitHub. Pulling changes.".format(len(commits_behind))
-                repo.pull()
+                repo.remotes.origin.pull()
 
                 # reinstall, just in case dependencies or version have updated
                 subprocess.check_call('python setup.py develop',
                     cwd=te_dist.location, shell=True)
+
+            elif commits_ahead:
+                print "Your branch is {} commits ahead of GitHub.".format(len(commits_behind))
+                push = raw_input("Do you want to push? [Y/n]")
+                if push == '' or push.lower()[0] == 'y':
+                    repo.remotes.origin.push()
+            else:
+                print "Your local branch is synced with GitHub. No updates available."
+
 
     else:
         installed_version = parse_version(get_installed_version('topicexplorer'))
