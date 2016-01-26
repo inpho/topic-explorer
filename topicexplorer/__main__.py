@@ -4,7 +4,8 @@ from argparse import ArgumentParser
 from ConfigParser import RawConfigParser as ConfigParser
 import os.path
 
-from topicexplorer import init, prep, train, server, launch, notebook, demo
+from topicexplorer import (init, prep, train, server, launch, notebook, demo,
+    update)
 from topicexplorer import __version__
 from topicexplorer.lib.util import is_valid_filepath
 
@@ -52,6 +53,11 @@ def main():
     parser_demo = parsers.add_parser('demo', 
         help="Download and run the AP demo")
     parser_demo.set_defaults(func="demo")
+
+    # Update Parser 
+    parser_update = parsers.add_parser('update', 
+        help="Update the Topic Explorer")
+    parser_update.set_defaults(func="update")
     
     args = parser.parse_args()
 
@@ -90,6 +96,9 @@ def main():
 
     elif args.func == 'demo':
         demo.main()
+
+    elif args.func == 'update':
+        update.main()
 
 if __name__ == '__main__':
     main()

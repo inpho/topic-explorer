@@ -33,6 +33,7 @@ def update():
 
     if dist_is_editable(dist):
         print "You have an editable install, so updates will be pulled from git."
+        print "Your install directory is: {}\n".format(dist.location)
         for attempt in range(2):
             try:
                 import git
@@ -54,22 +55,19 @@ def update():
                     from git.exc import InvalidGitRepositoryError
         else:
             print "GitPython is required to work with an editable install,"
-            print "but it was not successfully installed."
-            print "Exiting."
+            print "but it was not successfully installed.\n"
             return
 
         try:
             repo = git.Repo(dist.location)
         except InvalidGitRepositoryError:
             print "pip has detected an editable install, but the install directory"
-            print "is not a valid git repository."
-            print "Your install directory is: {}".format(dist.location)
+            print "is not a valid git repository.\n"
             return
 
         if repo.is_dirty():
             print "There are uncommitted changes in your local repository."
-            print "Please commit before running `vsm update`."
-            print "Your local repository is: {}".format(dist.location)
+            print "Please commit before running `vsm update`.\n"
             return
 
         if not repo.bare:
@@ -87,14 +85,15 @@ def update():
                 subprocess.check_call('python setup.py develop',
                     cwd=dist.location, shell=True)
 
+                print "Your local branch was updated.\n"
+
             elif commits_ahead:
                 print "Your branch is {} commits ahead of GitHub.".format(len(commits_ahead))
                 push = raw_input("Do you want to push? [Y/n] ")
                 if push == '' or push.lower()[0] == 'y':
                     repo.remotes.origin.push()
             else:
-                print "Your local branch is synced with GitHub. No updates available."
-
+                print "Your local branch is synced with GitHub. No updates available.\n"
 
     else:
         # TODO: Check if pre-release, if so, then continue beta updates. 
@@ -107,6 +106,10 @@ def update():
             subprocess.check_call(
                 'pip install topicexplorer=={}'.format(pypi_version), 
                 shell=True)
-        else:
-            print "You have the most recent release. No updates available."
 
+            print "Updated from {} to {}.\n".format(installed_version, pypi_version)
+        else:
+            print "You have the most recent release. No updates available.\n"
+
+def main():
+    update()
