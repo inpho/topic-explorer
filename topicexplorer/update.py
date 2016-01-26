@@ -75,9 +75,13 @@ def update():
 
         if not repo.bare:
             #check for upstream updates
-            update_commits = list(repo.iter_commits('BRANCH..BRANCH@{u}'))
-            if update_commits:
-                print "Your branch is {} commits behind GitHub. Pulling changes.".format(len(update_commits))
+            branch = repo.active_branch
+            commits_behind =list(repo.iter_commits(
+                '{BRANCH}..origin/{BRANCH}'.format(BRANCH=branch.name)))
+            commits_ahead =list(repo.iter_commits(
+                'origin/{BRANCH}..{BRANCH}'.format(BRANCH=branch.name)))
+            if commits_behind:
+                print "Your branch is {} commits behind GitHub. Pulling changes.".format(len(commits_behind))
                 repo.pull()
 
                 # reinstall, just in case dependencies or version have updated
