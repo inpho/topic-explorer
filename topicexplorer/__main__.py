@@ -6,13 +6,13 @@ import os.path
 
 from topicexplorer import (init, prep, train, server, launch, notebook, demo,
     update)
-from topicexplorer import __version__
+from topicexplorer import __pretty_version__
 from topicexplorer.lib.util import is_valid_filepath
 
 def main():
     parser = ArgumentParser()
     parser.add_argument('--version', help="Print the version and exit",
-        action='version', version=__version__)
+        action='version', version=__pretty_version__)
     parsers = parser.add_subparsers(help="select a command")
 
     # Init Parser
