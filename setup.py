@@ -55,7 +55,8 @@ install_requires = [
         'unidecode',
         'pdfminer',
         'pyenchant',
-        'networkx>=1.9.1'
+        'networkx>=1.9.1',
+        'pip>=7.1.1'
         ]
 
 if platform.system() == 'Windows':

@@ -2,7 +2,7 @@ from pip.utils import (get_installed_version, dist_is_editable, dist_location)
 from pip._vendor import pkg_resources
 from pip._vendor.packaging.version import parse as parse_version
 
-from subprocess import Popen
+import subprocess
 import json
 import urllib2
 from distutils.version import StrictVersion
@@ -33,18 +33,26 @@ def update():
     vsm_dist = get_dist('vsm')
 
     if dist_is_editable(te_dist):
-        # call git within directory
-
-        for i in attempt(2):
+        print "You have an editable install, so updates will be pulled from git."
+        for attempt in range(2):
             try:
                 import git
                 from git.exc import InvalidGitRepositoryError
+                break
             except ImportError:
-                install = raw_input("GitPython is required, but is not installed. Install? ")
-                if install.lower()[0] == 'y':
-                    Popen('pip install gitpython')
+                install = raw_input(
+                    "GitPython is required, but is not installed. Install? [Y/n]")
+                if install == '' or install.lower()[0] == 'y':
+                    subprocess.check_call('pip install gitpython', shell=True)
                     # TODO: Add error handling for failed gitpython install
-                    # TODO: Refresh local python path to reflect gitpython
+                    # Refresh local python path to reflect gitpython
+                    import site
+                    reload(site)
+
+                    # attempt import once again
+                    import git
+                    reload(git)
+                    from git.exc import InvalidGitRepositoryError
         else:
             print "GitPython is required to work with an editable install,"
             print "but it was not successfully installed."
@@ -67,11 +75,14 @@ def update():
 
         if not repo.bare:
             #check for upstream updates
-            list(repo.iter_commits('BRANCH..BRANCH@{u}'))
-            repo.pull()
+            update_commits = list(repo.iter_commits('BRANCH..BRANCH@{u}'))
+            if update_commits:
+                print "Your branch is {} commits behind GitHub. Pulling changes.".format(len(update_commits))
+                repo.pull()
 
-            # reinstall, just in case dependencies have updated
-            Popen('python setup.py develop', cwd=te_dist.location)
+                # reinstall, just in case dependencies or version have updated
+                subprocess.check_call('python setup.py develop',
+                    cwd=te_dist.location, shell=True)
 
     else:
         installed_version = parse_version(get_installed_version('topicexplorer'))
@@ -79,5 +90,8 @@ def update():
         update_available = pypi_version > installed_version
 
         if update_available:
-            Popen('pip install topicexplorer=={}'.format(pypi_version))
+            subprocess.check_call(
+                'pip install topicexplorer=={}'.format(pypi_version), 
+                shell=True)
 
+update()
