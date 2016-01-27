@@ -34,8 +34,6 @@ else:
 
 current_commit = repo.head.commit.hexsha
 
-### TODO: Automagically increment version number.
-
 ### Check version numbers are not already online
 if __version__ in repo.tags and current_commit != repo.tags[__version__]:
     print "Local version tag already exists: ", __version__
@@ -107,21 +105,25 @@ try:
     if sys.argv[-1] == 'test':
         check_output("python setup.py register -r pypitest", shell=True)
     else:
+        print "Registering package with PyPI."
         check_output("python setup.py register", shell=True)
+        
+        print "Uploading source to PyPI."
         check_output("python setup.py sdist upload", shell=True)
+
+        print "Uploading egg to PyPI."
         check_output("python setup.py bdist_egg upload", shell=True)
+
 except CalledProcessError as e:
     print "\nFailed to register and upload the package to PyPI.\n"
     sys.exit(1)
 finally:
     os.remove('README.txt')
 
-if __version__ not in repo.tags:
-    print "Creating tag for release.\n"
-    repo.create_tag(__version__)
+print "Creating local tag for release.\n"
+repo.create_tag(__version__)
 
-if __version__ not in repo.remotes.origin.repo.tags:
-    print "Pushing tag for release to GitHub.\n"
-    repo.remotes.origin.push(__version__)
+print "Pushing tag to GitHub.\n"
+repo.remotes.origin.push(__version__)
 
 print "Release complete.\n"
