@@ -223,7 +223,7 @@ def populate_parser(parser):
     group = parser.add_mutually_exclusive_group()
     group.add_argument("--decode", action="store_true", dest='decode',
         help="Convert unicode characters to ascii. [Default]")
-    group.add_argument("--unicode", action="store_true", dest='decode',
+    group.add_argument("--unicode", action="store_false", dest='decode',
         help="Store unicode characters.")
     parser.add_argument("--htrc", action="store_true")
     parser.add_argument("--rebuild", action="store_true")
