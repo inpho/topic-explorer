@@ -23,12 +23,6 @@ There are two types of install: Default and Developer.
 3.  Open a terminal and run `pip install -e --src . git+https://github.com/inpho/topic-explorer#egg=topicexplorer`
 4.  Test installation by typing `vsm -h` to print usage instructions.
 
-**Note:** When using a developer install `vsm --version` will print in the following format: `1.0b39-1-g7c834bf-dirty`. 
-* The first part is the most recent release tag. (`1.0b39`)
-* The second part is the number of commits since the tag. (`1`)
-* The next is the hash of the most recent commit. (`g7c834bf`)
-* The optional `-dirty` flag indicates that the current repository has uncommitted changes.
-
 ## Usage
 ![Workflow](http://inphodata.cogs.indiana.edu/img/workflow.png)
 
@@ -56,7 +50,18 @@ There are two types of install: Default and Developer.
 
 See the sample configuration files in the `config` directory for examples of how to extend the topic explorer.
 
-### Dependencies
+## Bug Reports
+Please report issues on the [issue tracker](http://github.com/inpho/topic-explorer/issues) or contact Jaimie directly (contact info at bottom of README).
+
+In your report, please include the error message, the command you ran, your operating system, and the output of the command `vsm --version`. This will ensure that we can quickly diagnose your issue.
+
+**Note:** When using a developer install `vsm --version` will print in the following format: `1.0b39-1-g7c834bf-dirty`. 
+* The first part is the most recent release tag. (`1.0b39`)
+* The second part is the number of commits since the tag. (`1`)
+* The next is the hash of the most recent commit. (`g7c834bf`)
+* The optional `-dirty` flag indicates that the local repository has uncommitted changes.
+
+## Alternate Installs
 We highly recommend using the Anaconda Python 2.7 Distribution. Straightforward instructions are provided for Anaconda for both end users and developers. If you want to roll your own install, some notes on dependencies are included below.
 
  - **Anaconda**
