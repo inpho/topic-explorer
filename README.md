@@ -23,7 +23,11 @@ There are two types of install: Default and Developer.
 3.  Open a terminal and run `pip install -e --src . git+https://github.com/inpho/topic-explorer#egg=topicexplorer`
 4.  Test installation by typing `vsm -h` to print usage instructions.
 
-**Note:** When using a developer install `vsm --version` will print like this: `1.0b39-1-g7c834bf-dirty`. The first part is the most recent release tag. The second part is the number of commits since the tag. The next is the hash of the most recent commit. The optional `-dirty` flag indicates that the current repository has uncommitted changes.
+**Note:** When using a developer install `vsm --version` will print in the following format: `1.0b39-1-g7c834bf-dirty`. 
+* The first part is the most recent release tag. (`1.0b39`)
+* The second part is the number of commits since the tag. (`1`)
+* The next is the hash of the most recent commit. (`g7c834bf`)
+* The optional `-dirty` flag indicates that the current repository has uncommitted changes.
 
 ## Usage
 ![Workflow](http://inphodata.cogs.indiana.edu/img/workflow.png)
