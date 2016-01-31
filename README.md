@@ -10,12 +10,20 @@ The color bands within each article's row show the topic distribution within tha
 Display options include topic normalization, alphabetical sort and topic sort. By normalizing topics, the combined width of each bar expands so that topic weights per document can be compared. By clicking a topic, the documents will reorder acoording to that topic's weight and topic bars will reorder according to the topic weights in the highest weighted document. When a topic is selected, clicking "Top Documents for [Topic]" will take you to a new page showing the most similar documents to that topic's word distribution. The original sort order can be restored with the "Reset Topic Sort" button.
 
 ## Installation
+There are two types of install: Default and Developer. 
 
+### Default Install
 1.  Install the [Anaconda Python 2.7 Distribution](http://continuum.io/downloads). 
 2.  Open a terminal and run `pip install --pre topicexplorer`.
 3.  Test installation by typing `vsm -h` to print usage instructions.
 
-See below for notes on developer installation.
+### Developer Install
+1.  [Set up Git](https://help.github.com/articles/set-up-git/)
+2.  Install the [Anaconda Python 2.7 Distribution](http://continuum.io/downloads). 
+3.  Open a terminal and run `pip install -e --src . git+https://github.com/inpho/topic-explorer#egg=topicexplorer`
+4.  Test installation by typing `vsm -h` to print usage instructions.
+
+**Note:** When using a developer install `vsm --version` will print like this: `1.0b39-1-g7c834bf-dirty`. The first part is the most recent release tag. The second part is the number of commits since the tag. The next is the hash of the most recent commit. The optional `-dirty` flag indicates that the current repository has uncommitted changes.
 
 ## Usage
 ![Workflow](http://inphodata.cogs.indiana.edu/img/workflow.png)
@@ -44,26 +52,11 @@ See below for notes on developer installation.
 
 See the sample configuration files in the `config` directory for examples of how to extend the topic explorer.
 
-
-## Developer Install
-
-We **highly recommend** installing the [Anaconda Python 2.7 Distribution](http://continuum.io/downloads) first. Straightforward instructions are provided for Anaconda. If you want to roll your own install, some notes on dependencies are included below.
-
-1. [Set up Git](https://help.github.com/articles/set-up-git/)
-
-2.  Install Anaconda packages:
-  
-    ```
-    conda install numpy scipy nltk matplotplib ipython
-    ```
-
-3.  Clone the repo and install in developer mode (`-e` flag):
-
-    ```
-    pip install -e git+https://github.com/inpho/topic-explorer#egg=topicexplorer
-    ```
-
 ### Dependencies
+We highly recommend using the Anaconda Python 2.7 Distribution. Straightforward instructions are provided for Anaconda for both end users and developers. If you want to roll your own install, some notes on dependencies are included below.
+
+ - **Anaconda**
+   1.  If using Miniconda, the necessary packages are: `conda install numpy scipy nltk matplotplib ipython networkx`
 
  - **Debian/Ubuntu** (non-Anaconda) 
    1.  `sudo apt-get-install build-essential python-dev python-pip python-numpy python-matplotlib python-scipy python-ipython` 
