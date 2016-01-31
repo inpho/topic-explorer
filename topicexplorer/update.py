@@ -73,6 +73,7 @@ def update():
         if not repo.bare:
             #check for upstream updates
             branch = repo.active_branch
+            repo.remotes.origin.fetch(branch)
             commits_behind =list(repo.iter_commits(
                 '{BRANCH}..origin/{BRANCH}'.format(BRANCH=branch.name)))
             commits_ahead =list(repo.iter_commits(
