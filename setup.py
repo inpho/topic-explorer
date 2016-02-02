@@ -56,7 +56,8 @@ install_requires = [
         'pdfminer',
         'pyenchant',
         'networkx>=1.9.1',
-        'pip>=7.1.1'
+        'pip>=7.1.1',
+        'langdetect'
         ]
 
 if platform.system() == 'Windows':

@@ -5,7 +5,7 @@ from ConfigParser import RawConfigParser as ConfigParser
 import os.path
 
 from topicexplorer import (init, prep, train, server, launch, notebook, demo,
-    update)
+    update, langspace)
 from topicexplorer import __pretty_version__
 from topicexplorer.lib.util import is_valid_filepath
 
@@ -59,6 +59,12 @@ def main():
         help="Update the Topic Explorer")
     parser_update.set_defaults(func="update")
     
+    # Lang Space Parser 
+    parser_langspace = parsers.add_parser('langspace', 
+        help="Add spaces before unicode chars")
+    langspace.populate_parser(parser_langspace)
+    parser_langspace.set_defaults(func="langspace")
+    
     args = parser.parse_args()
 
 
@@ -99,6 +105,8 @@ def main():
 
     elif args.func == 'update':
         update.main()
+    elif args.func == 'langspace':
+        langspace.main(args)
 
 if __name__ == '__main__':
     main()
