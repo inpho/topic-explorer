@@ -20,7 +20,7 @@ There are two types of install: Default and Developer.
 ### Developer Install
 1.  [Set up Git](https://help.github.com/articles/set-up-git/)
 2.  Install the [Anaconda Python 2.7 Distribution](http://continuum.io/downloads). 
-3.  Open a terminal and run `pip install -e --src . git+https://github.com/inpho/topic-explorer#egg=topicexplorer`
+3.  Open a terminal and run `pip install --src . -e git+https://github.com/inpho/topic-explorer#egg=topicexplorer`
 4.  Test installation by typing `vsm -h` to print usage instructions.
 
 ## Usage
