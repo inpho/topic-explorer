@@ -1,6 +1,6 @@
 # InPhO Topic Explorer
 [![Travis](https://img.shields.io/travis/inpho/topic-explorer.svg)](https://travis-ci.org/inpho/topic-explorer)
-[![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/inpho/topic-explorer/blob/master/LICENSE.txt)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/inpho/topic-explorer/blob/master/LICENSE.txt)
 [![PyPI](https://img.shields.io/pypi/v/topicexplorer.svg)](https://pypi.python.org/pypi/topicexplorer)
 
 This interactive visualization displays information from the LDA topic models generated using the [InPhO VSM module](http://github.com/inpho/vsm/). Live demos trained on the Stanford Encyclopedia of Philosophy, a selection of books from the HathiTrust Digital Library, and the original LDA training set of Associated Press articles are available at [http://inphodata.cogs.indiana.edu](http://inphodata.cogs.indiana.edu/).
