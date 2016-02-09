@@ -92,7 +92,7 @@ def get_mask(c, words=None, filter=None):
         mask[filter] = True
 
     if words:
-        ix = np.in1d(c.words, words)
+        ix = np.in1d(c.words, list(words))
         ix = np.where(ix)
         mask[ix] = False              # Set unwanted elements to False
 
@@ -117,18 +117,15 @@ def get_high_filter(args, c, words=None):
     while not high_filter:
         bin_counts, bins = np.histogram(counts[counts.argsort()[::-1]], range=(0,len(c.words)/4.))
 	print "{0:>12s}     {1}".format("# Occurences", "# Words")
-        
+       
 	for bin, count in zip(bins[-2::-1], np.cumsum(bin_counts[::-1])):
-            print "> {0:>5.0f}x".format(bin).rjust(12) + ' ',
-	    #print "{1:0.0f} words".format(bin,count).ljust(10)# occur more than {0:0.0f} times".format(bin, count).ljust(45),
             if count:
+                print "> {0:>5.0f}x".format(bin).rjust(12) + ' ',
                 print u'\u2588' * ((np.log(count) / np.log(len(c.words))) * 34),
                 #print u'*' * ((np.log2(count) / np.log2(len(c.words))) * 44),
-            else:
-                print '',
-            print "  {0:0.0f} words".format(count)
+                print "  {0:0.0f} words".format(count)
 
-	print len(c.words), "total words; ", counts.sum(), "total occurrences"
+	print get_mask(c, words).sum(), "total words; ", counts.sum(), "total occurrences"
         print ''
 
 
@@ -169,18 +166,30 @@ def get_high_filter(args, c, words=None):
 
     return (high_filter, candidates)
 
-def get_low_filter(args, c):
+def get_low_filter(args, c, words=None):
     print "\n\n*** FILTER LOW FREQUENCY WORDS ***"
+    print "This will remove all words occurring less than N times."
+    print "The histogram below shows how many times each word occurs."
     items, counts = get_items_counts(c.corpus)
+    items = items[get_mask(c, words)] 
+    counts = counts[get_mask(c, words)] 
 
     low_filter = False
     while not low_filter:
-        bin_counts, bins = np.histogram(counts[counts.argsort()[::-1]], range=(0,len(c.words)/20.))
+        bin_counts, bins = np.histogram(counts[counts.argsort()[::-1]],
+            range=(0,len(c.words)/(max(10*(np.log(len(c.words))-2), 10))))
 	#print "{0:>10s} {1:>10s}".format("# Tokens", "# Words")
-	for bin, count in zip(bins[:-1], bin_counts):
-	    print "{1:10.0f} words occur less than {0:10.0f} times".format(bin, count)
-        print counts.sum(), "total occurrences"
-	print len(c.words), "total words"
+	print "{0:>12s}     {1}".format("# Occurences", "# Words")
+       
+	for bin, count in zip(bins[1:], np.cumsum(bin_counts)):
+            if count:
+                print "<= {0:>5.0f}x".format(bin).rjust(12) + ' ',
+                print u'\u2588' * ((np.log(count) / np.log(len(c.words))) * 34),
+                #print u'*' * ((np.log2(count) / np.log2(len(c.words))) * 44),
+                print "  {0:0.0f} words".format(count)
+
+	print get_mask(c, words).sum(), "total words; ", counts.sum(), "total occurrences"
+        print ''
     
         input_filter = 0
         accept = None
@@ -245,7 +254,6 @@ def main(args):
         candidates = stop_language(c, langs[lang])
         if len(candidates):
             stoplist.update(candidates)
-        print len(candidates), len(stoplist) 
 
     # Apply custom stopwords file
     if args.stopword_file:
@@ -254,21 +262,18 @@ def main(args):
             candidates = [unidecode(word.strip()) for word in swf]
             if len(candidates):
                 stoplist.update(candidates)
-        print len(candidates), len(stoplist) 
 
     if args.min_word_len:
         print "filtering small words"
         candidates = get_small_words(c, args.min_word_len)
         if len(candidates):
             stoplist.update(candidates)
-        print len(candidates), len(stoplist) 
     
     if not args.special_chars:
         print "filtering words with special chars"
         candidates = get_special_chars(c)
         if len(candidates):
             stoplist.update(candidates)
-        print len(candidates), len(stoplist)
    
     print "adding high frequency filter" 
     if not args.high_filter:
@@ -280,11 +285,10 @@ def main(args):
         candidates = get_candidate_words(c,args.high_filter, sort=False)
         if len(candidates):
             stoplist.update(candidates)
-    print len(candidates), len(stoplist) 
 
     print "adding low frequency filter" 
     if not args.low_filter:
-        low_filter, candidates = get_low_filter(args, c)
+        low_filter, candidates = get_low_filter(args, c, words=stoplist)
         if len(candidates):
             stoplist.update(candidates)
     else:
@@ -292,7 +296,6 @@ def main(args):
         candidates  = get_candidate_words(c, -1*args.low_filter, sort=False)
         if len(candidates):
             stoplist.update(candidates)
-    print len(candidates), len(stoplist) 
 
     if stoplist:
         print "applying {} stopwords".format(len(stoplist))
