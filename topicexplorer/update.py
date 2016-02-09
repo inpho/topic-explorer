@@ -1,11 +1,13 @@
 from pip.utils import (get_installed_version, dist_is_editable, dist_location)
 from pip._vendor import pkg_resources
 from pip._vendor.packaging.version import parse as parse_version
+from distutils.version import StrictVersion
 
-import subprocess
 import json
 import urllib2
-from distutils.version import StrictVersion
+
+import subprocess
+import platform
 
 def pypi_versions(package_name):
     # Based on: http://stackoverflow.com/a/27239645
@@ -115,9 +117,20 @@ def update():
         update_available = pypi_version > installed_version
 
         if update_available:
-            subprocess.check_call(
-                'pip install topicexplorer=={}'.format(pypi_version), 
-                shell=True)
+            if platform.system() == 'Windows':
+                import shutil
+                import distutils.spawn
+                filename = distutils.spawn.find_executable('vsm.exe')
+                shutil.move(__file__, 'temp.exe')
+
+            try:
+                subprocess.check_call(
+                    'pip install topicexplorer=={}'.format(pypi_version), 
+                    shell=True)
+            except CalledProcessError:
+                if platform.system() == 'Windows':
+                    shutil.move('temp.exe', filename)
+                print "ERROR: Update did not install.\n"
 
             print "Updated from {} to {}.\n".format(installed_version, pypi_version)
         else:
