@@ -43,7 +43,7 @@ def get_topic_colors(v):
     rs = defaultdict(list)
     ss = np.zeros([len(mat), k, 2])
     adj = np.zeros([k,k])
-    thresh = 0.01
+    thresh = 0.1
     cs = 0
     
     # for each row add values to horizontal neighbors
@@ -100,10 +100,11 @@ def get_topic_colors(v):
         G.add_node(i)
     
     # initialize base variables
-    weight = 0 #int((cs + cse) / (4*k*k))
+    weight = int((cs + cse) / (4*k*k))
     ncolors = None
     
     while ncolors is None or ncolors > 9:
+        print weight, ncolors
         # clean previous color assignments and edges
         colors = defaultdict(int)
         G.remove_edges_from(G.edges())
@@ -139,3 +140,12 @@ def get_topic_colors(v):
     return topic_colors
     # TODO: add bmap -> rgba format
 
+def get_topic_colors(v):
+    ncolors = 8 
+    bmap = brewer.get_map('Set1', 'Qualitative', ncolors)
+
+    topic_colors =  [(n, bmap.mpl_colormap(float(n % ncolors) / (ncolors -1))) 
+        for n in range(v.model.K)]
+
+    topic_colors.sort(key=lambda x: x[0])
+    return topic_colors
