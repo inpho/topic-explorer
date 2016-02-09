@@ -77,9 +77,9 @@ def get_candidate_words(c, n_filter, sort=True, words=None):
             filter = filter[counts[counts > n_filter].argsort()[::-1]]
 
     elif n_filter < 0:
-        filter = items[counts < -n_filter]
+        filter = items[counts <= -n_filter]
         if sort:
-            filter = filter[counts[counts < -n_filter].argsort()[::-1]]
+            filter = filter[counts[counts <= -n_filter].argsort()[::-1]]
     mask = get_mask(c, words, filter=filter)
     return c.words[mask]
 
@@ -108,8 +108,8 @@ def get_special_chars(c):
 def get_high_filter(args, c, words=None):
     print "\n\n*** FILTER HIGH FREQUENCY WORDS ***"
     print "This will remove all words occurring more than N times."
-    print "The histogram below shows how many times each word occurs."
-    print ''
+    print "The histogram below shows how many words will be removed"
+    print "by selecting each maximum frequency threshold.\n"
     items, counts = get_items_counts(c.corpus)
     items = items[get_mask(c, words)] 
     counts = counts[get_mask(c, words)] 
@@ -169,7 +169,8 @@ def get_high_filter(args, c, words=None):
 def get_low_filter(args, c, words=None):
     print "\n\n*** FILTER LOW FREQUENCY WORDS ***"
     print "This will remove all words occurring less than N times."
-    print "The histogram below shows how many times each word occurs."
+    print "The histogram below shows how many words will be removed"
+    print "by selecting each minimum frequency threshold.\n"
     items, counts = get_items_counts(c.corpus)
     items = items[get_mask(c, words)] 
     counts = counts[get_mask(c, words)] 
@@ -201,10 +202,12 @@ def get_low_filter(args, c, words=None):
                     input_filter = int(raw_input("Enter the minimum word occurrence rate: "))
                 candidates = get_candidate_words(c, -input_filter)
     
-                print "Filter will remove", counts[counts < input_filter].sum(), "tokens", "of these", len(counts[counts < input_filter]), "words:"
+                print "Filter will remove", counts[counts <= input_filter].sum(), "tokens",
+                print "of these", len(counts[counts <= input_filter]), "words:"
                 print ' '.join(candidates)
 
-                print "\nFilter will remove", counts[counts < input_filter].sum(), "tokens", "of these", len(counts[counts < input_filter]), "words.",
+                print "\nFilter will remove", counts[counts <= input_filter].sum(), "tokens", 
+                print "of these", len(counts[counts <= input_filter]), "words.",
                 
                 if len(candidates) == len(c.words):
                     print "\n\nChoice of",input_filter, "will remove ALL words from the corpus."
