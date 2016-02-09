@@ -70,6 +70,17 @@ def update():
             print "Please commit before running `vsm update`.\n"
             return
 
+        if repo.active_branch != 'master':
+            print "You are on the '{}' branch.".format(repo.active_branch),
+            install = raw_input("Switch to the 'master' branch? [Y/n] ")
+            if install == '' or install.lower()[0] == 'y':
+                print "Switched to 'master' branch."
+                repo.heads.master.checkout()
+            else:
+                print "You must switch to the 'master' branch to use `vsm update`."
+                return
+
+
         if not repo.bare:
             #check for upstream updates
             branch = repo.active_branch
