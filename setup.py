@@ -95,6 +95,7 @@ setup(
         'https://github.com/inpho/vsm/archive/memory-optimization.zip#egg=vsm-0.4.0a1',
         ],
     include_package_data=True,
+    zip_safe=False,
     cmdclass = { 'install_data': wx_smart_install_data },
     entry_points={
         'console_scripts' : ['vsm = topicexplorer.__main__:main',
