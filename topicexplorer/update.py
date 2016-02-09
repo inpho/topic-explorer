@@ -121,7 +121,7 @@ def update():
                 import shutil
                 import distutils.spawn
                 filename = distutils.spawn.find_executable('vsm.exe')
-                shutil.move(__file__, 'temp.exe')
+                shutil.move(filename, 'temp.exe')
 
             try:
                 subprocess.check_call(
