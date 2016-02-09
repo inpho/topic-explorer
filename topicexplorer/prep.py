@@ -65,7 +65,7 @@ def get_htrc_langs(args):
                 if code not in args.lang:
                     out_langs.append(code)
 
-def get_candidate_words(c, n_filter, sort=True):
+def get_candidate_words(c, n_filter, sort=True, words=None):
     """ Takes a corpus and a filter and reutrns the candidate words. 
     If n_filter > 0, filter words occuring at least n_filter times.
     If n_filter < 0, filter words occuring less than n_filter times.
@@ -80,8 +80,23 @@ def get_candidate_words(c, n_filter, sort=True):
         filter = items[counts < -n_filter]
         if sort:
             filter = filter[counts[counts < -n_filter].argsort()[::-1]]
+    mask = get_mask(c, words, filter=filter)
+    return c.words[mask]
 
-    return c.words[filter]
+def get_mask(c, words=None, filter=None):
+    if filter is None:
+        mask = np.ones(len(c.words), dtype=bool) # all elements included/True.
+
+    if filter is not None:
+        mask = np.zeros(len(c.words), dtype=bool) # all elements excluded/False.
+        mask[filter] = True
+
+    if words:
+        ix = np.in1d(c.words, words)
+        ix = np.where(ix)
+        mask[ix] = False              # Set unwanted elements to False
+
+    return mask[:]
 
 def get_small_words(c, min_len):
     return [word for word in c.words if len(word) < min_len]
@@ -90,18 +105,33 @@ def get_special_chars(c):
     return [word for word in c.words if re.findall('[^A-Za-z\-\']', word)]
 
 
-def get_high_filter(args, c):
+def get_high_filter(args, c, words=None):
     print "\n\n*** FILTER HIGH FREQUENCY WORDS ***"
+    print "This will remove all words occurring more than N times."
+    print "The histogram below shows how many times each word occurs."
+    print ''
     items, counts = get_items_counts(c.corpus)
+    items = items[get_mask(c, words)] 
+    counts = counts[get_mask(c, words)] 
     high_filter = False
     while not high_filter:
         bin_counts, bins = np.histogram(counts[counts.argsort()[::-1]], range=(0,len(c.words)/4.))
-	#print "{0:>10s} {1:>10s}".format("# Tokens", "# Words")
-	for bin, count in zip(bins[1:], bin_counts):
-	    print "{1:0.0f} words occur more than {0:0.0f} times".format(bin, count)
-        print counts.sum(), "total occurrences"
-	print len(c.words), "total words"
-    
+	print "{0:>12s}     {1}".format("# Occurences", "# Words")
+        
+	for bin, count in zip(bins[-2::-1], np.cumsum(bin_counts[::-1])):
+            print "> {0:>5.0f}x".format(bin).rjust(12) + ' ',
+	    #print "{1:0.0f} words".format(bin,count).ljust(10)# occur more than {0:0.0f} times".format(bin, count).ljust(45),
+            if count:
+                print u'\u2588' * ((np.log(count) / np.log(len(c.words))) * 34),
+                #print u'*' * ((np.log2(count) / np.log2(len(c.words))) * 44),
+            else:
+                print '',
+            print "  {0:0.0f} words".format(count)
+
+	print len(c.words), "total words; ", counts.sum(), "total occurrences"
+        print ''
+
+
         input_filter = 0
         accept = None
         while not input_filter:
@@ -110,7 +140,7 @@ def get_high_filter(args, c):
                     input_filter = high_filter
                 else:
                     input_filter = int(raw_input("Enter the maximum word occurence rate: "))
-                candidates = get_candidate_words(c, input_filter)
+                candidates = get_candidate_words(c, input_filter, words=words)
     
                 print "Filter will remove", counts[counts > input_filter].sum(), "occurrences", "of these", len(counts[counts > input_filter]), "words:"
                 print ' '.join(candidates)
@@ -242,7 +272,7 @@ def main(args):
    
     print "adding high frequency filter" 
     if not args.high_filter:
-        high_filter, candidates = get_high_filter(args, c)
+        high_filter, candidates = get_high_filter(args, c, words=stoplist)
         if len(candidates):
             stoplist.update(candidates)
     else:
@@ -313,13 +343,15 @@ def populate_parser(parser):
     parser.add_argument("--high", type=int, dest="high_filter",
         help="High frequency word filter", default=None)
     parser.add_argument("--low", type=int, dest="low_filter",
-        default=5, help="Low frequency word filter [Default: 5]")
+        default=None, help="Low frequency word filter [Default: 5]")
     parser.add_argument("--min-word-len", type=int, dest="min_word_len",
         default=3, help="Low frequency word filter [Default: 3]")
     parser.add_argument("--exclude-special-chars", action="store_false",
         dest='special_chars')
     parser.add_argument("--lang", nargs='+', choices=langs.keys(),
         help="Languages to stoplist. See options below.", metavar='xx')
+    parser.add_argument("-q", "--quiet", help="Do not prompt for input",
+                        action="store_true")
 
 if __name__ == '__main__':
     import argparse
