@@ -118,19 +118,17 @@ def update():
 
         if update_available:
             if platform.system() == 'Windows':
-                import shutil
-                import distutils.spawn
-                filename = distutils.spawn.find_executable('vsm.exe')
-                shutil.move(filename, 'temp.exe')
-
+                import sys
+                if sys.argv[0] == __file__:
+                    print "Update available. Use the `python -m topicexplorer.update` command to update."
+                    return
+            
             try:
                 subprocess.check_call(
                     'pip install topicexplorer=={}'.format(pypi_version), 
                     shell=True)
             except CalledProcessError:
-                if platform.system() == 'Windows':
-                    shutil.move('temp.exe', filename)
-                print "ERROR: Update did not install.\n"
+                print "ERROR: Update did not comlete installation.\n"
 
             print "Updated from {} to {}.\n".format(installed_version, pypi_version)
         else:
