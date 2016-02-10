@@ -8,6 +8,7 @@ import urllib2
 
 import subprocess
 import platform
+from subprocess import CalledProcessError
 
 def pypi_versions(package_name):
     # Based on: http://stackoverflow.com/a/27239645
@@ -133,7 +134,7 @@ def update():
             
             try:
                 subprocess.check_call(
-                    'pip install topicexplorer=={}'.format(pypi_version), 
+                    'pip install topicexplorer=={} --no-cache-dir'.format(pypi_version), 
                     shell=True)
             except CalledProcessError:
                 print "ERROR: Update did not comlete installation.\n"
