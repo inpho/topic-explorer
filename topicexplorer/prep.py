@@ -67,7 +67,7 @@ def get_candidate_words(c, n_filter, sort=True, words=None):
     If n_filter < 0, filter words occuring less than n_filter times.
     """
     items, counts = get_items_counts(c.corpus)
-    if n_filter > 0:
+    if n_filter >= 0:
         filter = items[counts > n_filter]
         if sort:
             filter = filter[counts[counts > n_filter].argsort()[::-1]]
@@ -129,14 +129,14 @@ def get_high_filter(args, c, words=None):
 
         input_filter = 0
         accept = None
-        while not input_filter:
+        while not input_filter or input_filter <= 0:
             try:
                 if high_filter:
                     input_filter = high_filter
                 else:
                     input_filter = int(raw_input("Enter the maximum word occurence rate: "))
                 candidates = get_candidate_words(c, input_filter, words=words)
-    
+                
                 print "Filter will remove", counts[counts > input_filter].sum(), "occurrences", "of these", len(counts[counts > input_filter]), "words:"
                 print ' '.join(candidates)
 
@@ -175,7 +175,7 @@ def get_low_filter(args, c, words=None):
     counts = counts[get_mask(c, words)] 
 
     low_filter = False
-    while not low_filter:
+    while low_filter is False:
         bin_counts, bins = np.histogram(counts[counts.argsort()[::-1]],
             range=(0,len(c.words)/(max(10*(np.log(len(c.words))-2), 10))))
 	#print "{0:>10s} {1:>10s}".format("# Tokens", "# Words")
@@ -193,7 +193,7 @@ def get_low_filter(args, c, words=None):
     
         input_filter = 0
         accept = None
-        while not input_filter:
+        while not input_filter or input_filter <= 0:
             try:
                 if low_filter:
                     input_filter = low_filter
