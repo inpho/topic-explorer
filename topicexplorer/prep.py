@@ -3,8 +3,6 @@ import json
 import os.path
 import re
 
-import numpy as np
-
 from codecs import open 
 from unidecode import unidecode
 from topicexplorer.lib.util import isint, is_valid_filepath
@@ -19,6 +17,7 @@ langs_rev = dict((v, k) for k, v in langs.items())
 
 def get_items_counts(x):
     from scipy.stats import itemfreq
+    import numpy as np
     try:
         # for speed increase with numpy >= 1.9.0
         items, counts = np.unique(x, return_counts=True)
@@ -81,6 +80,7 @@ def get_candidate_words(c, n_filter, sort=True, words=None):
     return c.words[mask]
 
 def get_mask(c, words=None, filter=None):
+    import numpy as np
     if filter is None:
         mask = np.ones(len(c.words), dtype=bool) # all elements included/True.
 
@@ -103,6 +103,7 @@ def get_special_chars(c):
 
 
 def get_high_filter(args, c, words=None):
+    import numpy as np
     print "\n\n*** FILTER HIGH FREQUENCY WORDS ***"
     print "This will remove all words occurring more than N times."
     print "The histogram below shows how many words will be removed"
@@ -164,6 +165,7 @@ def get_high_filter(args, c, words=None):
     return (high_filter, candidates)
 
 def get_low_filter(args, c, words=None):
+    import numpy as np
     print "\n\n*** FILTER LOW FREQUENCY WORDS ***"
     print "This will remove all words occurring less than N times."
     print "The histogram below shows how many words will be removed"

@@ -17,8 +17,7 @@ from bottle import request, response, route, run, static_file
 from topicexplorer.lib.ssl import SSLWSGIRefServer
 from topicexplorer.lib.util import int_prompt, bool_prompt, is_valid_filepath
 
-import numpy as np
-
+import random
 import pystache
 
 def unquote_plus(s):
@@ -228,7 +227,7 @@ def docs(docs=None, q=None):
         response.set_header('Pragma', 'no-cache')
         response.set_header('Cache-Control', 'no-cache, no-store, must-revalidate')
         if request.query.random:
-            docs = [np.random.choice(lda_v.corpus.view_metadata(context_type)[doc_label_name(context_type)])]
+            docs = [random.choice(lda_v.corpus.view_metadata(context_type)[doc_label_name(context_type)])]
     except:
         pass
 
