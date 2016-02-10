@@ -1,6 +1,7 @@
-"""Version information."""
+"""Version information with Lazy Loading"""
 import types
 import sys
+
 class _VersionModule(types.ModuleType):
     @property
     def __version__(self):
@@ -18,8 +19,5 @@ class _VersionModule(types.ModuleType):
                 'git describe --long --tags --always --dirty',
                 cwd=dist.location, shell=True)
         return __pv__ or self.__version__
-
-    # The following line *must* be the last in the module, exactly as formatted:
-    # See http://stackoverflow.com/a/17626524
 
 sys.modules[__name__] = _VersionModule("__version__")
