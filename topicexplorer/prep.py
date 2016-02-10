@@ -3,11 +3,8 @@ import json
 import os.path
 import re
 
-import nltk
 import numpy as np
-from scipy.stats import itemfreq
 
-from vsm import *
 from codecs import open 
 from unidecode import unidecode
 from topicexplorer.lib.util import isint, is_valid_filepath
@@ -21,6 +18,7 @@ langs = dict(da='danish', nl='dutch', en='english', fi='finnish', fr='french',
 langs_rev = dict((v, k) for k, v in langs.items())
 
 def get_items_counts(x):
+    from scipy.stats import itemfreq
     try:
         # for speed increase with numpy >= 1.9.0
         items, counts = np.unique(x, return_counts=True)
@@ -31,9 +29,8 @@ def get_items_counts(x):
         counts = ifreq[:,1]
     return items, counts
 
-
-
 def stop_language(c, language):
+    import nltk.corpus
     words = nltk.corpus.stopwords.words(language)
     if c.words.dtype.char == 'S':
         words = [unidecode(word.strip()) for word in words if word in c.words]
@@ -233,6 +230,7 @@ def get_low_filter(args, c, words=None):
     return (low_filter, candidates)
 
 def main(args):
+    from vsm.corpus import Corpus
     config = ConfigParser({"htrc": False})
     config.read(args.config_file)
     

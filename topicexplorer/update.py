@@ -1,17 +1,11 @@
-from pip.utils import (get_installed_version, dist_is_editable, dist_location)
-from pip._vendor import pkg_resources
-from pip._vendor.packaging.version import parse as parse_version
-from distutils.version import StrictVersion
 
-import json
-import urllib2
-
-import subprocess
-import platform
-from subprocess import CalledProcessError
 
 def pypi_versions(package_name):
     # Based on: http://stackoverflow.com/a/27239645
+    from pip._vendor.packaging.version import parse as parse_version
+    import json
+    import urllib2
+
     url = "https://pypi.python.org/pypi/%s/json" % (package_name,)
     data = json.load(urllib2.urlopen(urllib2.Request(url)))
     versions = data["releases"].keys()
@@ -20,6 +14,7 @@ def pypi_versions(package_name):
 
 def get_dist(dist_name):
     """Get the installed version of dist_name avoiding pkg_resources cache"""
+    from pip._vendor import pkg_resources
     # Create a requirement that we'll look for inside of setuptools.
     req = pkg_resources.Requirement.parse(dist_name)
 
@@ -32,6 +27,12 @@ def get_dist(dist_name):
 
 
 def update():
+    from distutils.version import StrictVersion
+    from pip.utils import (get_installed_version, dist_is_editable, dist_location)
+    import platform
+    import subprocess
+    from subprocess import CalledProcessError
+
     dist = get_dist('topicexplorer')
 
     if dist_is_editable(dist):
@@ -144,7 +145,6 @@ def update():
             print "You have the most recent release. No updates available.\n"
 
 def main():
-    print platform.system() == 'Windows'
     update()
 
 if __name__ == '__main__':

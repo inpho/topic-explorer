@@ -4,9 +4,6 @@ import os.path
 import shutil
 import sys
 
-from vsm.corpus import Corpus
-from vsm.corpus.util.corpusbuilders import coll_corpus, dir_corpus, toy_corpus
-
 from topicexplorer.lib import pdf, util
 from topicexplorer.lib.util import prompt, is_valid_filepath, listdir_nohidden
 
@@ -66,6 +63,9 @@ def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=1,
     context_type='document', ignore=['.json','.log','.err','.pickle','.npz'],
     decode=True):
    
+    from vsm.corpus import Corpus
+    from vsm.corpus.util.corpusbuilders import coll_corpus, dir_corpus, toy_corpus
+
     # pre-process PDF files
     if corpus_path[-4:] == '.pdf' or util.contains_pattern(corpus_path, '*.pdf'):
         corpus_path = process_pdfs(corpus_path)

@@ -6,23 +6,17 @@ from importlib import import_module
 import json
 import itertools
 import os.path
-from pkg_resources import resource_filename
 import re
 import socket
 from urllib2 import unquote
 from StringIO import StringIO
 from urllib import unquote_plus as _unquote_plus
 
-from vsm.corpus import Corpus
-from vsm.model.lda import LDA
-from vsm.viewer.ldacgsviewer import LdaCgsViewer as LDAViewer
-from vsm.viewer.wrappers import doc_label_name, def_label_fn
 
 from bottle import request, response, route, run, static_file
 from topicexplorer.lib.ssl import SSLWSGIRefServer
 from topicexplorer.lib.util import int_prompt, bool_prompt, is_valid_filepath
 
-from topicexplorer.lib.color import get_topic_colors, rgb2hex
 import numpy as np
 
 import pystache
@@ -267,8 +261,17 @@ def get_docs(docs=None, id_as_key=False, query=None):
     return js
 
 def main(args):
-    global context_type, lda_c, lda_m, lda_v, label, id_fn
-    
+    from pkg_resources import resource_filename
+    from topicexplorer.lib.color import get_topic_colors, rgb2hex
+
+    from vsm.corpus import Corpus
+    from vsm.model.lda import LDA
+    from vsm.viewer.ldacgsviewer import LdaCgsViewer as LDAViewer
+    from vsm.viewer.wrappers import doc_label_name as _doc_label_name
+
+    global context_type, lda_c, lda_m, lda_v, label, id_fn, doc_label_name
+    doc_label_name = _doc_label_name
+
     # load in the configuration file
     config = ConfigParser({
         'certfile' : None,

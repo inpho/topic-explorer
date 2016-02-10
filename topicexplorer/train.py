@@ -4,13 +4,11 @@ from ConfigParser import NoOptionError
 import multiprocessing
 import os.path
 
-from vsm.corpus import Corpus
-from vsm.model.lda import LDA
-
 from topicexplorer.lib.util import bool_prompt, int_prompt, is_valid_filepath
 
 def build_models(corpus, corpus_filename, model_path, context_type, krange, 
                  n_iterations=200, n_proc=1, seed=None, dry_run=False):
+    from vsm.model.lda import LDA
 
     basefilename = os.path.basename(corpus_filename).replace('.npz','')
     basefilename += "-LDA-K%s-%s-%d.npz" % ('{0}', context_type, n_iterations)
@@ -41,6 +39,7 @@ def build_models(corpus, corpus_filename, model_path, context_type, krange,
     return basefilename
 
 def continue_training(model_pattern, krange, total_iterations=200, n_proc=1):
+    from vsm.model.lda import LDA
     for k in krange:
         m = LDA.load(model_pattern.format(k), multiprocessing=(n_proc > 1))
 
@@ -57,6 +56,9 @@ def continue_training(model_pattern, krange, total_iterations=200, n_proc=1):
     return basefilename
 
 def main(args):
+    from vsm.corpus import Corpus
+    from vsm.model.lda import LDA
+
     config = ConfigParser()
     config.read(args.config_file)
     corpus_filename = config.get("main", "corpus_file")
