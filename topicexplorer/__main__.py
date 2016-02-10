@@ -68,7 +68,7 @@ def main():
 
     if args.func == 'version':
         from topicexplorer.__version__ import __pretty_version__
-        print __pretty_version__
+        print __pretty_version__,
 
     elif args.func == 'init':
         args.config_file = init.main(args)

@@ -18,6 +18,7 @@ class _VersionModule(types.ModuleType):
             __pv__ = subprocess.check_output(
                 'git describe --long --tags --always --dirty',
                 cwd=dist.location, shell=True)
+            __pv__ = __pv__.strip()
         return __pv__ or self.__version__
 
 sys.modules[__name__] = _VersionModule("__version__")
