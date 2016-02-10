@@ -95,11 +95,19 @@ def update():
                 print "Your branch is {} commits behind GitHub. Pulling changes.".format(len(commits_behind))
                 repo.remotes.origin.pull()
 
+                if platform.system() == 'Windows':
+                    import sys
+                    if sys.argv[0] != __file__:
+                        print "Update available. Use the `python -m topicexplorer.update` command to update."
+                        return
                 # reinstall, just in case dependencies or version have updated
-                subprocess.check_call('python setup.py develop',
-                    cwd=dist.location, shell=True)
-
-                print "Your local branch was updated.\n"
+                try:
+                    subprocess.check_call('python setup.py develop',
+                        cwd=dist.location, shell=True)
+                except:
+                    print "ERROR: Update did not comlete installation.\n"
+                else:    
+                    print "Your local branch was updated.\n"
 
             elif commits_ahead:
                 print "Your branch is {} commits ahead of GitHub.".format(len(commits_ahead))
@@ -129,12 +137,13 @@ def update():
                     shell=True)
             except CalledProcessError:
                 print "ERROR: Update did not comlete installation.\n"
-
-            print "Updated from {} to {}.\n".format(installed_version, pypi_version)
+            else:
+                print "Updated from {} to {}.\n".format(installed_version, pypi_version)
         else:
             print "You have the most recent release. No updates available.\n"
 
 def main():
+    print platform.system() == 'Windows'
     update()
 
 if __name__ == '__main__':
