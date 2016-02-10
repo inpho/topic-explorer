@@ -182,6 +182,8 @@ def word_docs(N=40):
 @route('/topics.json')
 @_set_acao_headers
 def topics():
+    from topicexplorer.lib.color import rgb2hex
+
     response.content_type = 'application/json; charset=UTF8'
     response.set_header('Expires', _cache_date())
 
