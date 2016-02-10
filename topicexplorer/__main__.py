@@ -85,11 +85,12 @@ def main():
 
     elif args.func == 'train':
         train.main(args)
-        
-        print "\nTIP: launch the topic explorer with:"
-        print "         vsm launch", args.config_file
-        print "     or the notebook server with:"
-        print "         vsm notebook", args.config_file
+
+        if not args.dry_run:
+            print "\nTIP: launch the topic explorer with:"
+            print "         vsm launch", args.config_file
+            print "     or the notebook server with:"
+            print "         vsm notebook", args.config_file
 
     elif args.func == 'launch':
         launch.main(args)
