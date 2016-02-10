@@ -119,7 +119,7 @@ def update():
         if update_available:
             if platform.system() == 'Windows':
                 import sys
-                if sys.argv[0] == __file__:
+                if sys.argv[0] != __file__:
                     print "Update available. Use the `python -m topicexplorer.update` command to update."
                     return
             
