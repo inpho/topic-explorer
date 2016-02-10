@@ -12,6 +12,7 @@ import win32api
 
 # Load the DLL manually to ensure its handler gets
 # set before our handler.
+import numpy
 basepath = imp.find_module('numpy')[1]
 ctypes.CDLL(os.path.join(basepath, 'core', 'libmmd.dll'))
 ctypes.CDLL(os.path.join(basepath, 'core', 'libifcoremd.dll'))
