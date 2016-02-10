@@ -6,14 +6,13 @@ import os.path
 
 from topicexplorer import (init, prep, train, server, launch, notebook, demo,
     update, langspace)
-from topicexplorer import __pretty_version__
 from topicexplorer.lib.util import is_valid_filepath
 
 def main():
     parser = ArgumentParser()
-    parser.add_argument('--version', help="Print the version and exit",
-        action='version', version=__pretty_version__)
     parsers = parser.add_subparsers(help="select a command")
+    version_parser = parsers.add_parser('version', help="Print the version and exit")
+    version_parser.set_defaults(func='version')
 
     # Init Parser
     parser_init = parsers.add_parser('init', help="Initialize the topic explorer")
@@ -67,8 +66,11 @@ def main():
     
     args = parser.parse_args()
 
+    if args.func == 'version':
+        from topicexplorer.__version__ import __pretty_version__
+        print __pretty_version__
 
-    if args.func == 'init':
+    elif args.func == 'init':
         args.config_file = init.main(args)
         
         print "\nTIP: Only initalizing corpus object and config file."

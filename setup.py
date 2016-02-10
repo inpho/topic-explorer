@@ -7,7 +7,7 @@ import platform
 
 # get version from package through manual read
 # see http://stackoverflow.com/a/17626524 
-__version__ = open("topicexplorer/__version__.py").readlines()[7].split()[-1].strip("\"'")
+__version__ = open("topicexplorer/version.py").readlines()[7].split()[-1].strip("\"'")
 
 # building datafiles list
 datadir = 'www'
