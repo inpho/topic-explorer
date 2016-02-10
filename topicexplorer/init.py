@@ -4,8 +4,8 @@ import os.path
 import shutil
 import sys
 
-from topicexplorer.lib import pdf, util
-from topicexplorer.lib.util import prompt, is_valid_filepath, listdir_nohidden
+from topicexplorer.lib.util import (prompt, is_valid_filepath, 
+    listdir_nohidden, contains_pattern)
 
 def get_corpus_filename(corpus_path, model_path, nltk_stop=False, stop_freq=1,
 			context_type='document'):
@@ -25,6 +25,7 @@ def get_corpus_filename(corpus_path, model_path, nltk_stop=False, stop_freq=1,
 
 
 def process_pdfs(corpus_path, ignore=['.json','.log','.err','.pickle','.npz']):
+    from topicexplorer.lib import pdf
     if os.path.isfile(corpus_path):
         print "PDF file detected, extracting plaintext to",\
             corpus_path.replace('.pdf','.txt')
@@ -67,7 +68,7 @@ def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=1,
     from vsm.corpus.util.corpusbuilders import coll_corpus, dir_corpus, toy_corpus
 
     # pre-process PDF files
-    if corpus_path[-4:] == '.pdf' or util.contains_pattern(corpus_path, '*.pdf'):
+    if corpus_path[-4:] == '.pdf' or contains_pattern(corpus_path, '*.pdf'):
         corpus_path = process_pdfs(corpus_path)
 
     print "Building corpus from", corpus_path
