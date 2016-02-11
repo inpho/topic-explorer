@@ -27,7 +27,7 @@ def convert(fname, pages=None):
         cmd = subprocess.check_output([cmd, 'pdftotext']).strip()
         return subprocess.check_output([cmd, fname, '-'])
     except: 
-        logging.warning("pdftotext not found, defaulting to pdfminer.")
+        #logging.warning("pdftotext not found, defaulting to pdfminer.")
         return convert_miner(fname, pages=pages)
 
 
