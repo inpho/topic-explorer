@@ -67,7 +67,7 @@ def main():
     args = parser.parse_args()
 
     if args.func == 'version':
-        from topicexplorer.__version__ import __pretty_version__
+        from topicexplorer.version import __pretty_version__
         print __pretty_version__,
 
     elif args.func == 'init':
