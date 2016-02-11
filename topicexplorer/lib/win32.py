@@ -27,7 +27,7 @@ else:
     numpy_libifcoremd = os.path.join(basepath, 'Library/bin', 'libifcoremd.dll')
 
     ctypes.CDLL(numpy_libmmd)
-    ctypes.CDLL(numpy_libifcoremd.dll)
+    ctypes.CDLL(numpy_libifcoremd)
     
 
 # Now set our handler for CTRL_C_EVENT. Other control event 
