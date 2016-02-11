@@ -9,13 +9,26 @@ import imp
 import ctypes
 import thread
 import win32api
+import sys
 
 # Load the DLL manually to ensure its handler gets
 # set before our handler.
-import numpy
 basepath = imp.find_module('numpy')[1]
-ctypes.CDLL(os.path.join(basepath, 'core', 'libmmd.dll'))
-ctypes.CDLL(os.path.join(basepath, 'core', 'libifcoremd.dll'))
+numpy_libmmd = os.path.join(basepath, 'core', 'libmmd.dll')
+numpy_libifcoremd = os.path.join(basepath, 'core', 'libifcoremd.dll')
+if os.path.exists(numpy_libmmd) and os.path.exists(numpy_libifcoremd):
+    ctypes.CDLL(numpy_libmmd)
+    ctypes.CDLL(numpy_libifcoremd.dll)
+else:
+    import sys
+    basepath = os.path.dirname(sys.executable)
+
+    numpy_libmmd = os.path.join(basepath, 'Library/bin', 'libmmd.dll')
+    numpy_libifcoremd = os.path.join(basepath, 'Library/bin', 'libifcoremd.dll')
+
+    ctypes.CDLL(numpy_libmmd)
+    ctypes.CDLL(numpy_libifcoremd.dll)
+    
 
 # Now set our handler for CTRL_C_EVENT. Other control event 
 # types will chain to the next handler.
