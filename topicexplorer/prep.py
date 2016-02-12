@@ -76,6 +76,7 @@ def get_candidate_words(c, n_filter, sort=True, words=None):
         filter = items[counts <= -n_filter]
         if sort:
             filter = filter[counts[counts <= -n_filter].argsort()[::-1]]
+
     mask = get_mask(c, words, filter=filter)
     return c.words[mask]
 
@@ -83,8 +84,7 @@ def get_mask(c, words=None, filter=None):
     import numpy as np
     if filter is None:
         mask = np.ones(len(c.words), dtype=bool) # all elements included/True.
-
-    if filter is not None:
+    else:
         mask = np.zeros(len(c.words), dtype=bool) # all elements excluded/False.
         mask[filter] = True
 
@@ -101,29 +101,37 @@ def get_small_words(c, min_len):
 def get_special_chars(c):
     return [word for word in c.words if re.findall('[^A-Za-z\-\']', word)]
 
-
 def get_high_filter(args, c, words=None):
     import numpy as np
-    print "\n\n*** FILTER HIGH FREQUENCY WORDS ***"
-    print "This will remove all words occurring more than N times."
-    print "The histogram below shows how many words will be removed"
-    print "by selecting each maximum frequency threshold.\n"
+    header = "FILTER HIGH FREQUENCY WORDS" 
+    stars = (80 - len(header) - 2) / 2
+    print "\n\n{0} {1} {0}".format('*'*stars, header)
+    print "    This will remove all words occurring more than N times."
+    print "    The histogram below shows how many words will be removed"
+    print "    by selecting each maximum frequency threshold.\n"
     items, counts = get_items_counts(c.corpus)
     items = items[get_mask(c, words)] 
     counts = counts[get_mask(c, words)] 
     high_filter = False
+    bins = 1. - np.array([0., 0.025, 0.05, 0.075, 0.1, 0.15,0.20,0.25,0.3, 0.35, 0.4, 0.5, 1.0])
+
+    thresh = np.cumsum(counts[counts.argsort()]) / float(counts.sum())
+    bins = [counts[counts.argsort()][np.searchsorted(thresh, bin)] for bin in bins]
+    bins = sorted(bins)
+
     while not high_filter:
-        bin_counts, bins = np.histogram(counts[counts.argsort()[::-1]], range=(0,len(c.words)/4.))
-	print "{0:>12s}     {1}".format("# Occurences", "# Words")
-       
+        bin_counts, bins = np.histogram(counts, bins=bins)
+	print "{0:>8s} {1:>8s} {2:<36s} {3:>14s} {4:>8s}".format("Rate", 'Top', '% of corpus', "# words", "Rate")
 	for bin, count in zip(bins[-2::-1], np.cumsum(bin_counts[::-1])):
             if count:
-                print "> {0:>5.0f}x".format(bin).rjust(12) + ' ',
-                print u'\u2588' * ((np.log(count) / np.log(len(c.words))) * 34),
-                #print u'*' * ((np.log2(count) / np.log2(len(c.words))) * 44),
-                print "  {0:0.0f} words".format(count)
+                percentage = 1.- (counts[counts < bin].sum() / float(counts.sum()))
+                print "{0:>5.0f}x".format(bin-1).rjust(8),
+                print '{0:2.1f}%'.format(percentage *100).rjust(8),
+                print (u'\u2588' * (percentage * 36)).ljust(36),
+                print "  {0:0.0f} words".format(count).rjust(14),
+                print "> {0:>5.0f}x".format(bin-1).ljust(8)
 
-	print get_mask(c, words).sum(), "total words; ", counts.sum(), "total occurrences"
+	print ' ' * 17, "{} total occurrences".format(counts.sum()).ljust(36), '{} words total'.format(get_mask(c, words).sum()).rjust(20)
         print ''
 
 
@@ -134,7 +142,7 @@ def get_high_filter(args, c, words=None):
                 if high_filter:
                     input_filter = high_filter
                 else:
-                    input_filter = int(raw_input("Enter the maximum word occurence rate: "))
+                    input_filter = int(raw_input("Enter the maximum rate: ").replace('x',''))
                 candidates = get_candidate_words(c, input_filter, words=words)
                 
                 print "Filter will remove", counts[counts > input_filter].sum(), "occurrences", "of these", len(counts[counts > input_filter]), "words:"
@@ -161,34 +169,42 @@ def get_high_filter(args, c, words=None):
                         
             except ValueError:
                 input_filter = 0 
-
     return (high_filter, candidates)
 
 def get_low_filter(args, c, words=None):
     import numpy as np
-    print "\n\n*** FILTER LOW FREQUENCY WORDS ***"
-    print "This will remove all words occurring less than N times."
-    print "The histogram below shows how many words will be removed"
-    print "by selecting each minimum frequency threshold.\n"
+    header = "FILTER LOW FREQUENCY WORDS" 
+    stars = (80 - len(header) - 2) / 2
+    print "\n\n{0} {1} {0}".format('*'*stars, header)
+    print "    This will remove all words occurring less than N times."
+    print "    The histogram below shows how many words will be removed"
+    print "    by selecting each minimum frequency threshold.\n"
     items, counts = get_items_counts(c.corpus)
     items = items[get_mask(c, words)] 
     counts = counts[get_mask(c, words)] 
+   
+    bins = np.linspace(0, 1.0, 11)
+    bins = 1. - np.array([0., 0.025, 0.05, 0.075, 0.1, 0.15,0.20,0.25,0.3, 0.35, 0.4, 0.5, 1.0])
+
+    thresh = np.cumsum(counts[counts.argsort()[::-1]]) / float(counts.sum())
+    bins = [counts[counts.argsort()[::-1]][np.searchsorted(thresh, bin)] for bin in bins]
+    bins = sorted(bins)
 
     low_filter = False
     while low_filter is False:
-        bin_counts, bins = np.histogram(counts[counts.argsort()[::-1]],
-            range=(0,len(c.words)/(max(10*(np.log(len(c.words))-2), 10))))
+        bin_counts, bins = np.histogram(counts[counts.argsort()[::-1]], bins=bins)
 	#print "{0:>10s} {1:>10s}".format("# Tokens", "# Words")
-	print "{0:>12s}     {1}".format("# Occurences", "# Words")
-       
+	print "{0:>8s} {1:>8s} {2:<36s} {3:>14s} {4:>8s}".format("Rate", 'Bottom', '% of corpus', "# words", "Rate")
 	for bin, count in zip(bins[1:], np.cumsum(bin_counts)):
             if count:
-                print "<= {0:>5.0f}x".format(bin).rjust(12) + ' ',
-                print u'\u2588' * ((np.log(count) / np.log(len(c.words))) * 34),
-                #print u'*' * ((np.log2(count) / np.log2(len(c.words))) * 44),
-                print "  {0:0.0f} words".format(count)
+                percentage = (counts[counts <= bin].sum() / float(counts.sum()))
+                print "{0:>5.0f}x".format(bin-1).rjust(8),
+                print '{0:2.1f}%'.format(percentage *100).rjust(8),
+                print (u'\u2588' * (percentage * 36)).ljust(36),
+                print "  {0:0.0f} words".format(count).rjust(14),
+                print "<= {0:>5.0f}x".format(bin-1).ljust(8)
 
-	print get_mask(c, words).sum(), "total words; ", counts.sum(), "total occurrences"
+	print ' ' * 17, "{} total occurrences".format(counts.sum()).ljust(36), '{} words total'.format(get_mask(c, words).sum()).rjust(20)
         print ''
     
         input_filter = 0
@@ -198,7 +214,7 @@ def get_low_filter(args, c, words=None):
                 if low_filter:
                     input_filter = low_filter
                 else:
-                    input_filter = int(raw_input("Enter the minimum word occurrence rate: "))
+                    input_filter = int(raw_input("Enter the minimum rate: ").replace('x','')) + 1
                 candidates = get_candidate_words(c, -input_filter)
     
                 print "Filter will remove", counts[counts <= input_filter].sum(), "tokens",
@@ -224,7 +240,7 @@ def get_low_filter(args, c, words=None):
                         elif accept == 'y':
                             low_filter = input_filter
                         elif accept == 'n':
-                            low_filter = 0
+                            low_filter = False 
                         
             except ValueError:
                 input_filter = 0 
