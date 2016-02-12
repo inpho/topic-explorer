@@ -216,7 +216,7 @@ def get_low_filter(args, c, words=None):
                     input_filter = low_filter
                 else:
                     input_filter = int(raw_input("Enter the minimum rate: ").replace('x',''))
-                candidates = get_candidate_words(c, -input_filter)
+                candidates = get_candidate_words(c, -input_filter, words=words)
     
                 print "Filter will remove", counts[counts <= input_filter].sum(), "tokens",
                 print "of these", len(counts[counts <= input_filter]), "words:"
@@ -277,49 +277,59 @@ def main(args):
 
     # Apply custom stopwords file
     if args.stopword_file:
-        print "Applying custom stopword file"
         with open(args.stopword_file, encoding='utf8') as swf:
             candidates = [unidecode(word.strip()) for word in swf]
             if len(candidates):
+                print "Applying custom stopword file to remove {} word{}.".format(len(candidates),
+                's' if len(candidates) > 1 else '')
                 stoplist.update(candidates)
 
     if args.min_word_len:
-        print "filtering small words"
         candidates = get_small_words(c, args.min_word_len)
         if len(candidates):
+            print "Filtering {} small word{} with less than {} characters.".format(len(candidates),
+                's' if len(candidates) > 1 else '', args.min_word_len)
             stoplist.update(candidates)
     
     if not args.special_chars:
-        print "filtering words with special chars"
         candidates = get_special_chars(c)
         if len(candidates):
+            print "Filtering {} word{} with special characters.".format(len(candidates),
+                's' if len(candidates) > 1 else '')
             stoplist.update(candidates)
    
-    print "adding high frequency filter" 
     if not args.high_filter:
         high_filter, candidates = get_high_filter(args, c, words=stoplist)
         if len(candidates):
+            print "Filtering {} high frequency word{}.".format(len(candidates),
+                's' if len(candidates) > 1 else '')
             stoplist.update(candidates)
     else:
         high_filter = args.high_filter
         candidates = get_candidate_words(c,args.high_filter, sort=False)
         if len(candidates):
+            print "Filtering {} high frequency word{}.".format(len(candidates),
+                's' if len(candidates) > 1 else '')
             stoplist.update(candidates)
 
-    print "adding low frequency filter" 
     if not args.low_filter:
         low_filter, candidates = get_low_filter(args, c, words=stoplist)
         if len(candidates):
+            print "Filtering {} low frequency word{}.".format(len(candidates),
+                's' if len(candidates) > 1 else '')
             stoplist.update(candidates)
     else:
         low_filter = args.low_filter
         candidates  = get_candidate_words(c, -1*args.low_filter, sort=False)
         if len(candidates):
+            print "Filtering {} low frequency words.".format(len(candidates))
             stoplist.update(candidates)
 
     if stoplist:
-        print "applying {} stopwords".format(len(stoplist))
+        print "\n\nApplying {} stopword{}".format(len(stoplist),
+                's' if len(candidates) > 1 else '')
         c.in_place_stoplist(stoplist)
+        print "\n"
 
     def name_corpus(dirname, languages, lowfreq=None, highfreq=None):
         items, counts = get_items_counts(c.corpus)
