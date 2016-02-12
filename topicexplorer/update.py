@@ -27,8 +27,8 @@ def get_dist(dist_name):
 
 
 def update():
-    from distutils.version import StrictVersion
     from pip.utils import (get_installed_version, dist_is_editable, dist_location)
+
     import platform
     import subprocess
     from subprocess import CalledProcessError
@@ -94,14 +94,15 @@ def update():
             commits_ahead =list(repo.iter_commits(
                 'origin/{BRANCH}..{BRANCH}'.format(BRANCH=branch.name)))
             if commits_behind:
-                print "Your branch is {} commits behind GitHub. Pulling changes.".format(len(commits_behind))
-                repo.remotes.origin.pull()
-
+                print "Your branch is {} commits behind GitHub.".format(len(commits_behind)) 
                 if platform.system() == 'Windows':
                     import sys
                     if sys.argv[0] != __file__:
-                        print "Update available. Use the `python -m topicexplorer.update` command to update."
+                        print "Use the `python -m topicexplorer.update` command to update."
                         return
+
+                print "Pulling changes."
+                repo.remotes.origin.pull()
                 # reinstall, just in case dependencies or version have updated
                 try:
                     subprocess.check_call('python setup.py develop',
@@ -122,6 +123,8 @@ def update():
     else:
         # TODO: Check if pre-release, if so, then continue beta updates. 
         # If not, then wait for stable release. Allow for override flag.
+        from pip._vendor.packaging.version import parse as parse_version
+
         installed_version = parse_version(get_installed_version('topicexplorer'))
         pypi_version = parse_version(pypi_versions('topicexplorer')[-1])
         update_available = pypi_version > installed_version
