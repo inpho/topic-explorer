@@ -117,7 +117,8 @@ def get_high_filter(args, c, words=None):
 
     thresh = np.cumsum(counts[counts.argsort()]) / float(counts.sum())
     bins = [counts[counts.argsort()][np.searchsorted(thresh, bin)] for bin in bins]
-    bins = sorted(bins)
+    bins = sorted(set(bins))
+    bins.append(max(counts))
 
     while not high_filter:
         bin_counts, bins = np.histogram(counts, bins=bins)
@@ -188,7 +189,7 @@ def get_low_filter(args, c, words=None):
 
     thresh = np.cumsum(counts[counts.argsort()[::-1]]) / float(counts.sum())
     bins = [counts[counts.argsort()[::-1]][np.searchsorted(thresh, bin)] for bin in bins]
-    bins = sorted(bins)
+    bins = sorted(set(bins))
 
     low_filter = False
     while low_filter is False:
@@ -214,7 +215,7 @@ def get_low_filter(args, c, words=None):
                 if low_filter:
                     input_filter = low_filter
                 else:
-                    input_filter = int(raw_input("Enter the minimum rate: ").replace('x','')) + 1
+                    input_filter = int(raw_input("Enter the minimum rate: ").replace('x',''))
                 candidates = get_candidate_words(c, -input_filter)
     
                 print "Filter will remove", counts[counts <= input_filter].sum(), "tokens",
