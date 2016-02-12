@@ -6,6 +6,7 @@ from chardet.universaldetector import UniversalDetector
 import langdetect
 from progressbar import ProgressBar, Percentage, Bar
 import topicexplorer.lib.util as util
+import mmseg.search
 
 def detect_encoding(filename):
     """
@@ -34,7 +35,9 @@ def convert(fname, pages=None):
     lang = langdetect.detect(data)
     if lang.startswith('zh'):
         # add space before each non-ascii character
-        data = u''.join(ltr if ord(ltr) < 128 else u' ' + ltr for ltr in data)
+        #data = u' '.join(list(mmseg.search.seg_txt_search(data)))
+        data = u''.join(ltr if ord(ltr) < 128 
+                            else u' ' + ltr + u' ' for ltr in data)
     return data
 
 
