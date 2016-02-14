@@ -145,6 +145,10 @@ def get_high_filter(args, c, words=None):
                 else:
                     input_filter = int(raw_input("Enter the maximum rate: ").replace('x',''))
                 candidates = get_candidate_words(c, input_filter, words=words)
+                places = np.in1d(c.words[get_mask(c, words)], candidates)
+                places = dict(zip(candidates, np.where(places)[0]))
+                candidates = sorted(candidates, key=lambda x: counts[places[x]], reverse=True)
+                
                 
                 print "Filter will remove", counts[counts > input_filter].sum(), "occurrences", "of these", len(counts[counts > input_filter]), "words:"
                 print ' '.join(candidates)
@@ -216,7 +220,11 @@ def get_low_filter(args, c, words=None):
                     input_filter = low_filter
                 else:
                     input_filter = int(raw_input("Enter the minimum rate: ").replace('x',''))
+
                 candidates = get_candidate_words(c, -input_filter, words=words)
+                places = np.in1d(c.words[get_mask(c, words)], candidates)
+                places = dict(zip(candidates, np.where(places)[0]))
+                candidates = sorted(candidates, key=lambda x: counts[places[x]])
     
                 print "Filter will remove", counts[counts <= input_filter].sum(), "tokens",
                 print "of these", len(counts[counts <= input_filter]), "words:"
