@@ -53,6 +53,7 @@
     this.status = (typeof data.status === 'undefined') ? false : data.status;
     this.submit = (typeof data.submit === 'undefined') ? false : data.submit;
     this.cancel = (typeof data.cancel === 'undefined') ? false : data.cancel;
+    this.close = (typeof data.close === 'undefined') ? false : data.close;
 
     var html = '<div class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true">';
     if (this.title || this.cancel){
@@ -246,7 +247,10 @@ fulltext.popover = function(elt) {
 "title": doclabel,
 "body":  $('<div/>').text(data).html().replaceAll('\n','<br />'),
 "status" : docid,
-"submit": 'Close'
+"submit": 'Close',
+"cancel" : true,
+"close" : true
+
 });
     mymodal.show()
     });
