@@ -5,7 +5,7 @@ import re
 
 from codecs import open 
 from unidecode import unidecode
-from topicexplorer.lib.util import isint, is_valid_filepath
+from topicexplorer.lib.util import isint, is_valid_configfile
 
 # NLTK Langauges
 langs = dict(da='danish', nl='dutch', en='english', fi='finnish', fr='french',
@@ -377,7 +377,7 @@ def populate_parser(parser):
                           for k,v in sorted(langs.items(), 
                               key=lambda x: x[1])]))
     parser.add_argument("config_file", help="Path to Config",
-        type=lambda x: is_valid_filepath(parser, x))
+        type=lambda x: is_valid_configfile(parser, x))
     parser.add_argument("--htrc", action="store_true")
     parser.add_argument("--stopword-file", dest="stopword_file",
         help="File with custom stopwords")

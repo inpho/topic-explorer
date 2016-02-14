@@ -12,6 +12,27 @@ def is_valid_filepath(parser, arg):
     else:
         return arg
 
+def is_valid_configfile(parser, arg):
+    if os.path.exists(arg) and arg.endswith('.ini'):
+        from ConfigParser import RawConfigParser as ConfigParser
+        config = ConfigParser()
+        try:
+            if config.read(arg):
+                return arg
+        except:
+            parser.error("Invalid config file {0}".format(arg))
+
+    elif not os.path.exists(arg):
+        parser.error("The file %s does not exist!" % arg)
+    else:
+        if os.path.isdir(arg):
+            parser.error(("The file {0} is a directory, but {0}.ini exists.\n" +
+            "Rerun command with {0}.ini").format(arg))
+        else:
+            parser.error(("The file {0} is a file, but {0}.ini exists.\n" +
+            "Rerun command with {0}.ini").format(arg))
+
+
 def listdir_nohidden(path):
     for f in os.listdir(path):
         if not f.startswith('.'):

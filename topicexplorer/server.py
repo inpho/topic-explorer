@@ -15,7 +15,7 @@ from urllib import unquote_plus as _unquote_plus
 
 from bottle import request, response, route, run, static_file
 from topicexplorer.lib.ssl import SSLWSGIRefServer
-from topicexplorer.lib.util import int_prompt, bool_prompt, is_valid_filepath
+from topicexplorer.lib.util import int_prompt, bool_prompt, is_valid_filepath, is_valid_configfile
 
 import random
 import pystache
@@ -440,7 +440,7 @@ def main(args):
         run(host=host, port=port)
 
 def populate_parser(parser):
-    parser.add_argument('config', type=lambda x: is_valid_filepath(parser, x),
+    parser.add_argument('config', type=lambda x: is_valid_configfile(parser, x),
         help="Configuration file path")
     parser.add_argument('-k', type=int, required=True,
         help="Number of Topics")
@@ -462,12 +462,6 @@ def populate_parser(parser):
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
-
-    def is_valid_filepath(parser, arg):
-        if not os.path.exists(arg):
-            parser.error("The file %s does not exist!" % arg)
-        else:
-            return arg
     
     # argument parsing
     parser = ArgumentParser()

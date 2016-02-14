@@ -10,7 +10,7 @@ import sys
 import time
 from string import Template
 
-from topicexplorer.lib.util import overwrite_prompt, is_valid_filepath 
+from topicexplorer.lib.util import overwrite_prompt, is_valid_configfile 
 
 def main(args):
     args.config_file = os.path.abspath(args.config_file)
@@ -84,7 +84,7 @@ def main(args):
 
 def populate_parser(parser):
     parser.add_argument("config_file", help="Path to Config File",
-        type=lambda x: is_valid_filepath(parser, x))
+        type=lambda x: is_valid_configfile(parser, x))
     parser.add_argument('--no-launch', dest='launch', action='store_false')
 
 if __name__ == '__main__':

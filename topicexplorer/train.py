@@ -4,7 +4,7 @@ from ConfigParser import NoOptionError
 import multiprocessing
 import os.path
 
-from topicexplorer.lib.util import bool_prompt, int_prompt, is_valid_filepath
+from topicexplorer.lib.util import bool_prompt, int_prompt, is_valid_configfile
 
 def build_models(corpus, corpus_filename, model_path, context_type, krange, 
                  n_iterations=200, n_proc=1, seed=None, dry_run=False):
@@ -180,7 +180,7 @@ def main(args):
 
 def populate_parser(parser):
     parser.add_argument("config_file", help="Path to Config",
-        type=lambda x: is_valid_filepath(parser, x))
+        type=lambda x: is_valid_configfile(parser, x))
     parser.add_argument("--context-type", dest='context_type',
         help="Level of corpus modeling, prompts if not set")
     parser.add_argument("-p", "--processes", default=1, type=int,

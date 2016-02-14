@@ -8,7 +8,7 @@ import time
 import urllib
 import webbrowser
 
-from topicexplorer.lib.util import int_prompt, bool_prompt, is_valid_filepath
+from topicexplorer.lib.util import int_prompt, bool_prompt, is_valid_configfile
 
 def main(args):
     # CONFIGURATION PARSING
@@ -160,18 +160,11 @@ def main(args):
 
 def populate_parser(parser):
     parser.add_argument('config_file', help="Configuration file path",
-        type=lambda x: is_valid_filepath(parser, x))
+        type=lambda x: is_valid_configfile(parser, x))
     parser.add_argument('--no-browser', dest='browser', action='store_false')
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
-
-    # ARGUMENT PARSING
-    def is_valid_filepath(parser, arg):
-        if not os.path.exists(arg):
-            parser.error("The file %s does not exist!" % arg)
-        else:
-            return arg
     
     parser = ArgumentParser()
     populate_parser(parser)
