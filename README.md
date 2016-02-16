@@ -10,16 +10,16 @@ The color bands within each article's row show the topic distribution within tha
 Display options include topic normalization, alphabetical sort and topic sort. By normalizing topics, the combined width of each bar expands so that topic weights per document can be compared. By clicking a topic, the documents will reorder acoording to that topic's weight and topic bars will reorder according to the topic weights in the highest weighted document. When a topic is selected, clicking "Top Documents for [Topic]" will take you to a new page showing the most similar documents to that topic's word distribution. The original sort order can be restored with the "Reset Topic Sort" button.
 
 ## Installation
-There are two types of install: Default and Developer. 
+There are two types of install: Default and Developer.
 
 ### Default Install
-1.  Install the [Anaconda Python 2.7 Distribution](http://continuum.io/downloads). 
+1.  Install the [Anaconda Python 2.7 Distribution](http://continuum.io/downloads).
 2.  Open a terminal and run `pip install --pre topicexplorer`.
 3.  Test installation by typing `vsm -h` to print usage instructions.
 
 ### Developer Install
 1.  [Set up Git](https://help.github.com/articles/set-up-git/)
-2.  Install the [Anaconda Python 2.7 Distribution](http://continuum.io/downloads). 
+2.  Install the [Anaconda Python 2.7 Distribution](http://continuum.io/downloads).
 3.  Open a terminal and run `pip install --src . -e git+https://github.com/inpho/topic-explorer#egg=topicexplorer`
 4.  Test installation by typing `vsm -h` to print usage instructions.
 
@@ -55,24 +55,35 @@ Please report issues on the [issue tracker](http://github.com/inpho/topic-explor
 
 In your report, please include the error message, the command you ran, your operating system, and the output of the command `vsm --version`. This will ensure that we can quickly diagnose your issue.
 
-**Note:** When using a developer install `vsm --version` will print in the following format: `1.0b39-1-g7c834bf-dirty`. 
+**Note:** When using a developer install `vsm --version` will print in the following format: `1.0b39-1-g7c834bf-dirty`.
 * The first part is the most recent release tag. (`1.0b39`)
 * The second part is the number of commits since the tag. (`1`)
 * The next is the hash of the most recent commit. (`g7c834bf`)
 * The optional `-dirty` flag indicates that the local repository has uncommitted changes.
 
 ## Alternate Installs
-We highly recommend using the Anaconda Python 2.7 Distribution. Straightforward instructions are provided for Anaconda for both end users and developers. If you want to roll your own install, some notes on dependencies are included below.
+We highly recommend using the Anaconda Python 2.7 Distribution. Straightforward instructions are provided above for Anaconda Python 2.7 for both end users and developers. Both of these installs are officially supported.
 
- - **Anaconda**
-   1.  If using Miniconda, the necessary packages are: `conda install numpy scipy nltk matplotplib ipython networkx`
+Below we offer guidance for installing side-by-side with an Anaconda Python 3.5 install or for installing it without Anaconda, with notes on dependencies.
 
- - **Debian/Ubuntu** (non-Anaconda) 
-   1.  `sudo apt-get-install build-essential python-dev python-pip python-numpy python-matplotlib python-scipy python-ipython` 
-   
+### Python 3 Install
+The InPhO Topic Explorer is **only** compatible with Python 2.7. However, Anaconda for Python 3.5 makes it easy to set up a side-by-side install of Python 2.7 so you can use both Python 3.5 and Python 2.7.
+1. Install the [Anaconda Python 3.5 Distribution](http://continuum.io/downloads).
+2. Open a terminal and run `conda create -n py27 python=2.7 anaconda`. This will create a Python 2.7 Anaconda environment.
+3. Run `source activate py27` to activate the Python 2.7 bindings. You should see `(py27)` before your prompt.
+4. Use either the Default or Developer [install instructions](#installation), skipping the step to install Anaconda Python 2.7.
+5. Run `source deactivate` to deactivate Python 2.7 bindings and reactivate Python 3.5 bindings. Note that the `vsm` command will only work when the Python 2.7 bindings are activated.
+
+### Non-Anaconda Install
+ - **Miniconda**
+   1.  If using Miniconda (a small version of Anaconda), the necessary packages are: `conda install numpy scipy nltk matplotplib ipython networkx`
+
+ - **Debian/Ubuntu**
+   1.  `sudo apt-get-install build-essential python-dev python-pip python-numpy python-matplotlib python-scipy python-ipython`
+
    2.  [IPython Notebooks](http://ipython.org/install.html)
 
- - **Windows** 
+ - **Windows**
    1.  Install [Microsoft Visual C++ Compiler for Python 2.7](http://www.microsoft.com/en-us/download/details.aspx?id=44266)
 
    2.  Install the Python packages below:
@@ -101,4 +112,3 @@ The InPhO Topic Explorer is maintained by [Jaimie Murdock](http://jamram.net/):
 Please report issues on the [issue tracker](http://github.com/inpho/topic-explorer/issues) or contact Jaimie directly.
 
 We are open to collaboration! If there's a feature you'd like to see implemented, please contact us and we can lend advice and technical assistance.
-
