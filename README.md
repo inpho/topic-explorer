@@ -68,6 +68,7 @@ Below we offer guidance for installing side-by-side with an Anaconda Python 3.5 
 
 ### Python 3 Install
 The InPhO Topic Explorer is **only** compatible with Python 2.7. However, Anaconda for Python 3.5 makes it easy to set up a side-by-side install of Python 2.7 so you can use both Python 3.5 and Python 2.7.
+
 1.  Install the [Anaconda Python 3.5 Distribution](http://continuum.io/downloads).
 2.  Open a terminal and run `conda create -n py27 python=2.7 anaconda`. This will create a Python 2.7 Anaconda environment.
 3.  Run `source activate py27` to activate the Python 2.7 bindings. You should see `(py27)` before your prompt.
