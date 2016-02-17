@@ -57,7 +57,7 @@ def download_and_extract():
 
 
 
-def main():
+def main(args=None):
     download_and_extract()
     subprocess.check_call('vsm init ap --name "Associated Press 88-90 sample"', shell=True)
     # TODO: Catch RuntimeWarning event on Windows
