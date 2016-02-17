@@ -57,7 +57,8 @@ install_requires = [
         'pyenchant',
         'networkx>=1.9.1',
         'pip>=7.1.1',
-        'langdetect'
+        'langdetect',
+        'profilehooks'
         ]
 
 if platform.system() == 'Windows':
