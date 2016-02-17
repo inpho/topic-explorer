@@ -8,9 +8,27 @@ from topicexplorer import (init, prep, train, server, launch, notebook, demo,
     update, langspace)
 from topicexplorer.lib.util import is_valid_filepath
 
+class ArgumentParserError(Exception): pass
+
+class ThrowingArgumentParser(argparse.ArgumentParser):
+    def error(self, message):
+        raise ArgumentParserError(message)
+
 def main():
-    parser = ArgumentParser()
-    parsers = parser.add_subparsers(help="select a command")
+    parser = ThrowingArgumentParser()
+    benchmark_group = parser.add_mutually_exclusive_group()
+    benchmark_group.add_argument('-t', '--time', help="Print execution time",
+        action='store_true')
+    benchmark_group.add_argument('-p', '--profile', help="""Profile the command.
+    Optional filename saves results for use with snakeviz, pstats, or
+    cprofilev. Automatically launches snakeviz, if installed.""",
+        nargs='?', metavar='STATS_FILE')
+
+    # Using add_subparsers(metavar) until argparse.SUPPRESS support is fixed.
+    # See issue http://bugs.python.org/issue22848
+    parsers = parser.add_subparsers(help="select a command",
+        parser_class=ArgumentParser,
+        metavar='{version,demo,update,init,prep,train,launch,notebook}')
     version_parser = parsers.add_parser('version', help="Print the version and exit")
     version_parser.set_defaults(func='version')
 
@@ -63,15 +81,65 @@ def main():
         help="Add spaces before unicode chars")
     langspace.populate_parser(parser_langspace)
     parser_langspace.set_defaults(func="langspace")
-    
-    args = parser.parse_args()
+
+    # fancy arg validation for manually injecting tempfile to profile arg 
+    try:
+        try: 
+            args = parser.parse_args()
+        except ArgumentParserError as e:
+            import sys
+            new_args = sys.argv[1:]
+            try:
+                # If the error was thrown by the '-p' argument not having a
+                # valid file, fix by manually injecting a nargs break
+                profile = new_args.index('-p')
+
+                if (len(new_args) > (profile + 1) and
+                    new_args[profile + 1] in parsers.choices.keys()):
+                    new_args.insert(profile + 1, '-')
+                    args = parser.parse_args(new_args)
+                else:
+                    raise e
+            except ValueError:
+                raise e
+    except ArgumentParserError as e:
+        import sys
+        # Check to see if error occurs with a subparser and cause the exception
+        # to arise from the subparser instead
+        for p in parsers.choices.keys():
+            if p in sys.argv[1:]:
+                subargs_idx = sys.argv.index(p) + 1
+                subargs = sys.argv[subargs_idx:]
+                subparser = locals()['parser_' + p]
+                # this might cause an error in the subparser, in which case
+                # we actually want to show that error first
+                args = subparser.parse_args(subargs)
+        
+        # Use the default error mechanism for the master parser.
+        # If the code gets here, it means the error was not in a subparser
+        ArgumentParser.error(parser, e.message)
+
+    if args.profile:
+        if args.profile == '-':
+            import tempfile
+            temphandle, args.profile = tempfile.mkstemp(suffix='.prof', prefix='vsm.')
+            print args.profile
+
+        from profilehooks import profile
+        benchmark = lambda fn: profile(fn, filename=args.profile, stdout=None)
+
+    elif args.time:
+        from profilehooks import timecall
+        benchmark = lambda fn: timecall(fn, immediate=False)
+    else:
+        benchmark = lambda fn: fn
 
     if args.func == 'version':
         from topicexplorer.version import __pretty_version__
         print __pretty_version__,
 
     elif args.func == 'init':
-        args.config_file = init.main(args)
+        args.config_file = benchmark(init.main)(args)
         
         print "\nTIP: Only initalizing corpus object and config file."
         print "     Next prepare the corpus using:"
@@ -80,13 +148,13 @@ def main():
         print "         vsm train", args.config_file
 
     elif args.func == 'prep':
-        prep.main(args)
+        benchmark(prep.main)(args)
         
         print "\nTIP: Train the LDA models with:"
         print "         vsm train", args.config_file
 
     elif args.func == 'train':
-        train.main(args)
+        benchmark(train.main)(args)
 
         if not args.dry_run:
             print "\nTIP: launch the topic explorer with:"
@@ -95,21 +163,30 @@ def main():
             print "         vsm notebook", args.config_file
 
     elif args.func == 'launch':
-        launch.main(args)
+        benchmark(launch.main)(args)
 
     elif args.func == 'serve':
-        server.main(args)
+        benchmark(server.main)(args)
 
     elif args.func == 'notebook':
-        notebook.main(args)
+        benchmark(notebook.main)(args)
 
     elif args.func == 'demo':
-        demo.main()
+        benchmark(demo.main)(args)
 
     elif args.func == 'update':
-        update.main()
+        benchmark(update.main)(args)
+
     elif args.func == 'langspace':
-        langspace.main(args)
+        benchmark(langspace.main)(args)
+
+    if args.profile:
+        try:
+            import snakeviz.cli
+            snakeviz.cli.main([args.profile])
+        except ImportError:
+            print """\nSnakeviz is not installed. Install with `pip install snakeviz`, 
+            then run `snakeviz {}`.""".format(args.profile)
 
 if __name__ == '__main__':
     main()
