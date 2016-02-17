@@ -126,7 +126,7 @@ def main():
             print args.profile
 
         from profilehooks import profile
-        benchmark = lambda fn: profile(fn, filename=args.profile, stdout=None)
+        benchmark = lambda fn: profile(fn, immediate=True, filename=args.profile, stdout=None)
 
     elif args.time:
         from profilehooks import timecall
@@ -183,6 +183,7 @@ def main():
     if args.profile:
         try:
             import snakeviz.cli
+            print "\n\n"
             snakeviz.cli.main([args.profile])
         except ImportError:
             print """\nSnakeviz is not installed. Install with `pip install snakeviz`, 
