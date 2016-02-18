@@ -18,7 +18,7 @@ numpy_libmmd = os.path.join(basepath, 'core', 'libmmd.dll')
 numpy_libifcoremd = os.path.join(basepath, 'core', 'libifcoremd.dll')
 if os.path.exists(numpy_libmmd) and os.path.exists(numpy_libifcoremd):
     ctypes.CDLL(numpy_libmmd)
-    ctypes.CDLL(numpy_libifcoremd.dll)
+    ctypes.CDLL(numpy_libifcoremd)
 else:
     import sys
     basepath = os.path.dirname(sys.executable)

@@ -3,7 +3,6 @@ import os
 import os.path
 
 from chardet.universaldetector import UniversalDetector
-import langdetect
 from progressbar import ProgressBar, Percentage, Bar
 import topicexplorer.lib.util as util
 
@@ -28,6 +27,7 @@ def detect_encoding(filename):
     return detector.result['encoding']
 
 def convert(fname, pages=None):
+    import langdetect
     encoding = detect_encoding(fname)
     with open(fname, encoding=encoding) as infile:
         data = infile.read()
