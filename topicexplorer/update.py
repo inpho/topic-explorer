@@ -148,7 +148,7 @@ def update(args=None):
             print "You have the most recent release. No updates available.\n"
 
 def main(args=None):
-    update()
+    update(args)
 
 if __name__ == '__main__':
     main()
