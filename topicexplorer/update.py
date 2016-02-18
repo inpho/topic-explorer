@@ -26,7 +26,7 @@ def get_dist(dist_name):
     return working_set.find(req)
 
 
-def update():
+def update(args=None):
     from pip.utils import (get_installed_version, dist_is_editable, dist_location)
 
     import platform
@@ -147,7 +147,7 @@ def update():
         else:
             print "You have the most recent release. No updates available.\n"
 
-def main():
+def main(args=None):
     update()
 
 if __name__ == '__main__':
