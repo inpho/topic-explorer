@@ -7,6 +7,7 @@ from pdfminer.pdfpage import PDFPage
 from pdfminer.pdftypes import PDFException
 from pdfminer.psparser import PSException
 
+import os
 import os.path
 from glob import glob
 from codecs import open
@@ -18,13 +19,12 @@ from progressbar import ProgressBar, Percentage, Bar
 import os 
 import platform
 import subprocess
-import logging
 
 
 def convert(fname, pages=None):
     cmd = "where" if platform.system() == "Windows" else "which"
     try: 
-        cmd = subprocess.check_output([cmd, 'pdftotext']).strip()
+        cmd = subprocess.check_output([cmd, 'pdftotext'], stderr=os.devnull).strip()
         return subprocess.check_output([cmd, fname, '-'])
     except: 
         #logging.warning("pdftotext not found, defaulting to pdfminer.")
