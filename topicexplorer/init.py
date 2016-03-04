@@ -181,11 +181,13 @@ def write_config(args, config_file=None):
     config.add_section("main")
     config.set("main", "path", os.path.abspath(args.model_path))
     config.set("main", "corpus_file", os.path.abspath(args.corpus_filename))
+    config.set("main", "raw_corpus", os.path.abspath(args.corpus_path))
     
     config.add_section("www")
     config.set("www", "corpus_name", args.corpus_print_name)
     config.set("www", "icons", "link")
-    
+    config.set("www", "fulltext", "false")
+
     config.add_section("logging")
     config.set("logging","path","logs/%s/{0}.log" % args.corpus_name)
 

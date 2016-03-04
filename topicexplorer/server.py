@@ -270,7 +270,10 @@ def main(args):
     from vsm.viewer.ldacgsviewer import LdaCgsViewer as LDAViewer
     from vsm.viewer.wrappers import doc_label_name as _doc_label_name
 
-    global context_type, lda_c, lda_m, lda_v, label, id_fn, doc_label_name
+    global context_type, lda_c, lda_m, lda_v 
+    global label, id_fn, doc_label_name
+    global corpus_path
+
     doc_label_name = _doc_label_name
 
     # load in the configuration file
@@ -424,10 +427,23 @@ def main(args):
              'doc_url_format' : doc_url_format})
 
 
+    corpus_path = config.get('main', 'raw_corpus')
+    if args.fulltext or config.getboolean('www','fulltext'):
+        @route('/fulltext/<doc_id>')
+        @_set_acao_headers
+        def get_doc(doc_id):
+            import re
+            pdf_path = os.path.join(corpus_path, re.sub('txt$','pdf', doc_id))
+            if os.path.exists(pdf_path):
+                doc_id = re.sub('txt$','pdf', doc_id)
+    
+            return static_file(doc_id, root=corpus_path)
+
     @route('/<filename:path>')
     @_set_acao_headers
     def send_static(filename):
         return static_file(filename, root=resource_filename(__name__, '../www/'))
+
 
     if args.ssl or config.get('main', 'ssl'):
         certfile = args.certfile or config.get('ssl', 'certfile')
@@ -447,6 +463,7 @@ def populate_parser(parser):
     parser.add_argument('-p', dest='port', type=int, 
         help="Port Number", default=None)
     parser.add_argument('--host', default=None, help='Hostname')
+    parser.add_argument('--fulltext', action='store_true')
     parser.add_argument('--ssl', action='store_true',
         help="Use SSL (must specify certfile, keyfile, and ca_certs in config)")
     parser.add_argument('--ssl-certfile', dest='certfile', nargs="?",
