@@ -5,7 +5,7 @@ import re
 
 from codecs import open 
 from unidecode import unidecode
-from topicexplorer.lib.util import isint, is_valid_configfile
+from topicexplorer.lib.util import isint, is_valid_configfile, bool_prompt
 
 # NLTK Langauges
 langs = dict(da='danish', nl='dutch', en='english', fi='finnish', fr='french',
@@ -39,7 +39,7 @@ def stop_language(c, language):
 
 def get_htrc_langs(args):
     global langs
-    out_langs = []
+    md_langs = []
 
     metadata_path = os.path.dirname(args.corpus_path)
     metadata_path = os.path.join(metadata_path, '../metadata.json')
@@ -50,16 +50,25 @@ def get_htrc_langs(args):
 
         md_langs = set([lang for d in data.values() for lang in d.get('language', list())
             if lang.lower() in langs.values()])
-        
-        print "Stoplist the following languages?"
-        for lang in md_langs:
-            accept = None
-            while accept not in ['y','n']:
-                accept = raw_input(lang + "? [y/n] ") 
-            if accept == 'y':
-                code = langs_rev[lang.lower()]
-                if code not in args.lang:
-                    out_langs.append(code)
+    return md_langs
+
+def detect_langs(corpus):
+    global langs
+    import langdetect
+    
+    for doc in corpus.view_contexts(corpus.context_types[-1], as_strings=True):
+        lang = langdetect.detect(' '.join(doc))
+        return [lang]
+
+def lang_prompt(languages):
+    global langs
+    out_langs = set()
+    print "Stoplist the following languages?",
+    for lang in languages:
+        if lang in langs:
+            if bool_prompt("{}?".format(langs[lang].capitalize()), default=True):
+                out_langs.add(lang)
+    return out_langs
 
 def get_candidate_words(c, n_filter, sort=True, words=None):
     """ Takes a corpus and a filter and reutrns the candidate words. 
@@ -264,8 +273,6 @@ def main(args):
     if args.lang is None:
         args.lang = []
 
-    
-    
     args.corpus_path = config.get("main", "corpus_file")
     c = Corpus.load(args.corpus_path)
     
@@ -275,8 +282,19 @@ def main(args):
         if htrc_langs:
             args.lang.extend(htrc_langs)
 
+    # auto-guess a language
+    new_langs = [lang for lang in detect_langs(c) if lang in langs]
+    if new_langs:
+        args.lang.extend(new_langs)
+
+    # check for any new candidates
+    args.lang = [lang for lang in args.lang if stop_language(c, langs[lang])]
+    if args.lang:
+        args.lang = lang_prompt(args.lang) 
+
     stoplist = set() 
     # Apply stop words
+    print " "
     for lang in args.lang:
         print "Applying", langs[lang], "stopwords"
         candidates = stop_language(c, langs[lang])
