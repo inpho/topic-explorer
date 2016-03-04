@@ -158,6 +158,17 @@ def main(args):
             print "  * a folder of folders of plain-text files."
             print "\nExiting..."
             sys.exit(74)
+        except LookupError as e:
+            if 'punkt' in e.message:
+                print "\nERROR: sentence tokenizer not available, download by running:"
+                print "    python -m nltk.downloader punkt"
+
+            if 'stopwords' in e.message:
+                print "\nERROR: stopwords not available, download by running:"
+                print "    python -m nltk.downloader stopwords"
+            print "\nExiting..."
+            sys.exit(74)
+
 
     return write_config(args, args.config_file)
 
