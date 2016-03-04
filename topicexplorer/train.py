@@ -35,6 +35,7 @@ def build_models(corpus, corpus_filename, model_path, context_type, krange,
                     seed_or_seeds=seeds)
             m.train(n_iterations=n_iterations)
             m.save(basefilename.format(k))
+            print " "
 
     return basefilename
 
@@ -52,6 +53,7 @@ def continue_training(model_pattern, krange, total_iterations=200, n_proc=1):
             "-{orig}.npz".format(orig=orig_iterations),
             "-{new}.npz".format(new=total_iterations))
         m.save(basefilename.format(k))
+        print " "
 
     return basefilename
 
