@@ -93,6 +93,7 @@ def main(args):
     if args.processes < 0:
         args.processes = multiprocessing.cpu_count() + args.processes
 
+    print "Loading corpus... "
     corpus = Corpus.load(corpus_filename)
 
     try:

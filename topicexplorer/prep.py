@@ -398,6 +398,7 @@ def main(args):
     c.save(args.corpus_path)
 
     config.set("main", "corpus_file", args.corpus_path)
+    config.remove_option("main", "model_pattern")
     with open(args.config_file, 'wb') as configfh:
         config.write(configfh)
 
