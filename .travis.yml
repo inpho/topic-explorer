@@ -20,7 +20,7 @@ install:
   - conda update -q conda
   # Useful for debugging any issues with conda
   - conda info -a
-  - conda create -p $HOME/py --yes pip numpy scipy nltk unidecode "python=$TRAVIS_PYTHON_VERSION"
+  - conda create -p $HOME/py --yes pip numpy scipy nltk unidecode matplotlib "python=$TRAVIS_PYTHON_VERSION"
   - export PATH=$HOME/py/bin:$PATH
   # install topic explorer
   - python setup.py install
