@@ -30,7 +30,19 @@ def get_items_counts(x):
 
 def stop_language(c, language):
     import nltk.corpus
-    words = nltk.corpus.stopwords.words(language)
+
+    try:
+        words = nltk.corpus.stopwords.words(language)
+    except LookupError:
+        import sys
+        print "\nERROR: stopwords not available, download by running:"
+        print "    python -m nltk.downloader stopwords"
+        print "\nExiting..."
+        sys.exit(74)
+    except IOError:
+        print "{} unsupported by default, use a custom stopwords file."
+        return c.words
+
     if c.words.dtype.char == 'S':
         words = [unidecode(word.strip()) for word in words if word in c.words]
     else:
