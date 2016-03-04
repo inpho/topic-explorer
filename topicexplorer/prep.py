@@ -292,16 +292,16 @@ def main(args):
     if args.htrc or config.get("main","htrc"):
         htrc_langs = get_htrc_langs(args)
         if htrc_langs:
-            args.lang.extend(htrc_langs)
+            args.lang.extend(new_langs)
 
     # auto-guess a language
-    new_langs = [lang for lang in detect_langs(c) if lang in langs]
+    new_langs = [lang for lang in detect_langs(c) if lang in langs and lang not in args.lang]
     if new_langs:
         args.lang.extend(new_langs)
 
     # check for any new candidates
     args.lang = [lang for lang in args.lang if stop_language(c, langs[lang])]
-    if args.lang:
+    if args.lang and not args.quiet:
         args.lang = lang_prompt(args.lang) 
 
     stoplist = set() 
@@ -365,7 +365,7 @@ def main(args):
 
     if stoplist:
         print "\n\nApplying {} stopword{}".format(len(stoplist),
-                's' if len(candidates) > 1 else '')
+                's' if len(stoplist) > 1 else '')
         c.in_place_stoplist(stoplist)
         print "\n"
 
