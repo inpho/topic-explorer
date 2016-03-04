@@ -123,7 +123,7 @@ def main():
         if args.profile == '-':
             import tempfile
             temphandle, args.profile = tempfile.mkstemp(suffix='.prof', prefix='vsm.')
-            print args.profile
+            print "Saving benchmark data to", args.profile
 
         from profilehooks import profile
         benchmark = lambda fn: profile(fn, immediate=True, filename=args.profile, stdout=None)
