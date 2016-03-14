@@ -403,7 +403,7 @@ def main(args):
         topic_range = range(*topic_range)
     if config.get('main', 'topics'):
         topic_range = eval(config.get('main', 'topics'))
-    topic_range = [{'k' : k, 'port' : int(config.get('www','port').format(0)) + k} 
+    topic_range = [{'k' : k, 'port' : port + k} 
                         for k in topic_range] 
 
     renderer = pystache.Renderer(escape=lambda u: u)
