@@ -36,8 +36,8 @@ def init(model_path, viewer, ctx_type):
 
 def label(doc):
     if context_type == 'book':
-        md = metadata[doc]
         try:
+            md = metadata[doc]
             return md['title'][0]
         except:
             return doc
