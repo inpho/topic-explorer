@@ -10,8 +10,6 @@ import re
 import socket
 from urllib2 import unquote
 from StringIO import StringIO
-from urllib import unquote_plus as _unquote_plus
-
 
 from bottle import request, response, route, run, static_file
 from topicexplorer.lib.ssl import SSLWSGIRefServer
@@ -19,9 +17,6 @@ from topicexplorer.lib.util import int_prompt, bool_prompt, is_valid_filepath, i
 
 import random
 import pystache
-
-def unquote_plus(s):
-    return _unquote_plus(s)#.replace(' ', '+')
 
 def _set_acao_headers(f):
     """
@@ -44,7 +39,7 @@ def _cache_date(days=1):
 def doc_topic_csv(doc_id):
     response.content_type = 'text/csv; charset=UTF8'
 
-    doc_id = unquote_plus(doc_id)
+    doc_id = unquote(doc_id)
 
     data = lda_v.doc_topics(doc_id)
 
@@ -60,7 +55,7 @@ def doc_topic_csv(doc_id):
 def doc_csv(doc_id, threshold=0.2):
     response.content_type = 'text/csv; charset=UTF8'
     
-    doc_id = unquote_plus(doc_id)
+    doc_id = unquote(doc_id)
 
     data = lda_v.sim_doc_doc(doc_id, label_fn=id_fn)
 
@@ -108,7 +103,7 @@ def doc_topics(doc_id, N=40):
     except:
         pass
 
-    doc_id = unquote_plus(doc_id)
+    doc_id = unquote(doc_id)
 
     response.content_type = 'application/json; charset=UTF8'
 
