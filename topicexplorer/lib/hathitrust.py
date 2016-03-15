@@ -129,7 +129,8 @@ def getVolumesFromDataAPI(token, volumeIDs, concat=False):
     assert len(volumeIDs) > 0, "volumeIDs is less than one"
     
     url = dataapiEPR + "volumes"
-    data = {'volumeIDs' : '|'.join(volumeIDs)}
+    data = {'volumeIDs' : '|'.join(
+        [id.replace('+',':').replace('=','/') for id in volumeIDs])}
     if concat:
         data['concat'] = 'true'
 
