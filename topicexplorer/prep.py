@@ -2,6 +2,7 @@ from ConfigParser import RawConfigParser as ConfigParser
 import json
 import os.path
 import re
+import sys
 
 from codecs import open 
 from unidecode import unidecode
@@ -172,7 +173,8 @@ def get_high_filter(args, c, words=None):
                 
                 
                 print "Filter will remove", counts[counts > input_filter].sum(), "occurrences", "of these", len(counts[counts > input_filter]), "words:"
-                print ' '.join(candidates)
+                print u' '.join(candidates).encode(
+                    sys.stdout.encoding, errors='replace')
 
                 print "\nFilter will remove", counts[counts > input_filter].sum(), "occurrences", "of these", len(counts[counts > input_filter]), "words.",
                 if len(candidates) == len(c.words):
@@ -249,7 +251,8 @@ def get_low_filter(args, c, words=None):
     
                 print "Filter will remove", counts[counts <= input_filter].sum(), "tokens",
                 print "of these", len(counts[counts <= input_filter]), "words:"
-                print ' '.join(candidates)
+                print u' '.join(candidates).encode(
+                    sys.stdout.encoding, errors='replace')
 
                 print "\nFilter will remove", counts[counts <= input_filter].sum(), "tokens", 
                 print "of these", len(counts[counts <= input_filter]), "words.",
