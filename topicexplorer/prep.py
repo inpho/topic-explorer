@@ -295,9 +295,11 @@ def main(args):
             args.lang.extend(new_langs)
 
     # auto-guess a language
+    """
     new_langs = [lang for lang in detect_langs(c) if lang in langs and lang not in args.lang]
     if new_langs:
         args.lang.extend(new_langs)
+    """
 
     # check for any new candidates
     args.lang = [lang for lang in args.lang if stop_language(c, langs[lang])]
