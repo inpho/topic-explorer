@@ -49,11 +49,8 @@ def main(args):
             return subprocess.PIPE
 
 
-    def test_baseport(baseport, topic_range):
+    def test_baseport(host, baseport, topic_range):
         try:
-            host = config.get("www","host")
-            if host == '0.0.0.0':
-                host = 'localhost'
             for k in topic_range:
                 port = baseport + k
                 try:
@@ -67,10 +64,14 @@ def main(args):
             baseport = int_prompt(
                 "Conflict on port {0}. Enter new base port: [CURRENT: {1}]"\
                     .format(port, baseport)) 
-            return test_baseport(baseport, topic_range)
+            return test_baseport(host, baseport, topic_range)
 
-    baseport = test_baseport(int(config.get("www","port").format(0)),
-                             topic_range)
+    host = config.get("www","host")
+    if host == '0.0.0.0':
+        host = socket.gethostname()
+
+    baseport = int(config.get("www","port").format(0))
+    baseport = test_baseport(host, baseport, topic_range)
 
     # prompt to save
     if int(config.get("www","port").format(0)) != baseport:
@@ -110,7 +111,6 @@ def main(args):
     print "pid","port"
     for proc,k in zip(procs, topic_range):
         port = baseport + k
-        host = config.get("www","host")
         print proc.pid, "http://{host}:{port}/".format(host=host,port=port)
 
 
@@ -131,19 +131,50 @@ def main(args):
     signal.signal(signal.SIGTERM, signal_handler)
 
     port = baseport + topic_range[0]
-    host = config.get("www","host")
-    if host == '0.0.0.0':
-        host = 'localhost'
     url = "http://{host}:{port}/".format(host=host,port=port)
 
     # TODO: Add enhanced port checking
     while True:
+        wait_count = 0
         try:
             urllib.urlopen(url)
             print "Server successfully started"
             break
         except:
             time.sleep(1)
+            wait_count += 1
+
+        if wait_count == 60:
+            print "\nLaunching the server seems to be taking a long time."
+            print "This may be due to loading in a large corpus."
+
+            print "\nTo test launching a single model, press Ctrl+C to abort launch,"
+            print "then use the `serve` command to find the error message:"
+            print "\tvsm serve {config} -k {k}".format(
+                config=args.config_file, k=topic_range[0])
+    
+        for proc,k in zip(procs, topic_range):
+            if proc.poll() is not None:
+                print "\nAn error has occurred launching the {}-topic model.".format(k)
+                try:
+                    with get_log_file(k) as logfile:
+                        print "A log has been written to: {}\n".format(logfile.name)
+                except AttributeError:
+                    # No log file, things are a-ok.
+                    pass
+
+                print "Use the `serve` command to debug errors:"
+                print "\tvsm serve {config} -k {k}".format(config=args.config_file, k=k)
+                for p in procs:
+                    if p.poll() is None:
+                        try:
+                            os.killpg(p.pid, signal.SIGTERM)
+                        except AttributeError:
+                            # Cross-Platform Compatability
+                            subprocess.call(['taskkill', '/F', '/T', '/PID', str(p.pid)])    
+    
+                sys.exit(1)
+
     if args.browser:
         webbrowser.open(url)
         print "TIP: Browser launch can be disabled with the '--no-browser' argument:"
