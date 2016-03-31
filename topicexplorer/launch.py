@@ -1,5 +1,6 @@
 from ConfigParser import ConfigParser
 import os, os.path
+import platform
 import socket
 import signal, sys
 from StringIO import StringIO
@@ -117,13 +118,14 @@ def main(args):
     # CLEAN EXIT AND SHUTDOWN OF SERVERS
     def signal_handler(signal,frame):
         print "\n"
-        for p in procs:
-            print "killing", p.pid
+        for p, k in zip(procs, topic_range):
+            print "Stopping {}-topic model (Process ID: {})".format(k, p.pid)
             # Cross-Platform Compatability
-            try:
+            if platform.system() == 'Windows':
+                subprocess.call(['taskkill', '/F', '/T', '/PID', str(p.pid)],
+                        stdout=open(os.devnull), stderr=open(os.devnull))
+            else:
                 os.killpg(p.pid, signal)
-            except AttributeError:
-                subprocess.call(['taskkill', '/F', '/T', '/PID', str(p.pid)])    
 
         sys.exit()
 
