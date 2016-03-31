@@ -26,6 +26,27 @@ def get_dist(dist_name):
     return working_set.find(req)
 
 
+def process_exists(processname):
+    # http://stackoverflow.com/a/29275361
+
+    import subprocess
+    import platform
+    
+    if platform.system() == 'Windows':
+        tlcall = 'TASKLIST', '/FI', 'imagename eq %s' % processname
+        # shell=True hides the shell window, stdout to PIPE enables
+        # communicate() to get the tasklist command result
+        tlproc = subprocess.Popen(tlcall, shell=True, stdout=subprocess.PIPE)
+        # trimming it to the actual lines with information
+        tlout = tlproc.communicate()[0].strip().split('\r\n')
+        # if TASKLIST returns single line without processname: it's not running
+        if len(tlout) > 1 and processname in tlout[-1]:
+            return True
+        else:
+            return False
+    else:
+        raise NotImplementedError
+
 def update(args=None):
     from pip.utils import (get_installed_version, dist_is_editable, dist_location)
 
@@ -100,6 +121,9 @@ def update(args=None):
                     if sys.argv[0] != __file__:
                         print "Use the `python -m topicexplorer.update` command to update."
                         return
+                    if process_exists('vsm.exe'):
+                        print "vsm is currently running, please close all Topic Explorers to update."
+                        return
 
                 print "Pulling changes."
                 repo.remotes.origin.pull()
@@ -134,6 +158,9 @@ def update(args=None):
                 import sys
                 if sys.argv[0] != __file__:
                     print "Update available. Use the `python -m topicexplorer.update` command to update."
+                    return
+                if process_exists('vsm.exe'):
+                    print "vsm is currently running, please close all Topic Explorers to update."
                     return
             
             try:
