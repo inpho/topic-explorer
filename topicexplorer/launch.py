@@ -26,7 +26,7 @@ def main(args):
         'doc_title_format' : None,
         'doc_url_format' : None,
         'topic_range': None,
-        'fulltext' : False,
+        'fulltext' : 'false',
         'raw_corpus': None,
         'topics': None})
     config.read(args.config_file)

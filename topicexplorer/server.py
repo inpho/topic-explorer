@@ -285,7 +285,7 @@ def main(args):
         'doc_title_format' : None,
         'doc_url_format' : None,
         'raw_corpus' : None,
-        'fulltext' : False,
+        'fulltext' : 'false',
         'topics': None})
     config.read(args.config)
 
