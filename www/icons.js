@@ -20,7 +20,7 @@ var icon_fns = {"link" : function(ticks, i) {
         .attr("class", "apIcon icon")
         .attr("onclick", function(d) { return (d) ? "fulltext.popover(this)" : ""; });
   },
- "fulltext" : function(ticks, i,docs) {
+ "fulltext-inline" : function(ticks, i,docs) {
       base_fn(ticks,i)
         .attr("data-doc-id", function (d) {return d})
         .attr("data-doc-label", function (d) {
@@ -34,6 +34,16 @@ var icon_fns = {"link" : function(ticks, i) {
         .attr("xlink:href","img/icon-book.png")
         .attr("class", "fulltextIcon icon")
         .attr("onclick", function(d) { return (d) ? "fulltext.popover(this)" : ""; });
+  },
+ "fulltext" : function(ticks, i,docs) {
+      base_fn(ticks,i)
+        .attr("data-doc-id", function (d) {return d})
+        .attr("xlink:href","img/icon-book.png")
+        .attr("class", "fulltextIcon icon")
+        .on("click", function(d){
+          var url = window.location.origin + window.location.pathname + "fulltext/" + encodeURIComponent(d);
+          window.open(url);
+        }).append("title").text(function (d) { "Fulltext view of " + d });
   },
  "oldbailey" : function(ticks, i, docs) {
       base_fn(ticks,i)

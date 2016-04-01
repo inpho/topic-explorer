@@ -102,8 +102,9 @@ def main(args):
         grp_fn = os.setsid
     except AttributeError:
         grp_fn = None
-    procs = [subprocess.Popen("vsm serve -k {k} -p {port} {config_file}".format(
-        k=k, port=(baseport+k), config_file=args.config_file),
+    fulltext = '--fulltext' if args.fulltext else ''
+    procs = [subprocess.Popen("vsm serve -k {k} -p {port} {config_file} {fulltext}".format(
+        k=k, port=(baseport+k), config_file=args.config_file,fulltext=fulltext),
         shell=True, stdout=get_log_file(k), stderr=subprocess.STDOUT,
         preexec_fn=grp_fn) for k in topic_range]
 
@@ -162,6 +163,7 @@ def populate_parser(parser):
     parser.add_argument('config_file', help="Configuration file path",
         type=lambda x: is_valid_configfile(parser, x))
     parser.add_argument('--no-browser', dest='browser', action='store_false')
+    parser.add_argument('--fulltext', action='store_true')
 
 if __name__ == '__main__':
     from argparse import ArgumentParser

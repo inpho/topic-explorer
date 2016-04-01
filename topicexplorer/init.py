@@ -68,7 +68,8 @@ def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=1,
     from vsm.corpus.util.corpusbuilders import coll_corpus, dir_corpus, toy_corpus
 
     # pre-process PDF files
-    if corpus_path[-4:] == '.pdf' or contains_pattern(corpus_path, '*.pdf'):
+    contains_pdfs = corpus_path[-4:] == '.pdf' or contains_pattern(corpus_path, '*.pdf')
+    if contains_pdfs:
         corpus_path = process_pdfs(corpus_path)
 
     print "Building corpus from", corpus_path
@@ -101,6 +102,13 @@ def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=1,
             raise IOError("Invalid Path: empty directory")
     else:
         raise IOError("Invalid path")
+
+    if contains_pdfs:
+        from vsm.viewer.wrappers import doc_label_name
+        import re
+        label_name = doc_label_name(c.context_types[0])
+        new_labels = [re.sub('txt$', 'pdf', label) for label in c.context_data[0][label_name]]
+        c.context_data[0][label_name] = new_labels
 
     filename = get_corpus_filename(
         corpus_path, model_path, nltk_stop, stop_freq, context_type)

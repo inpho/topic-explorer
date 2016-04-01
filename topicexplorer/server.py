@@ -385,7 +385,23 @@ def main(args):
         id_fn = lambda metadata: metadata[doc_label_name(lda_v.model.context_type)]
         print "using default id function"
 
+    corpus_path = config.get('main', 'raw_corpus')
+    if args.fulltext or config.getboolean('www','fulltext'):
+        @route('/fulltext/<doc_id>')
+        @_set_acao_headers
+        def get_doc(doc_id):
+            import re
+            pdf_path = os.path.join(corpus_path, re.sub('txt$','pdf', doc_id))
+            if os.path.exists(pdf_path):
+                doc_id = re.sub('txt$','pdf', doc_id)
+    
+            return static_file(doc_id, root=corpus_path)
+
     config_icons = config.get('www','icons').split(",")
+    if args.fulltext or config.getboolean('www','fulltext'):
+        if 'fulltext' not in config_icons:
+            config_icons.insert(0,'fulltext')
+    
 
     @route('/icons.js')
     def icons():
@@ -427,17 +443,6 @@ def main(args):
              'doc_url_format' : doc_url_format})
 
 
-    corpus_path = config.get('main', 'raw_corpus')
-    if args.fulltext or config.getboolean('www','fulltext'):
-        @route('/fulltext/<doc_id>')
-        @_set_acao_headers
-        def get_doc(doc_id):
-            import re
-            pdf_path = os.path.join(corpus_path, re.sub('txt$','pdf', doc_id))
-            if os.path.exists(pdf_path):
-                doc_id = re.sub('txt$','pdf', doc_id)
-    
-            return static_file(doc_id, root=corpus_path)
 
     @route('/<filename:path>')
     @_set_acao_headers
