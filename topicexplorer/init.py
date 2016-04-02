@@ -62,10 +62,13 @@ def process_pdfs(corpus_path, ignore=['.json','.log','.err','.pickle','.npz']):
 
 def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=1,
     context_type='document', ignore=['.json','.log','.err','.pickle','.npz'],
-    decode=True):
+    decode=True, sentences=False):
    
     from vsm.corpus import Corpus
     from vsm.corpus.util.corpusbuilders import coll_corpus, dir_corpus, toy_corpus
+    if sentences:
+        print "Importing sentence constructors"
+        from vsm.extensions.ldasentences import dir_corpus, toy_corpus
 
     # pre-process PDF files
     contains_pdfs = corpus_path[-4:] == '.pdf' or contains_pattern(corpus_path, '*.pdf')
@@ -93,11 +96,15 @@ def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=1,
             c = dir_corpus(corpus_path, nltk_stop=nltk_stop,
                            stop_freq=stop_freq, chunk_name=context_type,
                            ignore=ignore, decode=decode)
-        elif count_dirs > 0 and count_files == 0:
+        elif count_dirs > 0 and count_files == 0 and not sentences:
             print "Constructing collection corpus, each folder is a document"
             context_type='book'
             c = coll_corpus(corpus_path, nltk_stop=nltk_stop,
                             stop_freq=stop_freq, ignore=ignore, decode=decode)
+        elif count_dirs > 0 and count_files == 0 and sentences:
+            raise NotImplementedError("""Collection corpuses are too large for
+            sentence parsing. Reduce your corpus to a single folder or
+            file.""")
         else:
             raise IOError("Invalid Path: empty directory")
     else:
@@ -158,7 +165,8 @@ def main(args):
     if args.rebuild == True:
         try:
             args.corpus_filename = build_corpus(args.corpus_path, args.model_path, 
-                                                stop_freq=5, decode=args.decode)
+                                                stop_freq=5, decode=args.decode,
+                                                sentences=args.sentences)
         except IOError:
             print "ERROR: invalid path, please specify either:"
             print "  * a single plain-text file,"
@@ -190,6 +198,7 @@ def write_config(args, config_file=None):
     config.set("main", "path", os.path.abspath(args.model_path))
     config.set("main", "corpus_file", os.path.abspath(args.corpus_filename))
     config.set("main", "raw_corpus", os.path.abspath(args.corpus_path))
+    config.set("main", "sentences", args.sentences)
     
     config.add_section("www")
     config.set("www", "corpus_name", args.corpus_print_name)
@@ -247,6 +256,7 @@ def populate_parser(parser):
         help="Convert unicode characters to ascii. [Default]")
     group.add_argument("--unicode", action="store_false", dest='decode',
         help="Store unicode characters.")
+    parser.add_argument("--sentences", action="store_true", help="Parse at the sentence level")
     parser.add_argument("--htrc", action="store_true")
     parser.add_argument("--rebuild", action="store_true")
     parser.add_argument("--tokenizer", choices=['inpho', 'default'], default="default")
