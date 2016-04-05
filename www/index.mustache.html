@@ -452,8 +452,9 @@ $('#randomDoc').tooltip({title: "Random Document", placement: 'bottom'});
 
 <!--<script src="topics.js"></script>-->
 <script>
+$('.scale')[0].checked = (roottopic != null); 
 
-  var ico;
+var ico;
 var maxRows = 25;
 var minCols = 2;
 
@@ -587,7 +588,7 @@ d3.json(url, function(error, data) {
     original_root = data[0];
     if (roottopic) docid = data[0]['doc'];
   
-    calculateTopicMap(data, true, function(a,b) {return data[0].topics[b] - data[0].topics[a];});
+    calculateTopicMap(data, !($('.scale')[0].checked), function(a,b) {return data[0].topics[b] - data[0].topics[a];});
   
   
   
