@@ -28,4 +28,4 @@ def init(model_path, viewer, ctx_type):
 
 def label(doc):
     global metadata
-    return metadata[doc]
+    return metadata.get(doc,doc)

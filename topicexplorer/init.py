@@ -25,7 +25,6 @@ def get_corpus_filename(corpus_path, model_path, nltk_stop=False, stop_freq=1,
 
 
 def process_pdfs(corpus_path, ignore=['.json','.log','.err','.pickle','.npz']):
-    """
     from topicexplorer.lib import pdf
     if os.path.isfile(corpus_path):
         print "PDF file detected, extracting plaintext to",\
@@ -57,8 +56,7 @@ def process_pdfs(corpus_path, ignore=['.json','.log','.err','.pickle','.npz']):
             raise IOError("Invalid Path: empty directory")
         
         corpus_path += '-txt'
-    """
-    return corpus_path + '-txt'
+    return corpus_path
 
 
 def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=1,
