@@ -9,11 +9,16 @@ from ConfigParser import ConfigParser as ConfigParser
 config_file = r"$config_file" 
 config = ConfigParser({
         'topic_range': None,
-        'topics': None})
+        'topics': None,
+        'sentences' : 'false'})
 config.read(config_file)
 
 # load the corpus
-c = Corpus.load(config.get('main', 'corpus_file'))
+if config.getboolean('main','sentences'):
+    from vsm.extensions.ldasentences import CorpusSent
+    c = CorpusSent.load(config.get('main', 'corpus_file'))
+else:
+    c = Corpus.load(config.get('main', 'corpus_file'))
 context_type = config.get('main', 'context_type')
 ctx_metadata = c.view_metadata(context_type)
 all_ids = ctx_metadata[doc_label_name(context_type)]

@@ -281,9 +281,14 @@ def get_low_filter(args, c, words=None):
     return (low_filter, candidates)
 
 def main(args):
-    from vsm.corpus import Corpus
-    config = ConfigParser({"htrc": False})
+    config = ConfigParser({"htrc": False,
+        "sentences": "False"})
     config.read(args.config_file)
+
+    if config.getboolean("main", "sentences"):
+        from vsm.extensions.ldasentences import CorpusSent as Corpus
+    else:
+        from vsm.corpus import Corpus
     
     if args.lang is None:
         args.lang = []

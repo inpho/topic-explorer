@@ -58,13 +58,17 @@ def continue_training(model_pattern, krange, total_iterations=200, n_proc=1):
     return basefilename
 
 def main(args):
-    from vsm.corpus import Corpus
     from vsm.model.lda import LDA
 
-    config = ConfigParser()
+    config = ConfigParser({"sentences": "False"})
     config.read(args.config_file)
     corpus_filename = config.get("main", "corpus_file")
     model_path = config.get("main", "path")
+
+    if config.getboolean("main", "sentences"):
+        from vsm.extensions.ldasentences import CorpusSent as Corpus
+    else:
+        from vsm.corpus import Corpus
 
     if args.k is None:
         try:
