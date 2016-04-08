@@ -45,59 +45,59 @@ elif (__version__ in repo.remotes.origin.repo.tags and
     print "Increment the version number and run release again.\n"
     sys.exit(1)
 
-
-### TRAVIS-CI CHECKS ###
-try:
-    t = TravisPy.github_auth(open('.travis.key').read().strip())
-except IOError as e:
-    if e.errno == 2:
-        print ".travis.key file required to hold GitHub Auth Token."
-        url = "https://github.com/settings/tokens/new"
-        url += "?scopes=repo_deployment,repo:status,write:repo_hook,read:org,user:email"
-        url += "&description=travis%20ci%20token"
-        # TODO: Prompt to open browser or automate token grab
-        print url + '\n'
-        sys.exit(1)
-    else:
-        raise e
-except TravisError:
-    if not open('.travis.key').read().strip():
-        print ".travis.key file is empty. Fill with a GitHub Auth Token from:"
-        url = "https://github.com/settings/tokens/new"
-        url += "?scopes=repo_deployment,repo:status,write:repo_hook,read:org,user:email"
-        url += "&description=travis%20ci%20token"
-        # TODO: Prompt to open browser or automate token grab
-        print url
-    else:
-        print ".travis.key file detected, but there was an error communicating with Travis."
-        print "Check your GitHub Auth Token or check the Travis status page at:"
-        print "https://www.traviscistatus.com/"
-    print " "
-    sys.exit(1)
-        
-print "Waitng for Travis-CI .",
-for attempt in range(900):
+# check for a no-travis flag
+if sys.argv[-1] != '--no-travis':
+    ### TRAVIS-CI CHECKS ###
     try:
-        branch = t.branch(repo.active_branch, 'inpho/topic-explorer')
-
-        if current_commit != branch.commit.sha:
-            raise RuntimeError("Need to wait for commit to sync.")
-        if not branch.finished:
-            raise RuntimeError("Need to wait for test to finish.")
-        break
-    except (TravisError, RuntimeError):
-        print ".",
-        sleep(10)
-else:
-    print "Travis build not complete. Aborting release.\n"
-    sys.exit(1)
-
-if branch.finished and branch.passed:
-    print "Travis build of release {} passed!\n".format(__version__) 
-else:
-    print "Travis build of release {} failed. Aborting release.\n".format(__version__)
-    sys.exit(1)
-
+        t = TravisPy.github_auth(open('.travis.key').read().strip())
+    except IOError as e:
+        if e.errno == 2:
+            print ".travis.key file required to hold GitHub Auth Token."
+            url = "https://github.com/settings/tokens/new"
+            url += "?scopes=repo_deployment,repo:status,write:repo_hook,read:org,user:email"
+            url += "&description=travis%20ci%20token"
+            # TODO: Prompt to open browser or automate token grab
+            print url + '\n'
+            sys.exit(1)
+        else:
+            raise e
+    except TravisError:
+        if not open('.travis.key').read().strip():
+            print ".travis.key file is empty. Fill with a GitHub Auth Token from:"
+            url = "https://github.com/settings/tokens/new"
+            url += "?scopes=repo_deployment,repo:status,write:repo_hook,read:org,user:email"
+            url += "&description=travis%20ci%20token"
+            # TODO: Prompt to open browser or automate token grab
+            print url
+        else:
+            print ".travis.key file detected, but there was an error communicating with Travis."
+            print "Check your GitHub Auth Token or check the Travis status page at:"
+            print "https://www.traviscistatus.com/"
+        print " "
+        sys.exit(1)
+            
+    print "Waitng for Travis-CI .",
+    for attempt in range(900):
+        try:
+            branch = t.branch(repo.active_branch, 'inpho/topic-explorer')
+    
+            if current_commit != branch.commit.sha:
+                raise RuntimeError("Need to wait for commit to sync.")
+            if not branch.finished:
+                raise RuntimeError("Need to wait for test to finish.")
+            break
+        except (TravisError, RuntimeError):
+            print ".",
+            sleep(10)
+    else:
+        print "Travis build not complete. Aborting release.\n"
+        sys.exit(1)
+    
+    if branch.finished and branch.passed:
+        print "Travis build of release {} passed!\n".format(__version__) 
+    else:
+        print "Travis build of release {} failed. Aborting release.\n".format(__version__)
+        sys.exit(1)
 
 ### Convert documentation for PyPI ###
 pypandoc.convert('README.md', 'rst', outputfile='README.txt')
