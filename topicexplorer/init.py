@@ -56,7 +56,6 @@ def process_pdfs(corpus_path, ignore=['.json','.log','.err','.pickle','.npz']):
             raise IOError("Invalid Path: empty directory")
         
         corpus_path += '-txt'
-
     return corpus_path
 
 

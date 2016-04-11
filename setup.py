@@ -59,7 +59,8 @@ install_requires = [
         'matplotlib>=1.5.0',
         'pip>=7.1.1',
         'langdetect',
-        'profilehooks'
+        'profilehooks',
+        'bibtexparser>=0.6.2'
         ]
 
 if platform.system() == 'Windows':
