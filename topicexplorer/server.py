@@ -465,7 +465,8 @@ def populate_parser(parser):
     parser.add_argument('-p', dest='port', type=int, 
         help="Port Number", default=None)
     parser.add_argument('--host', default=None, help='Hostname')
-    parser.add_argument('--fulltext', action='store_true')
+    parser.add_argument('--fulltext', action='store_true', 
+        help='Serve raw corpus files.')
     parser.add_argument('--ssl', action='store_true',
         help="Use SSL (must specify certfile, keyfile, and ca_certs in config)")
     parser.add_argument('--ssl-certfile', dest='certfile', nargs="?",
