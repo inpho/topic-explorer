@@ -1,4 +1,4 @@
-from ConfigParser import RawConfigParser as ConfigParser
+0from ConfigParser import RawConfigParser as ConfigParser
 import os
 import os.path
 import shutil
@@ -62,7 +62,7 @@ def process_pdfs(corpus_path, ignore=['.json','.log','.err','.pickle','.npz']):
 
 def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=1,
     context_type='document', ignore=['.json','.log','.err','.pickle','.npz'],
-    decode=True, sentences=False):
+    decode=True, sentences=False, simple=True):
    
     from vsm.corpus import Corpus
     from vsm.corpus.util.corpusbuilders import coll_corpus, dir_corpus, toy_corpus
@@ -160,7 +160,7 @@ def main(args):
             args.rebuild = raw_input("\nCorpus file found. Rebuild? [y/N] ")
             args.rebuild = args.rebuild.lower().strip()
             if args.rebuild == 'y':
-	        args.rebuild = True
+                args.rebuild = True
             elif args.rebuild == '':
                 args.rebuild = 'n'
     else:
@@ -169,7 +169,8 @@ def main(args):
         try:
             args.corpus_filename = build_corpus(args.corpus_path, args.model_path, 
                                                 stop_freq=5, decode=args.decode,
-                                                sentences=args.sentences)
+                                                sentences=args.sentences,
+                                                simple=args.simple)
         except IOError:
             print "ERROR: invalid path, please specify either:"
             print "  * a single plain-text file,"
@@ -186,7 +187,7 @@ def main(args):
                 print "\nERROR: stopwords not available, download by running:"
                 print "    python -m nltk.downloader stopwords"
             print "\nExiting..."
-            sys.exit(74)
+            sys.exit(74)        
 
 
     return write_config(args, args.config_file)
@@ -263,6 +264,7 @@ def populate_parser(parser):
     parser.add_argument("--htrc", action="store_true")
     parser.add_argument("--rebuild", action="store_true")
     parser.add_argument("--tokenizer", choices=['inpho', 'default'], default="default")
+    parser.add_argument("--simple", action="store_true", help="Skip sentence, paragraph, and page tokenizations.")
 
 if __name__ == '__main__': 
     from argparse import ArgumentParser
