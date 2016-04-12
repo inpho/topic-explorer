@@ -248,7 +248,7 @@ def get_docs(docs=None, id_as_key=False, query=None):
             struct = {
                 'id': doc,
                 'label' : label(doc),
-                'metadata' : dict(zip(md.dtype.names, [str(m) for m in md])) }
+                'metadata' : dict(zip(md.dtype.names, [unicode(m) for m in md])) }
             if id_as_key:
                 js[doc] = struct
             else:
