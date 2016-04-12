@@ -198,7 +198,8 @@ def populate_parser(parser):
     parser.add_argument('config_file', help="Configuration file path",
         type=lambda x: is_valid_configfile(parser, x))
     parser.add_argument('--no-browser', dest='browser', action='store_false')
-    parser.add_argument('--fulltext', action='store_true')
+    parser.add_argument('--fulltext', action='store_true',
+        help='Serve raw corpus files.')
 
 if __name__ == '__main__':
     from argparse import ArgumentParser

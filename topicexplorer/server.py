@@ -364,7 +364,7 @@ def main(args):
         label_module = config.get('main', 'label_module')
         label_module = import_module(label_module)
         print "imported label module"
-        label_module.init(config.get('main','path'), lda_v, context_type)
+        label_module.init(lda_v, config, args)
     except (ImportError, NoOptionError, AttributeError):
         pass
 
@@ -465,7 +465,11 @@ def populate_parser(parser):
     parser.add_argument('-p', dest='port', type=int, 
         help="Port Number", default=None)
     parser.add_argument('--host', default=None, help='Hostname')
-    parser.add_argument('--fulltext', action='store_true')
+    parser.add_argument('--fulltext', action='store_true', 
+        help='Serve raw corpus files.')
+    parser.add_argument('--bibtex', default=None, 
+        type=lambda x: is_valid_filepath(parser, x),
+        help='BibTeX library location')
     parser.add_argument('--ssl', action='store_true',
         help="Use SSL (must specify certfile, keyfile, and ca_certs in config)")
     parser.add_argument('--ssl-certfile', dest='certfile', nargs="?",

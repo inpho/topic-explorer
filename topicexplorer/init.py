@@ -56,7 +56,6 @@ def process_pdfs(corpus_path, ignore=['.json','.log','.err','.pickle','.npz']):
             raise IOError("Invalid Path: empty directory")
         
         corpus_path += '-txt'
-
     return corpus_path
 
 
@@ -123,6 +122,9 @@ def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=1,
     return filename 
 
 def main(args):
+    # convert to unicode to avoid windows errors
+    args.corpus_path = unicode(args.corpus_path, 'utf-8')
+
     if args.model_path is None:
         if os.path.isdir(args.corpus_path):
             args.model_path = os.path.join(args.corpus_path, '../models/')

@@ -50,7 +50,7 @@ install_requires = [
         'bottle>=0.12', 
         'brewer2mpl>=1.4',
         'pystache>=0.5.4',
-        'vsm==0.4.0a15',
+        'vsm==0.4.0a16',
         'wget',
         'unidecode',
         'pdfminer',
@@ -59,7 +59,8 @@ install_requires = [
         'matplotlib>=1.5.0',
         'pip>=7.1.1',
         'langdetect',
-        'profilehooks'
+        'profilehooks',
+        'pybtex>=0.20'
         ]
 
 if platform.system() == 'Windows':

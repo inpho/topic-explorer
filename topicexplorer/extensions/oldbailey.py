@@ -20,12 +20,12 @@ class keydefaultdict(defaultdict):
 
 ctx_md = keydefaultdict(lambda ctx: lda_v.corpus.view_metadata(ctx))
 
-def init(model_path, viewer, ctx_type):
+def init(viewer, config, args):
     global lda_v
     global context_type
     
     lda_v = viewer
-    context_type = ctx_type
+    context_type = config.get('main','context_type')
 
 def label(doc):
     global ctx_md
