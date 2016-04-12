@@ -61,10 +61,10 @@ def process_pdfs(corpus_path, ignore=['.json','.log','.err','.pickle','.npz']):
 
 def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=1,
     context_type='document', ignore=['.json','.log','.err','.pickle','.npz'],
-    decode=True, sentences=False):
+    decode=True, sentences=False, simple=True):
    
     from vsm.corpus import Corpus
-    from vsm.corpus.util.corpusbuilders import coll_corpus, dir_corpus, toy_corpus
+    from vsm.extensions.corpusbuilders import coll_corpus, dir_corpus, toy_corpus
     if sentences:
         print "Importing sentence constructors"
         from vsm.extensions.ldasentences import dir_corpus, toy_corpus
@@ -79,7 +79,7 @@ def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=1,
     if os.path.isfile(corpus_path):
         print "Constructing toy corpus, each line is a document"
         c = toy_corpus(corpus_path, is_filename=True, nltk_stop=nltk_stop, 
-                       stop_freq=stop_freq, autolabel=True, decode=decode)
+                       stop_freq=stop_freq, autolabel=True, decode=decode, simple=simple)
     elif os.path.isdir(corpus_path):
         contents = listdir_nohidden(corpus_path)
         contents = [os.path.join(corpus_path,obj) for obj in contents 
@@ -94,12 +94,12 @@ def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=1,
             print "Constructing directory corpus, each file is a document"
             c = dir_corpus(corpus_path, nltk_stop=nltk_stop,
                            stop_freq=stop_freq, chunk_name=context_type,
-                           ignore=ignore, decode=decode)
+                           ignore=ignore, decode=decode, simple=simple)
         elif count_dirs > 0 and count_files == 0 and not sentences:
             print "Constructing collection corpus, each folder is a document"
             context_type='book'
             c = coll_corpus(corpus_path, nltk_stop=nltk_stop,
-                            stop_freq=stop_freq, ignore=ignore, decode=decode)
+                            stop_freq=stop_freq, ignore=ignore, decode=decode, simple=simple)
         elif count_dirs > 0 and count_files == 0 and sentences:
             raise NotImplementedError("""Collection corpuses are too large for
             sentence parsing. Reduce your corpus to a single folder or
@@ -159,7 +159,7 @@ def main(args):
             args.rebuild = raw_input("\nCorpus file found. Rebuild? [y/N] ")
             args.rebuild = args.rebuild.lower().strip()
             if args.rebuild == 'y':
-	        args.rebuild = True
+                args.rebuild = True
             elif args.rebuild == '':
                 args.rebuild = 'n'
     else:
@@ -168,7 +168,8 @@ def main(args):
         try:
             args.corpus_filename = build_corpus(args.corpus_path, args.model_path, 
                                                 stop_freq=5, decode=args.decode,
-                                                sentences=args.sentences)
+                                                sentences=args.sentences,
+                                                simple=args.simple)
         except IOError:
             print "ERROR: invalid path, please specify either:"
             print "  * a single plain-text file,"
@@ -185,7 +186,7 @@ def main(args):
                 print "\nERROR: stopwords not available, download by running:"
                 print "    python -m nltk.downloader stopwords"
             print "\nExiting..."
-            sys.exit(74)
+            sys.exit(74)        
 
 
     return write_config(args, args.config_file)
@@ -262,6 +263,8 @@ def populate_parser(parser):
     parser.add_argument("--htrc", action="store_true")
     parser.add_argument("--rebuild", action="store_true")
     parser.add_argument("--tokenizer", choices=['inpho', 'default'], default="default")
+    parser.add_argument("--simple", action="store_true", default=True, 
+        help="Skip sentence tokenizations [default].")
 
 if __name__ == '__main__': 
     from argparse import ArgumentParser
