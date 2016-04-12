@@ -65,7 +65,8 @@ def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=1,
     decode=True, sentences=False, simple=True):
    
     from vsm.corpus import Corpus
-    from vsm.corpus.util.corpusbuilders_simple import coll_corpus, dir_corpus, toy_corpus
+    print "importing simple constructors"
+    from vsm.extensions.corpusbuilders.corpusbuilders_simple import coll_corpus, dir_corpus, toy_corpus
     if sentences:
         print "Importing sentence constructors"
         from vsm.extensions.ldasentences import dir_corpus, toy_corpus
