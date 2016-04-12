@@ -466,6 +466,9 @@ def populate_parser(parser):
         help="Port Number", default=None)
     parser.add_argument('--host', default=None, help='Hostname')
     parser.add_argument('--fulltext', action='store_true')
+    parser.add_argument('--bibtex', default=None, 
+        type=lambda x: is_valid_filepath(parser, x),
+        help='BibTeX library location')
     parser.add_argument('--ssl', action='store_true',
         help="Use SSL (must specify certfile, keyfile, and ca_certs in config)")
     parser.add_argument('--ssl-certfile', dest='certfile', nargs="?",

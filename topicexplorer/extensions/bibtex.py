@@ -12,7 +12,7 @@ def init(viewer, config, args):
 
 
     try:
-        filename = config.get('bibtex', 'path')
+        filename = args.bibtex or config.get('bibtex', 'path')
     except ConfigParser.Error:
         model_path = config.get('main','path')
         filename = os.path.join(model_path, 'library.bib')
@@ -24,7 +24,7 @@ def init(viewer, config, args):
     for entry in bib.entries:
         key = os.path.basename(bib.entries[entry].fields['file'].replace(':pdf',''))
         citation = pybtex.format_from_file(
-            'library.bib', style='plain', output_backend='text', citations=[entry])[3:]
+            filename, style='plain', output_backend='text', citations=[entry])[3:]
         metadata[key] = citation
     
 
