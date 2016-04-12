@@ -48,7 +48,7 @@ def process_pdfs(corpus_path, ignore=['.json','.log','.err','.pickle','.npz']):
             # process all files
             pdf.main(corpus_path, corpus_path + '-txt')
         elif count_dirs > 0 and count_files == 0:
-            # process each subdirectoryV
+            # process each subdirectory
             for directory in contents:
                 pdf.main(directory, 
                          directory.replace(corpus_path, corpus_path+'-txt'))
@@ -58,6 +58,36 @@ def process_pdfs(corpus_path, ignore=['.json','.log','.err','.pickle','.npz']):
         corpus_path += '-txt'
     return corpus_path
 
+def process_bibtex(corpus_path):
+    import pybtex
+    from pybtex.database import parse_file
+    from topicexplorer.lib.util import overwrite_prompt, safe_symlink
+
+    print "Loading BibTeX from", corpus_path 
+    bib = parse_file(corpus_path)
+    
+    target_dir = os.path.basename(corpus_path).replace('.bib','')
+    if not os.path.exists(target_dir):
+        os.makedirs(target_dir)
+    elif overwrite_prompt(target_dir):
+        shutil.rmtree(target_dir)
+        os.makedirs(target_dir)
+    else:
+        raise IOError("Path exits: {}".format(target_dir))
+
+
+    for entry in bib.entries:
+        if bib.entries[entry].fields.get('file', None):
+            filename = os.path.abspath('/' + bib.entries[entry].fields['file'].replace(':pdf','')[1:])
+            if not os.path.exists(filename):
+                print "Invalid 'file' field for BibTeX entry {}:\n\t({})".format(entry, filename)
+            else:
+                new_path = os.path.join(target_dir, os.path.basename(filename))
+                safe_symlink(filename, new_path)
+        else:
+            print "No 'file' field for BibTeX entry: {}".format(entry)
+
+    return target_dir
 
 def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=1,
     context_type='document', ignore=['.json','.log','.err','.pickle','.npz'],
@@ -125,14 +155,13 @@ def main(args):
     # convert to unicode to avoid windows errors
     args.corpus_path = unicode(args.corpus_path, 'utf-8')
 
-    if args.model_path is None:
-        if os.path.isdir(args.corpus_path):
-            args.model_path = os.path.join(args.corpus_path, '../models/')
-        else:
-            args.model_path = os.path.dirname(args.corpus_path)
-    if args.model_path and not os.path.exists(args.model_path):
-        os.makedirs(args.model_path)
+    # config corpus_path
+    # process bibtex files
+    if args.corpus_path.endswith('.bib'):
+        args.corpus_path = process_bibtex(args.corpus_path)
+        
 
+    # set corpus_name
     args.corpus_name = os.path.basename(args.corpus_path)
     if not args.corpus_name:
         args.corpus_name = os.path.basename(os.path.dirname(args.corpus_path))
@@ -151,6 +180,15 @@ def main(args):
         md_filename = os.path.join(args.corpus_path, '../metadata.json')
         with open(md_filename, 'wb') as outfile:
             json.dump(data, outfile)
+    
+    # configure model-path
+    if args.model_path is None:
+        if os.path.isdir(args.corpus_path):
+            args.model_path = os.path.join(args.corpus_path, '../models/')
+        else:
+            args.model_path = os.path.dirname(args.corpus_path)
+    if args.model_path and not os.path.exists(args.model_path):
+        os.makedirs(args.model_path)
   
     args.corpus_filename = get_corpus_filename(
         args.corpus_path, args.model_path, stop_freq=5)
@@ -171,9 +209,10 @@ def main(args):
                                                 sentences=args.sentences)
         except IOError:
             print "ERROR: invalid path, please specify either:"
-            print "  * a single plain-text file,"
-            print "  * a folder of plain-text files, or"
-            print "  * a folder of folders of plain-text files."
+            print "  * a single plain-text or PDF file,"
+            print "  * a single bibtex (.bib) file with 'file' fields,"
+            print "  * a folder of plain-text or PDF files, or"
+            print "  * a folder of folders of plain-text or PDF files."
             print "\nExiting..."
             sys.exit(74)
         except LookupError as e:

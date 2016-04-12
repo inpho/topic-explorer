@@ -5,6 +5,31 @@ topicexplorer.lib.util contains some helper functions for command prompts, argpa
 import os, fnmatch
 import os.path
 from glob import glob
+import shutil
+
+def safe_symlink(srcpath, linkpath):
+    """
+    Provides support for symlink if OS supports it, otherwise copies the file.
+    Largely a nice workaround for Windows.
+    """
+    if os.name == "nt":
+        def symlink_ms(source, link_name):
+            import ctypes
+            csl = ctypes.windll.kernel32.CreateSymbolicLinkW
+            csl.argtypes = (ctypes.c_wchar_p, ctypes.c_wchar_p, ctypes.c_uint32)
+            csl.restype = ctypes.c_ubyte
+            flags = 1 if os.path.isdir(source) else 0
+            try:
+                if csl(link_name, source.replace('/', '\\'), flags) == 0:
+                    raise ctypes.WinError()
+            except:
+                shutil.copyfile(source, link_name)
+                
+        os.symlink = symlink_ms
+
+    srcpath = os.path.abspath(srcpath)
+    linkpath = os.path.abspath(linkpath)
+    os.symlink(srcpath, linkpath)
 
 def is_valid_filepath(parser, arg):
     if not os.path.exists(arg):
