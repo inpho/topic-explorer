@@ -1,20 +1,24 @@
 from collections import defaultdict
+import ConfigParser
 import os.path
 
 import pybtex
 from pybtex.database import parse_file
 
-lda_v = None
 metadata = None
-context_type = None
 
-def init(model_path, viewer, ctx_type):
+def init(viewer, config, args):
     global metadata
-    global lda_v
-    global context_type
-    filename = os.path.join(model_path, 'library.bib')
+
+
+    try:
+        filename = config.get('bibtex', 'path')
+    except ConfigParser.Error:
+        model_path = config.get('main','path')
+        filename = os.path.join(model_path, 'library.bib')
+
     print "Loading Bibtex metadata from", filename
-    bib = parse_file('library.bib')
+    bib = parse_file(filename)
 
     metadata = dict()
     for entry in bib.entries:
@@ -23,8 +27,6 @@ def init(model_path, viewer, ctx_type):
             'library.bib', style='plain', output_backend='text', citations=[entry])[3:]
         metadata[key] = citation
     
-    lda_v = viewer
-    context_type = ctx_type
 
 def label(doc):
     global metadata

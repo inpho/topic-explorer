@@ -364,7 +364,7 @@ def main(args):
         label_module = config.get('main', 'label_module')
         label_module = import_module(label_module)
         print "imported label module"
-        label_module.init(config.get('main','path'), lda_v, context_type)
+        label_module.init(lda_v, config, args)
     except (ImportError, NoOptionError, AttributeError):
         pass
 
