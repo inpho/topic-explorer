@@ -465,7 +465,8 @@ def populate_parser(parser):
     parser.add_argument('-p', dest='port', type=int, 
         help="Port Number", default=None)
     parser.add_argument('--host', default=None, help='Hostname')
-    parser.add_argument('--fulltext', action='store_true')
+    parser.add_argument('--fulltext', action='store_true', 
+        help='Serve raw corpus files.')
     parser.add_argument('--bibtex', default=None, 
         type=lambda x: is_valid_filepath(parser, x),
         help='BibTeX library location')
