@@ -65,8 +65,7 @@ def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=1,
     decode=True, sentences=False, simple=True):
    
     from vsm.corpus import Corpus
-    print "importing simple constructors"
-    from vsm.extensions.corpusbuilders.corpusbuilders_simple import coll_corpus, dir_corpus, toy_corpus
+    from vsm.extensions.corpusbuilders.corpusbuilders import coll_corpus, dir_corpus, toy_corpus
     if sentences:
         print "Importing sentence constructors"
         from vsm.extensions.ldasentences import dir_corpus, toy_corpus
@@ -265,7 +264,8 @@ def populate_parser(parser):
     parser.add_argument("--htrc", action="store_true")
     parser.add_argument("--rebuild", action="store_true")
     parser.add_argument("--tokenizer", choices=['inpho', 'default'], default="default")
-    parser.add_argument("--simple", action="store_true", help="Skip sentence, paragraph, and page tokenizations.")
+    parser.add_argument("--simple", action="store_true", default=True, 
+        help="Skip sentence tokenizations [default].")
 
 if __name__ == '__main__': 
     from argparse import ArgumentParser
