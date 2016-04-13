@@ -27,7 +27,8 @@ def detect_encoding(filename):
     return detector.result['encoding']
 
 def convert(fname, pages=None, tokenizer='modern'):
-    from topicexplorer.lib.chinese import *
+    from topicexplorer.lib.chinese import (modern_chinese_tokenizer,
+                                           ancient_chinese_tokenizer)
     import langdetect
     encoding = detect_encoding(fname)
     with open(fname, encoding=encoding) as infile:
