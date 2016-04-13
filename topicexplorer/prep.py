@@ -427,7 +427,7 @@ def populate_parser(parser):
     parser.add_argument("--low", type=int, dest="low_filter",
         default=None, help="Low frequency word filter [Default: 5]")
     parser.add_argument("--min-word-len", type=int, dest="min_word_len",
-        default=3, help="Low frequency word filter [Default: 3]")
+        default=0, help="Filter short words [Default: 0]")
     parser.add_argument("--exclude-special-chars", action="store_false",
         dest='special_chars')
     parser.add_argument("--lang", nargs='+', choices=langs.keys(),

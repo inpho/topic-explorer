@@ -61,13 +61,28 @@ def process_pdfs(corpus_path, ignore=['.json','.log','.err','.pickle','.npz']):
 
 def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=1,
     context_type='document', ignore=['.json','.log','.err','.pickle','.npz'],
-    decode=True, sentences=False, simple=True):
+    decode=True, sentences=False, simple=True, tokenizer='default'):
    
     from vsm.corpus import Corpus
     from vsm.extensions.corpusbuilders import coll_corpus, dir_corpus, toy_corpus
     if sentences:
         print "Importing sentence constructors"
         from vsm.extensions.ldasentences import dir_corpus, toy_corpus
+
+
+    # import appropriate tokenizer
+    if tokenizer == 'default':
+        from vsm.extensions.corpusbuilders.util import word_tokenize
+        tokenizer = word_tokenize
+    elif tokenizer == 'zh':
+        from topicexplorer.lib.chinese import modern_chinese_tokenizer
+        tokenizer = modern_chinese_tokenizer
+    elif tokenizer == 'ltc' or tokenizer == 'och':
+        from topicexplorer.lib.chinese import ancient_chinese_tokenizer
+        tokenizer = ancient_chinese_tokenizer
+    else:
+        raise NotImplementedError("Tokenizer '{}' is not included in topicexplorer".format(tokenizer))
+
 
     # pre-process PDF files
     contains_pdfs = corpus_path[-4:] == '.pdf' or contains_pattern(corpus_path, '*.pdf')
@@ -79,7 +94,8 @@ def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=1,
     if os.path.isfile(corpus_path):
         print "Constructing toy corpus, each line is a document"
         c = toy_corpus(corpus_path, is_filename=True, nltk_stop=nltk_stop, 
-                       stop_freq=stop_freq, autolabel=True, decode=decode, simple=simple)
+                       stop_freq=stop_freq, autolabel=True, decode=decode,
+                       simple=simple, tokenizer=tokenizer)
     elif os.path.isdir(corpus_path):
         contents = listdir_nohidden(corpus_path)
         contents = [os.path.join(corpus_path,obj) for obj in contents 
@@ -94,12 +110,14 @@ def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=1,
             print "Constructing directory corpus, each file is a document"
             c = dir_corpus(corpus_path, nltk_stop=nltk_stop,
                            stop_freq=stop_freq, chunk_name=context_type,
-                           ignore=ignore, decode=decode, simple=simple)
+                           ignore=ignore, decode=decode, simple=simple, 
+                           tokenizer=tokenizer)
         elif count_dirs > 0 and count_files == 0 and not sentences:
             print "Constructing collection corpus, each folder is a document"
             context_type='book'
             c = coll_corpus(corpus_path, nltk_stop=nltk_stop,
-                            stop_freq=stop_freq, ignore=ignore, decode=decode, simple=simple)
+                            stop_freq=stop_freq, ignore=ignore, decode=decode,
+                            simple=simple, tokenizer=tokenizer)
         elif count_dirs > 0 and count_files == 0 and sentences:
             raise NotImplementedError("""Collection corpuses are too large for
             sentence parsing. Reduce your corpus to a single folder or
@@ -169,7 +187,7 @@ def main(args):
             args.corpus_filename = build_corpus(args.corpus_path, args.model_path, 
                                                 stop_freq=5, decode=args.decode,
                                                 sentences=args.sentences,
-                                                simple=args.simple)
+                                                simple=args.simple,tokenizer=args.tokenizer)
         except IOError:
             print "ERROR: invalid path, please specify either:"
             print "  * a single plain-text file,"
@@ -177,17 +195,20 @@ def main(args):
             print "  * a folder of folders of plain-text files."
             print "\nExiting..."
             sys.exit(74)
+        """
         except LookupError as e:
             if 'punkt' in e.message:
                 print "\nERROR: sentence tokenizer not available, download by running:"
                 print "    python -m nltk.downloader punkt"
 
-            if 'stopwords' in e.message:
+            elif 'stopwords' in e.message:
                 print "\nERROR: stopwords not available, download by running:"
                 print "    python -m nltk.downloader stopwords"
+            else:
+                raise e
             print "\nExiting..."
             sys.exit(74)        
-
+        """
 
     return write_config(args, args.config_file)
 
@@ -256,13 +277,13 @@ def populate_parser(parser):
         help="Model Path [Default: [corpus_path]/../models]")
     group = parser.add_mutually_exclusive_group()
     group.add_argument("--decode", action="store_true", dest='decode',
-        help="Convert unicode characters to ascii. [Default]")
+        help="Convert unicode characters to ascii.")
     group.add_argument("--unicode", action="store_false", dest='decode',
-        help="Store unicode characters.")
+        help="Store unicode characters. [Default]")
     parser.add_argument("--sentences", action="store_true", help="Parse at the sentence level")
     parser.add_argument("--htrc", action="store_true")
     parser.add_argument("--rebuild", action="store_true")
-    parser.add_argument("--tokenizer", choices=['inpho', 'default'], default="default")
+    parser.add_argument("--tokenizer", choices=['zh', 'ltc', 'och', 'inpho', 'default'], default="default")
     parser.add_argument("--simple", action="store_true", default=True, 
         help="Skip sentence tokenizations [default].")
 
