@@ -44,7 +44,10 @@ def convert_miner(fname, pages=None):
 
     infile = file(fname, 'rb')
     for page in PDFPage.get_pages(infile, pagenums):
-        interpreter.process_page(page)
+        try:
+            interpreter.process_page(page)
+        except:
+            pass
     infile.close()
     converter.close()
     text = output.getvalue()
