@@ -60,7 +60,8 @@ install_requires = [
         'pip>=7.1.1',
         'langdetect',
         'profilehooks',
-        'pybtex>=0.20'
+        'pybtex>=0.20',
+        'mmseg==1.3.0'
         ]
 
 if platform.system() == 'Windows':
