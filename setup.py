@@ -61,11 +61,12 @@ install_requires = [
         'langdetect',
         'profilehooks',
         'pybtex>=0.20',
-        'mmseg==1.3.0'
         ]
 
 if platform.system() == 'Windows':
     install_requires.append('pywin32')
+else:
+    install_requires.append('mmseg==1.3.0')
 
 setup(
     name='topicexplorer',
