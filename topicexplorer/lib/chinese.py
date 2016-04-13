@@ -1,5 +1,7 @@
 import platform
-if platform.system() != 'Windows':
+if platform.system() == 'Windows':
+    raise NotImplementedError("mmseg Chinese language parser not implemented for Windows systems.")
+else:
     import mmseg
     import os.path
     
