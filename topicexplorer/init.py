@@ -75,10 +75,10 @@ def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=1,
         from vsm.extensions.corpusbuilders.util import word_tokenize
         tokenizer = word_tokenize
     elif tokenizer == 'zh':
-        from topicexplorer.lib.mmseg import modern_chinese_tokenizer
+        from topicexplorer.lib.chinese import modern_chinese_tokenizer
         tokenizer = modern_chinese_tokenizer
     elif tokenizer == 'ltc' or tokenizer == 'och':
-        from topicexplorer.lib.mmseg import ancient_chinese_tokenizer
+        from topicexplorer.lib.chinese import ancient_chinese_tokenizer
         tokenizer = ancient_chinese_tokenizer
     else:
         raise NotImplementedError("Tokenizer '{}' is not included in topicexplorer".format(tokenizer))
@@ -195,17 +195,20 @@ def main(args):
             print "  * a folder of folders of plain-text files."
             print "\nExiting..."
             sys.exit(74)
+        """
         except LookupError as e:
             if 'punkt' in e.message:
                 print "\nERROR: sentence tokenizer not available, download by running:"
                 print "    python -m nltk.downloader punkt"
 
-            if 'stopwords' in e.message:
+            elif 'stopwords' in e.message:
                 print "\nERROR: stopwords not available, download by running:"
                 print "    python -m nltk.downloader stopwords"
+            else:
+                raise e
             print "\nExiting..."
             sys.exit(74)        
-
+        """
 
     return write_config(args, args.config_file)
 
@@ -274,9 +277,9 @@ def populate_parser(parser):
         help="Model Path [Default: [corpus_path]/../models]")
     group = parser.add_mutually_exclusive_group()
     group.add_argument("--decode", action="store_true", dest='decode',
-        help="Convert unicode characters to ascii. [Default]")
+        help="Convert unicode characters to ascii.")
     group.add_argument("--unicode", action="store_false", dest='decode',
-        help="Store unicode characters.")
+        help="Store unicode characters. [Default]")
     parser.add_argument("--sentences", action="store_true", help="Parse at the sentence level")
     parser.add_argument("--htrc", action="store_true")
     parser.add_argument("--rebuild", action="store_true")

@@ -5,7 +5,7 @@ import os.path
 from chardet.universaldetector import UniversalDetector
 from progressbar import ProgressBar, Percentage, Bar
 import topicexplorer.lib.util as util
-from topicexplorer.lib.mmseg import *
+from topicexplorer.lib.chinese import *
 
 def detect_encoding(filename):
     """
@@ -34,7 +34,6 @@ def convert(fname, pages=None, tokenizer='modern'):
         data = infile.read()
     lang = langdetect.detect(data)
 
-
     if tokenizer == 'modern':
         tokenizer = modern_chinese_tokenizer
     elif tokenizer == 'ancient':
@@ -61,7 +60,7 @@ def convert_and_write(fname, output_dir=None, overwrite=False, verbose=False,
 
     if overwrite or util.overwrite_prompt(output):
         with open(output, 'wb', encoding='utf8') as outfile:
-            outfile.write(convert(fname), tokenizer=tokenizer)
+            outfile.write(convert(fname, tokenizer=tokenizer))
             if verbose:
                 print "converted", fname, "->", output
 
