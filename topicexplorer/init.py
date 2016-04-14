@@ -7,7 +7,7 @@ import sys
 from topicexplorer.lib.util import (prompt, is_valid_filepath, 
     listdir_nohidden, contains_pattern)
 
-def get_corpus_filename(corpus_path, model_path, nltk_stop=False, stop_freq=1,
+def get_corpus_filename(corpus_path, model_path, nltk_stop=False, stop_freq=0,
 			context_type='document'):
     corpus_name = os.path.basename(corpus_path)
     if not corpus_name:
@@ -59,7 +59,7 @@ def process_pdfs(corpus_path, ignore=['.json','.log','.err','.pickle','.npz']):
     return corpus_path
 
 
-def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=1,
+def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=0,
     context_type='document', ignore=['.json','.log','.err','.pickle','.npz'],
     decode=True, sentences=False, simple=True, tokenizer='default'):
    
@@ -171,7 +171,7 @@ def main(args):
             json.dump(data, outfile)
   
     args.corpus_filename = get_corpus_filename(
-        args.corpus_path, args.model_path, stop_freq=5)
+        args.corpus_path, args.model_path, stop_freq=args.stop_freq)
     if not args.rebuild and os.path.exists(args.corpus_filename): 
         while args.rebuild not in ['y', 'n', True]:
             args.rebuild = raw_input("\nCorpus file found. Rebuild? [y/N] ")
@@ -185,7 +185,7 @@ def main(args):
     if args.rebuild == True:
         try:
             args.corpus_filename = build_corpus(args.corpus_path, args.model_path, 
-                                                stop_freq=5, decode=args.decode,
+                                                stop_freq=args.stop_freq, decode=args.decode,
                                                 sentences=args.sentences,
                                                 simple=args.simple,tokenizer=args.tokenizer)
         except IOError:
@@ -275,17 +275,23 @@ def populate_parser(parser):
         help="Path to Config [optional]")
     parser.add_argument("--model-path", dest="model_path",
         help="Model Path [Default: [corpus_path]/../models]")
+
     group = parser.add_mutually_exclusive_group()
-    group.add_argument("--decode", action="store_true", dest='decode',
-        help="Convert unicode characters to ascii.")
     group.add_argument("--unicode", action="store_false", dest='decode',
         help="Store unicode characters. [Default]")
-    parser.add_argument("--sentences", action="store_true", help="Parse at the sentence level")
+    group.add_argument("--decode", action="store_true", dest='decode',
+        help="Convert unicode characters to ascii.")
+    parser.set_defaults(decode=False)
+    
     parser.add_argument("--htrc", action="store_true")
     parser.add_argument("--rebuild", action="store_true")
     parser.add_argument("--tokenizer", choices=['zh', 'ltc', 'och', 'inpho', 'default'], default="default")
+    
     parser.add_argument("--simple", action="store_true", default=True, 
         help="Skip sentence tokenizations [default].")
+    parser.add_argument("--sentences", action="store_true", help="Parse at the sentence level")
+    parser.add_argument("--freq", dest="stop_freq", default=5, type=int,
+        help="Filter words occurring less than freq times [Default: 5])")
 
 if __name__ == '__main__': 
     from argparse import ArgumentParser
