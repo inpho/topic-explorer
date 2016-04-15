@@ -93,9 +93,14 @@ def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=0,
 
     if os.path.isfile(corpus_path):
         print "Constructing toy corpus, each line is a document"
-        c = toy_corpus(corpus_path, is_filename=True, nltk_stop=nltk_stop, 
-                       stop_freq=stop_freq, autolabel=True, decode=decode,
-                       simple=simple, tokenizer=tokenizer)
+        if args.sentences:
+            c = toy_corpus(corpus_path, is_filename=True, nltk_stop=nltk_stop, 
+                           stop_freq=stop_freq, autolabel=True, decode=decode,
+                           tokenizer=tokenizer)
+        else:
+            c = toy_corpus(corpus_path, is_filename=True, nltk_stop=nltk_stop, 
+                           stop_freq=stop_freq, autolabel=True, decode=decode,
+                           simple=simple, tokenizer=tokenizer)
     elif os.path.isdir(corpus_path):
         contents = listdir_nohidden(corpus_path)
         contents = [os.path.join(corpus_path,obj) for obj in contents 
@@ -108,10 +113,16 @@ def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=0,
 
         if count_files > 0 and count_dirs == 0:
             print "Constructing directory corpus, each file is a document"
-            c = dir_corpus(corpus_path, nltk_stop=nltk_stop,
-                           stop_freq=stop_freq, chunk_name=context_type,
-                           ignore=ignore, decode=decode, simple=simple, 
-                           tokenizer=tokenizer)
+            if args.sentences:
+                c = dir_corpus(corpus_path, nltk_stop=nltk_stop,
+                               stop_freq=stop_freq, chunk_name=context_type,
+                               ignore=ignore, decode=decode,
+                               tokenizer=tokenizer)
+            else:
+                c = dir_corpus(corpus_path, nltk_stop=nltk_stop,
+                               stop_freq=stop_freq, chunk_name=context_type,
+                               ignore=ignore, decode=decode, simple=simple, 
+                               tokenizer=tokenizer)
         elif count_dirs > 0 and count_files == 0 and not sentences:
             print "Constructing collection corpus, each folder is a document"
             context_type='book'
