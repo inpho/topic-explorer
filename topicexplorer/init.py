@@ -93,7 +93,7 @@ def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=0,
 
     if os.path.isfile(corpus_path):
         print "Constructing toy corpus, each line is a document"
-        if args.sentences:
+        if sentences:
             c = toy_corpus(corpus_path, is_filename=True, nltk_stop=nltk_stop, 
                            stop_freq=stop_freq, autolabel=True, decode=decode,
                            tokenizer=tokenizer)
@@ -113,7 +113,7 @@ def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=0,
 
         if count_files > 0 and count_dirs == 0:
             print "Constructing directory corpus, each file is a document"
-            if args.sentences:
+            if sentences:
                 c = dir_corpus(corpus_path, nltk_stop=nltk_stop,
                                stop_freq=stop_freq, chunk_name=context_type,
                                ignore=ignore, decode=decode,
