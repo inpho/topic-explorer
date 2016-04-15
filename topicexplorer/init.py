@@ -95,8 +95,7 @@ def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=0,
         print "Constructing toy corpus, each line is a document"
         if sentences:
             c = toy_corpus(corpus_path, is_filename=True, nltk_stop=nltk_stop, 
-                           stop_freq=stop_freq, autolabel=True, decode=decode,
-                           tokenizer=tokenizer)
+                           stop_freq=stop_freq, autolabel=True, decode=decode)
         else:
             c = toy_corpus(corpus_path, is_filename=True, nltk_stop=nltk_stop, 
                            stop_freq=stop_freq, autolabel=True, decode=decode,
@@ -116,8 +115,7 @@ def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=0,
             if sentences:
                 c = dir_corpus(corpus_path, nltk_stop=nltk_stop,
                                stop_freq=stop_freq, chunk_name=context_type,
-                               ignore=ignore, decode=decode,
-                               tokenizer=tokenizer)
+                               ignore=ignore, decode=decode)
             else:
                 c = dir_corpus(corpus_path, nltk_stop=nltk_stop,
                                stop_freq=stop_freq, chunk_name=context_type,
