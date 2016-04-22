@@ -28,6 +28,8 @@ def _inpho_token_generator(document):
             return
 
         first, rest = rest.split(u' ', 1)
+        rest = rest.strip()
+
         # always yield the raw string
         yield first
 
