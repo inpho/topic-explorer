@@ -3,6 +3,7 @@ from ConfigParser import SafeConfigParser as ConfigParser
 from ConfigParser import NoOptionError
 import multiprocessing
 import os.path
+from cluster import dimensionReduce
 
 from topicexplorer.lib.util import bool_prompt, int_prompt, is_valid_filepath
 
@@ -177,6 +178,19 @@ def main(args):
     if not args.dry_run:
         with open(args.config_file, "wb") as configfh:
             config.write(configfh)
+    
+    dimension_reduce_model = dimensionReduce(args.config_file)
+    print "fitting Isomap \n"    
+    dimension_reduce_model.fit_isomap()  
+    n_clusters=None
+    print "Enter Number of clusters"
+    n_clusters = raw_input()
+    if n_clusters == None or int(n_clusters) <1:
+        n_clusters = 5
+    print "fitting Kmeans \n"    
+    dimension_reduce_model.fit_kmeans(int(n_clusters))
+    print "writing model files for Isomap and kmeans\n"    
+    dimension_reduce_model.write_model_file()
 
 def populate_parser(parser):
     parser.add_argument("config_file", help="Path to Config",
