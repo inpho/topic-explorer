@@ -83,6 +83,9 @@ def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=0,
     elif tokenizer == 'inpho':
         from topicexplorer.extensions.inpho import inpho_tokenizer
         tokenizer = inpho_tokenizer
+    elif tokenizer == 'brain':
+        from hyperbrain.parse import brain_tokenizer
+        tokenizer = brain_tokenizer
     else:
         raise NotImplementedError("Tokenizer '{}' is not included in topicexplorer".format(tokenizer))
 
