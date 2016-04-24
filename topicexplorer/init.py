@@ -300,7 +300,7 @@ def populate_parser(parser):
     
     parser.add_argument("--htrc", action="store_true")
     parser.add_argument("--rebuild", action="store_true")
-    parser.add_argument("--tokenizer", choices=['zh', 'ltc', 'och', 'inpho', 'default'], default="default")
+    parser.add_argument("--tokenizer", choices=['zh', 'ltc', 'och', 'inpho', 'default', 'brain'], default="default")
     
     parser.add_argument("--simple", action="store_true", default=True, 
         help="Skip sentence tokenizations [default].")
