@@ -68,7 +68,7 @@ if platform.system() == 'Windows':
 else:
     install_requires.append('mmseg==1.3.0')
 
-if platform.python_version_tuple()[0] == 2:
+if platform.python_version_tuple()[0] == '2':
     install_requires.append("futures>=3.0.0")
 
 setup(
