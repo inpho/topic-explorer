@@ -7,6 +7,8 @@ from pdfminer.pdfpage import PDFPage
 from pdfminer.pdftypes import PDFException
 from pdfminer.psparser import PSException
 
+import concurrent.futures
+
 import os
 import os.path
 from glob import glob
@@ -73,25 +75,26 @@ def main(path_or_paths, output_dir=None, verbose=1):
     if isinstance(path_or_paths, basestring):
         path_or_paths = [path_or_paths]
 
-    for p in path_or_paths:
-        if os.path.isdir(p):
-            num_files = len(list(util.find_files(p, '*.pdf')))
-            if verbose == 1:
-                pbar = ProgressBar(widgets=[Percentage(), Bar()],
-                                   maxval=num_files).start()
-            for file_n, pdffile in enumerate(util.find_files(p, '*.pdf')):
-                try:
-                    convert_and_write(pdffile, output_dir, overwrite=True)
-                except (PDFException, PSException):
-                    print "Skipping {0} due to PDF Exception".format(pdffile)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+        futures = []
+        for p in path_or_paths:
+            if os.path.isdir(p):
+                for file_n, pdffile in enumerate(util.find_files(p, '*.pdf')):
+                    try:
+                        futures.append(executor.submit(convert_and_write, pdffile, output_dir, True))
+                    except (PDFException, PSException):
+                        print "Skipping {0} due to PDF Exception".format(pdffile)
+            else:
+                futures.append(executor.submit(convert_and_write, pdffile, output_dir, True, True))
 
-                if verbose == 1:
-                    pbar.update(file_n)
+        if verbose == 1:
+            pbar = ProgressBar(widgets=[Percentage(), Bar()],
+                                   maxval=len(futures)).start()
 
-            if verbose == 1:
-                pbar.finish()
-        else:
-            convert_and_write(p, output_dir, overwrite=True, verbose=True)
+            for file_n,f in enumerate(concurrent.futures.as_completed(futures)):
+                pbar.update(file_n)
+
+            pbar.finish()
 
     
 
