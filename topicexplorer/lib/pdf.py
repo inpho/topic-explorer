@@ -75,7 +75,7 @@ def main(path_or_paths, output_dir=None, verbose=1):
     if isinstance(path_or_paths, basestring):
         path_or_paths = [path_or_paths]
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+    with concurrent.futures.ProcessPoolExecutor() as executor:
         futures = []
         for p in path_or_paths:
             if os.path.isdir(p):
