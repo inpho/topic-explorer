@@ -18,3 +18,4 @@ dist/
 topicexplorer.egg-info
 
 *~
+.travis.key
