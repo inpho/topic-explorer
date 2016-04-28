@@ -1,15 +1,12 @@
 from ConfigParser import RawConfigParser as ConfigWriter
 from ConfigParser import SafeConfigParser as ConfigParser
 from ConfigParser import NoOptionError
-import multiprocessing
 import os.path
 
 from topicexplorer.lib.util import bool_prompt, int_prompt, is_valid_configfile
 
 def build_models(corpus, corpus_filename, model_path, context_type, krange, 
                  n_iterations=200, n_proc=1, seed=None, dry_run=False):
-    from vsm.model.lda import LDA
-
     basefilename = os.path.basename(corpus_filename).replace('.npz','')
     basefilename += "-LDA-K%s-%s-%d.npz" % ('{0}', context_type, n_iterations)
     basefilename = os.path.join(model_path, basefilename)
@@ -28,6 +25,7 @@ def build_models(corpus, corpus_filename, model_path, context_type, krange,
         seeds = None
 
     if not dry_run:
+        from vsm.model.lda import LDA
         for k in krange:
             print "Training model for k={0} Topics with {1} Processes"\
                 .format(k, n_proc)
@@ -58,7 +56,6 @@ def continue_training(model_pattern, krange, total_iterations=200, n_proc=1):
     return basefilename
 
 def main(args):
-    from vsm.model.lda import LDA
 
     config = ConfigParser({"sentences": "False"})
     config.read(args.config_file)
@@ -95,6 +92,7 @@ def main(args):
                 print "Enter valid integers, separated by spaces!"
         
     if args.processes < 0:
+        import multiprocessing
         args.processes = multiprocessing.cpu_count() + args.processes
 
     print "Loading corpus... "
@@ -107,7 +105,8 @@ def main(args):
 
     if model_pattern is not None and\
         bool_prompt("Existing models found. Continue training?", default=True):
-    
+
+        from vsm.model.lda import LDA
         m = LDA.load(model_pattern.format(args.k[0]),
                      multiprocessing=args.processes > 1,
                      n_proc=args.processes)
@@ -210,3 +209,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     main(args)
+
