@@ -50,7 +50,7 @@ install_requires = [
         'bottle>=0.12', 
         'brewer2mpl>=1.4',
         'pystache>=0.5.4',
-        'vsm==0.4.0a25',
+        'vsm==0.4.0a26',
         'wget',
         'unidecode',
         'pdfminer',
