@@ -203,7 +203,15 @@ def topics():
         js[str(i)].update({'words' : dict([(w, p) for w,p in topic[:10]])})
 
     return json.dumps(js)
-
+	
+@route('/<filename>.csv')
+@_set_acao_headers
+def serve_model_csv(filename):
+	tfilename =filename
+	tfilename += '.csv'
+	return static_file(tfilename, root=os.path.normpath('C:/Users/adi/Desktop/'))
+		
+		
 @route('/docs.json')
 @_set_acao_headers
 def docs(docs=None, q=None):
@@ -422,7 +430,14 @@ def main(args):
              'topic_range' : topic_range,
              'doc_title_format' : doc_title_format,
              'doc_url_format' : doc_url_format})
-
+	
+    @route('/<filename>.csv')
+    @_set_acao_headers
+    def serve_model_csv(filename):
+	tfilename =config.get('main','cluster')+'_'+filename
+	tfilename += '.csv'
+	return static_file(tfilename, root=os.path.normpath(os.path.dirname(tfilename)))
+	
 
     @route('/<filename:path>')
     @_set_acao_headers

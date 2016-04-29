@@ -47,25 +47,25 @@ class dimensionReduce:
         kmeans_object = cluster.KMeans(n_clusters)
         self.kmeans = kmeans_object.fit(self.isomap.embedding_)
         
-    def write_isomap(self):
-        with open(r"C:/Users/adi/Desktop/isomapWWW.csv",'w') as isomap_file:
+    def write_isomap(self,filename):
+        with open(filename +'_'+"isomapWWW.csv",'w') as isomap_file:
             isomap_file.write('x,y\n')
             for i in range(len(self.isomap.embedding_)):
                 isomap_file.write(str(self.isomap.embedding_[i][0])+','+str(self.isomap.embedding_[i][1])+'\n')
         
-    def write_kmeans(self):
-        with open(r"C:/Users/adi/Desktop/clusterWWW.csv",'w') as cluster_file:
+    def write_kmeans(self,filename):
+        with open(filename +'_'+"clusterWWW.csv",'w') as cluster_file:
             cluster_file.write('x,y\n')
             for i in range(len(self.kmeans.cluster_centers_ )):
                 cluster_file.write(str(self.kmeans.cluster_centers_[i][0])+','+str(self.kmeans.cluster_centers_[i][1])+'\n')
         
-        with open(r"C:/Users/adi/Desktop/labelsWWW.csv",'w') as label_file:
+        with open(filename +'_'+"labelsWWW.csv",'w') as label_file:
             label_file.write('x\n')
             for i in range(len(self.kmeans.labels_ )):
                 label_file.write(str(self.kmeans.labels_[i])+'\n')
         
-    def write_topics(self):
-        with open(r"C:/Users/adi/Desktop/topicsWWW.csv",'w') as topic_file,open(r"C:/Users/adi/Desktop/topic_rangeWWW.csv",'w') as topicR_file:
+    def write_topics(self,filename):
+        with open(filename +'_'+"topicsWWW.csv",'w') as topic_file,open(filename +'_'+"topic_rangeWWW.csv",'w') as topicR_file:
             topic_file.write('topic\n')
             topicR_file.write('topic_range\n')
             for k in self.topic_range:
@@ -79,7 +79,7 @@ class dimensionReduce:
                     topicR_file.write(str(k)+'\n')
             
         
-    def write_model_file(self):
-        self.write_isomap()
-        self.write_kmeans()
-        self.write_topics()
+    def write_model_file(self,filename):
+        self.write_isomap(filename)
+        self.write_kmeans(filename)
+        self.write_topics(filename)

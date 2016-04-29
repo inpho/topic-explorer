@@ -189,8 +189,11 @@ def main(args):
         n_clusters = 5
     print "fitting Kmeans \n"    
     dimension_reduce_model.fit_kmeans(int(n_clusters))
-    print "writing model files for Isomap and kmeans\n"    
-    dimension_reduce_model.write_model_file()
+    print "writing model files for Isomap and kmeans\n"
+    config.set("main", "cluster", str.split(corpus_filename,'.')[0]+'_k'+str(n_clusters))
+    with open(args.config_file, "wb") as configfh:
+         config.write(configfh)
+    dimension_reduce_model.write_model_file(config.get("main", "cluster"))
 
 def populate_parser(parser):
     parser.add_argument("config_file", help="Path to Config",
