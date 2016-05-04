@@ -454,8 +454,8 @@ $('#randomDoc').tooltip({title: "Random Document", placement: 'bottom'});
     d3.select("#mainsvg").remove();
     initTa();
     
-    d3.csv("clusterWWW.csv", function(centers){ 
-    d3.csv("labelsWWW.csv", function(labels){ 
+    d3.csv("clusterWWW_" + document.getElementById("clusterRange").value+".csv", function(centers){ 
+    d3.csv("labelsWWW_"+ document.getElementById("clusterRange").value+".csv", function(labels){ 
     d3.csv("isomapWWW.csv", function(data){
     d3.csv("topicsWWW.csv", function(topics){
     d3.csv("topic_rangeWWW.csv", function(topics_range){
@@ -524,7 +524,6 @@ $('#randomDoc').tooltip({title: "Random Document", placement: 'bottom'});
     
 	var prev = -1;
     for(i =0 ;i < data.length ; i++){
-        console.log("here");
         if( topic_r[i] != prev){
 			var individual_topic_index = 0;
 			prev = topic_r[i];
@@ -534,10 +533,9 @@ $('#randomDoc').tooltip({title: "Random Document", placement: 'bottom'});
 		}
 		
 		if( document.getElementById("topic"+topic_r[i]).checked == true){
-      
            allData.push({'x':linearScalex(dataArrayX[i]),        
            'y':linearScaley(dataArrayY[i]),
-           'z':topics[i]['topic'],
+           'z':'Topic' + individual_topic_index + ':' +topics[i]['topic'],
 		   'topic_id' : topic_r[i],
            'idd': individual_topic_index,'label':label[i],'cx':linearScalecx(centerX[label[i]]) ,'cy':linearScalecy(centerY[label[i]]) });
                        
@@ -562,7 +560,7 @@ $('#randomDoc').tooltip({title: "Random Document", placement: 'bottom'});
 	                     .attr("title",function(d){return d.z;})
 						 .attr("id",function(d){return "t"+d.topic_id+"n"+d.idd;})
                          .attr("r", function(d){return circleRadius(d.topic_id);})
-                         .style("fill",function(d){ return color(d.label);});
+						 .style("fill",function(d){ return color(d.label);});
     
     $("circle").tooltip({container:'body', trigger: 'manual', animation: false, html: true});
     
@@ -594,6 +592,7 @@ $('#randomDoc').tooltip({title: "Random Document", placement: 'bottom'});
     document.getElementById("topic"+parseInt(document.getElementById("submit").innerHTML.split(" ")[0])).checked = true;
 	$("#controlsTA :input").attr("disabled", false);
     document.getElementById("topic"+parseInt(document.getElementById("submit").innerHTML.split(" ")[0])).disabled = true;
+	document.getElementById("clusterRange").disabled = false;
 	drw();
 	}
   else{
@@ -623,7 +622,15 @@ $('#randomDoc').tooltip({title: "Random Document", placement: 'bottom'});
 	{{#topic_range}}
 	<input type="checkbox" id="topic{{k}}" onclick="drw()" disabled><span style='color:black'>{{k}} Topics</span>
     {{/topic_range}}
+	<br>
+	<form>
+	<strong> Clusters </strong>
+	<br>
+	<input type="range" id="clusterRange" style="width: 250px;" defaultValue='2' min='1' max='10' onchange="drw()"  disabled>
+	</input>
+	</form>
 </div>  
+
   <strong>Display Options</strong>
   <label class="checkbox"><input class="sort" type="checkbox"> Alphabetical sort</label>
   <label class="checkbox"><input class="scale" type="checkbox"> Normalize topic bars</label>
