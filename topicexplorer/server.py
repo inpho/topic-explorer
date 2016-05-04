@@ -17,6 +17,8 @@ from bottle import request, response, route, run, static_file
 from topicexplorer.lib.ssl import SSLWSGIRefServer
 from topicexplorer.lib.util import int_prompt, bool_prompt, is_valid_filepath
 
+from cluster import dimensionReduce
+
 import random
 import pystache
 
@@ -302,7 +304,9 @@ def main(args):
     context_type = config.get('main', 'context_type')
     corpus_file = config.get('main', 'corpus_file')
     model_pattern = config.get('main', 'model_pattern') 
-
+    dimension_reduce_model = dimensionReduce(args.config)    
+    dimension_reduce_model.fit_isomap()
+    topic_range = config.get('main','topics')
     # automatic port assignment
 
     def test_port(port):
@@ -434,9 +438,20 @@ def main(args):
     @route('/<filename>.csv')
     @_set_acao_headers
     def serve_model_csv(filename):
-	tfilename =config.get('main','cluster')+'_'+filename
-	tfilename += '.csv'
-	return static_file(tfilename, root=os.path.normpath(os.path.dirname(tfilename)))
+        tfilename =config.get('main','cluster')+'_'+filename
+        tfilename += '.csv'
+        if filename == "isomapWWW" or filename == "topicsWWW" or filename == "topic_rangeWWW":
+          return static_file(tfilename, root=os.path.normpath(os.path.dirname(tfilename)))
+        else:
+          if not os.path.isfile(filename):
+              dimension_reduce_model.fit_kmeans(int(str.split(filename,'_')[1]))
+              dimension_reduce_model.write_kmeans(config.get('main','cluster'))
+              return static_file(tfilename, root=os.path.normpath(os.path.dirname(tfilename)))
+          else:
+              return static_file(tfilename, root=os.path.normpath(os.path.dirname(tfilename)))
+              
+              
+          
 	
 
     @route('/<filename:path>')

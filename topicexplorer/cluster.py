@@ -10,6 +10,7 @@ from config import moduleLoad
 import numpy as np
 from sklearn import manifold
 from sklearn import cluster
+import os.path
 
 class dimensionReduce:
     def __init__(self,config_name):
@@ -44,39 +45,43 @@ class dimensionReduce:
         self.isomap = isomap_object.fit(self.merge_word_topic)
     
     def fit_kmeans(self,n_clusters):
+        self.no_clusters = n_clusters
         kmeans_object = cluster.KMeans(n_clusters)
         self.kmeans = kmeans_object.fit(self.isomap.embedding_)
         
     def write_isomap(self,filename):
-        with open(filename +'_'+"isomapWWW.csv",'w') as isomap_file:
-            isomap_file.write('x,y\n')
-            for i in range(len(self.isomap.embedding_)):
-                isomap_file.write(str(self.isomap.embedding_[i][0])+','+str(self.isomap.embedding_[i][1])+'\n')
+        if not os.path.isfile(filename +'_'+"isomapWWW.csv"):
+            with open(filename +'_'+"isomapWWW.csv",'w') as isomap_file:
+                isomap_file.write('x,y\n')
+                for i in range(len(self.isomap.embedding_)):
+                    isomap_file.write(str(self.isomap.embedding_[i][0])+','+str(self.isomap.embedding_[i][1])+'\n')
         
     def write_kmeans(self,filename):
-        with open(filename +'_'+"clusterWWW.csv",'w') as cluster_file:
-            cluster_file.write('x,y\n')
-            for i in range(len(self.kmeans.cluster_centers_ )):
-                cluster_file.write(str(self.kmeans.cluster_centers_[i][0])+','+str(self.kmeans.cluster_centers_[i][1])+'\n')
-        
-        with open(filename +'_'+"labelsWWW.csv",'w') as label_file:
-            label_file.write('x\n')
-            for i in range(len(self.kmeans.labels_ )):
-                label_file.write(str(self.kmeans.labels_[i])+'\n')
+        if not os.path.isfile(filename +'_'+"clusterWWW"+'_'+str(self.no_clusters)+".csv"):
+            with open(filename +'_'+"clusterWWW"+'_'+str(self.no_clusters)+".csv",'w') as cluster_file:
+                cluster_file.write('x,y\n')
+                for i in range(len(self.kmeans.cluster_centers_ )):
+                    cluster_file.write(str(self.kmeans.cluster_centers_[i][0])+','+str(self.kmeans.cluster_centers_[i][1])+'\n')
+            
+            with open(filename +'_'+"labelsWWW"+'_'+str(self.no_clusters)+".csv",'w') as label_file:
+                label_file.write('x\n')
+                for i in range(len(self.kmeans.labels_ )):
+                    label_file.write(str(self.kmeans.labels_[i])+'\n')
         
     def write_topics(self,filename):
-        with open(filename +'_'+"topicsWWW.csv",'w') as topic_file,open(filename +'_'+"topic_rangeWWW.csv",'w') as topicR_file:
-            topic_file.write('topic\n')
-            topicR_file.write('topic_range\n')
-            for k in self.topic_range:
-                temp_model=self.model_v[k].topics()
-                                
-                for i in range(k):
-                    temp_str = ''                    
-                    for j in range(10):
-                        temp_str=temp_str+' '+temp_model[i][j][0]
-                    topic_file.write(temp_str+'\n')
-                    topicR_file.write(str(k)+'\n')
+        if not os.path.isfile(filename +'_'+"topicsWWW.csv"):        
+            with open(filename +'_'+"topicsWWW.csv",'w') as topic_file,open(filename +'_'+"topic_rangeWWW.csv",'w') as topicR_file:
+                topic_file.write('topic\n')
+                topicR_file.write('topic_range\n')
+                for k in self.topic_range:
+                    temp_model=self.model_v[k].topics()
+                                    
+                    for i in range(k):
+                        temp_str = ''                    
+                        for j in range(10):
+                            temp_str=temp_str+' '+temp_model[i][j][0]
+                        topic_file.write(temp_str+'\n')
+                        topicR_file.write(str(k)+'\n')
             
         
     def write_model_file(self,filename):
