@@ -67,8 +67,16 @@
 rect {
   opacity: 0.6;
   }
-
+circle {
+  opacity: 0.9;
+  }
 rect.hover {
+  stroke: #000;
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+  cursor: crosshair;
+}
+circle.hover {
   stroke: #000;
   stroke-width: 1;
   shape-rendering: crispEdges;
@@ -81,14 +89,32 @@ rect.hover, .legend rect {
 .doc:hover rect, .doc.hover rect {
   opacity: 1.0;
   }
+  
 rect:hover {
   opacity: 1.0 !important;
 }
+
+circle:hover {
+  opacity: 1.0 !important;
+}
+
 rect:hover, .legend.hover rect, .legend.selected rect {
   stroke: #000;
   stroke-width: 2;
   shape-rendering: crispEdges;
   }
+.selected_circle{
+  opacity: 1.0;
+  stroke: #000;
+  stroke-width: 2;
+  shape-rendering: crispEdges;
+}
+.hover_circle{
+  opacity: 1.0;
+  stroke: #000;
+  stroke-width: 2;
+  shape-rendering: crispEdges;
+}
 .selected text, .hover text {
   font-weight: bold;
 }
@@ -453,7 +479,7 @@ $('#randomDoc').tooltip({title: "Random Document", placement: 'bottom'});
     function drw(){
     d3.select("#mainsvg").remove();
     initTa();
-    
+    document.getElementById("cluster_range_indicator").innerHTML = document.getElementById("clusterRange").value;
     d3.csv("clusterWWW_" + document.getElementById("clusterRange").value+".csv", function(centers){ 
     d3.csv("labelsWWW_"+ document.getElementById("clusterRange").value+".csv", function(labels){ 
     d3.csv("isomapWWW.csv", function(data){
@@ -520,7 +546,8 @@ $('#randomDoc').tooltip({title: "Random Document", placement: 'bottom'});
                      .domain(d3.extent(topic_r))
                      .range([5,15]);
     
-    var color = d3.scale.category20();
+			   
+    var color = d3.scale.category20b();
     
 	var prev = -1;
     for(i =0 ;i < data.length ; i++){
@@ -535,8 +562,9 @@ $('#randomDoc').tooltip({title: "Random Document", placement: 'bottom'});
 		if( document.getElementById("topic"+topic_r[i]).checked == true){
            allData.push({'x':linearScalex(dataArrayX[i]),        
            'y':linearScaley(dataArrayY[i]),
-           'z':'Topic' + individual_topic_index + ':' +topics[i]['topic'],
+           'z': 'Topic Model : ' + topic_r[i] + "<br>" + 'Topic' + individual_topic_index + ':' +topics[i]['topic'],
 		   'topic_id' : topic_r[i],
+		   'port' : {{port}} + topic_r[i],
            'idd': individual_topic_index,'label':label[i],'cx':linearScalecx(centerX[label[i]]) ,'cy':linearScalecy(centerY[label[i]]) });
                        
         }
@@ -555,20 +583,37 @@ $('#randomDoc').tooltip({title: "Random Document", placement: 'bottom'});
     var circle =svgSelection.selectAll("circle").data(allData)
                .enter()
                .append("circle").style("pointer-events", "all");
-                
+    
+	var cur_port=location.origin.split(':')[2];
+	var cur_port_length = cur_port.length;
+	var cur_port_start_base = Math.pow(10,cur_port_length-1);
+	var cur_port_base = (Math.floor((parseInt(cur_port))/cur_port_start_base))*cur_port_start_base;
+	
+	var final_port = location.origin.split(':')[0] + ':' + location.origin.split(':')[1] + ':';
+	
     var circleAttributes = circle
 	                     .attr("title",function(d){return d.z;})
 						 .attr("id",function(d){return "t"+d.topic_id+"n"+d.idd;})
                          .attr("r", function(d){return circleRadius(d.topic_id);})
-						 .style("fill",function(d){ return color(d.label);});
+						 .style("fill",function(d){ return color(d.label);})
+						 .on("click", function(d) { $('.topdoc').click(function URL() {location.href = final_port+ (parseInt(cur_port_base) + parseInt(d.topic_id))  + location.pathname + '?topic=' + d.idd;});$('.topdoc').trigger("click"); });
+						 
     
     $("circle").tooltip({container:'body', trigger: 'manual', animation: false, html: true});
     
 	circleAttributes.data(allData)
 	
-	.on("mouseover",function(d){$("#t"+d.topic_id+"n"+d.idd).addClass('hover').tooltip('show');})
-	.on("mouseout",function(d){$("#t"+d.topic_id+"n"+d.idd).removeClass('hover').tooltip('hide');});
-      });
+	.on("mouseover",function(d){
+	 $("#t"+d.topic_id+"n"+d.idd).addClass('hover').tooltip('show');
+	 $(".top_"+d.idd).addClass('selected');
+	})
+	.on("mouseout",function(d){
+	 $("#t"+d.topic_id+"n"+d.idd).removeClass('hover').tooltip('hide');
+     $(".top_"+d.idd).removeClass('selected');
+	 });
+	  
+	  
+	  });
      });
     });
    });
@@ -616,7 +661,7 @@ $('#randomDoc').tooltip({title: "Random Document", placement: 'bottom'});
 	</div>
 </div>
 <div id="controls" style="display:none;">
-<input  type="checkbox" id="taMain" onclick="activateTopicCheckBox()"><strong>Topic Visualization</strong></input>
+<input  type="checkbox" id="taMain" onclick="activateTopicCheckBox()"><strong>Topic Cluster Visualization</strong></input>
 <div id = "controlsTA">
    <br>
 	{{#topic_range}}
@@ -627,6 +672,18 @@ $('#randomDoc').tooltip({title: "Random Document", placement: 'bottom'});
 	<strong> Clusters </strong>
 	<br>
 	<input type="range" id="clusterRange" style="width: 250px;" defaultValue='2' min='1' max='10' onchange="drw()"  disabled>
+	<script>
+	var max_range = 0;
+	var min_range = 1;
+	{{#topic_range}}
+	max_range = max_range + {{k}};
+	{{/topic_range}}
+	document.getElementById("clusterRange").min = min_range;
+	document.getElementById("clusterRange").max = max_range;
+	document.getElementById("clusterRange").defaultValue = Math.floor((max_range- min_range)/2);
+	</script>
+	
+	<p id="cluster_range_indicator"><strong></p>
 	</input>
 	</form>
 </div>  
@@ -901,6 +958,7 @@ d3.json(url, function(error, data) {
       .enter().append("g")
         .attr("class", function(d) { return "legend top_" + d; })
         .attr("transform", function(d, i) { return "translate("+(55 * Math.floor(i / legendFactor))+"," + (y(i % legendFactor) - 10*(i % legendFactor)) + ")"; });
+	
 	var taLegendMap;
 	
     legendElts.append("rect")
@@ -920,16 +978,22 @@ d3.json(url, function(error, data) {
               else
                 return 0;
             }).join(", ") + ", ..."; })
-        .on("click", function(d) { topicSort(d); })
+        .on("click", function(d) { 
+			topicSort(d);
+			d3.selectAll("circle").classed("selected_circle",false);
+			d3.selectAll("#t"+d3.keys(topics).length+"n"+d).classed("selected_circle",true); 
+			})
         .on("mouseover", function(d) {
 			if(document.getElementById("taMain").checked == true){
 		    taLegendMap=d3.selectAll(("#t"+d3.keys(topics).length)+"n"+d).attr("r");
-			d3.selectAll(("#t"+d3.keys(topics).length)+"n"+d).attr("r","25");
+			d3.selectAll("#t"+d3.keys(topics).length+"n"+d).attr("r","25");
+			d3.selectAll("#t"+d3.keys(topics).length+"n"+d).classed("hover_circle",true);
 			}
             $(".top_" + d).addClass('hover').tooltip('show');
           })
         .on("mouseout", function(d) {
             d3.selectAll(("#t"+d3.keys(topics).length)+"n"+d).attr("r",taLegendMap);
+			d3.selectAll("#t"+d3.keys(topics).length+"n"+d).classed("hover_circle",false);
 			$(".top_" + d).removeClass('hover').tooltip('hide');
           });
   
