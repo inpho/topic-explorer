@@ -539,7 +539,7 @@ function calculateTopicMap(data, scale, sortFn){
 var url;
 if (roottopic) url = "topics/" + roottopic + '.json';
 else if (q) url = "word_docs.json?q=" + q.replace(/ /g, '|');
-else if (docid) url = "docs_topics/" + docid + '.json';
+else if (docid) url = "docs_topics/" + encodeURIComponent(docid) + '.json';
 else url = null;
 
 
