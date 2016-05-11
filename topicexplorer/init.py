@@ -59,6 +59,41 @@ def process_pdfs(corpus_path, ignore=['.json','.log','.err','.pickle','.npz']):
     return corpus_path
 
 
+def get_corpusbuilder_fn(corpus_path, sentences=False):
+    relpaths = [os.path.relpath(path, start=corpus_path)
+                    for f in recursive_listdir(path)]
+
+    dir_counts = defaultdict(int)
+    for path in relpaths:
+        dir_counts[os.path.dirname(path)] += 1
+
+    dirs = dir_counts.keys()
+    populated_levels = [dir.count(os.path.sep) for dir, key in dir_counts]
+    levels = max(populated_values) - min(populated_levels)
+
+    if len(relpaths) == 1:
+        if sentences:
+            from vsm.extensions.ldasentences import toy_corpus
+        else:
+            from vsm.extensions.corpusbuilders import toy_corpus
+        return toy_corpus
+    elif len(dirs) <= 1:
+        if sentences:
+            from vsm.extensions.ldasentences import dir_corpus
+        else:
+            from vsm.extensions.corpusbuilders import dir_corpus
+        return dir_corpus
+    elif sentences:
+        raise NotImplementedError("""Collection corpuses are too large for
+        sentence parsing. Reduce your corpus to a single folder or
+        file.""")
+    elif levels == 1:
+        from vsm.extensions.corpusbuilders import coll_corpus
+        return coll_corpus
+    else:
+        from vsm.extensions.corpusbuilders import walk_corpus
+        return walk_corpus
+
 def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=0,
     context_type='document', ignore=['.json','.log','.err','.pickle','.npz'],
     decode=True, sentences=False, simple=True, tokenizer='default'):
@@ -90,7 +125,13 @@ def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=0,
         corpus_path = process_pdfs(corpus_path)
 
     print "Building corpus from", corpus_path
+    corpusbuilder = get_corpusbuilder_fn(corpus_path, sentences)
 
+    c = corpusbuilder(corpus_path, nltk_stop=nltk_stop,
+                      stop_freq=stop_freq, ignore=ignore, decode=decode,
+                      simple=simple, tokenizer=tokenizer)
+
+    '''
     if os.path.isfile(corpus_path):
         print "Constructing toy corpus, each line is a document"
         if sentences:
@@ -135,6 +176,7 @@ def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=0,
             raise IOError("Invalid Path: empty directory")
     else:
         raise IOError("Invalid path")
+    '''
 
     if contains_pdfs:
         from vsm.viewer.wrappers import doc_label_name
