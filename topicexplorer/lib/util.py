@@ -32,10 +32,17 @@ def is_valid_configfile(parser, arg):
         parser.error("The file %s does not exist!" % arg)
 
 
-def listdir_nohidden(path):
-    for f in os.listdir(path):
-        if not f.startswith('.'):
-            yield f
+def listdir_nohidden(path, recursive=False):
+    if recursive:
+        for root, dirs, files in os.walk(path):
+            for f in files:
+                if not f.startswith('.'):
+                    yield os.path.join(root, f)
+    else:
+        for f in os.listdir(path):
+            if not f.startswith('.'):
+                yield f
+
 
 ## Command Line Prompts
 def overwrite_prompt(filename, default=True):

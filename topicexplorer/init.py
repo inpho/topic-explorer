@@ -1,4 +1,5 @@
 from ConfigParser import RawConfigParser as ConfigParser
+from collections import defaultdict
 import os
 import os.path
 import shutil
@@ -61,22 +62,24 @@ def process_pdfs(corpus_path, ignore=['.json','.log','.err','.pickle','.npz']):
 
 def get_corpusbuilder_fn(corpus_path, sentences=False):
     relpaths = [os.path.relpath(path, start=corpus_path)
-                    for f in recursive_listdir(path)]
+                    for path in listdir_nohidden(corpus_path, recursive=True)]
 
     dir_counts = defaultdict(int)
     for path in relpaths:
         dir_counts[os.path.dirname(path)] += 1
 
     dirs = dir_counts.keys()
-    populated_levels = [dir.count(os.path.sep) for dir, key in dir_counts]
-    levels = max(populated_values) - min(populated_levels)
+    populated_levels = [dir.count(os.path.sep) 
+        for dir, key in dir_counts.iteritems()]
+    levels = max(populated_levels) - min(populated_levels)
 
     if len(relpaths) == 1:
         if sentences:
             from vsm.extensions.ldasentences import toy_corpus
         else:
             from vsm.extensions.corpusbuilders import toy_corpus
-        return toy_corpus
+        import functools
+        return functools.partial(toy_corpus, is_filename=True, autolabel=True)
     elif len(dirs) <= 1:
         if sentences:
             from vsm.extensions.ldasentences import dir_corpus
