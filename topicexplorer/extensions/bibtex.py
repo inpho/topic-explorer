@@ -22,7 +22,7 @@ def init(viewer, config, args):
 
     metadata = dict()
     for entry in bib.entries:
-        key = os.path.basename(bib.entries[entry].fields['file'].replace(':pdf',''))
+        key = os.path.basename(bib.entries[entry].fields.get('file','').replace(':pdf',''))
         citation = pybtex.format_from_file(
             filename, style='plain', output_backend='text', citations=[entry])[3:]
         metadata[key] = citation
