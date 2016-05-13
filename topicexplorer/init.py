@@ -79,7 +79,12 @@ def process_bibtex(corpus_path):
 
     for entry in bib.entries:
         if bib.entries[entry].fields.get('file', None):
-            filename = os.path.abspath('/' + bib.entries[entry].fields['file'].replace(':pdf','')[1:])
+            filename = '/' + bib.entries[entry].fields['file'].replace(':pdf','')[1:]
+            if 'C$\\backslash$:' in filename:
+                filename = filename.replace('C$\\backslash$:', '') 
+                filename = filename[1:]
+                filename = os.path.normpath(filename)
+            filename = os.path.abspath(filename)
             if not os.path.exists(filename):
                 print "Invalid 'file' field for BibTeX entry {}:\n\t({})".format(entry, filename)
             else:
@@ -229,7 +234,8 @@ def main(args):
 
     # config corpus_path
     # process bibtex files
-    if args.corpus_path.endswith('.bib'):
+    args.bibtex = args.corpus_path.endswith('.bib')
+    if args.bibtex:
         args.corpus_path = process_bibtex(args.corpus_path)
         
 
@@ -316,6 +322,8 @@ def write_config(args, config_file=None):
     config.set("main", "corpus_file", os.path.abspath(args.corpus_filename))
     config.set("main", "raw_corpus", os.path.abspath(args.corpus_path))
     config.set("main", "sentences", args.sentences)
+    if args.bibtex:
+        config.set("main", "label_module", "topicexplorer.extensions.bibtex")
     
     config.add_section("www")
     config.set("www", "corpus_name", args.corpus_print_name)
