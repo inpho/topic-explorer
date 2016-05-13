@@ -308,6 +308,14 @@ def main(args):
     if new_langs:
         args.lang.extend(new_langs)
     """
+    
+    # add default locale if no other languages are specified
+    # do not add if in quiet mode -- make everything explicit
+    if not args.lang and not args.quiet:
+        import locale
+        locale = locale.getdefaultlocale()[0].split('_')[0].lower()
+        if locale in langs.keys():
+            args.lang.append(locale)
 
     # check for any new candidates
     args.lang = [lang for lang in args.lang if stop_language(c, langs[lang])]
