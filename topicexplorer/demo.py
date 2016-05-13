@@ -63,7 +63,7 @@ def main(args=None):
         subprocess.check_call('vsm init ap --name "Associated Press 88-90 sample"', shell=True)
         # TODO: Catch RuntimeWarning event on Windows
         subprocess.check_call("vsm prep ap.ini --lang en --high 2000 --low 5 -q", shell=True)
-        subprocess.check_call("vsm train ap.ini -k 20 40 60 --context-type document --iter 20", shell=True)
+        subprocess.check_call("vsm train ap.ini -k 20 40 60 --context-type article --iter 20", shell=True)
     except subprocess.CalledProcessError:
         # presumably the exception has been handled in the subprocess
         sys.exit(1)

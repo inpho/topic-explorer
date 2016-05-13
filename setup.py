@@ -50,7 +50,7 @@ install_requires = [
         'bottle>=0.12', 
         'brewer2mpl>=1.4',
         'pystache>=0.5.4',
-        'vsm==0.4.0a16',
+        'vsm==0.4.0a29',
         'wget',
         'unidecode',
         'pdfminer',
@@ -60,11 +60,16 @@ install_requires = [
         'pip>=7.1.1',
         'langdetect',
         'profilehooks',
-        'pybtex>=0.20'
+        'pybtex>=0.20',
         ]
 
 if platform.system() == 'Windows':
     install_requires.append('pywin32')
+else:
+    install_requires.append('mmseg==1.3.0')
+
+if platform.python_version_tuple()[0] == '2':
+    install_requires.append("futures>=3.0.0")
 
 setup(
     name='topicexplorer',
@@ -95,7 +100,7 @@ setup(
     data_files=datafiles,
     install_requires=install_requires,
     dependency_links=[
-        'https://github.com/inpho/vsm/archive/memory-optimization.zip#egg=vsm-0.4.0a1',
+        'https://github.com/inpho/vsm/archive/master.zip#egg=vsm-0.4.0a20',
         ],
     include_package_data=True,
     zip_safe=False,

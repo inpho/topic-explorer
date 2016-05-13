@@ -346,34 +346,36 @@ def main(args):
                 's' if len(candidates) > 1 else '')
             stoplist.update(candidates)
    
-    if not args.high_filter:
-        high_filter, candidates = get_high_filter(args, c, words=stoplist)
+    if args.high_filter is None and not args.quiet:
+        args.high_filter, candidates = get_high_filter(args, c, words=stoplist)
         if len(candidates):
             print "Filtering {} high frequency word{}.".format(len(candidates),
                 's' if len(candidates) > 1 else '')
             stoplist.update(candidates)
-    else:
-        high_filter = args.high_filter
+    elif args.high_filter > 0:
         candidates = get_candidate_words(c,args.high_filter, sort=False)
         if len(candidates):
             print "Filtering {} high frequency word{}.".format(len(candidates),
                 's' if len(candidates) > 1 else '')
             stoplist.update(candidates)
 
-    if not args.low_filter:
-        low_filter, candidates = get_low_filter(args, c, words=stoplist)
+    if args.low_filter is None and not args.quiet:
+        args.low_filter, candidates = get_low_filter(args, c, words=stoplist)
         if len(candidates):
             print "Filtering {} low frequency word{}.".format(len(candidates),
                 's' if len(candidates) > 1 else '')
             stoplist.update(candidates)
-    else:
-        low_filter = args.low_filter
+    elif args.low_filter > 0:
         candidates  = get_candidate_words(c, -1*args.low_filter, sort=False)
         if len(candidates):
             print "Filtering {} low frequency words.".format(len(candidates))
             stoplist.update(candidates)
 
-    if stoplist:
+    if not stoplist:
+        print "No stopwords applied.\n\n"
+
+        sys.exit(0)
+    else:
         print "\n\nApplying {} stopword{}".format(len(stoplist),
                 's' if len(stoplist) > 1 else '')
         c.in_place_stoplist(stoplist)
@@ -401,7 +403,7 @@ def main(args):
         return corpus_name
    
     dirname = os.path.basename(args.corpus_path).split('-nltk-')[0].replace('.npz','')
-    corpus_name = name_corpus(dirname, ['en'], low_filter, high_filter)
+    corpus_name = name_corpus(dirname, ['en'], args.low_filter, args.high_filter)
 
     model_path = os.path.dirname(args.corpus_path)
     args.corpus_path = os.path.join(model_path, corpus_name) 
@@ -425,9 +427,9 @@ def populate_parser(parser):
     parser.add_argument("--high", type=int, dest="high_filter",
         help="High frequency word filter", default=None)
     parser.add_argument("--low", type=int, dest="low_filter",
-        default=None, help="Low frequency word filter [Default: 5]")
+        default=None, help="Low frequency word filter")
     parser.add_argument("--min-word-len", type=int, dest="min_word_len",
-        default=3, help="Low frequency word filter [Default: 3]")
+        default=0, help="Filter short words [Default: 0]")
     parser.add_argument("--exclude-special-chars", action="store_false",
         dest='special_chars')
     parser.add_argument("--lang", nargs='+', choices=langs.keys(),

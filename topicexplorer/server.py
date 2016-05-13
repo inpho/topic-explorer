@@ -95,7 +95,7 @@ def topic_json(topic_no, N=40):
 
     return json.dumps(js)
 
-@route('/docs_topics/<doc_id>.json')
+@route('/docs_topics/<doc_id:path>.json')
 @_set_acao_headers
 def doc_topics(doc_id, N=40):
     try:
@@ -104,6 +104,7 @@ def doc_topics(doc_id, N=40):
         pass
 
     doc_id = unquote(doc_id)
+    print doc_id
 
     response.content_type = 'application/json; charset=UTF8'
 
@@ -248,7 +249,7 @@ def get_docs(docs=None, id_as_key=False, query=None):
             struct = {
                 'id': doc,
                 'label' : label(doc),
-                'metadata' : dict(zip(md.dtype.names, [str(m) for m in md])) }
+                'metadata' : dict(zip(md.dtype.names, [unicode(m) for m in md])) }
             if id_as_key:
                 js[doc] = struct
             else:
@@ -384,10 +385,11 @@ def main(args):
 
     corpus_path = config.get('main', 'raw_corpus')
     if args.fulltext or config.getboolean('www','fulltext'):
-        @route('/fulltext/<doc_id>')
+        @route('/fulltext/<doc_id:path>')
         @_set_acao_headers
         def get_doc(doc_id):
             import re
+            doc_id = unquote(doc_id).decode('utf-8')
             pdf_path = os.path.join(corpus_path, re.sub('txt$','pdf', doc_id))
             if os.path.exists(pdf_path):
                 doc_id = re.sub('txt$','pdf', doc_id)
@@ -396,7 +398,8 @@ def main(args):
 
     config_icons = config.get('www','icons').split(",")
     if args.fulltext or config.getboolean('www','fulltext'):
-        if 'fulltext' not in config_icons:
+        if ('fulltext' not in config_icons and
+            'fulltext-inline' not in config_icons):
             config_icons.insert(0,'fulltext')
     
 
