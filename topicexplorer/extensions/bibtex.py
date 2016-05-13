@@ -22,11 +22,15 @@ def init(viewer, config, args):
 
     metadata = dict()
     for entry in bib.entries:
-        key = os.path.basename(bib.entries[entry].fields.get('file','').replace(':pdf',''))
+        key = '/' + bib.entries[entry].fields.get('file','').replace(':pdf','')[1:]
+        if 'C$\\backslash$:' in key:
+            key = key.replace('C$\\backslash$:', '') 
+            key = key[1:]
+            key = os.path.normpath(key)
+        key = os.path.basename(key)
         citation = pybtex.format_from_file(
             filename, style='plain', output_backend='text', citations=[entry])[3:]
         metadata[key] = citation
-    
 
 def label(doc):
     global metadata

@@ -236,6 +236,7 @@ def main(args):
     # process bibtex files
     args.bibtex = args.corpus_path.endswith('.bib')
     if args.bibtex:
+        args.bibtex = args.corpus_path
         args.corpus_path = process_bibtex(args.corpus_path)
         
 
@@ -324,6 +325,8 @@ def write_config(args, config_file=None):
     config.set("main", "sentences", args.sentences)
     if args.bibtex:
         config.set("main", "label_module", "topicexplorer.extensions.bibtex")
+        config.add_section("bibtex")
+        config.set("bibtex", "path", args.bibtex)
     
     config.add_section("www")
     config.set("www", "corpus_name", args.corpus_print_name)
