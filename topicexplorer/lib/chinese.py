@@ -1,4 +1,5 @@
 import platform
+#updated to use pymmseg function calls instead of plain mmseg
 
 chinese_punctuation = [u'\u2013',
                        u'\u2014',
