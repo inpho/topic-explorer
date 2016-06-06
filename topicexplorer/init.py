@@ -95,9 +95,11 @@ def process_bibtex(corpus_path):
 
     return target_dir
 
-def get_corpusbuilder_fn(corpus_path, sentences=False):
+def get_corpusbuilder_fn(corpus_path, sentences=False, ignore=[]):
     relpaths = [os.path.relpath(path, start=corpus_path)
-                    for path in listdir_nohidden(corpus_path, recursive=True)]
+                    for path in listdir_nohidden(corpus_path, recursive=True) 
+                        if os.path.isfile(path) 
+                            and not any([path.endswith(i) for i in ignore])]
 
     dir_counts = defaultdict(int)
     for path in relpaths:
@@ -107,6 +109,7 @@ def get_corpusbuilder_fn(corpus_path, sentences=False):
     populated_levels = [dir.count(os.path.sep) 
         for dir, key in dir_counts.iteritems()]
     levels = max(populated_levels) - min(populated_levels)
+    print "{} files, {} dirs, {} levels".format(len(relpaths), len(dirs), levels)
 
     if len(relpaths) == 1:
         if sentences:
@@ -125,7 +128,7 @@ def get_corpusbuilder_fn(corpus_path, sentences=False):
         raise NotImplementedError("""Collection corpuses are too large for
         sentence parsing. Reduce your corpus to a single folder or
         file.""")
-    elif levels == 1:
+    elif levels == 0:
         from vsm.extensions.corpusbuilders import coll_corpus
         return coll_corpus
     else:
@@ -162,8 +165,9 @@ def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=0,
     if contains_pdfs:
         corpus_path = process_pdfs(corpus_path)
 
-    print "Building corpus from", corpus_path
-    corpusbuilder = get_corpusbuilder_fn(corpus_path, sentences)
+    print "Building corpus from", corpus_path,
+    corpusbuilder = get_corpusbuilder_fn(corpus_path, sentences, ignore=ignore)
+    print "with {} function".format(corpusbuilder.__name__)
 
     c = corpusbuilder(corpus_path, nltk_stop=nltk_stop,
                       stop_freq=stop_freq, ignore=ignore, decode=decode,
