@@ -117,7 +117,7 @@ Code to download volumes
 host = "silvermaple.pti.indiana.edu" # use over HTTPS
 port = 25443
 oauth2EPRurl = "/oauth2/token"
-oauth2port = 9443
+oauth2port = 443
 dataapiEPR = "/data-api/"
 
 
