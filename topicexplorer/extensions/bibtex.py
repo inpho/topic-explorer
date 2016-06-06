@@ -4,6 +4,7 @@ import os.path
 
 import pybtex
 from pybtex.database import parse_file
+from pybtex.excpetions import PybtexError
 
 metadata = None
 
@@ -28,9 +29,13 @@ def init(viewer, config, args):
             key = key[1:]
             key = os.path.normpath(key)
         key = os.path.basename(key)
-        citation = pybtex.format_from_file(
-            filename, style='plain', output_backend='text', citations=[entry])[3:]
-        metadata[key] = citation
+        try:
+            citation = pybtex.format_from_file(
+                filename, style='plain', output_backend='text', citations=[entry])[3:]
+            metadata[key] = citation
+        except PybtexError:
+            metadata[key] = filename
+            
 
 def label(doc):
     global metadata
