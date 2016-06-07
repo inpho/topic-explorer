@@ -1,4 +1,6 @@
 # InPhO Topic Explorer
+
+[![Join the chat at https://gitter.im/inpho/topic-explorer](https://badges.gitter.im/inpho/topic-explorer.svg)](https://gitter.im/inpho/topic-explorer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Travis](https://img.shields.io/travis/inpho/topic-explorer.svg)](https://travis-ci.org/inpho/topic-explorer)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/inpho/topic-explorer/blob/master/LICENSE.txt)
 [![PyPI](https://img.shields.io/pypi/v/topicexplorer.svg)](https://pypi.python.org/pypi/topicexplorer)
