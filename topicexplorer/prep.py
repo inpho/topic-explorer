@@ -334,7 +334,11 @@ def main(args):
     # Apply custom stopwords file
     if args.stopword_file:
         with open(args.stopword_file, encoding='utf8') as swf:
-            candidates = [unidecode(word.strip()) for word in swf]
+            #candidates = [unidecode(word.strip()) for word in swf]
+            candidates = []
+            for word in swf:
+                candidates.append(word)
+
             if len(candidates):
                 print "Applying custom stopword file to remove {} word{}.".format(len(candidates),
                 's' if len(candidates) > 1 else '')
