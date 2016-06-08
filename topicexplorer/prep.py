@@ -61,8 +61,10 @@ def get_htrc_langs(args):
         with open(metadata_path) as jsonfile:
             data = json.load(jsonfile)
 
-        md_langs = set([lang for d in data.values() for lang in d.get('language', list())
+        md_langs = set([langs_rev[lang.lower()] for d in data.values() 
+                            for lang in d.get('language', list())
             if lang.lower() in langs.values()])
+    print md_langs
     return md_langs
 
 def detect_langs(corpus):
@@ -300,7 +302,7 @@ def main(args):
     if args.htrc or config.get("main","htrc"):
         htrc_langs = get_htrc_langs(args)
         if htrc_langs:
-            args.lang.extend(new_langs)
+            args.lang.extend(htrc_langs)
 
     # auto-guess a language
     """

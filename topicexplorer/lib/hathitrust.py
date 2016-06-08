@@ -33,7 +33,8 @@ def metadata(id, sleep_time=1):
 
 def get_metadata(folder):
     ids = os.listdir(folder)
-    data = [(id.strip(), metadata(id.strip())) for id in ids]
+    data = [(id.strip(), metadata(id.strip())) for id in ids 
+                if not id.endswith('.log')]
     data = dict(data)
     with open(os.path.join(folder, '../metadata.json'),'wb') as outfile:
         json.dump(data, outfile)
