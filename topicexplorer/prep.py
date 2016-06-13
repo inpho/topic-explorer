@@ -45,7 +45,7 @@ def stop_language(c, language):
         return c.words
 
     if c.words.dtype.char == 'S':
-        words = [unidecode(word.strip()) for word in words if word in c.words]
+        words = [word.strip() for word in words if word in c.words]
     else:
         words = [word for word in words if word in c.words]
     return words
