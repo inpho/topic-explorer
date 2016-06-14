@@ -4,6 +4,8 @@ import os
 import os.path
 import shutil
 import sys
+reload(sys)
+sys.setdefaultencoding("utf-8")
 
 from topicexplorer.lib.util import (prompt, is_valid_filepath, 
     listdir_nohidden, contains_pattern)
@@ -361,7 +363,6 @@ def write_config(args, config_file=None):
                     or config_file
             elif overwrite == '' or overwrite == 'y':
                 overwrite=True
-
 
 
     print "Writing configuration file", config_file

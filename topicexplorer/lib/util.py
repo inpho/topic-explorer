@@ -127,7 +127,7 @@ def prompt(prompt, options=None, default=None):
             choices[default_idx] = choices[default_idx].upper()
         prompt += " [{0}]".format('/'.join(choices))
     elif default:
-        prompt += " [Default: {0}]".format(default)
+        prompt += " [Default: {0}]".format(default.encode('utf-8'))
     prompt += " "
 
     # Wait for valid response
