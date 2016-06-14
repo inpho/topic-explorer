@@ -396,7 +396,7 @@ def main(args):
             (firstdirs,lastdir) = os.path.split(corpus_path)
             pattern = '^'+lastdir
             if re.match(pattern,doc_id):
-                return static_file(doc_id,firstdirs)
+                return static_file(doc_id, root=firstdirs)
             else:
                 return static_file(doc_id, root=corpus_path)
 
