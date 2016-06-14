@@ -393,8 +393,12 @@ def main(args):
             pdf_path = os.path.join(corpus_path, re.sub('txt$','pdf', doc_id))
             if os.path.exists(pdf_path):
                 doc_id = re.sub('txt$','pdf', doc_id)
-    
-            return static_file(doc_id, root=corpus_path)
+            (firstdirs,lastdir) = os.path.split(corpus_path)
+            pattern = '^'+lastdir
+            if re.match(pattern,doc_id):
+                return static_file(doc_id,firstdirs)
+            else:
+                return static_file(doc_id, root=corpus_path)
 
     config_icons = config.get('www','icons').split(",")
     if args.fulltext or config.getboolean('www','fulltext'):
