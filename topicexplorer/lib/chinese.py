@@ -1,7 +1,8 @@
 import platform
 #updated to use pymmseg function calls instead of plain mmseg
 
-chinese_punctuation = [u'\xb7',
+chinese_punctuation = [
+                       u'\xb7',
                        u'\u203b',
                        u'\u25a1',
                        u'\u25c7',
@@ -18,6 +19,7 @@ chinese_punctuation = [u'\xb7',
                        u'\u201C',
                        u'\u201D',
                        u'\u2026',
+                       u'\u3000',
                        u'\u3001',
                        u'\u3002',
                        u'\u3008',
