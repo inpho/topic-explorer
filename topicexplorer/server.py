@@ -388,15 +388,15 @@ def main(args):
         @route('/fulltext/<doc_id:path>')
         @_set_acao_headers
         def get_doc(doc_id):
-            import re
             doc_id = unquote(doc_id).decode('utf-8')
             pdf_path = os.path.join(corpus_path, re.sub('txt$','pdf', doc_id))
             if os.path.exists(pdf_path):
                 doc_id = re.sub('txt$','pdf', doc_id)
-            (firstdirs,lastdir) = os.path.split(corpus_path)
-            pattern = '^'+lastdir
-            if re.match(pattern,doc_id):
-                return static_file(doc_id, root=firstdirs)
+            #here we deal with case where corpus_path and doc_id overlap
+            (fdirs,lastdir) = os.path.split(corpus_path)
+            pattern = lastdir.decode('utf-8')
+            if re.match('^'+pattern,doc_id):
+                return static_file(doc_id, root=fdirs)
             else:
                 return static_file(doc_id, root=corpus_path)
 
