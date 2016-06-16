@@ -195,8 +195,11 @@ def topics():
     
     # populate word values
     data = lda_v.topics()
+    
+    wordmax = 10 # for alphabetic languages
+    if lang=='cn': wordmax = 25 # for ideographic languages
     for i,topic in enumerate(data):
-        js[str(i)].update({'words' : dict([(w, p) for w,p in topic[:10]])})
+        js[str(i)].update({'words' : dict([(w, p) for w,p in topic[:wordmax]])})
 
     return json.dumps(js)
 
@@ -269,6 +272,7 @@ def main(args):
     global context_type, lda_c, lda_m, lda_v 
     global label, id_fn, doc_label_name
     global corpus_path
+    global lang
 
     doc_label_name = _doc_label_name
 
@@ -289,15 +293,16 @@ def main(args):
         'fulltext' : 'false',
         'topics': None})
     config.read(args.config)
-
+        
     # path variables
-    path = config.get('main', 'path')
     context_type = config.get('main', 'context_type')
     corpus_file = config.get('main', 'corpus_file')
-    model_pattern = config.get('main', 'model_pattern') 
+    model_pattern = config.get('main', 'model_pattern')
+
+    # language customization
+    lang = config.get('main','lang')
 
     # automatic port assignment
-
     def test_port(port):
         try:
             host = args.host or config.get("www","host")
