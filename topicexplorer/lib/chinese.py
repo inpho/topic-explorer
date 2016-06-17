@@ -19,6 +19,7 @@ chinese_punctuation = [
                        u'\u201C',
                        u'\u201D',
                        u'\u2026',
+                       u'\u25CF',
                        u'\u3000',
                        u'\u3001',
                        u'\u3002',
