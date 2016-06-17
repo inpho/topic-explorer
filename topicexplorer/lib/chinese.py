@@ -34,6 +34,7 @@ chinese_punctuation = [
                        u'\u3011',
                        u'\u3014',
                        u'\u3015',
+                       u'\uFE50',
                        u'\uFF01',
                        u'\uFF08',
                        u'\uFF09',
