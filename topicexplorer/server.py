@@ -291,7 +291,8 @@ def main(args):
         'doc_url_format' : None,
         'raw_corpus' : None,
         'fulltext' : 'false',
-        'topics': None})
+        'topics': None,
+        'lang': None})
     config.read(args.config)
         
     # path variables
