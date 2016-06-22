@@ -283,8 +283,8 @@ def main(args):
         'topic_range' : '{0},{1},1'.format(args.k, args.k+1),
         'icons': 'link',
         'corpus_link' : None,
-        'doc_title_format' : None,
-        'doc_url_format' : None,
+        'doc_title_format' : '{0}',
+        'doc_url_format' : '',
         'raw_corpus' : None,
         'fulltext' : 'false',
         'topics': None})
