@@ -33,7 +33,8 @@ def metadata(id, sleep_time=1):
 
 def get_metadata(folder):
     ids = os.listdir(folder)
-    data = [(id.strip(), metadata(id.strip())) for id in ids]
+    data = [(id.strip(), metadata(id.strip())) for id in ids 
+                if not id.endswith('.log')]
     data = dict(data)
     with open(os.path.join(folder, '../metadata.json'),'wb') as outfile:
         json.dump(data, outfile)
@@ -117,7 +118,7 @@ Code to download volumes
 host = "silvermaple.pti.indiana.edu" # use over HTTPS
 port = 25443
 oauth2EPRurl = "/oauth2/token"
-oauth2port = 9443
+oauth2port = 443
 dataapiEPR = "/data-api/"
 
 

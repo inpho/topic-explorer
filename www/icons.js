@@ -98,7 +98,7 @@ var icon_fns = {"link" : function(ticks, i) {
       base_fn(ticks,i)
         .attr("xlink:href","img/sep.png")
         .attr("class", "sepIcon icon")
-        .on("click", function(d) { window.open("http://plato.stanford.edu/entires/" + d, "_blank");});
+        .on("click", function(d) { window.open("http://plato.stanford.edu/entries/" + d, "_blank");});
    }
 };
 
