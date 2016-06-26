@@ -5,9 +5,10 @@ import os.path
 
 from topicexplorer.lib.util import bool_prompt, int_prompt, is_valid_configfile
 
-def build_models(corpus, corpus_filename, model_path, context_type, krange, 
+
+def build_models(corpus, corpus_filename, model_path, context_type, krange,
                  n_iterations=200, n_proc=1, seed=None, dry_run=False):
-    basefilename = os.path.basename(corpus_filename).replace('.npz','')
+    basefilename = os.path.basename(corpus_filename).replace('.npz', '')
     basefilename += "-LDA-K%s-%s-%d.npz" % ('{0}', context_type, n_iterations)
     basefilename = os.path.join(model_path, basefilename)
 
@@ -37,6 +38,7 @@ def build_models(corpus, corpus_filename, model_path, context_type, krange,
 
     return basefilename
 
+
 def continue_training(model_pattern, krange, total_iterations=200, n_proc=1):
     from vsm.model.lda import LDA
     for k in krange:
@@ -54,6 +56,7 @@ def continue_training(model_pattern, krange, total_iterations=200, n_proc=1):
         print " "
 
     return basefilename
+
 
 def main(args):
 
@@ -74,7 +77,7 @@ def main(args):
             else:
                 raise NoOptionError
         except NoOptionError:
-            default = ' '.join(map(str, range(20,100,20)))
+            default = ' '.join(map(str, range(20, 100, 20)))
 
         while args.k is None:
             ks = raw_input("Number of Topics [Default '{0}']: ".format(default))
@@ -87,10 +90,10 @@ def main(args):
                 if args.k:
                     print "\nTIP: number of topics can be specified with argument '-k N N N ...':"
                     print "         vsm train %s -k %s\n" %\
-                             (args.config_file, ' '.join(map(str, args.k)))
+                        (args.config_file, ' '.join(map(str, args.k)))
             except ValueError:
                 print "Enter valid integers, separated by spaces!"
-        
+
     if args.processes < 0:
         import multiprocessing
         args.processes = multiprocessing.cpu_count() + args.processes
@@ -104,7 +107,7 @@ def main(args):
         model_pattern = None
 
     if model_pattern is not None and\
-        bool_prompt("Existing models found. Continue training?", default=True):
+            bool_prompt("Existing models found. Continue training?", default=True):
 
         from vsm.model.lda import LDA
         m = LDA.load(model_pattern.format(args.k[0]),
@@ -113,8 +116,8 @@ def main(args):
 
         if args.iter is None:
             args.iter = int_prompt("Total number of training iterations:",
-                                   default=int(m.iteration*1.5), min=m.iteration)
-    
+                                   default=int(m.iteration * 1.5), min=m.iteration)
+
             print "\nTIP: number of training iterations can be specified with argument '--iter N':"
             print "         vsm train --iter %d %s\n" % (args.iter, args.config_file)
 
@@ -122,15 +125,15 @@ def main(args):
 
         # if the set changes, build some new models and continue some old ones
 
-        config_topics = eval(config.get("main","topics"))
-        if args.k != config_topics :
+        config_topics = eval(config.get("main", "topics"))
+        if args.k != config_topics:
             new_models = set(args.k) - set(config_topics)
             continuing_models = set(args.k) & set(config_topics)
-        
-            build_models(corpus, corpus_filename, model_path, 
-                                         config.get("main", "context_type"),
-                                         new_models, n_iterations=args.iter,
-                                         n_proc=args.processes, seed=args.seed)
+
+            build_models(corpus, corpus_filename, model_path,
+                         config.get("main", "context_type"),
+                         new_models, n_iterations=args.iter,
+                         n_proc=args.processes, seed=args.seed)
 
             model_pattern = continue_training(model_pattern, continuing_models,
                                               args.iter, n_proc=args.processes)
@@ -143,10 +146,10 @@ def main(args):
         # build a new model
         if args.iter is None:
             args.iter = int_prompt("Number of training iterations:", default=200)
-    
+
             print "\nTIP: number of training iterations can be specified with argument '--iter N':"
             print "         vsm train --iter %d %s\n" % (args.iter, args.config_file)
-    
+
         ctxs = corpus.context_types
         ctxs = sorted(ctxs, key=lambda ctx: len(corpus.view_contexts(ctx)))
         if args.context_type not in ctxs:
@@ -159,16 +162,16 @@ def main(args):
                     args.context_type = ctxs[0]
                 if args.context_type == ctxs[0].upper():
                     args.context_type = ctxs[0]
-    
+
             print "\nTIP: context type can be specified with argument '--context-type TYPE':"
-            print "         vsm train --context-type %s %s\n" % (args.context_type, args.config_file)
-    
-    
+            print "         vsm train --context-type {} {}\n".format(args.context_type,
+                                                                     args.config_file)
+
         print "\nTIP: This configuration can be automated as:"
         print "         vsm train %s --iter %d --context-type %s -k %s\n" %\
-            (args.config_file, args.iter, args.context_type, 
+            (args.config_file, args.iter, args.context_type,
                 ' '.join(map(str, args.k)))
-        model_pattern = build_models(corpus, corpus_filename, model_path, 
+        model_pattern = build_models(corpus, corpus_filename, model_path,
                                      args.context_type, args.k,
                                      n_iterations=args.iter,
                                      n_proc=args.processes, seed=args.seed,
@@ -179,34 +182,34 @@ def main(args):
         config.set("main", "context_type", args.context_type)
     args.k.sort()
     config.set("main", "topics", str(args.k))
-    
+
     if not args.dry_run:
         with open(args.config_file, "wb") as configfh:
             config.write(configfh)
 
+
 def populate_parser(parser):
     parser.add_argument("config_file", help="Path to Config",
-        type=lambda x: is_valid_configfile(parser, x))
+                        type=lambda x: is_valid_configfile(parser, x))
     parser.add_argument("--context-type", dest='context_type',
-        help="Level of corpus modeling, prompts if not set")
+                        help="Level of corpus modeling, prompts if not set")
     parser.add_argument("-p", "--processes", default=1, type=int,
-        help="Number of CPU cores for training [Default: 1]")
+                        help="Number of CPU cores for training [Default: 1]")
     parser.add_argument("--seed", default=None, type=int,
-        help="Random seed for topic modeling [Default: None]")
+                        help="Random seed for topic modeling [Default: None]")
     parser.add_argument("-k", nargs='+',
-        help="K values to train upon", type=int)
+                        help="K values to train upon", type=int)
     parser.add_argument('--iter', type=int,
-        help="Number of training iterations")
+                        help="Number of training iterations")
     parser.add_argument('--dry-run', dest='dry_run', action='store_true',
-        help="Run code without training models")
+                        help="Run code without training models")
 
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
-    
+
     parser = ArgumentParser()
     populate_parser(parser)
     args = parser.parse_args()
 
     main(args)
-

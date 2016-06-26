@@ -1,8 +1,10 @@
 from ConfigParser import ConfigParser
-import os, os.path
+import os
+import os.path
 import platform
 import socket
-import signal, sys
+import signal
+import sys
 from StringIO import StringIO
 import subprocess
 import time
@@ -11,22 +13,23 @@ import webbrowser
 
 from topicexplorer.lib.util import int_prompt, bool_prompt, is_valid_configfile
 
+
 def main(args):
     # CONFIGURATION PARSING
     # load in the configuration file
     config = ConfigParser({
-        'certfile' : None,
-        'keyfile' : None,
-        'ca_certs' : None,
-        'ssl' : False,
-        'port' : '8000',
-        'host' : '0.0.0.0',
+        'certfile': None,
+        'keyfile': None,
+        'ca_certs': None,
+        'ssl': False,
+        'port': '8000',
+        'host': '0.0.0.0',
         'icons': 'link',
-        'corpus_link' : None,
-        'doc_title_format' : None,
-        'doc_url_format' : None,
+        'corpus_link': None,
+        'doc_title_format': None,
+        'doc_url_format': None,
         'topic_range': None,
-        'fulltext' : 'false',
+        'fulltext': 'false',
         'raw_corpus': None,
         'topics': None})
     config.read(args.config_file)
@@ -42,7 +45,7 @@ def main(args):
     # Cross-platform compatability
     def get_log_file(k):
         if config.has_section('logging'):
-            path = config.get('logging','path')
+            path = config.get('logging', 'path')
             path = path.format(k)
             if not os.path.exists(os.path.dirname(path)):
                 os.makedirs(os.path.dirname(path))
@@ -51,13 +54,12 @@ def main(args):
         else:
             return subprocess.PIPE
 
-
     def test_baseport(host, baseport, topic_range):
         try:
             for k in topic_range:
                 port = baseport + k
                 try:
-                    s = socket.create_connection((host,port), 2)
+                    s = socket.create_connection((host, port), 2)
                     s.close()
                     raise IOError("Socket connectable on port {0}".format(port))
                 except socket.error:
@@ -65,22 +67,22 @@ def main(args):
             return baseport
         except IOError:
             baseport = int_prompt(
-                "Conflict on port {0}. Enter new base port: [CURRENT: {1}]"\
-                    .format(port, baseport)) 
+                "Conflict on port {0}. Enter new base port: [CURRENT: {1}]"
+                .format(port, baseport))
             return test_baseport(host, baseport, topic_range)
 
-    host = config.get("www","host")
+    host = config.get("www", "host")
     if host == '0.0.0.0':
         host = socket.gethostname()
 
-    baseport = int(config.get("www","port").format(0))
+    baseport = int(config.get("www", "port").format(0))
     baseport = test_baseport(host, baseport, topic_range)
 
     # prompt to save
-    if int(config.get("www","port").format(0)) != baseport:
+    if int(config.get("www", "port").format(0)) != baseport:
         if bool_prompt("Change default baseport to {0}?".format(baseport),
                        default=True):
-            config.set("www","port", baseport)
+            config.set("www", "port", baseport)
 
             # create deep copy of configuration
             # see http://stackoverflow.com/a/24343297
@@ -98,35 +100,35 @@ def main(args):
 
             # write deep copy without DEFAULT section
             # this preserves DEFAULT for rest of program
-            with open(args.config_file,'wb') as configfh:
+            with open(args.config_file, 'wb') as configfh:
                 new_config.write(configfh)
-
 
     try:
         grp_fn = os.setsid
     except AttributeError:
         grp_fn = None
     fulltext = '--fulltext' if args.fulltext else ''
-    procs = [subprocess.Popen("vsm serve -k {k} -p {port} {config_file} {fulltext} --no-browser".format(
-        k=k, port=(baseport+k), config_file=args.config_file,fulltext=fulltext),
-        shell=True, stdout=get_log_file(k), stderr=subprocess.STDOUT,
-        preexec_fn=grp_fn) for k in topic_range]
+    command = "vsm serve -k {k} -p {port} {config_file} {fulltext} --no-browser"
+    procs = [subprocess.Popen(command.format(k=k, port=(baseport + k), fulltext=fulltext,
+                                             config_file=args.config_file),
+                              shell=True, stdout=get_log_file(k), stderr=subprocess.STDOUT,
+                              preexec_fn=grp_fn)
+             for k in topic_range]
 
-    print "pid","port"
-    for proc,k in zip(procs, topic_range):
+    print "pid", "port"
+    for proc, k in zip(procs, topic_range):
         port = baseport + k
-        print proc.pid, "http://{host}:{port}/".format(host=host,port=port)
-
+        print proc.pid, "http://{host}:{port}/".format(host=host, port=port)
 
     # CLEAN EXIT AND SHUTDOWN OF SERVERS
-    def signal_handler(signal,frame):
+    def signal_handler(signal, frame):
         print "\n"
         for p, k in zip(procs, topic_range):
             print "Stopping {}-topic model (Process ID: {})".format(k, p.pid)
             # Cross-Platform Compatability
             if platform.system() == 'Windows':
                 subprocess.call(['taskkill', '/F', '/T', '/PID', str(p.pid)],
-                        stdout=open(os.devnull), stderr=open(os.devnull))
+                                stdout=open(os.devnull), stderr=open(os.devnull))
             else:
                 os.killpg(p.pid, signal)
 
@@ -136,7 +138,7 @@ def main(args):
     signal.signal(signal.SIGTERM, signal_handler)
 
     port = baseport + topic_range[0]
-    url = "http://{host}:{port}/".format(host=host,port=port)
+    url = "http://{host}:{port}/".format(host=host, port=port)
 
     # TODO: Add enhanced port checking
     while True:
@@ -157,8 +159,8 @@ def main(args):
             print "then use the `serve` command to find the error message:"
             print "\tvsm serve {config} -k {k}".format(
                 config=args.config_file, k=topic_range[0])
-    
-        for proc,k in zip(procs, topic_range):
+
+        for proc, k in zip(procs, topic_range):
             if proc.poll() is not None:
                 print "\nAn error has occurred launching the {}-topic model.".format(k)
                 try:
@@ -176,8 +178,8 @@ def main(args):
                             os.killpg(p.pid, signal.SIGTERM)
                         except AttributeError:
                             # Cross-Platform Compatability
-                            subprocess.call(['taskkill', '/F', '/T', '/PID', str(p.pid)])    
-    
+                            subprocess.call(['taskkill', '/F', '/T', '/PID', str(p.pid)])
+
                 sys.exit(1)
 
     if args.browser:
@@ -194,16 +196,17 @@ def main(args):
         while True:
             time.sleep(1)
 
+
 def populate_parser(parser):
     parser.add_argument('config_file', help="Configuration file path",
-        type=lambda x: is_valid_configfile(parser, x))
+                        type=lambda x: is_valid_configfile(parser, x))
     parser.add_argument('--no-browser', dest='browser', action='store_false')
     parser.add_argument('--fulltext', action='store_true',
-        help='Serve raw corpus files.')
+                        help='Serve raw corpus files.')
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
-    
+
     parser = ArgumentParser()
     populate_parser(parser)
     args = parser.parse_args()
