@@ -8,14 +8,14 @@ from pybtex.excpetions import PybtexError
 
 metadata = None
 
+
 def init(viewer, config, args):
     global metadata
-
 
     try:
         filename = args.bibtex or config.get('bibtex', 'path')
     except ConfigParser.Error:
-        model_path = config.get('main','path')
+        model_path = config.get('main', 'path')
         filename = os.path.join(model_path, 'library.bib')
 
     print "Loading Bibtex metadata from", filename
@@ -23,9 +23,9 @@ def init(viewer, config, args):
 
     metadata = dict()
     for entry in bib.entries:
-        key = '/' + bib.entries[entry].fields.get('file','').replace(':pdf','')[1:]
+        key = '/' + bib.entries[entry].fields.get('file', '').replace(':pdf', '')[1:]
         if 'C$\\backslash$:' in key:
-            key = key.replace('C$\\backslash$:', '') 
+            key = key.replace('C$\\backslash$:', '')
             key = key[1:]
             key = os.path.normpath(key)
         key = os.path.basename(key)
@@ -35,8 +35,8 @@ def init(viewer, config, args):
             metadata[key] = citation
         except PybtexError:
             metadata[key] = filename
-            
+
 
 def label(doc):
     global metadata
-    return metadata.get(doc,doc)
+    return metadata.get(doc, doc)
