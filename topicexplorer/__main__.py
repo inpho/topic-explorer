@@ -32,16 +32,22 @@ from topicexplorer import (init, prep, train, server, launch, notebook, demo,
 from topicexplorer.lib.util import is_valid_filepath
 
 class ArgumentParserError(Exception): 
-    """ Skeleton class for use in `try` blocks."""
+    """
+    Skeleton class for use in `try` blocks.
+    """
     pass
 
 class ThrowingArgumentParser(argparse.ArgumentParser):
-    """ Skeleton subclass of argparse.ArgumentParser to raise exceptions. """
+    """ 
+    Skeleton subclass of argparse.ArgumentParser to raise exceptions.
+    """
     def error(self, message):
         raise ArgumentParserError(message)
 
 def main():
-    """ The primary CLI function for the Topic Explorer. """
+    """ 
+    The primary CLI function for the Topic Explorer.
+    """
     # Create the master argparse object.
     parser = ThrowingArgumentParser()
 

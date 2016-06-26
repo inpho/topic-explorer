@@ -6,3 +6,4 @@ Each action is governed by three primary functions:
 2. `main()`
 
 .. automodule:: topicexplorer.__main__
+    :members:
