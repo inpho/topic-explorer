@@ -18,18 +18,18 @@ from topicexplorer.lib import util
 
 from progressbar import ProgressBar, Percentage, Bar
 
-import os 
+import os
 import platform
 import subprocess
 
 
 def convert(fname, pages=None):
     cmd = "where" if platform.system() == "Windows" else "which"
-    try: 
+    try:
         cmd = subprocess.check_output([cmd, 'pdftotext'], stderr=os.devnull).strip()
         return subprocess.check_output([cmd, fname, '-'])
-    except: 
-        #logging.warning("pdftotext not found, defaulting to pdfminer.")
+    except:
+        # logging.warning("pdftotext not found, defaulting to pdfminer.")
         return convert_miner(fname, pages=pages)
 
 
@@ -55,11 +55,12 @@ def convert_miner(fname, pages=None):
     text = output.getvalue()
     output.close()
     text += '\n'
-    return text 
+    return text
+
 
 def convert_and_write(fname, output_dir=None, overwrite=False, verbose=False):
-    output = os.path.basename(fname) 
-    output = output.replace('.pdf','.txt')
+    output = os.path.basename(fname)
+    output = output.replace('.pdf', '.txt')
     if output_dir:
         output = os.path.join(output_dir, output)
     if output_dir is not None and not os.path.exists(output_dir):
@@ -71,6 +72,7 @@ def convert_and_write(fname, output_dir=None, overwrite=False, verbose=False):
             if verbose:
                 print "converted", fname, "->", output
 
+
 def main(path_or_paths, output_dir=None, verbose=1):
     if isinstance(path_or_paths, basestring):
         path_or_paths = [path_or_paths]
@@ -81,7 +83,8 @@ def main(path_or_paths, output_dir=None, verbose=1):
             if os.path.isdir(p):
                 for file_n, pdffile in enumerate(util.find_files(p, '*.pdf')):
                     try:
-                        futures.append(executor.submit(convert_and_write, pdffile, output_dir, True))
+                        futures.append(executor.submit(
+                            convert_and_write, pdffile, output_dir, True))
                     except (PDFException, PSException):
                         print "Skipping {0} due to PDF Exception".format(pdffile)
             else:
@@ -89,23 +92,22 @@ def main(path_or_paths, output_dir=None, verbose=1):
 
         if verbose == 1:
             pbar = ProgressBar(widgets=[Percentage(), Bar()],
-                                   maxval=len(futures)).start()
+                               maxval=len(futures)).start()
 
-            for file_n,f in enumerate(concurrent.futures.as_completed(futures)):
+            for file_n, f in enumerate(concurrent.futures.as_completed(futures)):
                 pbar.update(file_n)
 
             pbar.finish()
 
-    
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
     parser = ArgumentParser()
 
     parser.add_argument("path", nargs='+', help="PDF file or folder to parse",
-        type=lambda x: util.is_valid_filepath(parser, x))
+                        type=lambda x: util.is_valid_filepath(parser, x))
     parser.add_argument("-o", '--output',
-        help="output path [default: same as filename]")
+                        help="output path [default: same as filename]")
 
     args = parser.parse_args()
 
