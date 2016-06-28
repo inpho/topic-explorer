@@ -359,6 +359,7 @@ def write_config(args, config_file=None):
 
         if os.path.basename(args.corpus_path) == args.corpus_name:
             config_file = os.path.join(args.corpus_path, '..', config_file)
+            config_file = os.path.normpath(config_file)
 
         overwrite = None if os.path.exists(config_file) else True
         while not overwrite:
