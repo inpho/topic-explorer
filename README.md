@@ -16,8 +16,9 @@ There are two types of install: Default and Developer.
 
 ### Default Install
 1.  Install the [Anaconda Python 2.7 Distribution](http://continuum.io/downloads).
-2.  Open a terminal and run `pip install --pre topicexplorer`.
-3.  Test installation by typing `vsm -h` to print usage instructions.
+2.  Open a Terminal (Mac and Linux) or PowerShell (Windows).
+3.  Run `pip install --pre topicexplorer`.
+4.  Test installation by typing `vsm -h` to print usage instructions.
 
 ### Developer Install
 1.  [Set up Git](https://help.github.com/articles/set-up-git/)
