@@ -241,7 +241,7 @@ fulltext.popover = function(elt) {
   if (!($(elt).data('modal'))) {
     var docid = $(elt).data('doc-id');
     var doclabel = $(elt).data('doc-label');
-    $.get('/fulltext/'+docid, function (data) {
+    $.get('fulltext/'+encodeURIComponent(docid), function (data) {
 
   var mymodal = new BOOTSTRAP.Modal({
 "title": doclabel,

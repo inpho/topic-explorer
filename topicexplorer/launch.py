@@ -107,7 +107,7 @@ def main(args):
     except AttributeError:
         grp_fn = None
     fulltext = '--fulltext' if args.fulltext else ''
-    procs = [subprocess.Popen("vsm serve -k {k} -p {port} {config_file} {fulltext}".format(
+    procs = [subprocess.Popen("vsm serve -k {k} -p {port} {config_file} {fulltext} --no-browser".format(
         k=k, port=(baseport+k), config_file=args.config_file,fulltext=fulltext),
         shell=True, stdout=get_log_file(k), stderr=subprocess.STDOUT,
         preexec_fn=grp_fn) for k in topic_range]

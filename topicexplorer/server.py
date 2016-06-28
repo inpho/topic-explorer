@@ -9,6 +9,7 @@ import os.path
 import re
 import socket
 from urllib2 import unquote
+import webbrowser
 from StringIO import StringIO
 
 from bottle import request, response, route, run, static_file
@@ -287,8 +288,8 @@ def main(args):
         'topic_range' : '{0},{1},1'.format(args.k, args.k+1),
         'icons': 'link',
         'corpus_link' : None,
-        'doc_title_format' : None,
-        'doc_url_format' : None,
+        'doc_title_format' : '{0}',
+        'doc_url_format' : '',
         'raw_corpus' : None,
         'fulltext' : 'false',
         'topics': None,
@@ -459,6 +460,17 @@ def main(args):
     def send_static(filename):
         return static_file(filename, root=resource_filename(__name__, '../www/'))
 
+    if args.browser:
+    	if host == '0.0.0.0':
+            link_host = socket.gethostname()
+	else:
+	    link_host = host
+    	url = "http://{host}:{port}/".format(host=link_host,port=port)
+        webbrowser.open(url)
+
+        print "TIP: Browser launch can be disabled with the '--no-browser' argument:"
+        print "vsm serve --no-browser", args.config, "\n"
+
 
     if args.ssl or config.get('main', 'ssl'):
         certfile = args.certfile or config.get('ssl', 'certfile')
@@ -469,7 +481,7 @@ def main(args):
             certfile=certfile, keyfile=keyfile, ca_certs=ca_certs)
     else:
         run(host=host, port=port)
-
+    
 def populate_parser(parser):
     parser.add_argument('config', type=lambda x: is_valid_configfile(parser, x),
         help="Configuration file path")
@@ -478,6 +490,7 @@ def populate_parser(parser):
     parser.add_argument('-p', dest='port', type=int, 
         help="Port Number", default=None)
     parser.add_argument('--host', default=None, help='Hostname')
+    parser.add_argument('--no-browser', dest='browser', action='store_false')
     parser.add_argument('--fulltext', action='store_true', 
         help='Serve raw corpus files.')
     parser.add_argument('--bibtex', default=None, 
