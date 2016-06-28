@@ -351,6 +351,9 @@ def write_config(args, config_file=None):
         config.set("www", "icons", "htrc,htrcbook,link")
         config.set("main", "htrc", True)
 
+    if args.tokenizer in ['zh','ltc','och']:
+        config.set("main", "lang", "cn")
+
     if config_file is None:
         config_file = args.corpus_name + ".ini"
 
