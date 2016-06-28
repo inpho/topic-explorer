@@ -357,6 +357,9 @@ def write_config(args, config_file=None):
     if config_file is None:
         config_file = args.corpus_name + ".ini"
 
+        if os.path.basename(args.corpus_path) == args.corpus_name:
+            config_file = os.path.join(args.corpus_path, '..', config_file)
+
         overwrite = None if os.path.exists(config_file) else True
         while not overwrite:
             overwrite = raw_input("\nConfig file {0} exists. Overwrite? [Y/n] ".format(config_file))
