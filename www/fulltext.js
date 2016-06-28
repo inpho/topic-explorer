@@ -248,7 +248,7 @@ fulltext.popover = function(elt) {
 "body":  $('<div/>').text(data).html().replaceAll('\n','<br />'),
 "status" : docid,
 "submit": 'Close',
-"cancel" : true,
+"cancel" : false,
 "close" : true
 
 });
