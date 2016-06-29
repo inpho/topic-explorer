@@ -285,7 +285,10 @@ h1 a, h1 a:hover {
 </div>
 <script>
 var q = inpho.util.getValueForURLParam('q') || null;
-if (q) q = q.replace(/\|/g, ' ');
+if (q) {
+  q = decodeURIComponent(q);
+  q = q.replace(/\|/g, ' ');
+}
 
 var docid = inpho.util.getValueForURLParam('doc') || null;
 if (docid) {
