@@ -107,7 +107,7 @@ def main(args):
     except AttributeError:
         grp_fn = None
     fulltext = '--fulltext' if args.fulltext else ''
-    procs = [subprocess.Popen("vsm serve -k {k} -p {port} {config_file} {fulltext} --no-browser".format(
+    procs = [subprocess.Popen("topicexplorer serve -k {k} -p {port} {config_file} {fulltext} --no-browser".format(
         k=k, port=(baseport+k), config_file=args.config_file,fulltext=fulltext),
         shell=True, stdout=get_log_file(k), stderr=subprocess.STDOUT,
         preexec_fn=grp_fn) for k in topic_range]
@@ -155,7 +155,7 @@ def main(args):
 
             print "\nTo test launching a single model, press Ctrl+C to abort launch,"
             print "then use the `serve` command to find the error message:"
-            print "\tvsm serve {config} -k {k}".format(
+            print "\ttopicexplorer serve {config} -k {k}".format(
                 config=args.config_file, k=topic_range[0])
     
         for proc,k in zip(procs, topic_range):
@@ -169,7 +169,7 @@ def main(args):
                     pass
 
                 print "Use the `serve` command to debug errors:"
-                print "\tvsm serve {config} -k {k}".format(config=args.config_file, k=k)
+                print "\ttopicexplorer serve {config} -k {k}".format(config=args.config_file, k=k)
                 for p in procs:
                     if p.poll() is None:
                         try:
@@ -183,7 +183,7 @@ def main(args):
     if args.browser:
         webbrowser.open(url)
         print "TIP: Browser launch can be disabled with the '--no-browser' argument:"
-        print "vsm launch --no-browser", args.config_file, "\n"
+        print "topicexplorer launch --no-browser", args.config_file, "\n"
 
     print "Press Ctrl+C to shutdown the Topic Explorer server"
     # Cross-platform Compatability

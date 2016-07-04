@@ -469,7 +469,7 @@ def main(args):
         webbrowser.open(url)
 
         print "TIP: Browser launch can be disabled with the '--no-browser' argument:"
-        print "vsm serve --no-browser", args.config, "\n"
+        print "topicexplorer serve --no-browser", args.config, "\n"
 
 
     if args.ssl or config.get('main', 'ssl'):

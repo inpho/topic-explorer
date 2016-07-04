@@ -86,7 +86,7 @@ def main(args):
 
                 if args.k:
                     print "\nTIP: number of topics can be specified with argument '-k N N N ...':"
-                    print "         vsm train %s -k %s\n" %\
+                    print "         topicexplorer train %s -k %s\n" %\
                              (args.config_file, ' '.join(map(str, args.k)))
             except ValueError:
                 print "Enter valid integers, separated by spaces!"
@@ -116,7 +116,7 @@ def main(args):
                                    default=int(m.iteration*1.5), min=m.iteration)
     
             print "\nTIP: number of training iterations can be specified with argument '--iter N':"
-            print "         vsm train --iter %d %s\n" % (args.iter, args.config_file)
+            print "         topicexplorer train --iter %d %s\n" % (args.iter, args.config_file)
 
         del m
 
@@ -145,7 +145,7 @@ def main(args):
             args.iter = int_prompt("Number of training iterations:", default=200)
     
             print "\nTIP: number of training iterations can be specified with argument '--iter N':"
-            print "         vsm train --iter %d %s\n" % (args.iter, args.config_file)
+            print "         topicexplorer train --iter %d %s\n" % (args.iter, args.config_file)
     
         ctxs = corpus.context_types
         ctxs = sorted(ctxs, key=lambda ctx: len(corpus.view_contexts(ctx)))
@@ -161,11 +161,11 @@ def main(args):
                     args.context_type = ctxs[0]
     
             print "\nTIP: context type can be specified with argument '--context-type TYPE':"
-            print "         vsm train --context-type %s %s\n" % (args.context_type, args.config_file)
+            print "         topicexplorer train --context-type %s %s\n" % (args.context_type, args.config_file)
     
     
         print "\nTIP: This configuration can be automated as:"
-        print "         vsm train %s --iter %d --context-type %s -k %s\n" %\
+        print "         topicexplorer train %s --iter %d --context-type %s -k %s\n" %\
             (args.config_file, args.iter, args.context_type, 
                 ' '.join(map(str, args.k)))
         model_pattern = build_models(corpus, corpus_filename, model_path, 

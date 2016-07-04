@@ -92,7 +92,7 @@ def update(args=None):
 
         if repo.is_dirty():
             print "There are uncommitted changes in your local repository."
-            print "Please commit before running `vsm update`.\n"
+            print "Please commit before running `topicexplorer update`.\n"
             return
 
         if repo.active_branch != repo.heads.master:
@@ -102,7 +102,7 @@ def update(args=None):
                 print "Switched to 'master' branch."
                 repo.heads.master.checkout()
             else:
-                print "You must switch to the 'master' branch to use `vsm update`."
+                print "You must switch to the 'master' branch to use `topicexplorer update`."
                 return
 
 
@@ -121,8 +121,9 @@ def update(args=None):
                     if sys.argv[0] != __file__:
                         print "Use the `python -m topicexplorer.update` command to update."
                         return
-                    if process_exists('vsm.exe'):
-                        print "vsm is currently running, please close all Topic Explorers to update."
+                    # TODO: remove process_exists('vsm.exe') on 1.0rc1
+                    if process_exists('topicexplorer.exe') or process_exists('vsm.exe'):
+                        print "topicexplorer is currently running, please close all Topic Explorers to update."
                         return
 
                 print "Pulling changes."
@@ -159,8 +160,9 @@ def update(args=None):
                 if sys.argv[0] != __file__:
                     print "Update available. Use the `python -m topicexplorer.update` command to update."
                     return
-                if process_exists('vsm.exe'):
-                    print "vsm is currently running, please close all Topic Explorers to update."
+                # TODO: remove process_exists('vsm.exe') on 1.0rc1
+                if process_exists('topicexplorer.exe') or process_exists('vsm.exe'):
+                    print "topicexplorer is currently running, please close all Topic Explorers to update."
                     return
             
             try:

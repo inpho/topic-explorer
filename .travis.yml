@@ -26,4 +26,4 @@ install:
   - python setup.py install
 # command to run tests
 script: 
-  - vsm demo
+  - topicexplorer demo

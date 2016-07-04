@@ -74,7 +74,7 @@ def main():
 
     # Serve Parser
     parser_serve = parsers.add_parser('serve', 
-        help="Serve a single LDA model, helper for `vsm launch`,"+
+        help="Serve a single LDA model, helper for `topicexplorer launch`,"+
              "rarely called directly")
     server.populate_parser(parser_serve)
     parser_serve.set_defaults(func="serve")
@@ -162,24 +162,24 @@ def main():
         
         print "\nTIP: Only initalizing corpus object and config file."
         print "     Next prepare the corpus using:"
-        print "         vsm prep", args.config_file
+        print "         topicexplorer prep", args.config_file
         print "     Or skip directly to training LDA models using:"
-        print "         vsm train", args.config_file
+        print "         topicexplorer train", args.config_file
 
     elif args.func == 'prep':
         benchmark(prep.main)(args)
         
         print "\nTIP: Train the LDA models with:"
-        print "         vsm train", args.config_file
+        print "         topicexplorer train", args.config_file
 
     elif args.func == 'train':
         benchmark(train.main)(args)
 
         if not args.dry_run:
             print "\nTIP: launch the topic explorer with:"
-            print "         vsm launch", args.config_file
+            print "         topicexplorer launch", args.config_file
             print "     or the notebook server with:"
-            print "         vsm notebook", args.config_file
+            print "         topicexplorer notebook", args.config_file
 
     elif args.func == 'launch':
         benchmark(launch.main)(args)
