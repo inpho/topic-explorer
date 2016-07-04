@@ -106,7 +106,8 @@ setup(
     zip_safe=False,
     cmdclass = { 'install_data': wx_smart_install_data },
     entry_points={
-        'console_scripts' : ['vsm = topicexplorer.__main__:main',
+        'console_scripts' : ['vsm = topicexplorer.__main__:vsm',
+                'topicexplorer = topicexplorer.__main__:main',
                 'htutils = topicexplorer.lib.hathitrust:main']
     }
 )

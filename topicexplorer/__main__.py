@@ -3,16 +3,35 @@ import argparse
 from argparse import ArgumentParser
 from ConfigParser import RawConfigParser as ConfigParser
 import os.path
+import warnings
 
 from topicexplorer import (init, prep, train, server, launch, notebook, demo,
     update, langspace)
 from topicexplorer.lib.util import is_valid_filepath
+
 
 class ArgumentParserError(Exception): pass
 
 class ThrowingArgumentParser(argparse.ArgumentParser):
     def error(self, message):
         raise ArgumentParserError(message)
+
+
+def vsm():
+    warning_msg = ("The `vsm` command has been replaced by `topicexplorer`.\n" +
+                   "    `vsm` will be removed in the 1.0 release.\n" +
+                   "See http://github.com/inpho/topic-explorer/issues/136.")
+    warnings.warn(warning_msg, DeprecationWarning)
+
+    # Force error to print
+    print "WARNING: " + warning_msg
+    import sys
+    if sys.argv[0].endswith('vsm') and len(sys.argv) > 1:
+        print "\nTIP: Use the following command instead:"
+        print '    topicexplorer ' + ' '.join(sys.argv[1:]) + '\n'
+
+    # Proceed while deprecated
+    main()
 
 def main():
     parser = ThrowingArgumentParser()
