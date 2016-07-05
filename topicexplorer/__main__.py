@@ -6,7 +6,7 @@ import os.path
 import warnings
 
 from topicexplorer import (init, prep, train, server, launch, notebook, demo,
-    update, langspace)
+    update, langspace, metadata)
 from topicexplorer.lib.util import is_valid_filepath
 
 
@@ -100,6 +100,12 @@ def main():
         help="Add spaces before unicode chars")
     langspace.populate_parser(parser_langspace)
     parser_langspace.set_defaults(func="langspace")
+
+    # Metadata Parser
+    parser_metadata = parsers.add_parser('metadata', 
+        help="Add spaces before unicode chars")
+    metadata.populate_parser(parser_metadata)
+    parser_metadata.set_defaults(func="metadata")
 
     # fancy arg validation for manually injecting tempfile to profile arg 
     try:
@@ -198,6 +204,9 @@ def main():
 
     elif args.func == 'langspace':
         benchmark(langspace.main)(args)
+
+    elif args.func == 'metadata':
+        benchmark(metadata.main)(args)
 
     if args.profile:
         try:
