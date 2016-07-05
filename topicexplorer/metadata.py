@@ -4,6 +4,7 @@ from codecs import open
 from unidecode import unidecode
 from topicexplorer.lib.util import isint, is_valid_configfile, bool_prompt
 
+from vsm.viewer.wrappers import doc_label_name
 
 def parse_metadata_from_csvfile(filename):
     """
@@ -14,42 +15,55 @@ def parse_metadata_from_csvfile(filename):
     pass
 
 
-def extract_metadata(corpus, filename, format='csv'):
+def extract_metadata(corpus, ctx_type, filename, format='csv'):
     """
     Takes a filename to export metadata to.
     """
     pass
 
 
-def extract_labels(corpus, filename):
+def extract_labels(corpus, ctx_type, filename):
     """
     Creates a new csv where each row is a label in the corpus.
     """
+    label_name = doc_label_name(ctx_type)
+    labels = c.view_metadata(ctx_type)[label_name]
+
+    with open(filename, 'w') as outfile:
+        for label in labels:
+            outfile.write(label + '\n')
 
 
 def add_metadata(corpus, ctx_type, new_metadata):
     import vsm.corpus
-
-    label = _get_label(ctx_type)
     
     # get existing metadata
     i = corpus.context_types.index(ctx_type)
     md = corpus.context_data[i]
     fields = md.dtype.fields.keys()
 
-    new_data = [new_metadata[id] for id in md[label]]
-    new_fields = set()
+    # sort new_metadata according to existing md order
+    # n.b., this may raise a KeyError - in which case there's not md
+    # for each entry - which is the desired error to throw.
+    label_name = doc_label_name(ctx_type)
+    labels = md[label_name]
+    new_data = [new_metadata[id] for id in labels]
 
+    # look for new fields
+    new_fields = set()
     for vals in new_metadata.values():
         new_fields.add(vals.keys())
 
+    # differentiate new and updated fields
     updated_fields = new_fields.intersection(fields)
     new_fields = new_fields.difference(fields)
 
+    # process new fields
     for field in new_fields:
         data = [d[field] for d in new_data] #TODO: sort field by _label
         corpus = vsm.corpus.add_metadata(corpus, ctx_type, field, data)
 
+    # process existing fields
     for field in updated_fields:
         data = [d[field] for d in new_data] #TODO: sort field by _label
         corpus.context_data[i][field] = data
@@ -69,7 +83,8 @@ def main(args):
         metadata = parse_metadata_from_csvfile(filename)
         c = add_metadata(c, metadata)
         c.save(args.corpus_path)
-
+    if args.list:
+        extract_labels(c, args.list)
 
 def populate_parser(parser):
     parser.add_argument("config_file", help="Path to Config",
