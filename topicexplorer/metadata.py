@@ -30,6 +30,7 @@ def extract_labels(corpus, ctx_type, filename):
     labels = c.view_metadata(ctx_type)[label_name]
 
     with open(filename, 'w') as outfile:
+        outfile.write(label_name + '\n')
         for label in labels:
             outfile.write(label + '\n')
 
@@ -86,14 +87,13 @@ def main(args):
     if args.list:
         extract_labels(c, args.list)
 
+
 def populate_parser(parser):
     parser.add_argument("config_file", help="Path to Config",
         type=lambda x: is_valid_configfile(parser, x))
     parser.add_argument("-e", "--extract", help="Extract metadata to file")
     parser.add_argument("-a", "--add", help="Add metadata from file")
-    parser.add_argument("-l", "--list")
-
-
+    parser.add_argument("-l", "--list", help="List all labels")
 
 
 if __name__ == '__main__':
