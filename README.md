@@ -18,13 +18,13 @@ There are two types of install: Default and Developer.
 1.  Install the [Anaconda Python 2.7 Distribution](http://continuum.io/downloads).
 2.  Open a Terminal (Mac and Linux) or PowerShell (Windows).
 3.  Run `pip install --pre topicexplorer`.
-4.  Test installation by typing `vsm -h` to print usage instructions.
+4.  Test installation by typing `topicexplorer -h` to print usage instructions.
 
 ### Developer Install
 1.  [Set up Git](https://help.github.com/articles/set-up-git/)
 2.  Install the [Anaconda Python 2.7 Distribution](http://continuum.io/downloads).
 3.  Open a terminal and run `pip install --src . -e git+https://github.com/inpho/topic-explorer#egg=topicexplorer`
-4.  Test installation by typing `vsm -h` to print usage instructions.
+4.  Test installation by typing `topicexplorer -h` to print usage instructions.
 
 ## Usage
 ![Workflow](http://inphodata.cogs.indiana.edu/img/workflow.png)
@@ -32,7 +32,7 @@ There are two types of install: Default and Developer.
 1.  Initialize the Topic Explorer on a file, folder of text files, or folder of folders:
 
     ```
-    vsm init PATH [CONFIG]
+    topicexplorer init PATH [CONFIG]
     ```
 
     This will generate a configuration file called *CONFIG*.
@@ -40,13 +40,13 @@ There are two types of install: Default and Developer.
 2.  Train LDA models using the on-screen instructions:
 
     ```
-    vsm train CONFIG
+    topicexplorer train CONFIG
     ```
 
 3.  Launch the topic explorer:
 
     ```
-    vsm launch CONFIG
+    topicexplorer launch CONFIG
     ```
 
 4.  Press Ctrl+C to quit all servers.
@@ -56,9 +56,9 @@ See the sample configuration files in the `config` directory for examples of how
 ## Bug Reports
 Please report issues on the [issue tracker](http://github.com/inpho/topic-explorer/issues) or contact Jaimie directly (contact info at bottom of README).
 
-In your report, please include the error message, the command you ran, your operating system, and the output of the command `vsm --version`. This will ensure that we can quickly diagnose your issue.
+In your report, please include the error message, the command you ran, your operating system, and the output of the command `topicexplorer version`. This will ensure that we can quickly diagnose your issue.
 
-**Note:** When using a developer install `vsm --version` will print in the following format: `1.0b39-1-g7c834bf-dirty`.
+**Note:** When using a developer install `topicexplorer version` will print in the following format: `1.0b39-1-g7c834bf-dirty`.
 * The first part is the most recent release tag. (`1.0b39`)
 * The second part is the number of commits since the tag. (`1`)
 * The next is the hash of the most recent commit. (`g7c834bf`)
@@ -76,7 +76,7 @@ The InPhO Topic Explorer is **only** compatible with Python 2.7. However, Anacon
 2.  Open a terminal and run `conda create -n py27 python=2.7 anaconda`. This will create a Python 2.7 Anaconda environment.
 3.  Run `source activate py27` to activate the Python 2.7 bindings. You should see `(py27)` before your prompt.
 4.  Use either the Default or Developer [install instructions](#installation), skipping the step to install Anaconda Python 2.7.
-5.  Run `source deactivate` to deactivate Python 2.7 bindings and reactivate Python 3.5 bindings. Note that the `vsm` command will only work when the Python 2.7 bindings are activated.
+5.  Run `source deactivate` to deactivate Python 2.7 bindings and reactivate Python 3.5 bindings. Note that the `topicexplorer` command will only work when the Python 2.7 bindings are activated.
 
 ### Non-Anaconda Install
  - **Miniconda**
