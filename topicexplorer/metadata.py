@@ -27,7 +27,7 @@ def extract_labels(corpus, ctx_type, filename):
     Creates a new csv where each row is a label in the corpus.
     """
     label_name = doc_label_name(ctx_type)
-    labels = c.view_metadata(ctx_type)[label_name]
+    labels = corpus.view_metadata(ctx_type)[label_name]
 
     with open(filename, 'w') as outfile:
         outfile.write(label_name + '\n')
@@ -73,19 +73,23 @@ def add_metadata(corpus, ctx_type, new_metadata):
 
 
 def main(args):
+    from vsm.corpus import Corpus
+
     config = ConfigParser({"htrc": False,
         "sentences": "False"})
     config.read(args.config_file)
     
     args.corpus_path = config.get("main", "corpus_file")
     c = Corpus.load(args.corpus_path)
+    
+    context_type = config.get('main', 'context_type')
 
     if args.add:
         metadata = parse_metadata_from_csvfile(filename)
-        c = add_metadata(c, metadata)
+        c = add_metadata(c, context_type, metadata)
         c.save(args.corpus_path)
     if args.list:
-        extract_labels(c, args.list)
+        extract_labels(c, context_type, args.list)
 
 
 def populate_parser(parser):
