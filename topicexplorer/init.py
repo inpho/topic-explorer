@@ -158,6 +158,12 @@ def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=0,
     elif tokenizer == 'ltc' or tokenizer == 'och':
         from topicexplorer.lib.chinese import ancient_chinese_tokenizer
         tokenizer = ancient_chinese_tokenizer
+    elif tokenizer == 'inpho':
+        from topicexplorer.extensions.inpho import inpho_tokenizer
+        tokenizer = inpho_tokenizer
+    elif tokenizer == 'brain':
+        from hyperbrain.parse import brain_tokenizer
+        tokenizer = brain_tokenizer
     else:
         raise NotImplementedError("Tokenizer '{}' is not included in topicexplorer".format(tokenizer))
 
@@ -401,7 +407,7 @@ def populate_parser(parser):
     
     parser.add_argument("--htrc", action="store_true")
     parser.add_argument("--rebuild", action="store_true")
-    parser.add_argument("--tokenizer", choices=['zh', 'ltc', 'och', 'inpho', 'default'], default="default")
+    parser.add_argument("--tokenizer", choices=['zh', 'ltc', 'och', 'inpho', 'default', 'brain'], default="default")
     
     parser.add_argument("--simple", action="store_true", default=True, 
         help="Skip sentence tokenizations [default].")
