@@ -142,11 +142,6 @@ def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=0,
     decode=True, sentences=False, simple=True, tokenizer='default'):
    
     from vsm.corpus import Corpus
-    from vsm.extensions.corpusbuilders import coll_corpus, dir_corpus, toy_corpus
-    if sentences:
-        print "Importing sentence constructors"
-        from vsm.extensions.ldasentences import dir_corpus, toy_corpus
-
 
     # import appropriate tokenizer
     if tokenizer == 'default':
@@ -180,53 +175,6 @@ def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=0,
     c = corpusbuilder(corpus_path, nltk_stop=nltk_stop,
                       stop_freq=stop_freq, ignore=ignore, decode=decode,
                       simple=simple, tokenizer=tokenizer)
-
-    '''
-    if os.path.isfile(corpus_path):
-        print "Constructing toy corpus, each line is a document"
-        if sentences:
-            c = toy_corpus(corpus_path, is_filename=True, nltk_stop=nltk_stop, 
-                           stop_freq=stop_freq, autolabel=True, decode=decode)
-        else:
-            c = toy_corpus(corpus_path, is_filename=True, nltk_stop=nltk_stop, 
-                           stop_freq=stop_freq, autolabel=True, decode=decode,
-                           simple=simple, tokenizer=tokenizer)
-    elif os.path.isdir(corpus_path):
-        contents = listdir_nohidden(corpus_path)
-        contents = [os.path.join(corpus_path,obj) for obj in contents 
-            if not any([obj.endswith(suffix) for suffix in ignore])]
-        count_dirs = len(filter(os.path.isdir, contents))
-        count_files = len(filter(os.path.isfile, contents))
-
-        print "Detected %d folders and %d files in %s" %\
-            (count_dirs, count_files, corpus_path)
-
-        if count_files > 0 and count_dirs == 0:
-            print "Constructing directory corpus, each file is a document"
-            if sentences:
-                c = dir_corpus(corpus_path, nltk_stop=nltk_stop,
-                               stop_freq=stop_freq, chunk_name=context_type,
-                               ignore=ignore, decode=decode)
-            else:
-                c = dir_corpus(corpus_path, nltk_stop=nltk_stop,
-                               stop_freq=stop_freq, chunk_name=context_type,
-                               ignore=ignore, decode=decode, simple=simple, 
-                               tokenizer=tokenizer)
-        elif count_dirs > 0 and count_files == 0 and not sentences:
-            print "Constructing collection corpus, each folder is a document"
-            context_type='book'
-            c = coll_corpus(corpus_path, nltk_stop=nltk_stop,
-                            stop_freq=stop_freq, ignore=ignore, decode=decode,
-                            simple=simple, tokenizer=tokenizer)
-        elif count_dirs > 0 and count_files == 0 and sentences:
-            raise NotImplementedError("""Collection corpuses are too large for
-            sentence parsing. Reduce your corpus to a single folder or
-            file.""")
-        else:
-            raise IOError("Invalid Path: empty directory")
-    else:
-        raise IOError("Invalid path")
-    '''
 
     if contains_pdfs:
         from vsm.viewer.wrappers import doc_label_name
