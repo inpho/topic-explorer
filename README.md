@@ -17,7 +17,9 @@ There are two types of install: Default and Developer.
 ### Default Install
 1.  Install the [Anaconda Python 2.7 Distribution](http://continuum.io/downloads).
 2.  Open a Terminal (Mac and Linux) or PowerShell (Windows).
-3.  Run `pip install --pre topicexplorer`.
+3.  Run `pip install --pre topicexplorer -i https://inpho.cogs.indiana.edu/pypi/`.
+    
+    **Note:** `--pre` has *two* `-` characters. When the `1.0` release happens, `--pre` will no longer be necessary.
 4.  Test installation by typing `topicexplorer -h` to print usage instructions.
 
 ### Developer Install

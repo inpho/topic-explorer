@@ -50,7 +50,7 @@ install_requires = [
         'bottle>=0.12', 
         'brewer2mpl>=1.4',
         'pystache>=0.5.4',
-        'vsm==0.4.0a29',
+        'vsm==0.4.0b1',
         'wget',
         'unidecode',
         'pdfminer',
@@ -100,7 +100,8 @@ setup(
     data_files=datafiles,
     install_requires=install_requires,
     dependency_links=[
-        'https://github.com/inpho/vsm/archive/master.zip#egg=vsm-0.4.0a20',
+        'https://github.com/inpho/vsm/archive/master.zip#egg=vsm-0.4.0b1',
+        'https://inpho.cogs.indiana.edu/pypi/pymmseg/'
         ],
     include_package_data=True,
     zip_safe=False,
