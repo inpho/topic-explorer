@@ -100,7 +100,7 @@ setup(
     data_files=datafiles,
     install_requires=install_requires,
     dependency_links=[
-        'https://github.com/inpho/vsm/archive/master.zip#egg=vsm-0.4.0b1',
+        #'https://github.com/inpho/vsm/archive/master.zip#egg=vsm-0.4.0b1',
         'https://inpho.cogs.indiana.edu/pypi/pymmseg/'
         ],
     include_package_data=True,
