@@ -53,6 +53,7 @@ class Application(Bottle):
         super(Application, self).__init__()
 
         # setup routes
+        self.renderer = pystache.Renderer(escape=lambda u: u)
         self._setup_routes()
 
         # load corpus
@@ -285,8 +286,25 @@ class Application(Bottle):
             js = self.get_docs(docs, query=q)
         
             return json.dumps(js)
+
+        @self.route('/')
+        def index():
+            response.set_header('Expires', _cache_date())
+            print __name__
+            print resource_filename(__name__, '../www/index.mustache.html')
+    
+            with open(resource_filename(__name__, '../www/index.mustache.html'),
+                      encoding='utf-8') as tmpl_file:
+                template = tmpl_file.read()
+            return self.renderer.render(template, 
+                {'corpus_name' : 'AP YO',
+                 'corpus_link' : '',
+                 'context_type' : self.context_type,
+                 'topic_range' : self.topic_range,
+                 'doc_title_format' : '{}',
+                 'doc_url_format' : ''})
         
-        @route('/<filename:path>')
+        @self.route('/<filename:path>')
         @_set_acao_headers
         def send_static(filename):
             return static_file(filename, root=resource_filename(__name__, '../www/'))
@@ -474,22 +492,7 @@ def main(args):
         doc_title_format = config.get('www', 'doc_title_format')
         doc_url_format = config.get('www', 'doc_url_format')
     
-        renderer = pystache.Renderer(escape=lambda u: u)
     
-        @route('/')
-        def index():
-            response.set_header('Expires', _cache_date())
-    
-            with open(resource_filename(__name__, '../www/index.mustache.html'),
-                      encoding='utf-8') as tmpl_file:
-                template = tmpl_file.read()
-            return renderer.render(template, 
-                {'corpus_name' : corpus_name,
-                 'corpus_link' : corpus_link,
-                 'context_type' : context_type,
-                 'topic_range' : topic_range,
-                 'doc_title_format' : doc_title_format,
-                 'doc_url_format' : doc_url_format})
     """
     
     
@@ -505,6 +508,7 @@ def main(args):
         print "TIP: Browser launch can be disabled with the '--no-browser' argument:"
         print "topicexplorer serve --no-browser", args.config, "\n"
 
+    app.run(host='0.0.0.0', port=8081)
     return app
 
     
