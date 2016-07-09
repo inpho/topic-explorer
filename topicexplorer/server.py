@@ -49,14 +49,16 @@ def _cache_date(days=1):
 
 class Application(Bottle):
     def __init__(self, corpus_file='', model_pattern='', topic_range=None,
-                 context_type=''):
+                 context_type='', lang=None, icons=None):
         super(Application, self).__init__()
 
         # setup routes
         self.renderer = pystache.Renderer(escape=lambda u: u)
+        self.icons = icons
         self._setup_routes()
 
         # load corpus
+        self.lang = lang
         self.context_type = context_type
         self.label_name = doc_label_name(self.context_type)
         self._load_corpus(corpus_file)
@@ -250,7 +252,9 @@ class Application(Bottle):
             data = self.v[k].topics()
             
             wordmax = 10 # for alphabetic languages
-            if lang=='cn': wordmax = 25 # for ideographic languages
+            if self.lang == 'cn':
+                wordmax = 25 # for ideographic languages
+
             for i,topic in enumerate(data):
                 js[str(i)].update({'words' : dict([(w, p) for w,p in topic[:wordmax]])})
         
@@ -282,13 +286,20 @@ class Application(Bottle):
                     docs = [random.choice(self.labels)]
             except:
                 pass
-        
+
             js = self.get_docs(docs, query=q)
-        
+
             return json.dumps(js)
 
-        @self.route('/')
-        def index():
+        @route('/icons.js')
+        def icons():
+            with open(resource_filename(__name__, '../www/icons.js')) as icons:
+                text = '{0}\n var icons = {1};'\
+                    .format(icons.read(), json.dumps(self.icons))
+            return text
+
+        @self.route('/<k:int>/')
+        def index(k):
             response.set_header('Expires', _cache_date())
             print __name__
             print resource_filename(__name__, '../www/index.mustache.html')
@@ -337,12 +348,6 @@ class Application(Bottle):
     
 
 def main(args):
-
-    global context_type, lda_c, lda_m, lda_v 
-    global label, id_fn, doc_label_name
-    global corpus_path
-    global lang
-
     # load in the configuration file
     config = ConfigParser({
         'certfile' : None,
@@ -426,9 +431,25 @@ def main(args):
         topic_range = range(*topic_range)
     if config.get('main', 'topics'):
         topic_range = eval(config.get('main', 'topics'))
+    # get icons_list
+    config_icons = config.get('www','icons').split(",")
+    if args.fulltext or config.getboolean('www','fulltext'):
+        if ('fulltext' not in config_icons and
+            'fulltext-inline' not in config_icons):
+            config_icons.insert(0,'fulltext')
 
-    # LDA objects
-    app = Application(corpus_file, model_pattern, topic_range, context_type)
+    # Create application object
+    corpus_name = config.get('www','corpus_name')
+    corpus_link = config.get('www','corpus_link')
+    doc_title_format = config.get('www', 'doc_title_format')
+    doc_url_format = config.get('www', 'doc_url_format')
+
+    app = Application(corpus_file=corpus_file,
+                      model_pattern=model_pattern,
+                      topic_range=topic_range,
+                      context_type=context_type,
+                      lang=lang,
+                      icons=config_icons)
 
     """
     with app:
@@ -472,25 +493,9 @@ def main(args):
                 else:
                     return static_file(doc_id, root=corpus_path)
     
-        config_icons = config.get('www','icons').split(",")
-        if args.fulltext or config.getboolean('www','fulltext'):
-            if ('fulltext' not in config_icons and
-                'fulltext-inline' not in config_icons):
-                config_icons.insert(0,'fulltext')
-        
-        @route('/icons.js')
-        def icons():
-            with open(resource_filename(__name__, '../www/icons.js')) as icons:
-                text = '{0}\n var icons = {1};'\
-                    .format(icons.read(), json.dumps(config_icons))
-            return text
     
     
         # index page parameterization
-        corpus_name = config.get('www','corpus_name')
-        corpus_link = config.get('www','corpus_link')
-        doc_title_format = config.get('www', 'doc_title_format')
-        doc_url_format = config.get('www', 'doc_url_format')
     
     
     """
