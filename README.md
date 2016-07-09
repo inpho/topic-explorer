@@ -98,6 +98,43 @@ The InPhO Topic Explorer is **only** compatible with Python 2.7. However, Anacon
        *   [matplotlib](http://matplotlib.org/downloads.html)
        *   [IPython Notebooks](http://ipython.org/install.html)
 
+## Deployment
+### mod_wsgi
+
+1.  Install apache2 with mod_wsgi: `apt-get install apache2 libapache2-mod-wsgi`
+2.  Create a file `/var/www/topicexplroer/app.config.ini`. Each line should consist of an explorer ID and the path to the config file for that ID. 
+3.  Create a file `/etc/systemd/system/httpd.service` with the following contents:
+    ```
+    [Service]
+    Environment=TOPICEXPLORER_CONFIG=/var/www/topicexplorer/app.config.ini
+    ```
+4.  Create `/etc/apache2/sites-available/topicexplorer.conf`:
+    ```
+<VirtualHost *:80>
+	ServerName localhost
+	ServerAdmin admin@localhost
+	
+	ErrorLog ${APACHE_LOG_DIR}/error.log
+	CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+	WSGIDaemonProcess topicexplorer.ap user=www-data group=www-data \
+	  python-path=/home/jaimie/anaconda2/lib/python2.7/site-packages/
+	WSGIScriptAlias /ap /var/www/topicexplorer/app.wsgi
+	
+	<Directory /var/www/topicexplorer>
+		WSGIProcessGroup topicexplorer.ap
+		WSGIApplicationGroup %{GLOBAL}
+		Options All
+		AllowOverride All
+		Require all granted
+	</Directory>
+</VirtualHost>
+
+    ```
+    
+
+
+
 ## Licensing and Attribution
 The project is released under an [Open-Source Initiative-approved MIT License](http://opensource.org/licenses/MIT).
 
