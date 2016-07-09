@@ -471,16 +471,6 @@ def main(args):
         print "TIP: Browser launch can be disabled with the '--no-browser' argument:"
         print "topicexplorer serve --no-browser", args.config, "\n"
 
-
-    if args.ssl or config.get('main', 'ssl'):
-        certfile = args.certfile or config.get('ssl', 'certfile')
-        keyfile = args.keyfile or config.get('ssl', 'keyfile')
-        ca_certs = args.ca_certs or config.get('ssl', 'ca_certs')
-
-        run(host=host, port=port, server=SSLWSGIRefServer,
-            certfile=certfile, keyfile=keyfile, ca_certs=ca_certs)
-    else:
-        run(host=host, port=port)
     
 def populate_parser(parser):
     parser.add_argument('config', type=lambda x: is_valid_configfile(parser, x),
@@ -518,3 +508,13 @@ if __name__ == '__main__':
     args = parser.parse_args()
     
     main(args)
+
+    if args.ssl or config.get('main', 'ssl'):
+        certfile = args.certfile or config.get('ssl', 'certfile')
+        keyfile = args.keyfile or config.get('ssl', 'keyfile')
+        ca_certs = args.ca_certs or config.get('ssl', 'ca_certs')
+
+        run(host=host, port=port, server=SSLWSGIRefServer,
+            certfile=certfile, keyfile=keyfile, ca_certs=ca_certs)
+    else:
+        run(host=host, port=port)
