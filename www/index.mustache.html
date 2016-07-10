@@ -200,7 +200,7 @@ h1 a, h1 a:hover {
     <a class="btn dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
     <ul class="dropdown-menu">
     {{#topic_range}}
-    <li><a href="javascript:visualize({{k}}, {{port}})">{{k}} Topics</a></li>
+    <li><a href="javascript:visualize({{.}})">{{.}} Topics</a></li>
     {{/topic_range}}
     </ul>
   </div>
@@ -336,12 +336,11 @@ $('#searchForm').submit(function(event) {
   event.preventDefault();
 });
 
-function visualize(k, port) {
+function visualize(k) {
   var url = "{0}{1}".format(window.location.origin, window.location.pathname);
-  if (port && window.location.port)
-    url = url.replace(window.location.port, port);
-  else if (k && tops) 
-    url = url.replace(Object.keys(tops).length, k);
+  if (k && tops)
+    url = url.replace('/' + Object.keys(tops).length + '/',
+                      '/' + k + '/');
 
   if ($("#autocompleteDoc").hasClass('active') && !($("#autocompleteDoc").attr("disabled") == 'disabled')) {
     url += "?doc=" + encodeURIComponent($("#hidden_id").val() || docid) ;
