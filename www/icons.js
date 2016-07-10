@@ -1,6 +1,6 @@
 var base_fn = function(ticks,i) {
     return ticks.append("svg:image")
-        .attr("xlink:href","../../img/link.png")
+        .attr("xlink:href","/img/link.png")
         .attr("width", 18)
         .attr("height",18)
         .attr("x", -margin.left + 5 + (i*20))
@@ -9,14 +9,14 @@ var base_fn = function(ticks,i) {
 
 var icon_fns = {"link" : function(ticks, i) {
       base_fn(ticks,i)
-        .attr("xlink:href","../img/link.png")
+        .attr("xlink:href","/img/link.png")
         .attr("class", "linkIcon icon")
         .on("click", function(d) { window.location.href = window.location.origin + window.location.pathname + "?doc=" + encodeURIComponent(d);});
   },
  "ap" : function(ticks, i) {
       base_fn(ticks,i)
         .attr("data-doc-id", function (d) {return d})
-        .attr("xlink:href","../img/ap.jpg")
+        .attr("xlink:href","/img/ap.jpg")
         .attr("class", "apIcon icon")
         .attr("onclick", function(d) { return (d) ? "fulltext.popover(this)" : ""; });
   },
@@ -31,14 +31,14 @@ var icon_fns = {"link" : function(ticks, i) {
               return d;  
             }; 
           })
-        .attr("xlink:href","../img/icon-book.png")
+        .attr("xlink:href","/img/icon-book.png")
         .attr("class", "fulltextIcon icon")
         .attr("onclick", function(d) { return (d) ? "fulltext.popover(this)" : ""; });
   },
  "fulltext" : function(ticks, i,docs) {
       base_fn(ticks,i)
         .attr("data-doc-id", function (d) {return d})
-        .attr("xlink:href","../img/icon-book.png")
+        .attr("xlink:href","/img/icon-book.png")
         .attr("class", "fulltextIcon icon")
         .on("click", function(d){
           var url = window.location.origin + window.location.pathname + "fulltext/" + encodeURIComponent(d);
@@ -48,7 +48,7 @@ var icon_fns = {"link" : function(ticks, i) {
  "oldbailey" : function(ticks, i, docs) {
       base_fn(ticks,i)
         .attr("data-doc-id", function (d) {return d})
-        .attr("xlink:href","../img/icon-law.png")
+        .attr("xlink:href","/img/icon-law.png")
         .attr("class", "oldbaileyIcon icon")
         .on("click", function(d) { 
           data = docs.filter(function(doc, i) { return doc.id == d})[0];
@@ -58,7 +58,7 @@ var icon_fns = {"link" : function(ticks, i) {
   },
  "htrc" : function(ticks, i, docs) {
       base_fn(ticks,i)
-        .attr("xlink:href","../img/htrc.png")
+        .attr("xlink:href","/img/htrc.png")
         .attr("class", "htrcIcon icon")
         .attr("data-htrc-page", function(d) { 
           if (Number(d) == NaN)
@@ -79,7 +79,7 @@ var icon_fns = {"link" : function(ticks, i) {
   },
  "htrcbook" : function(ticks, i, docs) {
       base_fn(ticks,i)
-        .attr("xlink:href","../img/icon-book.png")
+        .attr("xlink:href","/img/icon-book.png")
         .attr("class", "htrcbookIcon icon")
         .on("click", function(d) { 
           data = docs.filter(function(doc, i) { return doc.id == d})[0]
@@ -90,13 +90,13 @@ var icon_fns = {"link" : function(ticks, i) {
   },
  "inpho" : function(ticks, i) { 
       base_fn(ticks,i)
-        .attr("xlink:href","../img/inpho.png")
+        .attr("xlink:href","/img/inpho.png")
         .attr("class", "inphoIcon icon")
         .on("click", function(d) { window.open("https://inpho.cogs.indiana.edu/entity?redirect=True&sep=" + d, "_blank");});
    },
  "sep" : function(ticks, i) {
       base_fn(ticks,i)
-        .attr("xlink:href","../img/sep.png")
+        .attr("xlink:href","/img/sep.png")
         .attr("class", "sepIcon icon")
         .on("click", function(d) { window.open("http://plato.stanford.edu/entries/" + d, "_blank");});
    }

@@ -47,21 +47,21 @@ for model, path in config.iteritems():
 # Create global static file serving - helps with caching
 WWW_DIR = os.environ.get('TOPICEXPLORER_WWW_DIR',
     '/var/www/topicexplorer/www/')
-
-LIB_DIR = os.path.join(WWW_DIR, 'lib/')
-if not os.path.exists(LIB_DIR):
-    shutil.copytree(
-        resource_filename('topicexplorer.server', '../www/lib/'), LIB_DIR)
-
-IMG_DIR = os.path.join(WWW_DIR, 'img/')
-if not os.path.exists(IMG_DIR):
-    shutil.copytree(
-        resource_filename('topicexplorer.server', '../www/img/'), IMG_DIR)
+STATIC_DIR = resource_filename('topicexplorer.server', '../www/')
 
 @application.route('/<filename:path>')
 def send_static(filename):
-    return bottle.static_file(filename, root=WWW_DIR)
+    www_path = os.path.join(WWW_DIR, filename)
+    static_path = os.path.join(STATIC_DIR, filename) 
 
-@application.route('/')
-def index():
-    return send_static('index.html')
+    if os.path.isdir(www_path) or os.path.isdir(static_path):
+        filename = os.path.join(filename, 'index.html')
+        www_path = os.path.join(WWW_DIR, filename)
+
+    if os.path.exists(www_path):
+        root = WWW_DIR
+    else:
+        root = resource_filename('topicexplorer.server', '../www/')
+
+    return bottle.static_file(filename, root=root)
+

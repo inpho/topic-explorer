@@ -313,7 +313,8 @@ class Application(Bottle):
                  'doc_title_format' : '{}',
                  'doc_url_format' : ''}
             return self.renderer.render(template, tmpl_params)
-        
+
+    def serve_static(): 
         @self.route('/<filename:path>')
         @_set_acao_headers
         def send_static(filename):
