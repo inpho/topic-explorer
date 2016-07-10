@@ -13,6 +13,8 @@ from argparse import ArgumentParser
 from glob import iglob as glob
 import os
 import os.path
+from pkg_resources import resource_filename
+import shutil
 
 import bottle
 import topicexplorer.server
@@ -21,11 +23,11 @@ import topicexplorer.server
 config = dict()
 
 # get configuration directory
-config_dir = os.environ.get('TOPICEXPLORER_CONFIG_DIR',
+CONFIG_DIR = os.environ.get('TOPICEXPLORER_CONFIG_DIR',
     '/var/www/topicexplorer/config/')
 
 # grab config files from "config" directory
-for path in glob(os.path.join(config_dir, '*.ini')):
+for path in glob(os.path.join(CONFIG_DIR, '*.ini')):
     key = os.path.basename(path).replace('.ini','')
     config[key] = path
 
@@ -36,7 +38,30 @@ application = bottle.default_app()
 
 # append each model to the app
 for model, path in config.iteritems():
-    args = parser.parse_args([path])
+    args = parser.parse_args([path, '--no-browser'])
     child_app = topicexplorer.server.main(args)
     application.mount('/{}/'.format(model), child_app)
 
+
+
+# Create global static file serving - helps with caching
+WWW_DIR = os.environ.get('TOPICEXPLORER_WWW_DIR',
+    '/var/www/topicexplorer/www/')
+
+LIB_DIR = os.path.join(WWW_DIR, 'lib/')
+if not os.path.exists(LIB_DIR):
+    shutil.copytree(
+        resource_filename('topicexplorer.server', '../www/lib/'), LIB_DIR)
+
+IMG_DIR = os.path.join(WWW_DIR, 'img/')
+if not os.path.exists(IMG_DIR):
+    shutil.copytree(
+        resource_filename('topicexplorer.server', '../www/img/'), IMG_DIR)
+
+@application.route('/<filename:path>')
+def send_static(filename):
+    return bottle.static_file(filename, root=WWW_DIR)
+
+@application.route('/')
+def index():
+    return send_static('index.html')
