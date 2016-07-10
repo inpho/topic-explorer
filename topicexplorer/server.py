@@ -49,7 +49,7 @@ def _cache_date(days=1):
 
 class Application(Bottle):
     def __init__(self, corpus_file='', model_pattern='', topic_range=None,
-                 context_type='', **kwargs):
+                 context_type='', label_module=None, config_file='', **kwargs):
         super(Application, self).__init__()
 
         # setup routes
@@ -60,6 +60,7 @@ class Application(Bottle):
         # load corpus
         self.context_type = context_type
         self.label_name = self.context_type + '_label'
+        self._load_label_module(label_module, config_file)
         self._load_corpus(corpus_file)
        
         # load viewers
@@ -68,11 +69,28 @@ class Application(Bottle):
         self.colors = dict()
         self._load_viewers(model_pattern)
 
-    def id_fn(self, x): 
-        return x
 
-    def label(self, x):
-        return x
+    def _load_label_module(self, label_module, config_file):
+        try:
+            label_module = import_module(label_module)
+            print "imported label module"
+            label_module.init(config_file)
+        except (ImportError, NoOptionError, AttributeError):
+            pass
+
+        try:
+            self.label = label_module.label
+            print "imported label function"
+        except (AttributeError, UnboundLocalError):
+            self.label = lambda x: x
+            print "using default label function"
+
+        try:
+            self.id_fn = label_module.id_fn
+            print "imported id function"
+        except (AttributeError, UnboundLocalError):
+            self.id_fn = lambda metadata: metadata[self.label_name]
+            print "using default id function"
 
     def _load_corpus(self, corpus_file):
         self.c = Corpus.load(corpus_file)
@@ -415,6 +433,7 @@ def main(args):
         'doc_title_format' : '{0}',
         'doc_url_format' : '',
         'raw_corpus' : None,
+        'label_module' : None,
         'fulltext' : 'false',
         'topics': None,
         'lang': None})
@@ -444,11 +463,14 @@ def main(args):
     corpus_link = config.get('www','corpus_link')
     doc_title_format = config.get('www', 'doc_title_format')
     doc_url_format = config.get('www', 'doc_url_format')
+    label_module = config.get('main', 'label_module')
 
     app = Application(corpus_file=corpus_file,
                       model_pattern=model_pattern,
                       topic_range=topic_range,
                       context_type=context_type,
+                      label_module=label_module,
+                      config_file=args.config,
                       lang=lang,
                       icons=config_icons,
                       corpus_name=corpus_name,
@@ -458,28 +480,6 @@ def main(args):
 
     """
     with app:
-        # label function imports
-        try:
-            label_module = config.get('main', 'label_module')
-            label_module = import_module(label_module)
-            print "imported label module"
-            label_module.init(lda_v, config, args)
-        except (ImportError, NoOptionError, AttributeError):
-            pass
-    
-        try:
-            label = label_module.label
-            print "imported label function"
-        except (AttributeError, UnboundLocalError):
-            label = lambda x: x
-            print "using default label function"
-            
-        try:
-            id_fn = label_module.id_fn
-            print "imported id function"
-        except (AttributeError, UnboundLocalError):
-            id_fn = lambda metadata: metadata[doc_label_name(lda_v.model.context_type)]
-            print "using default id function"
     
         corpus_path = config.get('main', 'raw_corpus')
         if args.fulltext or config.getboolean('www','fulltext'):
