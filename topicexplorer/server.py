@@ -60,7 +60,7 @@ class Application(Bottle):
         # load corpus
         self.lang = lang
         self.context_type = context_type
-        self.label_name = doc_label_name(self.context_type)
+        self.label_name = self.context_type + '_label'
         self._load_corpus(corpus_file)
        
         # load viewers
@@ -80,6 +80,7 @@ class Application(Bottle):
         self.labels = self.c.view_metadata(self.context_type)[self.label_name]
 
     def _load_viewers(self, model_pattern):
+        self.id_fn = lambda md: md[self.label_name]
         for k in self.topic_range:
             print "Loading", k
             m = LDA.load(model_pattern.format(k))
@@ -93,7 +94,7 @@ class Application(Bottle):
     def _setup_routes(self):
         @self.route('/<k:int>/doc_topics/<doc_id>')
         @_set_acao_headers
-        def doc_topic_csv(doc_id):
+        def doc_topic_csv(k, doc_id):
             response.content_type = 'text/csv; charset=UTF8'
         
             doc_id = unquote(doc_id)
@@ -109,7 +110,7 @@ class Application(Bottle):
         
         @self.route('/<k:int>/docs/<doc_id>')
         @_set_acao_headers
-        def doc_csv(doc_id, threshold=0.2):
+        def doc_csv(k, doc_id, threshold=0.2):
             response.content_type = 'text/csv; charset=UTF8'
             
             doc_id = unquote(doc_id)
@@ -125,7 +126,7 @@ class Application(Bottle):
         
         @self.route('/<k:int>/topics/<topic_no:int>.json')
         @_set_acao_headers
-        def topic_json(topic_no, N=40):
+        def topic_json(k, topic_no, N=40):
             response.content_type = 'application/json; charset=UTF8'
             try:
                 N = int(request.query.n)
@@ -154,7 +155,7 @@ class Application(Bottle):
         
         @self.route('/<k:int>/docs_topics/<doc_id:path>.json')
         @_set_acao_headers
-        def doc_topics(doc_id, N=40):
+        def doc_topics(k, doc_id, N=40):
             try:
                 N = int(request.query.n)
             except:
@@ -179,14 +180,14 @@ class Application(Bottle):
                 doc, prob = doc_prob
                 struct = docs[doc]
                 struct.update({'prob' : 1-prob,
-                    'topics' : dict([(str(t), p) for t,p in topics])})
+                    'topics' : dict([(str(t), float(p)) for t,p in topics])})
                 js.append(struct)
         
             return json.dumps(js)
         
         @self.route('/<k:int>/word_docs.json')
         @_set_acao_headers
-        def word_docs(N=40):
+        def word_docs(k, N=40):
             try:
                 N = int(request.query.n)
             except:
@@ -231,7 +232,7 @@ class Application(Bottle):
         
         @self.route('/<k:int>/topics.json')
         @_set_acao_headers
-        def topics():
+        def topics(k):
             from topicexplorer.lib.color import rgb2hex
         
             response.content_type = 'application/json; charset=UTF8'
@@ -244,8 +245,8 @@ class Application(Bottle):
             for rank,topic_H in enumerate(data):
                 topic, H = topic_H
                 js[str(topic)] = {
-                    "H" : H, 
-                    "color" : rgb2hex(colors[topic])
+                    "H" : float(H), 
+                    "color" : rgb2hex(self.colors[k][topic])
                 }
             
             # populate word values
@@ -256,7 +257,7 @@ class Application(Bottle):
                 wordmax = 25 # for ideographic languages
 
             for i,topic in enumerate(data):
-                js[str(i)].update({'words' : dict([(w, p) for w,p in topic[:wordmax]])})
+                js[str(i)].update({'words' : dict([(unicode(w), float(p)) for w,p in topic[:wordmax]])})
         
             return json.dumps(js)
         
@@ -291,7 +292,7 @@ class Application(Bottle):
 
             return json.dumps(js)
 
-        @route('/icons.js')
+        @self.route('/icons.js')
         def icons():
             with open(resource_filename(__name__, '../www/icons.js')) as icons:
                 text = '{0}\n var icons = {1};'\
@@ -301,8 +302,6 @@ class Application(Bottle):
         @self.route('/<k:int>/')
         def index(k):
             response.set_header('Expires', _cache_date())
-            print __name__
-            print resource_filename(__name__, '../www/index.mustache.html')
     
             with open(resource_filename(__name__, '../www/index.mustache.html'),
                       encoding='utf-8') as tmpl_file:
@@ -346,34 +345,9 @@ class Application(Bottle):
     
         return js
     
-
-def main(args):
-    # load in the configuration file
-    config = ConfigParser({
-        'certfile' : None,
-        'keyfile' : None,
-        'ca_certs' : None,
-        'ssl' : False,
-        'port' : '8000',
-        'host' : '0.0.0.0',
-        'topic_range' : '{0},{1},1'.format(args.k, args.k+1),
-        'icons': 'link',
-        'corpus_link' : None,
-        'doc_title_format' : '{0}',
-        'doc_url_format' : '',
-        'raw_corpus' : None,
-        'fulltext' : 'false',
-        'topics': None,
-        'lang': None})
+def get_host_port(args):
+    config = ConfigParser({ 'port' : '8000', 'host' : '0.0.0.0' })
     config.read(args.config)
-        
-    # path variables
-    context_type = config.get('main', 'context_type')
-    corpus_file = config.get('main', 'corpus_file')
-    model_pattern = config.get('main', 'model_pattern')
-
-    # language customization
-    lang = config.get('main','lang')
 
     # automatic port assignment
     def test_port(port):
@@ -424,6 +398,36 @@ def main(args):
 
     # hostname assignment
     host = args.host or config.get('www','host')
+
+    return host, port
+
+def main(args):
+    # load in the configuration file
+    config = ConfigParser({
+        'certfile' : None,
+        'keyfile' : None,
+        'ca_certs' : None,
+        'ssl' : False,
+        'port' : '8000',
+        'host' : '0.0.0.0',
+        'topic_range' : '{0},{1},1'.format(args.k, args.k+1),
+        'icons': 'link',
+        'corpus_link' : None,
+        'doc_title_format' : '{0}',
+        'doc_url_format' : '',
+        'raw_corpus' : None,
+        'fulltext' : 'false',
+        'topics': None,
+        'lang': None})
+    config.read(args.config)
+        
+    # path variables
+    context_type = config.get('main', 'context_type')
+    corpus_file = config.get('main', 'corpus_file')
+    model_pattern = config.get('main', 'model_pattern')
+
+    # language customization
+    lang = config.get('main','lang')
    
     # set topic_range
     if config.get('main', 'topic_range'):
@@ -500,7 +504,7 @@ def main(args):
     
     """
     
-    
+    host, port = get_host_port(args) 
     
     if args.browser:
     	if host == '0.0.0.0':
@@ -553,6 +557,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
     
     app = main(args)
+    
+    host, port = get_host_port(args) 
 
     if args.ssl or config.get('main', 'ssl'):
         certfile = args.certfile or config.get('ssl', 'certfile')
