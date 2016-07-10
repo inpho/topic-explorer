@@ -367,14 +367,14 @@ def get_host_port(args):
                 "Conflict on port {0}. Enter new port:".format(port)) 
             return test_port(port)
 
-    port = args.port or int(config.get('www','port').format(0)) + args.k
+    port = args.port or int(config.get('www','port').format(0))
     port = test_port(port)
     
     # prompt to save
-    if (int(config.get("www","port").format(0)) + args.k) != port:
-        if bool_prompt("Change default baseport to {0}?".format(port - args.k),
+    if (int(config.get("www","port").format(0))) != port:
+        if bool_prompt("Change default baseport to {0}?".format(port),
                        default=True):
-            config.set("www","port", str(port - args.k))
+            config.set("www","port", str(port))
 
             # create deep copy of configuration
             # see http://stackoverflow.com/a/24343297
@@ -410,7 +410,6 @@ def main(args):
         'ssl' : False,
         'port' : '8000',
         'host' : '0.0.0.0',
-        'topic_range' : '{0},{1},1'.format(args.k, args.k+1),
         'icons': 'link',
         'corpus_link' : None,
         'doc_title_format' : '{0}',
@@ -430,9 +429,6 @@ def main(args):
     lang = config.get('main','lang')
    
     # set topic_range
-    if config.get('main', 'topic_range'):
-        topic_range = map(int, config.get('main', 'topic_range').split(','))
-        topic_range = range(*topic_range)
     if config.get('main', 'topics'):
         topic_range = eval(config.get('main', 'topics'))
     # get icons_list

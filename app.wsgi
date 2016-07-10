@@ -27,7 +27,7 @@ import mod_wsgi
 import topicexplorer.server
 
 # get process group to identify which config to use
-_, group, k = mod_wsgi.process_group.split('.', 2)
+_, group = mod_wsgi.process_group.split('.', 1)
 
 # initalize configuration dictionary
 config_path = dict()
@@ -56,7 +56,7 @@ for path in glob('/var/www/topicexplorer/config/*.ini'):
 parser = ArgumentParser()
 topicexplorer.server.populate_parser(parser)
 print config_path[group]
-args = parser.parse_args([config_path[group], '-k', k])
+args = parser.parse_args([config_path[group]])
 
 # start the server
 application = topicexplorer.server.main(args)
