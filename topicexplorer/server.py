@@ -49,16 +49,15 @@ def _cache_date(days=1):
 
 class Application(Bottle):
     def __init__(self, corpus_file='', model_pattern='', topic_range=None,
-                 context_type='', lang=None, icons=None):
+                 context_type='', **kwargs):
         super(Application, self).__init__()
 
         # setup routes
         self.renderer = pystache.Renderer(escape=lambda u: u)
-        self.icons = icons
-        self._setup_routes()
+        self.icons = kwargs.get('icons', 'link')
+        self._setup_routes(**kwargs)
 
         # load corpus
-        self.lang = lang
         self.context_type = context_type
         self.label_name = self.context_type + '_label'
         self._load_corpus(corpus_file)
@@ -90,7 +89,7 @@ class Application(Bottle):
             self.v[k].dist_top_doc = partial(
                 self.v[k].dist_top_doc, label_fn=self.id_fn)
 
-    def _setup_routes(self):
+    def _setup_routes(self, **kwargs):
         @self.route('/<k:int>/doc_topics/<doc_id>')
         @_set_acao_headers
         def doc_topic_csv(k, doc_id):
@@ -252,7 +251,7 @@ class Application(Bottle):
             data = self.v[k].topics()
             
             wordmax = 10 # for alphabetic languages
-            if self.lang == 'cn':
+            if kwargs.get('lang', None) == 'cn':
                 wordmax = 25 # for ideographic languages
 
             for i,topic in enumerate(data):
@@ -306,12 +305,12 @@ class Application(Bottle):
                       encoding='utf-8') as tmpl_file:
                 template = tmpl_file.read()
 
-            tmpl_params = {'corpus_name' : 'AP YO',
-                 'corpus_link' : '',
+            tmpl_params = {'corpus_name' : kwargs.get('corpus_name', ''),
+                 'corpus_link' : kwargs.get('corpus_link', ''),
                  'context_type' : self.context_type,
                  'topic_range' : self.topic_range,
-                 'doc_title_format' : '{}',
-                 'doc_url_format' : ''}
+                 'doc_title_format' : kwargs.get('doc_title_format', '{0}'),
+                 'doc_url_format' : kwargs.get('doc_url_format', '')}
             return self.renderer.render(template, tmpl_params)
 
     def serve_static(): 
@@ -432,6 +431,7 @@ def main(args):
     # set topic_range
     if config.get('main', 'topics'):
         topic_range = eval(config.get('main', 'topics'))
+
     # get icons_list
     config_icons = config.get('www','icons').split(",")
     if args.fulltext or config.getboolean('www','fulltext'):
@@ -450,7 +450,11 @@ def main(args):
                       topic_range=topic_range,
                       context_type=context_type,
                       lang=lang,
-                      icons=config_icons)
+                      icons=config_icons,
+                      corpus_name=corpus_name,
+                      corpus_link=corpus_link,
+                      doc_title_format=doc_title_format,
+                      doc_url_format=doc_url_format)
 
     """
     with app:
