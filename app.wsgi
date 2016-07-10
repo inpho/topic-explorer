@@ -5,59 +5,38 @@ This file contains the WSGI adapter for the topicexplorer, enabling it
 to be embedded in Apache or another WSGI-compliant server. Run the module
 `topicexplorer.apache` to be guided through the configuration process.
 
-Two sets of configuration files are loaded in the following order:
-1.  *Optional:* The configuration file located at the environment
-    variable `TOPICEXPLORER_CONFIG`, which contains one key-value pair
-    per line consisting of a process group identifier and an absolute 
-    path to the topicexplorer configuration file or corpus directory.
-    Ex:
-    ```
-    ap /home/jaimie/Topics/ap.ini
-    sep /home/jaimie/Topics/sep.ini
-    ```
-2.  The directory `/var/www/topicexplorer/config/` is scanned for `.ini`
-    files, loaded into the dictionary. These files are given priority.
+The directory `TOPICEXPLORER_CONFIG_DIR` (Default: 
+`/var/www/topicexplorer/config/`) is scanned for `.ini` files, each of
+which is joined to the master url at `/FILENAME/`.
 """
 from argparse import ArgumentParser
 from glob import iglob as glob
 import os
 import os.path
 
-import mod_wsgi
+import bottle
 import topicexplorer.server
 
-# get process group to identify which config to use
-_, group = mod_wsgi.process_group.split('.', 1)
-
 # initalize configuration dictionary
-config_path = dict()
+config = dict()
 
-# get master config file
-configfile = os.environ.get('TOPICEXPLORER_CONFIG', None)
-if configfile:
-    with open(configfile) as config:
-        for line in config:
-            key, path = line.split(' ', 1)
-            path = path.format(**os.environ)
-            config_path[key] = os.path.abspath(path.strip())
-elif not os.path.exists(configfile):
-    # TODO: Convert to log message
-    raise Exception("{} does not exist".format(configfile))
-elif not configfile:
-    # TODO: Convert to log message
-    raise Exception("No TOPICEXPLORER_CONFIG environment variable set.")
+# get configuration directory
+config_dir = os.environ.get('TOPICEXPLORER_CONFIG_DIR',
+    '/var/www/topicexplorer/config/')
 
 # grab config files from "config" directory
-for path in glob('/var/www/topicexplorer/config/*.ini'):
+for path in glob(os.path.join(config_dir, '*.ini')):
     key = os.path.basename(path).replace('.ini','')
-    config_path[key] = path
+    config[key] = path
 
-# parse arguments for the server instance
+# parse arguments for each server instance and mount to the master module
 parser = ArgumentParser()
 topicexplorer.server.populate_parser(parser)
-print config_path[group]
-args = parser.parse_args([config_path[group]])
 
-# start the server
-application = topicexplorer.server.main(args)
+application = bottle.default_app()
+
+for model, path in config.iteritems():
+    args = parser.parse_args([path])
+    child_app = topicexplorer.server.main(args)
+    application.mount('/{}/'.format(model), child_app)
 
