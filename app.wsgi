@@ -29,12 +29,12 @@ for path in glob(os.path.join(config_dir, '*.ini')):
     key = os.path.basename(path).replace('.ini','')
     config[key] = path
 
-# parse arguments for each server instance and mount to the master module
+# create argument parser and default app
 parser = ArgumentParser()
 topicexplorer.server.populate_parser(parser)
-
 application = bottle.default_app()
 
+# append each model to the app
 for model, path in config.iteritems():
     args = parser.parse_args([path])
     child_app = topicexplorer.server.main(args)
