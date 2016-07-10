@@ -23,7 +23,6 @@ from glob import iglob as glob
 import os
 import os.path
 
-import bottle
 import mod_wsgi
 import topicexplorer.server
 
@@ -59,9 +58,6 @@ topicexplorer.server.populate_parser(parser)
 print config_path[group]
 args = parser.parse_args([config_path[group], '-k', k])
 
-# configure the server process
-topicexplorer.server.main(args)
-
 # start the server
-application = bottle.default_app()
+application = topicexplorer.server.main(args)
 

@@ -81,7 +81,6 @@ class Application(Bottle):
 
     def _load_viewers(self, model_pattern):
         for k in self.topic_range:
-            print "Loading", k
             m = LDA.load(model_pattern.format(k))
             self.v[k] = LDAViewer(self.c, m)
             self.colors[k] = dict(get_topic_colors(self.v[k]))
@@ -301,19 +300,18 @@ class Application(Bottle):
         @self.route('/<k:int>/')
         def index(k):
             response.set_header('Expires', _cache_date())
-            print __name__
-            print resource_filename(__name__, '../www/index.mustache.html')
-    
+
             with open(resource_filename(__name__, '../www/index.mustache.html'),
                       encoding='utf-8') as tmpl_file:
                 template = tmpl_file.read()
-            return self.renderer.render(template, 
-                {'corpus_name' : 'AP YO',
+
+            tmpl_params = {'corpus_name' : 'AP YO',
                  'corpus_link' : '',
                  'context_type' : self.context_type,
                  'topic_range' : self.topic_range,
                  'doc_title_format' : '{}',
-                 'doc_url_format' : ''})
+                 'doc_url_format' : ''}
+            return self.renderer.render(template, tmpl_params)
         
         @self.route('/<filename:path>')
         @_set_acao_headers
@@ -513,7 +511,7 @@ def main(args):
         print "TIP: Browser launch can be disabled with the '--no-browser' argument:"
         print "topicexplorer serve --no-browser", args.config, "\n"
 
-    app.run(host='0.0.0.0', port=8081)
+    # app.run(host='0.0.0.0', port=8081)
     return app
 
     
