@@ -29,7 +29,7 @@ htrc.solr.get = function(id, callback) {
  * Create a popover for HTRC content
  * */
 $.ajax({
-  url : "popover.content.mustache", 
+  url : "../popover.content.mustache", 
   async: false,
   success: function(template) { 
     htrc.popover = function(elt) {
