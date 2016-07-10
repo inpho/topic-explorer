@@ -49,13 +49,16 @@ def _cache_date(days=1):
 
 class Application(Bottle):
     def __init__(self, corpus_file='', model_pattern='', topic_range=None,
-                 context_type='', label_module=None, config_file='', **kwargs):
+                 context_type='', label_module=None, config_file='', 
+                 fulltext=False, corpus_path='', **kwargs):
         super(Application, self).__init__()
 
         # setup routes
         self.renderer = pystache.Renderer(escape=lambda u: u)
         self.icons = kwargs.get('icons', 'link')
         self._setup_routes(**kwargs)
+        if fulltext:
+            self._serve_fulltext(corpus_path)
 
         # load corpus
         self.context_type = context_type
@@ -74,7 +77,7 @@ class Application(Bottle):
         try:
             label_module = import_module(label_module)
             print "imported label module"
-            label_module.init(config_file)
+            label_module.init(self, config_file)
         except (ImportError, NoOptionError, AttributeError):
             pass
 
@@ -331,6 +334,22 @@ class Application(Bottle):
                  'doc_url_format' : kwargs.get('doc_url_format', '')}
             return self.renderer.render(template, tmpl_params)
 
+    def _serve_fulltext(self, corpus_path):
+        @self.route('/fulltext/<doc_id:path>')
+        @_set_acao_headers
+        def get_doc(doc_id):
+            doc_id = unquote(doc_id).decode('utf-8')
+            pdf_path = os.path.join(corpus_path, re.sub('txt$','pdf', doc_id))
+            if os.path.exists(pdf_path):
+                doc_id = re.sub('txt$','pdf', doc_id)
+            #here we deal with case where corpus_path and doc_id overlap
+            (fdirs,lastdir) = os.path.split(corpus_path)
+            pattern = lastdir.decode('utf-8')
+            if re.match('^'+pattern,doc_id):
+                return static_file(doc_id, root=fdirs)
+            else:
+                return static_file(doc_id, root=corpus_path)
+
     def serve_static(): 
         @self.route('/<filename:path>')
         @_set_acao_headers
@@ -464,6 +483,8 @@ def main(args):
     doc_title_format = config.get('www', 'doc_title_format')
     doc_url_format = config.get('www', 'doc_url_format')
     label_module = config.get('main', 'label_module')
+    corpus_path = config.get('main', 'raw_corpus')
+    fulltext = args.fulltext or config.getboolean('www','fulltext')
 
     app = Application(corpus_file=corpus_file,
                       model_pattern=model_pattern,
@@ -471,39 +492,14 @@ def main(args):
                       context_type=context_type,
                       label_module=label_module,
                       config_file=args.config,
+                      corpus_path=corpus_path,
+                      fulltext=fulltext,
                       lang=lang,
                       icons=config_icons,
                       corpus_name=corpus_name,
                       corpus_link=corpus_link,
                       doc_title_format=doc_title_format,
                       doc_url_format=doc_url_format)
-
-    """
-    with app:
-    
-        corpus_path = config.get('main', 'raw_corpus')
-        if args.fulltext or config.getboolean('www','fulltext'):
-            @route('/fulltext/<doc_id:path>')
-            @_set_acao_headers
-            def get_doc(doc_id):
-                doc_id = unquote(doc_id).decode('utf-8')
-                pdf_path = os.path.join(corpus_path, re.sub('txt$','pdf', doc_id))
-                if os.path.exists(pdf_path):
-                    doc_id = re.sub('txt$','pdf', doc_id)
-                #here we deal with case where corpus_path and doc_id overlap
-                (fdirs,lastdir) = os.path.split(corpus_path)
-                pattern = lastdir.decode('utf-8')
-                if re.match('^'+pattern,doc_id):
-                    return static_file(doc_id, root=fdirs)
-                else:
-                    return static_file(doc_id, root=corpus_path)
-    
-    
-    
-        # index page parameterization
-    
-    
-    """
     
     host, port = get_host_port(args) 
     

@@ -4,17 +4,18 @@ from bottle import route, static_file
 import os.path
 print os.path.abspath('ap')
 
-@route('/fulltext/<doc_id>')
-def get_doc(doc_id):
-    return static_file(doc_id, root='ap')
 
 raw_corpus_path = None
-def init(config_file):
+def init(app, config_file):
     global raw_corpus_path
     config = ConfigParser({ 'raw_corpus' : 'ap/'  })
     config.read(config_file)
 
     raw_corpus_path = config.get('main', 'raw_corpus')
+
+    @app.route('/fulltext/<doc_id>')
+    def get_doc(doc_id):
+        return static_file(doc_id, root=raw_corpus_path)
 
 import os.path
 def label(doc):

@@ -41,7 +41,7 @@ var icon_fns = {"link" : function(ticks, i) {
         .attr("xlink:href","/img/icon-book.png")
         .attr("class", "fulltextIcon icon")
         .on("click", function(d){
-          var url = window.location.origin + window.location.pathname + "fulltext/" + encodeURIComponent(d);
+          var url = window.location.origin + window.location.pathname + "../fulltext/" + encodeURIComponent(d);
           window.open(url);
         }).append("title").text(function (d) { "Fulltext view of " + d });
   },
