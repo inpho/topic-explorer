@@ -39,8 +39,11 @@ application = bottle.default_app()
 # append each model to the app
 for model, path in config.iteritems():
     args = parser.parse_args([path, '--no-browser'])
-    child_app = topicexplorer.server.main(args)
-    application.mount('/{}/'.format(model), child_app)
+    try:
+        child_app = topicexplorer.server.main(args)
+        application.mount('/{}/'.format(model), child_app)
+    except:
+        print "Could not load", model
 
 
 
@@ -54,7 +57,7 @@ def send_static(filename):
     www_path = os.path.join(WWW_DIR, filename)
     static_path = os.path.join(STATIC_DIR, filename) 
 
-    if os.path.isdir(www_path) or os.path.isdir(static_path):
+    if os.path.isdir(www_path) and os.path.isdir(static_path):
         filename = os.path.join(filename, 'index.html')
         www_path = os.path.join(WWW_DIR, filename)
 
@@ -65,3 +68,6 @@ def send_static(filename):
 
     return bottle.static_file(filename, root=root)
 
+@application.route('/')
+def index():
+    return send_static('index.html')
