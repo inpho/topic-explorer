@@ -8,12 +8,11 @@ from pybtex.excpetions import PybtexError
 
 metadata = None
 
-def init(viewer, config, args):
+def init(app, config_file):
     global metadata
 
-
     try:
-        filename = args.bibtex or config.get('bibtex', 'path')
+        filename = config.get('bibtex', 'path')
     except ConfigParser.Error:
         model_path = config.get('main','path')
         filename = os.path.join(model_path, 'library.bib')

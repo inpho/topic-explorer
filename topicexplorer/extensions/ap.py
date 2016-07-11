@@ -1,8 +1,6 @@
 from ConfigParser import RawConfigParser as ConfigParser, NoOptionError
 
-from bottle import route, static_file
-import os.path
-print os.path.abspath('ap')
+from bottle import static_file
 
 
 raw_corpus_path = None
