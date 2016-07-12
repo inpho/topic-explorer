@@ -102,20 +102,14 @@ The InPhO Topic Explorer is **only** compatible with Python 2.7. However, Anacon
 ### mod_wsgi
 
 1.  Install apache2 with mod_wsgi: `apt-get install apache2 libapache2-mod-wsgi`
-2.  Create a file `/var/www/topicexplroer/app.config.ini`. Each line should consist of an explorer ID and the path to the config file for that ID. 
-3.  Create a file `/etc/systemd/system/httpd.service` with the following contents:
-    ```
-    [Service]
-    Environment=TOPICEXPLORER_CONFIG=/var/www/topicexplorer/app.config.ini
-    ```
-4.  Create `/etc/apache2/sites-available/topicexplorer.conf`:
+2.  Create `/etc/apache2/sites-available/topicexplorer.conf`:
     ```
 <VirtualHost *:80>
 	ServerName localhost
 	ServerAdmin admin@localhost
 	
-	ErrorLog ${APACHE_LOG_DIR}/error.log
-	CustomLog ${APACHE_LOG_DIR}/access.log combined
+	ErrorLog /var/www/topicexplorer/log/error.log
+	CustomLog /var/www/topicexplorer/log/access.log combined
 
 	WSGIDaemonProcess topicexplorer.ap user=www-data group=www-data \
 	  python-path=/home/jaimie/anaconda2/lib/python2.7/site-packages/
@@ -129,11 +123,63 @@ The InPhO Topic Explorer is **only** compatible with Python 2.7. However, Anacon
 		Require all granted
 	</Directory>
 </VirtualHost>
+```
+#.  Create the application directory: `sudo mkdir -p /var/www/topicexplorer/`
+#.  Create the log directory: `sudo mkdir -p /var/www/topicexplorer/log`
+#.  Create the www directory: `sudo mkdir -p /var/www/topicexplorer/www`
+#.  Create the config directory: `sudo mkdir -p /var/www/topicexplorer/config`
+#.  Add a symlink from `/var/www/topicexplorer/` to `app.wsgi`. For example: `ln -s /home/jaimie/workspace/topic-explorer/app.wsgi /var/www/topicexplorer/app.wsgi`
+#.  Add a symlink to your `.ini` files in the `/var/www/topicexplorer/config` directory. For example, if working with the AP corpus trained in my home directory: `ln -s /home/jaimie/ap.ini /var/www/topicexplorer/config/ap.ini`
+#.  Enable the site: `sudo a2ensite topicexplorer`
+#.  Restart apache: `sudo apache2ctl restart`
+#.  Test the site at [http://localhost/]. If an HTTP 500 Internal Server Error is returned, check the log in `/var/www/topicexplorer/log/error.log`.
 
-    ```
-    
+
+#### Caching
+Credit to [Digital Ocean](https://www.digitalocean.com/community/tutorials/how-to-configure-apache-content-caching-on-ubuntu-14-04) for a very helpful guide.
+
+To enable caching:
+1.  Modify `/etc/apache2/sites-available/topicexplorer.conf` to add Cache directives before the closing `</VirtualHost>` tag:
+```
+<VirtualHost *:80>
+    # ...
+
+	CacheQuickHandler off
+
+	CacheLock on
+	CacheLockPath /tmp/mod_cache-lock
+	CacheLockMaxAge 5
+
+	CacheIgnoreHeaders Set-Cookie
+
+	<Location />
+		CacheEnable disk
+		CacheHeader on
+
+		CacheDefaultExpire 600
+		CacheMaxExpire 86400
+		CacheLastModifiedFactor 0.5
+	</Location>
+</VirtualHost>
+```
+2.  Enable caching modules: `sudo a2enmod cache && sudo a2enmod cache_disk`
+#.  Restart apache: `sudo apache2ctl restart`
 
 
+#### Server Status
+The following snippet may help debug issues, enabling you to visit [http://localhost/server-status] to find more details. Remove these lines for production environments.
+```
+<VirtualHost *:80>
+    # ...
+
+	<Location /server-status>
+		SetHandler server-status
+		
+		Order Deny,Allow
+		Allow from all
+	</Location>
+</VirtualHost>
+```
 
 ## Licensing and Attribution
 The project is released under an [Open-Source Initiative-approved MIT License](http://opensource.org/licenses/MIT).
