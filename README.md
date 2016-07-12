@@ -124,15 +124,15 @@ The InPhO Topic Explorer is **only** compatible with Python 2.7. However, Anacon
 	</Directory>
 </VirtualHost>
 ```
-#.  Create the application directory: `sudo mkdir -p /var/www/topicexplorer/`
-#.  Create the log directory: `sudo mkdir -p /var/www/topicexplorer/log`
-#.  Create the www directory: `sudo mkdir -p /var/www/topicexplorer/www`
-#.  Create the config directory: `sudo mkdir -p /var/www/topicexplorer/config`
-#.  Add a symlink from `/var/www/topicexplorer/` to `app.wsgi`. For example: `ln -s /home/jaimie/workspace/topic-explorer/app.wsgi /var/www/topicexplorer/app.wsgi`
-#.  Add a symlink to your `.ini` files in the `/var/www/topicexplorer/config` directory. For example, if working with the AP corpus trained in my home directory: `ln -s /home/jaimie/ap.ini /var/www/topicexplorer/config/ap.ini`
-#.  Enable the site: `sudo a2ensite topicexplorer`
-#.  Restart apache: `sudo apache2ctl restart`
-#.  Test the site at [http://localhost/]. If an HTTP 500 Internal Server Error is returned, check the log in `/var/www/topicexplorer/log/error.log`.
+3.  Create the application directory: `sudo mkdir -p /var/www/topicexplorer/`
+4.  Create the log directory: `sudo mkdir -p /var/www/topicexplorer/log`
+5.  Create the www directory: `sudo mkdir -p /var/www/topicexplorer/www`
+6.  Create the config directory: `sudo mkdir -p /var/www/topicexplorer/config`
+7.  Add a symlink from `/var/www/topicexplorer/` to `app.wsgi`. For example: `ln -s /home/jaimie/workspace/topic-explorer/app.wsgi /var/www/topicexplorer/app.wsgi`
+8.  Add a symlink to your `.ini` files in the `/var/www/topicexplorer/config` directory. For example, if working with the AP corpus trained in my home directory: `ln -s /home/jaimie/ap.ini /var/www/topicexplorer/config/ap.ini`
+9.  Enable the site: `sudo a2ensite topicexplorer`
+10.  Restart apache: `sudo apache2ctl restart`
+11.  Test the site at [http://localhost/]. If an HTTP 500 Internal Server Error is returned, check the log in `/var/www/topicexplorer/log/error.log`.
 
 
 #### Caching
@@ -163,7 +163,7 @@ To enable caching:
 </VirtualHost>
 ```
 2.  Enable caching modules: `sudo a2enmod cache && sudo a2enmod cache_disk`
-#.  Restart apache: `sudo apache2ctl restart`
+3.  Restart apache: `sudo apache2ctl restart`
 
 
 #### Server Status
