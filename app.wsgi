@@ -41,9 +41,19 @@ for model, path in config.iteritems():
     args = parser.parse_args([path, '--no-browser'])
     try:
         child_app = topicexplorer.server.main(args)
+
         application.mount('/{}/'.format(model), child_app)
-    except:
+
+    except Exception as e:
         print "Could not load", model
+
+        @application.route('/{}/'.format(model))
+        def raise_error():
+            raise e
+
+        @application.route('/{}/<filename:path>'.format(model))
+        def raise_error(filename):
+            raise e
 
 
 
@@ -54,6 +64,10 @@ STATIC_DIR = resource_filename('topicexplorer.server', '../www/')
 
 @application.route('/<filename:path>')
 def send_static(filename):
+    # override for a particular model, just had the wrong path
+    if filename in config.keys():
+        bottle.redirect('/{}/'.format(filename), 307)
+
     www_path = os.path.join(WWW_DIR, filename)
     static_path = os.path.join(STATIC_DIR, filename) 
 
