@@ -342,11 +342,12 @@ class Application(Bottle):
         def get_doc(doc_id):
             doc_id = unquote(doc_id).decode('utf-8')
             pdf_path = os.path.join(corpus_path, re.sub('txt$','pdf', doc_id))
-            if os.path.exists(pdf_path):
+            if os.path.exists(pdf_path.encode('utf-8')):
                 doc_id = re.sub('txt$','pdf', doc_id)
             #here we deal with case where corpus_path and doc_id overlap
             (fdirs,lastdir) = os.path.split(corpus_path)
             pattern = lastdir.decode('utf-8')
+            doc_id = doc_id.encode('utf-8')
             if re.match('^'+pattern,doc_id):
                 return static_file(doc_id, root=fdirs)
             else:
