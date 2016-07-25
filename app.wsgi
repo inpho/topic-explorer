@@ -31,6 +31,38 @@ for path in glob(os.path.join(CONFIG_DIR, '*.ini')):
     key = os.path.basename(path).replace('.ini','')
     config[key] = path
 
+# Create global static file serving - helps with caching
+WWW_DIR = os.environ.get('TOPICEXPLORER_WWW_DIR',
+    '/var/www/topicexplorer/www/')
+STATIC_DIR = resource_filename('topicexplorer.server', '../www/')
+
+def send_static(filename):
+    # override for a particular model, just had the wrong path
+    if filename in config.keys():
+        bottle.redirect('/{}/'.format(filename), 307)
+
+    if filename.startswith('/'):
+        filename = filename[1:]
+
+    www_path = os.path.join(WWW_DIR, filename)
+    static_path = os.path.join(STATIC_DIR, filename)
+
+    # reinit if these are directories
+    if os.path.isdir(www_path) and os.path.isdir(static_path):
+        filename = os.path.join(filename, 'index.html')
+        www_path = os.path.join(WWW_DIR, filename)
+        static_path = os.path.join(STATIC_DIR, filename)
+
+    if os.path.exists(www_path):
+        root = WWW_DIR
+    else:
+        root = resource_filename('topicexplorer.server', '../www/')
+    print 'send_static WWW_DIR', WWW_DIR, www_path
+    print 'send_static is here', root, filename
+
+    return bottle.static_file(filename, root=root)
+
+
 # create argument parser and default app
 parser = ArgumentParser()
 topicexplorer.server.populate_parser(parser)
@@ -41,6 +73,15 @@ for model, path in config.iteritems():
     args = parser.parse_args([path, '--no-browser'])
     try:
         child_app = topicexplorer.server.main(args)
+
+        @child_app.route('/<filename:path>'.format(model))
+        def static_child(filename):
+            print "static_child is here",os.path.join('/{}/'.format(model), filename)
+            return send_static(os.path.join('/{}/'.format(model), filename))
+
+        @child_app.route('/'.format(model))
+        def index():
+            return send_static('/{}/index.html'.format(model))
 
         application.mount('/{}/'.format(model), child_app)
 
@@ -56,31 +97,7 @@ for model, path in config.iteritems():
             raise e
 
 
-
-# Create global static file serving - helps with caching
-WWW_DIR = os.environ.get('TOPICEXPLORER_WWW_DIR',
-    '/var/www/topicexplorer/www/')
-STATIC_DIR = resource_filename('topicexplorer.server', '../www/')
-
-@application.route('/<filename:path>')
-def send_static(filename):
-    # override for a particular model, just had the wrong path
-    if filename in config.keys():
-        bottle.redirect('/{}/'.format(filename), 307)
-
-    www_path = os.path.join(WWW_DIR, filename)
-    static_path = os.path.join(STATIC_DIR, filename) 
-
-    if os.path.isdir(www_path) and os.path.isdir(static_path):
-        filename = os.path.join(filename, 'index.html')
-        www_path = os.path.join(WWW_DIR, filename)
-
-    if os.path.exists(www_path):
-        root = WWW_DIR
-    else:
-        root = resource_filename('topicexplorer.server', '../www/')
-
-    return bottle.static_file(filename, root=root)
+application.route('/<filename:path>', 'GET', send_static)
 
 @application.route('/')
 def index():
