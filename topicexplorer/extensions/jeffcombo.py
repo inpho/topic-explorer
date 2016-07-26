@@ -1,4 +1,5 @@
 from collections import defaultdict
+from ConfigParser import RawConfigParser as ConfigParser, NoOptionError
 import json
 import os.path
 import numpy as np
@@ -13,9 +14,8 @@ def get_doc(doc_id):
     return static_file(doc_id, root=os.path.abspath('TJCombo/'))
 print "Loading TJCombo letters from:", os.path.abspath('TJCombo/')
 
-lda_v = None
 metadata = None
-context_type = None
+app = None
 
 class keydefaultdict(defaultdict):
     # http://stackoverflow.com/a/2912455
@@ -26,17 +26,17 @@ class keydefaultdict(defaultdict):
             ret = self[key] = self.default_factory(key)
             return ret
 
-ctx_md = keydefaultdict(lambda ctx: lda_v.corpus.view_metadata(ctx))
+ctx_md = keydefaultdict(lambda ctx: app.c.view_metadata(app.context_type))
 
-def init(viewer, config, args):
+def init(_app, config_file):
     global metadata
-    global lda_v
-    global context_type
+    global app
+    app = _app
 
-    lda_v = viewer
+    config = ConfigParser()
+    config.read(config_file)
 
     model_path = config.get('main', 'path')
-    context_type = config.get('main', 'context_type')
 
     filename = os.path.join(model_path,'../metadata.json')
     print "Loading HTRC metadata from", filename
@@ -45,7 +45,7 @@ def init(viewer, config, args):
         metadata = json.load(f)
 
 def label(doc):
-    if context_type == 'document':
+    if app.context_type == 'document':
         doc = doc.replace('.txt','')
         try:
             md = metadata[doc]
@@ -61,7 +61,7 @@ def label(doc):
             except:
                 pass
             return "LETTER -- " + newdoc
-    elif context_type == 'page':
+    elif app.context_type == 'page':
         context_md = ctx_md['page']
         where = np.squeeze(np.where(np.in1d(context_md['page_label'], [doc])))
         page_no = context_md['file'][where]
@@ -81,8 +81,3 @@ def label(doc):
             return "p%s of %s" % (page_no, md['title'][0])
         except:
             return doc
-
-def id_fn(md):
-    context_md = lda_v.corpus.view_metadata(context_type)
-    ctx_label = doc_label_name(context_type)
-    return context_md[ctx_label] 
