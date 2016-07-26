@@ -10,6 +10,7 @@ The directory `TOPICEXPLORER_CONFIG_DIR` (Default:
 which is joined to the master url at `/FILENAME/`.
 """
 from argparse import ArgumentParser
+from functools import partial
 from glob import iglob as glob
 import os
 import os.path
@@ -57,11 +58,11 @@ def send_static(filename):
         root = WWW_DIR
     else:
         root = resource_filename('topicexplorer.server', '../www/')
-    print 'send_static WWW_DIR', WWW_DIR, www_path
-    print 'send_static is here', root, filename
 
     return bottle.static_file(filename, root=root)
 
+def static_child(filename, model):
+    return send_static(os.path.join('/{}/'.format(model), filename))
 
 # create argument parser and default app
 parser = ArgumentParser()
@@ -74,14 +75,12 @@ for model, path in config.iteritems():
     try:
         child_app = topicexplorer.server.main(args)
 
-        @child_app.route('/<filename:path>'.format(model))
-        def static_child(filename):
-            print "static_child is here",os.path.join('/{}/'.format(model), filename)
-            return send_static(os.path.join('/{}/'.format(model), filename))
+        child_app.route('/<filename:path>', 'GET',
+            partial(static_child, model=model))
 
-        @child_app.route('/'.format(model))
-        def index():
-            return send_static('/{}/index.html'.format(model))
+        child_app.route('/', 'GET',
+            partial(static_child, model=model,
+                filename='/{}/index.html'.format(model)))
 
         application.mount('/{}/'.format(model), child_app)
 
