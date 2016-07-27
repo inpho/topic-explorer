@@ -26,8 +26,8 @@ This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangel
     - [InPhO ontology](https://inpho.cogs.indiana.edu/): `topicexplorer init --tokenizer inpho`
     - [ABI Human Brain Atlas](http://help.brain-map.org/display/api/Atlas+Drawings+and+Ontologies): `topicexplorer init --tokenizer brain`
 - Changed:
-  - [#136](http://github.com/inpho/topic-explorer/issues/136) - Rename master command from `vsm` to `topicexplorer`
   - Massive load performance increases from upstream `vsm==0.4.0b1`.
+  - [#136](http://github.com/inpho/topic-explorer/issues/136) - Rename master command from `vsm` to `topicexplorer`
 - Deprecated:
   - `vsm` commands will be removed in v1.0.
 - Removed:
@@ -57,14 +57,22 @@ This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangel
 
 ## [1.0b79] - 2016-04-13
 - Added:
+  - Very basic support for Chinese word segmentation: `vsm langspace`
   - [#94](http://github.com/inpho/topic-explorer/issues/94) - Create generic fulltext file serving for pdfs and text files
   - [#97](http://github.com/inpho/topic-explorer/issues/97) - Add langdetect to `vsm prep` to use guesses for stopwords.
     - This change was reverted in
       [0048d60](https://github.com/inpho/topic-explorer/commit/0048d60944640da4932a590c9678bec92c283d34) due to performance issues.
+
 - Changed:
-  - [#113](http://github.com/inpho/topic-explorer/issues/113) - Topic view should default to normalized
   - Improve init and prep performance from upstream changes in `vsm==0.4.0a20`
+  - No longer perform sentence mining by default. Significant speedup to `vsm
+    init` for most use cases.
+  - `label_module` semantics now use `init(viewer, config, args)`
+  - [#113](http://github.com/inpho/topic-explorer/issues/113) - Topic view should default to normalized
 - Fixed:
+  - Fixed dynamic port switching
+  - Fixed plus signs in doc_ids.
+  - Fixed popover/search box z-index issue.
   - [#93](http://github.com/inpho/topic-explorer/issues/93) - continuation of training with fewer words / topic explorer can hang
   - [#107](http://github.com/inpho/topic-explorer/issues/107) - AP Demo text opening error
   - [#108](http://github.com/inpho/topic-explorer/issues/108) - Capture missing nltk libraries and suggest downloader command
@@ -73,17 +81,35 @@ This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangel
   - [#115](http://github.com/inpho/topic-explorer/issues/115) - `vsm launch` should fail more gracefully.
 
 ## [1.0b60] - 2016-02-20
-- Improve Init performance
+- Added:
+  - Native benchmarking tools via `vsm -p` and `vsm -t`
+  - Version command via `vsm version`
+  - ASCII histograms for `vsm prep` high and low frequency filters.
+  - License badge for `README.md`
+  - [#98](http://github.com/inpho/topic-explorer/issues/98) - Add `--dry-run` to help with automation in `vsm train`
+- Changed:
+  - Improve init performance from upstream changes in `vsm==0.4.0a11`
+  - [#105](http://github.com/inpho/topic-explorer/issues/105) - vsm init without .ini extension should auto-suggest
+- Removed:
+  - NP-hard graph coloring algorithm removed from topic explorer launch.
+- Fixed:
+  - [#83](http://github.com/inpho/topic-explorer/issues/83) - "Close" button not appearing in reduced window
+  - [#100](http://github.com/inpho/topic-explorer/issues/100) - Windows `vsm update` does not run
+  - [#101](http://github.com/inpho/topic-explorer/issues/101) - Check if repo is on master branch in `vsm update`
+  - [#102](http://github.com/inpho/topic-explorer/issues/102) - entering 0 for minimum word occurrence rate during vsm prep causes error
 
 ## [1.0b41] - 2016-02-02
-- Added `vsm update` command.
-- Added `release.py` automation.
+- Added:
+  - `vsm update` command.
+  - `release.py` automation.
+
 
 ## 1.0b32 - 2016-01-20
 - Added PDF file support
 - Added `--unicode`/`--decode` flags.
 - Added progress bars
 - Changed `vsm prep` to only use a single stoplist pass, using an in-place rather than out-of-place technique. Massive performance increase.
+- **Start of CHANGELOG.md**
 
 
 
