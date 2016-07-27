@@ -116,11 +116,13 @@ This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangel
 
 
 ## 1.0b32 - 2016-01-20
-- Added PDF file support
-- Added `--unicode`/`--decode` flags.
-- Added progress bars
-- Changed `vsm prep` to only use a single stoplist pass, using an in-place rather than out-of-place technique. Massive performance increase.
 - **Start of CHANGELOG.md**
+- Added:
+  - PDF file support
+  - `--unicode`/`--decode` flags.
+  - Progress bars
+- Changed:
+  - `vsm prep` now uses a single stoplist pass, using an in-place rather than out-of-place technique. Massive performance increase.
 
 
 
