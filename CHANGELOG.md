@@ -83,15 +83,17 @@ This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangel
 ## [1.0b60] - 2016-02-20
 - Added:
   - Native benchmarking tools via `vsm -p` and `vsm -t`
-  - Version command via `vsm version`
   - ASCII histograms for `vsm prep` high and low frequency filters.
   - License badge for `README.md`
   - [#98](http://github.com/inpho/topic-explorer/issues/98) - Add `--dry-run` to help with automation in `vsm train`
 - Changed:
   - Improve init performance from upstream changes in `vsm==0.4.0a11`
+  - Migrated `vsm --version` to `vsm version`
   - [#105](http://github.com/inpho/topic-explorer/issues/105) - vsm init without .ini extension should auto-suggest
 - Removed:
   - NP-hard graph coloring algorithm removed from topic explorer launch.
+- Deprecated:
+  - `vsm --version` will be removed in a future version.
 - Fixed:
   - [#83](http://github.com/inpho/topic-explorer/issues/83) - "Close" button not appearing in reduced window
   - [#100](http://github.com/inpho/topic-explorer/issues/100) - Windows `vsm update` does not run
@@ -101,7 +103,16 @@ This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangel
 ## [1.0b41] - 2016-02-02
 - Added:
   - `vsm update` command.
+  - `vsm --version` command.
   - `release.py` automation.
+  - Notes in README.md on Bug Reports
+- Changed:
+  - Import upstream fixes via `vsm==0.4.0a8`
+- Fixed:
+  - `vsm init --unicode` fixed.
+  - [#82](http://github.com/inpho/topic-explorer/issues/82) - Alphabetization not working
+  - [#86](http://github.com/inpho/topic-explorer/issues/86) - Capitalization inconsistencies
+  - [#89](http://github.com/inpho/topic-explorer/issues/89) - color map bug affecting browser launch
 
 
 ## 1.0b32 - 2016-01-20
