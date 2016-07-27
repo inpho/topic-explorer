@@ -97,7 +97,7 @@ def topic_json(topic_no, N=40):
         doc, prob = doc_prob
         struct = docs[doc]
         struct.update({'prob' : 1-prob,
-            'topics' : dict([(str(t), p) for t,p in topics])})
+            'topics' : dict([(str(t), float(p)) for t,p in topics])})
         js.append(struct)
 
     return json.dumps(js)
@@ -130,7 +130,7 @@ def doc_topics(doc_id, N=40):
         doc, prob = doc_prob
         struct = docs[doc]
         struct.update({'prob' : 1-prob,
-            'topics' : dict([(str(t), p) for t,p in topics])})
+            'topics' : dict([(str(t), float(p)) for t,p in topics])})
         js.append(struct)
 
     return json.dumps(js)
@@ -175,8 +175,8 @@ def word_docs(N=40):
         doc, prob = doc_prob
         struct = docs[doc]
         struct.update({'prob' : 1-prob,
-            'topics' : dict([(str(t), p) for t,p in topics])})
-	js.append(struct)
+            'topics' : dict([(str(t), float(p)) for t,p in topics])})
+    js.append(struct)
 
     return json.dumps(js)
 
@@ -195,25 +195,17 @@ def topics():
     for rank,topic_H in enumerate(data):
         topic, H = topic_H
         js[str(topic)] = {
-            "H" : H, 
+            "H" : float(H), 
             "color" : rgb2hex(colors[topic])
         }
     
     # populate word values
     data = lda_v.topics()
     for i,topic in enumerate(data):
-        js[str(i)].update({'words' : dict([(w, p) for w,p in topic[:10]])})
+        js[str(i)].update({'words' : dict([(w, float(p)) for w,p in topic[:10]])})
 
     return json.dumps(js)
-	
-@route('/<filename>.csv')
-@_set_acao_headers
-def serve_model_csv(filename):
-	tfilename =filename
-	tfilename += '.csv'
-	return static_file(tfilename, root=os.path.normpath('C:/Users/adi/Desktop/'))
-		
-		
+
 @route('/docs.json')
 @_set_acao_headers
 def docs(docs=None, q=None):
@@ -434,25 +426,20 @@ def main(args):
              'topic_range' : topic_range,
              'doc_title_format' : doc_title_format,
              'doc_url_format' : doc_url_format})
-	
+    
     @route('/<filename>.csv')
     @_set_acao_headers
     def serve_model_csv(filename):
         tfilename =config.get('main','cluster')+'_'+filename
         tfilename += '.csv'
-        if filename == "isomapWWW" or filename == "topicsWWW" or filename == "topic_rangeWWW":
-          return static_file(tfilename, root=os.path.normpath(os.path.dirname(tfilename)))
+        root, filename = os.path.split(tfilename)
+        if os.path.exists(tfilename):
+            return static_file(filename, root=root)
         else:
-          if not os.path.isfile(filename):
-              dimension_reduce_model.fit_kmeans(int(str.split(filename,'_')[1]))
-              dimension_reduce_model.write_kmeans(config.get('main','cluster'))
-              return static_file(tfilename, root=os.path.normpath(os.path.dirname(tfilename)))
-          else:
-              return static_file(tfilename, root=os.path.normpath(os.path.dirname(tfilename)))
-              
-              
-          
-	
+            k = int(str.rsplit(filename,'_', 1)[1].replace('.csv', ''))
+            dimension_reduce_model.fit_kmeans(k)
+            dimension_reduce_model.write_kmeans(config.get('main','cluster'))
+            return static_file(filename, root=root)
 
     @route('/<filename:path>')
     @_set_acao_headers
