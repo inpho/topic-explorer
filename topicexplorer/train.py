@@ -64,6 +64,24 @@ def main(args):
     config.read(args.config_file)
     corpus_filename = config.get("main", "corpus_file")
     model_path = config.get("main", "path")
+    
+    if args.cluster:
+        dimension_reduce_model = dimensionReduce(args.config_file)
+        print "fitting Isomap \n"    
+        dimension_reduce_model.fit_isomap()  
+        n_clusters=None
+        print "Enter Number of clusters"
+        n_clusters = raw_input()
+        if n_clusters == None or int(n_clusters) <1:
+            n_clusters = 5
+        print "fitting Kmeans \n"    
+        dimension_reduce_model.fit_kmeans(int(n_clusters))
+        print "writing model files for Isomap and kmeans\n"
+        config.set("main", "cluster", str.split(corpus_filename,'.')[0] +'_'+'_'.join([str(t) for t in str(args.k)]))
+        with open(args.config_file, "wb") as configfh:
+             config.write(configfh)
+        dimension_reduce_model.write_model_file(config.get("main", "cluster"))
+        return
 
     if args.k is None:
         try:
@@ -178,22 +196,7 @@ def main(args):
     if not args.dry_run:
         with open(args.config_file, "wb") as configfh:
             config.write(configfh)
-    
-    dimension_reduce_model = dimensionReduce(args.config_file)
-    print "fitting Isomap \n"    
-    dimension_reduce_model.fit_isomap()  
-    n_clusters=None
-    print "Enter Number of clusters"
-    n_clusters = raw_input()
-    if n_clusters == None or int(n_clusters) <1:
-        n_clusters = 5
-    print "fitting Kmeans \n"    
-    dimension_reduce_model.fit_kmeans(int(n_clusters))
-    print "writing model files for Isomap and kmeans\n"
-    config.set("main", "cluster", str.split(corpus_filename,'.')[0] +'_'+'_'.join([str(t) for t in str(args.k)]))
-    with open(args.config_file, "wb") as configfh:
-         config.write(configfh)
-    dimension_reduce_model.write_model_file(config.get("main", "cluster"))
+
 
 def populate_parser(parser):
     parser.add_argument("config_file", help="Path to Config",
@@ -210,6 +213,8 @@ def populate_parser(parser):
         help="Number of training iterations")
     parser.add_argument('--dry-run', dest='dry_run', action='store_true',
         help="Run code without training models")
+    parser.add_argument('--cluster', action='store_true',
+        help="Cluster an existing model")
 
 
 if __name__ == '__main__':
