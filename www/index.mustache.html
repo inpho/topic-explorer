@@ -562,7 +562,7 @@ $('#randomDoc').tooltip({title: "Random Document", placement: 'bottom'});
 		if( document.getElementById("topic"+topic_r[i]).checked == true){
            allData.push({'x':linearScalex(dataArrayX[i]),        
            'y':linearScaley(dataArrayY[i]),
-           'z': 'Topic Model : ' + topic_r[i] + "<br>" + 'Topic' + individual_topic_index + ':' +topics[i]['topic'],
+           'z': 'Topic Model : ' + topic_r[i] + "<br>Cluser: " + label[i] + '<br>Topic ' + individual_topic_index + ':' +topics[i]['topic'],
 		   'topic_id' : topic_r[i],
 		   'port' : {{port}} + topic_r[i],
            'idd': individual_topic_index,'label':label[i],'cx':linearScalecx(centerX[label[i]]) ,'cy':linearScalecy(centerY[label[i]]) });
