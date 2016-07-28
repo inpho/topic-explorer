@@ -5,6 +5,7 @@ Created on Sun Apr 17 23:15:56 2016
 @author: adi
 """
 
+from codecs import open
 import config
 from config import moduleLoad
 import numpy as np
@@ -70,7 +71,7 @@ class dimensionReduce:
         
     def write_topics(self,filename):
         if not os.path.isfile(filename +'_'+"topicsWWW.csv"):        
-            with open(filename +'_'+"topicsWWW.csv",'w') as topic_file,open(filename +'_'+"topic_rangeWWW.csv",'w') as topicR_file:
+            with open(filename +'_'+"topicsWWW.csv",'w', encoding='utf8') as topic_file,open(filename +'_'+"topic_rangeWWW.csv",'w') as topicR_file:
                 topic_file.write('topic\n')
                 topicR_file.write('topic_range\n')
                 for k in self.topic_range:
@@ -80,7 +81,7 @@ class dimensionReduce:
                         temp_str = ''                    
                         for j in range(10):
                             temp_str=temp_str+' '+temp_model[i][j][0]
-                        topic_file.write(temp_str+'\n')
+                        topic_file.write(temp_str+u'\n')
                         topicR_file.write(str(k)+'\n')
             
         
