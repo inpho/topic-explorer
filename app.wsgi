@@ -76,11 +76,12 @@ for model, path in config.iteritems():
         child_app = topicexplorer.server.main(args)
 
         child_app.route('/<filename:path>', 'GET',
-            partial(static_child, model=model))
+            partial(topicexplorer.server._set_acao_headers(static_child),
+                    model=model))
 
         child_app.route('/', 'GET',
-            partial(static_child, model=model,
-                filename='/{}/index.html'.format(model)))
+            partial(topicexplorer.server._set_acao_headers(static_child),
+                    model=model, filename='/{}/index.html'.format(model)))
 
         application.mount('/{}/'.format(model), child_app)
 
@@ -96,7 +97,8 @@ for model, path in config.iteritems():
             raise e
 
 
-application.route('/<filename:path>', 'GET', send_static)
+application.route('/<filename:path>', 'GET',
+    topicexplorer.server._set_acao_headers(send_static))
 
 @application.route('/')
 def index():

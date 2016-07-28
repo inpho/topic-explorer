@@ -27,7 +27,7 @@ from vsm.viewer.wrappers import doc_label_name
 import random
 import pystache
 
-__all__ = ['populate_parser', 'main']
+__all__ = ['populate_parser', 'main', '_set_acao_headers']
 
 def _set_acao_headers(f):
     """
