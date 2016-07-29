@@ -91,7 +91,7 @@ def topic_json(topic_no, N=40):
         doc, prob = doc_prob
         struct = docs[doc]
         struct.update({'prob' : 1-prob,
-            'topics' : dict([(str(t), p) for t,p in topics])})
+            'topics' : dict([(str(t), float(p)) for t,p in topics])})
         js.append(struct)
 
     return json.dumps(js)
@@ -125,7 +125,7 @@ def doc_topics(doc_id, N=40):
         doc, prob = doc_prob
         struct = docs[doc]
         struct.update({'prob' : 1-prob,
-            'topics' : dict([(str(t), p) for t,p in topics])})
+            'topics' : dict([(str(t), float(p)) for t,p in topics])})
         js.append(struct)
 
     return json.dumps(js)
@@ -170,7 +170,7 @@ def word_docs(N=40):
         doc, prob = doc_prob
         struct = docs[doc]
         struct.update({'prob' : 1-prob,
-            'topics' : dict([(str(t), p) for t,p in topics])})
+            'topics' : dict([(str(t), float(p)) for t,p in topics])})
 	js.append(struct)
 
     return json.dumps(js)
@@ -190,7 +190,7 @@ def topics():
     for rank,topic_H in enumerate(data):
         topic, H = topic_H
         js[str(topic)] = {
-            "H" : H, 
+            "H" : float(H), 
             "color" : rgb2hex(colors[topic])
         }
     
@@ -200,7 +200,7 @@ def topics():
     wordmax = 10 # for alphabetic languages
     if lang=='cn': wordmax = 25 # for ideographic languages
     for i,topic in enumerate(data):
-        js[str(i)].update({'words' : dict([(w, p) for w,p in topic[:wordmax]])})
+        js[str(i)].update({'words' : dict([(w, float(p)) for w,p in topic[:wordmax]])})
 
     return json.dumps(js)
 
