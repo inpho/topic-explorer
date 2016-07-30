@@ -73,7 +73,7 @@ application = bottle.default_app()
 for model, path in config.iteritems():
     args = parser.parse_args([path, '--no-browser'])
     try:
-        child_app = topicexplorer.server.main(args)
+        child_app = topicexplorer.server.create_app(args)
 
         child_app.route('/<filename:path>', 'GET',
             partial(topicexplorer.server._set_acao_headers(static_child),

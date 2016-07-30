@@ -181,11 +181,12 @@ def main():
             print "     or the notebook server with:"
             print "         topicexplorer notebook", args.config_file
 
-    elif args.func == 'launch':
-        benchmark(launch.main)(args)
+    elif args.func == 'launch' or args.func == 'serve':
+        # Note that we are only benchmarking the creation process - obviously
+        # benches of the serve process will take longer
+        app = benchmark(server.create_app)(args)
+        server.main(args, app)
 
-    elif args.func == 'serve':
-        benchmark(server.main)(args)
 
     elif args.func == 'notebook':
         benchmark(notebook.main)(args)

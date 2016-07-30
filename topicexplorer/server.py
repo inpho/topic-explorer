@@ -336,6 +336,11 @@ class Application(Bottle):
                  'doc_url_format' : kwargs.get('doc_url_format', '')}
             return self.renderer.render(template, tmpl_params)
 
+        @self.route('/<filename:path>')
+        @_set_acao_headers
+        def send_static(filename):
+            return static_file(filename, root=resource_filename(__name__, '../www/'))
+
     def _serve_fulltext(self, corpus_path):
         @self.route('/fulltext/<doc_id:path>')
         @_set_acao_headers
@@ -353,11 +358,6 @@ class Application(Bottle):
             else:
                 return static_file(doc_id, root=corpus_path)
 
-    def serve_static(): 
-        @self.route('/<filename:path>')
-        @_set_acao_headers
-        def send_static(filename):
-            return static_file(filename, root=resource_filename(__name__, '../www/'))
 
     def get_docs(self, docs=None, id_as_key=False, query=None):
         ctx_md = self.c.view_metadata(self.context_type)
@@ -441,7 +441,29 @@ def get_host_port(args):
 
     return host, port
 
-def main(args):
+
+def main(args, app=None):
+    if app is None:
+        app = create_app(args)
+
+    host, port = get_host_port(args) 
+    
+    if args.browser:
+    	if host == '0.0.0.0':
+            link_host = socket.gethostname()
+	else:
+	    link_host = host
+    	url = "http://{host}:{port}/{k}/"
+        url = url.format(host=link_host, port=port, k=min(app.topic_range))
+        webbrowser.open(url)
+
+        print "TIP: Browser launch can be disabled with the '--no-browser' argument:"
+        print "topicexplorer serve --no-browser", args.config, "\n"
+
+    app.run(host=host, port=port)
+
+
+def create_app(args):
     # load in the configuration file
     config = ConfigParser({
         'certfile' : None,
@@ -504,19 +526,9 @@ def main(args):
                       doc_title_format=doc_title_format,
                       doc_url_format=doc_url_format)
     
+    """
     host, port = get_host_port(args) 
-    
-    if args.browser:
-    	if host == '0.0.0.0':
-            link_host = socket.gethostname()
-	else:
-	    link_host = host
-    	url = "http://{host}:{port}/".format(host=link_host,port=8081)
-        webbrowser.open(url)
-
-        print "TIP: Browser launch can be disabled with the '--no-browser' argument:"
-        print "topicexplorer serve --no-browser", args.config, "\n"
-
+    """
     # app.run(host='0.0.0.0', port=8081)
     return app
 
@@ -556,16 +568,4 @@ if __name__ == '__main__':
     populate_parser(parser)
     args = parser.parse_args()
     
-    app = main(args)
-    
-    host, port = get_host_port(args) 
-
-    if args.ssl or config.get('main', 'ssl'):
-        certfile = args.certfile or config.get('ssl', 'certfile')
-        keyfile = args.keyfile or config.get('ssl', 'keyfile')
-        ca_certs = args.ca_certs or config.get('ssl', 'ca_certs')
-
-        app.run(host=host, port=port, server=SSLWSGIRefServer,
-            certfile=certfile, keyfile=keyfile, ca_certs=ca_certs)
-    else:
-        app.run(host='0.0.0.0', port=8081)
+    main(args)
