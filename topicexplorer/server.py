@@ -201,7 +201,72 @@ class Application(Bottle):
                 doc, prob = doc_prob
                 struct = docs[doc]
                 struct.update({'prob' : 1-prob,
-                    'topics' : dict([(str(t), float(H), 
+                    'topics' : dict([(str(t), float(p)) for t,p in topics])})
+                js.append(struct)
+
+            return json.dumps(js)
+
+        @self.route('/<k:int>/word_docs.json')
+        @_set_acao_headers
+        def word_docs(k, N=40):
+            try:
+                N = int(request.query.n)
+            except:
+                pass
+            try:
+                query = request.query.q.lower().split('|')
+            except:
+                raise Exception('Must specify a query')
+
+            response.content_type = 'application/json; charset=UTF8'
+
+            query = [word for word in query if word in self.c.words]
+
+            # abort if there are no terms in the query
+            if not query:
+                response.status = 400 # Bad Request
+                return "Search terms not in model"
+
+            topics = self.v[k].dist_word_top(query, show_topics=False)
+            data = self.v[k].dist_top_doc(topics['i'],
+                       weights=(topics['value'].max() - topics['value']))
+
+            if N > 0:
+                data = data[:N]
+            else:
+                data = data[N:]
+                data = reversed(data)
+
+            docs = [doc for doc,prob in data]
+            doc_topics_mat = self.v[k].doc_topics(docs)
+            docs = self.get_docs(docs, id_as_key=True)
+
+            js = []
+            for doc_prob, topics in zip(data, doc_topics_mat):
+                doc, prob = doc_prob
+                struct = docs[doc]
+                struct.update({'prob' : 1-prob,
+                    'topics' : dict([(str(t), p) for t,p in topics])})
+                js.append(struct)
+
+            return json.dumps(js)
+
+        @self.route('/<k:int>/topics.json')
+        @_set_acao_headers
+        def topics(k):
+            from topicexplorer.lib.color import rgb2hex
+
+            response.content_type = 'application/json; charset=UTF8'
+            response.set_header('Expires', _cache_date())
+
+            # populate partial jsd values
+            data = self.v[k].topic_jsds()
+
+            js = {}
+            for rank,topic_H in enumerate(data):
+                topic, H = topic_H
+                js[str(topic)] = {
+                    "H" : float(H),
                     "color" : rgb2hex(self.colors[k][topic])
                 }
             
