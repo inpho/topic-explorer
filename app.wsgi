@@ -87,13 +87,20 @@ for model, path in config.iteritems():
 
     except Exception as e:
         print "Could not load", model
+        import traceback
+        import sys
+        exc_info = sys.exc_info()
+        traceback.print_exception(*exc_info)
+
 
         @application.route('/{}/'.format(model))
         def raise_error():
+            traceback.print_exc()
             raise e
 
         @application.route('/{}/<filename:path>'.format(model))
         def raise_error(filename):
+            traceback.print_exc()
             raise e
 
 
