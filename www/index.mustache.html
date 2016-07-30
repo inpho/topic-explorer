@@ -2,17 +2,17 @@
 <html>
 <head>
 <title>InPhO Topic Explorer</title>
-<script src="lib/jquery-1.11.0.min.js"></script>
-<script src="lib/jquery.superdom.min.js"></script>
-<script src="lib/jquery.cookie.min.js"></script>
-<script src="lib/bootstrap-2.3.2/js/bootstrap.min.js"></script>
-<script src="lib/d3.v3.min.js"></script>
-<script src="lib/mustache.js"></script>
-<script src="lib/inpho/util.js"></script>
-<script src="fulltext.js"></script>
-<script src="htrc.js"></script>
-<script src="icons.js"></script>
-<link rel="stylesheet" type="text/css" href="lib/bootstrap-2.3.2/css/bootstrap.min.css" />
+<script src="/lib/jquery-1.11.0.min.js"></script>
+<script src="/lib/jquery.superdom.min.js"></script>
+<script src="/lib/jquery.cookie.min.js"></script>
+<script src="/lib/bootstrap-2.3.2/js/bootstrap.min.js"></script>
+<script src="/lib/d3.v3.min.js"></script>
+<script src="/lib/mustache.js"></script>
+<script src="/lib/inpho/util.js"></script>
+<script src="/fulltext.js"></script>
+<script src="/htrc.js"></script>
+<script src="../icons.js"></script>
+<link rel="stylesheet" type="text/css" href="/lib/bootstrap-2.3.2/css/bootstrap.min.css" />
 <!--<link rel="stylesheet" type="text/css" href="style.css" />-->
 <style>
 .y.axis text {
@@ -112,7 +112,7 @@ text.hover, .title{
   shape-rendering: crispEdges;
 }*/
 .logo-word {
-  background-image: url('img/inpho_logo.png');
+  background-image: url('http://inpho.cogs.indiana.edu/img/newlogo.png');
   background-size: 172px 92px;
   width: 172px;
   height: 84px;
@@ -200,7 +200,7 @@ h1 a, h1 a:hover {
     <a class="btn dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
     <ul class="dropdown-menu">
     {{#topic_range}}
-    <li><a href="javascript:visualize({{k}}, {{port}})">{{k}} Topics</a></li>
+    <li><a href="javascript:visualize({{.}})">{{.}} Topics</a></li>
     {{/topic_range}}
     </ul>
   </div>
@@ -295,7 +295,7 @@ if (docid) {
   docid = decodeURIComponent(docid);
   $('#hidden_id').val(docid);
   $('.twitter-share-button').attr('data-text', "What's similar to " +docid+"? Discover with the #InPhO Topic Explorer");
-  $.getJSON('docs.json?id='+encodeURIComponent(docid), function(title) {
+  $.getJSON('../docs.json?id='+encodeURIComponent(docid), function(title) {
     if (title.length) {
       title = title[0].label;
       $('.title').html('{{doc_title_format}}'.format(title,'{{doc_url_format}}'.format(docid)));
@@ -336,12 +336,11 @@ $('#searchForm').submit(function(event) {
   event.preventDefault();
 });
 
-function visualize(k, port) {
+function visualize(k) {
   var url = "{0}{1}".format(window.location.origin, window.location.pathname);
-  if (port && window.location.port)
-    url = url.replace(window.location.port, port);
-  else if (k && tops) 
-    url = url.replace(Object.keys(tops).length, k);
+  if (k && tops)
+    url = url.replace('/' + Object.keys(tops).length + '/',
+                      '/' + k + '/');
 
   if ($("#autocompleteDoc").hasClass('active') && !($("#autocompleteDoc").attr("disabled") == 'disabled')) {
     url += "?doc=" + encodeURIComponent($("#hidden_id").val() || docid) ;
@@ -360,7 +359,7 @@ $(".typeahead").typeahead({items: 12,
 
     this.$menu.find('.active').removeClass('active');
     taTimeout = setTimeout(function () {
-      $.getJSON('docs.json?q=' + encodeURIComponent(query), function(data) {
+      $.getJSON('../docs.json?q=' + encodeURIComponent(query), function(data) {
         labels = [];
         mapped = {};
         $.each(data, function(i, item) {
@@ -429,7 +428,7 @@ $('#autocompleteDoc').click(function() {
 
 
 $('#randomDoc').click(function() { 
-    $.getJSON('docs.json?random=1', function(rand) {
+    $.getJSON('../docs.json?random=1', function(rand) {
       if (!$('#autocompleteDoc').hasClass('active')) {
         $('#autocompleteDoc').button('toggle');
         $('span.icon-font', '#autocompleteDoc').removeClass('icon-font').addClass('icon-file');
