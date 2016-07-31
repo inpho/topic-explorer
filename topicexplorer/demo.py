@@ -69,7 +69,7 @@ def main(args=None):
         init_parser = ArgumentParser()
         init.populate_parser(init_parser)
         args = init_parser.parse_args(
-            ['ap', '--name', '"Associated Press 88-90 sample"', '--rebuild'])
+            ['ap', '--name', '"Associated Press 88-90 sample"', '--rebuild', '-q'])
         init.main(args)
 
         prep_parser = ArgumentParser()

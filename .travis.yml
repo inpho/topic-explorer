@@ -24,7 +24,7 @@ install:
   - export PATH=$HOME/py/bin:$PATH
   - pip install coveralls
   # install topic explorer
-  - python setup.py install
+  - pip install . --extra-index-url https://inpho.cogs.indiana.edu/pypi
 # command to run tests
 script: bash coverage.sh
 after_success: coveralls

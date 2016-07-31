@@ -1,5 +1,5 @@
 #!/bin/bash
-CMD="coverage run -a --source=topicexplorer --omit=topicexplorer/lib,topicexplorer/extensions"
+CMD='coverage run -a --source topicexplorer --omit="topicexplorer/extensions/*.py,topicexplorer/lib/hathitrust.py"'
 
 rm -rf .coverage
 coverage debug sys
