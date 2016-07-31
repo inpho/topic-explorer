@@ -19,3 +19,5 @@ topicexplorer.egg-info
 
 *~
 .travis.key
+
+docs/_build

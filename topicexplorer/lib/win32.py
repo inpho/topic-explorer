@@ -28,14 +28,14 @@ else:
 
     ctypes.CDLL(numpy_libmmd)
     ctypes.CDLL(numpy_libifcoremd)
-    
 
-# Now set our handler for CTRL_C_EVENT. Other control event 
+
+# Now set our handler for CTRL_C_EVENT. Other control event
 # types will chain to the next handler.
 def handler(dwCtrlType, hook_sigint=thread.interrupt_main):
-    if dwCtrlType == 0: # CTRL_C_EVENT
+    if dwCtrlType == 0:  # CTRL_C_EVENT
         hook_sigint()
-        return 1 # chain to the next handler
-    return 0 # chain to the next handler
+        return 1         # chain to the next handler
+    return 0             # chain to the next handler
 
-win32api.SetConsoleCtrlHandler(handler, 1)    
+win32api.SetConsoleCtrlHandler(handler, 1)

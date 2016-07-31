@@ -1,4 +1,24 @@
 #!/usr/bin/env python
+"""
+`topicexplorer.__main__`
+
+This file defines the master script for the Topic Explorer CLI.
+The general usage pattern is to create subcommands through new modules
+in the same package - such as `topicexplorer.init`, 
+`topicexplorer.prep`, `topicexplorer.train`, etc.
+
+Each submodule defines a `populate_parser()` function which adds
+command arguments to an `argparse.ArgumentParser` instance. The instance
+is then added to the master `ArgumentParser` and a `func` keyword
+is used to switch between the functionality defined by each module's
+`main()` method.
+
+In addition, `topicexplorer.__main__` defines the benchmark commands
+for execution time and profiling.
+
+"""
+
+# Import the standard library modules
 import argparse
 from argparse import ArgumentParser
 from ConfigParser import RawConfigParser as ConfigParser
@@ -7,12 +27,20 @@ import warnings
 
 from topicexplorer import (init, prep, train, server, notebook, demo,
     update, langspace)
+
+# import the filepath validator for use with config
 from topicexplorer.lib.util import is_valid_filepath
 
-
-class ArgumentParserError(Exception): pass
+class ArgumentParserError(Exception): 
+    """
+    Skeleton class for use in `try` blocks.
+    """
+    pass
 
 class ThrowingArgumentParser(argparse.ArgumentParser):
+    """ 
+    Skeleton subclass of argparse.ArgumentParser to raise exceptions.
+    """
     def error(self, message):
         raise ArgumentParserError(message)
 
@@ -34,7 +62,13 @@ def vsm():
     main()
 
 def main():
+    """ 
+    The primary CLI function for the Topic Explorer.
+    """
+    # Create the master argparse object.
     parser = ThrowingArgumentParser()
+
+    # Adding the benchmarks flags.
     benchmark_group = parser.add_mutually_exclusive_group()
     benchmark_group.add_argument('-t', '--time', help="Print execution time",
         action='store_true')
@@ -209,5 +243,6 @@ def main():
             print """\nSnakeviz is not installed. Install with `pip install snakeviz`, 
             then run `snakeviz {}`.""".format(args.profile)
 
+# Allow `__main__` to be called as a script.
 if __name__ == '__main__':
     main()
