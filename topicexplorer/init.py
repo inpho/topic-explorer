@@ -315,7 +315,7 @@ def write_config(args, config_file=None):
             config_file = os.path.join(args.corpus_path, '..', config_file)
             config_file = os.path.normpath(config_file)
 
-        overwrite = None if os.path.exists(config_file) else True
+        overwrite = None if os.path.exists(config_file) and not args.quiet else True
         while not overwrite:
             overwrite = raw_input("\nConfig file {0} exists. Overwrite? [Y/n] ".format(config_file))
             overwrite = overwrite.lower().strip()
@@ -355,6 +355,7 @@ def populate_parser(parser):
     
     parser.add_argument("--htrc", action="store_true")
     parser.add_argument("--rebuild", action="store_true")
+    parser.add_argument("-q", "--quiet", action="store_true")
     parser.add_argument("--tokenizer", choices=['zh', 'ltc', 'och', 'inpho', 'default', 'brain'], default="default")
     
     parser.add_argument("--simple", action="store_true", default=True, 

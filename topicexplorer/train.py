@@ -103,8 +103,8 @@ def main(args):
     except NoOptionError:
         model_pattern = None
 
-    if model_pattern is not None and\
-        bool_prompt("Existing models found. Continue training?", default=True):
+    if (model_pattern is not None and not args.rebuild and
+        bool_prompt("Existing models found. Continue training?", default=True)):
 
         from vsm.model.lda import LDA
         m = LDA.load(model_pattern.format(args.k[0]),
@@ -199,6 +199,7 @@ def populate_parser(parser):
         help="Number of training iterations")
     parser.add_argument('--dry-run', dest='dry_run', action='store_true',
         help="Run code without training models")
+    parser.add_argument('--rebuild', action='store_true')
 
 
 if __name__ == '__main__':

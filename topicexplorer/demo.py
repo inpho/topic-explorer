@@ -1,3 +1,4 @@
+from argparse import ArgumentParser
 import os, os.path, shutil
 import platform
 from StringIO import StringIO
@@ -7,6 +8,8 @@ import tarfile
 import xml.etree.ElementTree as ET
 
 import wget
+
+from topicexplorer import init, prep, train
 
 def download_and_extract():
     # parse the pseudo-xml document into a python-native dict
@@ -60,10 +63,24 @@ def download_and_extract():
 def main(args=None):
     download_and_extract()
     try:
-        subprocess.check_call('topicexplorer init ap --name "Associated Press 88-90 sample"', shell=True)
-        # TODO: Catch RuntimeWarning event on Windows
-        subprocess.check_call("topicexplorer prep ap.ini --lang en --high 2000 --low 5 -q", shell=True)
-        subprocess.check_call("topicexplorer train ap.ini -k 20 40 60 --context-type article --iter 20", shell=True)
+        pwd = os.getcwd()
+        print pwd
+
+        init_parser = ArgumentParser()
+        init.populate_parser(init_parser)
+        args = init_parser.parse_args(
+            ['ap', '--name', '"Associated Press 88-90 sample"', '--rebuild'])
+        init.main(args)
+
+        prep_parser = ArgumentParser()
+        prep.populate_parser(prep_parser)
+        args = prep_parser.parse_args('ap.ini --lang en --high 2000 --low 5 -q'.split())
+        prep.main(args)
+
+        train_parser = ArgumentParser()
+        train.populate_parser(train_parser)
+        args = train_parser.parse_args("ap.ini -k 20 40 60 --context-type article --iter 20".split())
+        train.main(args)
     except subprocess.CalledProcessError:
         # presumably the exception has been handled in the subprocess
         sys.exit(1)
