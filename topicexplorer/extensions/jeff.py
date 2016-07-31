@@ -1,4 +1,5 @@
 from ConfigParser import RawConfigParser as ConfigParser, NoOptionError
+import string
 
 from bottle import static_file
 
@@ -14,18 +15,16 @@ def init(app, config_file):
     def get_doc(doc_id):
         return static_file(doc_id, root=raw_corpus_path)
 
-import string
+
 def label(doc):
     newdoc = doc.replace('_', ' ')
-    newdoc = newdoc.replace('.txt','')
+    newdoc = newdoc.replace('.txt', '')
     try:
-        id, details = newdoc.split('--',1)
+        id, details = newdoc.split('--', 1)
         details = details.lower()
-        id = id.replace("LETTER ",'')
-        #newdoc = id + " -- " + string.capwords(details)
+        id = id.replace("LETTER ", '')
+        # newdoc = id + " -- " + string.capwords(details)
         newdoc = string.capwords(details)
     except:
         pass
     return newdoc
-
-

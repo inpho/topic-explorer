@@ -7,11 +7,13 @@ from vsm.viewer.wrappers import doc_label_name, def_label_fn
 
 app = None
 
+
 class keydefaultdict(defaultdict):
     # http://stackoverflow.com/a/2912455
+
     def __missing__(self, key):
         if self.default_factory is None:
-            raise KeyError( key )
+            raise KeyError(key)
         else:
             ret = self[key] = self.default_factory(key)
             return ret
@@ -27,8 +29,6 @@ def label(doc):
 
     context_md = ctx_md['page']
     where = np.squeeze(np.where(np.in1d(context_md['page_label'], [str(doc)])))
-    print where, context_md
     page_no = context_md[where]
-    print where, page_no['title']
     return page_no['title']
 

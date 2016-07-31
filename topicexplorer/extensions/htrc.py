@@ -10,16 +10,20 @@ from topicexplorer.lib.hathitrust import parse_marc, get_volume_from_marc
 app = None
 metadata = None
 
+
 class keydefaultdict(defaultdict):
     # http://stackoverflow.com/a/2912455
+
     def __missing__(self, key):
         if self.default_factory is None:
-            raise KeyError( key )
+            raise KeyError(key)
         else:
             ret = self[key] = self.default_factory(key)
             return ret
 
+
 ctx_md = keydefaultdict(lambda ctx: app.c.view_metadata(app.context_type))
+
 
 def init(_app, config_file):
     #viewer, config, args):
@@ -31,11 +35,12 @@ def init(_app, config_file):
 
     model_path = config.get('main', 'path')
 
-    filename = os.path.join(model_path,'../metadata.json')
+    filename = os.path.join(model_path, '../metadata.json')
     print "Loading HTRC metadata from", filename
 
     with open(filename) as f:
         metadata = json.load(f)
+
 
 def label(doc):
     if app.context_type == 'book':
@@ -49,7 +54,7 @@ def label(doc):
         where = np.squeeze(np.where(np.in1d(context_md['page_label'], [doc])))
         page_no = context_md['file'][where]
         page_no = page_no.split('/')[-1]
-        page_no = page_no.replace('.txt','')
+        page_no = page_no.replace('.txt', '')
         page_no = int(page_no)
 
         book_label = context_md['book_label'][where]
