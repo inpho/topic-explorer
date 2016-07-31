@@ -5,7 +5,7 @@ from ConfigParser import RawConfigParser as ConfigParser
 import os.path
 import warnings
 
-from topicexplorer import (init, prep, train, server, launch, notebook, demo,
+from topicexplorer import (init, prep, train, server, notebook, demo,
     update, langspace)
 from topicexplorer.lib.util import is_valid_filepath
 
@@ -69,7 +69,7 @@ def main():
     
     # Launch Parser
     parser_launch = parsers.add_parser('launch', help="Serve the trained LDA models")
-    launch.populate_parser(parser_launch)
+    server.populate_parser(parser_launch)
     parser_launch.set_defaults(func="launch")
 
     # Serve Parser
