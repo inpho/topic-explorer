@@ -22,8 +22,9 @@ install:
   - conda info -a
   - conda create -p $HOME/py --yes pip numpy scipy nltk unidecode matplotlib cython pyyaml networkx wget decorator chardet progressbar "python=$TRAVIS_PYTHON_VERSION"
   - export PATH=$HOME/py/bin:$PATH
+  - pip install coveralls
   # install topic explorer
   - python setup.py install
 # command to run tests
-script: 
-  - topicexplorer demo
+script: bash coverage.sh
+after_success: coveralls
