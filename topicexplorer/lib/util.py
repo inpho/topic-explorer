@@ -2,10 +2,12 @@
 topicexplorer.lib.util contains some helper functions for command prompts, argparse, and globing
 """
 
-import os, fnmatch
+import os
+import fnmatch
 import os.path
 from glob import glob
 import shutil
+
 
 def safe_symlink(srcpath, linkpath):
     """
@@ -24,18 +26,20 @@ def safe_symlink(srcpath, linkpath):
                     raise ctypes.WinError()
             except:
                 shutil.copyfile(source, link_name)
-                
+
         os.symlink = symlink_ms
 
     srcpath = os.path.abspath(srcpath)
     linkpath = os.path.abspath(linkpath)
     os.symlink(srcpath, linkpath)
 
+
 def is_valid_filepath(parser, arg):
     if not os.path.exists(arg):
         parser.error("The file %s does not exist!" % arg)
     else:
         return arg
+
 
 def is_valid_configfile(parser, arg):
     if not arg.endswith('.ini'):
@@ -69,7 +73,7 @@ def listdir_nohidden(path, recursive=False):
                 yield f
 
 
-## Command Line Prompts
+# Command Line Prompts
 def overwrite_prompt(filename, default=True):
     if os.path.exists(filename):
         prompt_str = 'Overwrite {0}?'.format(filename)
@@ -78,18 +82,20 @@ def overwrite_prompt(filename, default=True):
     else:
         return True
 
+
 def bool_prompt(prompt_str, default=None):
-    if default == True:
+    if default is True:
         default = 'y'
-    elif default == False:
+    elif default is False:
         default = 'n'
 
-    result = prompt(prompt_str, options=['y','n'], default=default)
+    result = prompt(prompt_str, options=['y', 'n'], default=default)
 
     if result == 'y':
         return True
     elif result == 'n':
         return False
+
 
 def int_prompt(prompt_str, default=None, min=None, max=None):
     result = prompt(prompt_str, default=default)
@@ -101,24 +107,23 @@ def int_prompt(prompt_str, default=None, min=None, max=None):
         return int_prompt(prompt_str, default=default, min=min, max=max)
     if max and min and not (result <= max and result > min):
         print "ERROR: You must enter a number between {min} and {max}."\
-             .format(min=min, max=max)
+            .format(min=min, max=max)
         return int_prompt(prompt_str, default=default, min=min, max=max)
     elif max and result > max:
         print "ERROR: You must enter a number less than {max}."\
-             .format(min=min, max=max)
+            .format(min=min, max=max)
         return int_prompt(prompt_str, default=default, min=min, max=max)
     elif min and result <= min:
         print "ERROR: You must enter a number greater than {min}."\
-             .format(min=min, max=max)
+            .format(min=min, max=max)
         return int_prompt(prompt_str, default=default, min=min, max=max)
     else:
         return result
-            
 
 
 def prompt(prompt, options=None, default=None):
     # Construct prompt
-    prompt = "\n"+prompt
+    prompt = "\n" + prompt
 
     if options:
         choices = options[:]
@@ -144,7 +149,6 @@ def prompt(prompt, options=None, default=None):
     return result
 
 
-
 def find_files(directory, pattern, include_hidden=False):
     for root, dirs, files in os.walk(directory):
         for basename in files:
@@ -155,12 +159,14 @@ def find_files(directory, pattern, include_hidden=False):
                 else:
                     yield filename
 
+
 def contains_pattern(directory, pattern):
     try:
         find_files(directory, pattern).next()
         return True
     except StopIteration:
         return False
+
 
 def isint(x):
     try:

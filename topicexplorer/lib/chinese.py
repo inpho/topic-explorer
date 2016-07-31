@@ -65,63 +65,61 @@ if platform.system() == 'Windows':
 else:
     import mmseg
     import os.path
-    
+
     TOKENIZER = None
-    
+
     def reset_mmseg():
         global TOKENIZER
         global mmseg
         TOKENIZER = None
         reload(mmseg)
         import mmseg
-    
-    
+
     def ancient_chinese_tokenizer(raw_text):
         global TOKENIZER
         if TOKENIZER is not 'Ancient':
             # reload mmseg to re-init
             reset_mmseg()
-    
-            #directory of ancient dictionary
+
+            # directory of ancient dictionary
             dirname = os.path.dirname(__file__)
             dictionary = os.path.join(dirname, 'ancient words.dic')
             mmseg.dict_load_defaults()
             mmseg.Dictionary.load_words(dictionary)
             TOKENIZER = 'Ancient'
-    
+
         # process text
         tokenizer = mmseg.Algorithm(raw_text.encode('utf-8-sig'))
         tokens = []
         for token in tokenizer:
-            token = token.text.decode('utf-8-sig', errors='replace').replace(u'\x00','')
+            token = token.text.decode('utf-8-sig', errors='replace').replace(u'\x00', '')
             if token:
                 if token not in chinese_punctuation:
                     tokens.append(token)
-    
+
         return tokens
-    
-    
+
     def modern_chinese_tokenizer(raw_text):
         global TOKENIZER
         if TOKENIZER is not 'Modern':
             # reload mmseg to re-init
             reset_mmseg()
-    
-            #directory of morden dictionary
+
+            # directory of morden dictionary
             dirname = os.path.dirname(__file__)
             dictionary = os.path.join(dirname, 'modern words.dic')
             mmseg.dict_load_defaults()
             mmseg.dict_load_words(dictionary)
             TOKENIZER = 'Modern'
-    
+
         # process text
         #print raw_text.encode('utf-8')
         tokenizer = mmseg.Algorithm(raw_text.encode('utf-8-sig'))
+
         tokens = []
         for token in tokenizer:
-            token = token.text.decode('utf-8-sig', errors='replace').replace(u'\x00','')
+            token = token.text.decode('utf-8-sig', errors='replace').replace(u'\x00', '')
             if token:
                 tokens.append(token)
-    
+
         return tokens
-    
