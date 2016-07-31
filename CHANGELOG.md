@@ -10,9 +10,16 @@ This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangel
 
 ## [Unreleased]
 - Added:
-  - mod_wsgi support
   - topic cluster display
   - documentation for BibTeX support.
+
+## [1.0b107] - 2016-07-30
+- Added:
+  - mod_wsgi support
+- Removed:
+  - Module `topicexplorer.launch`. Alias for command `topicexplorer launch` still works and is documented way to launch browser. Reserve `topicexplorer serve` for advanced use.
+- Fixed:
+  - [#37](http://github.com/inpho/topic-explorer/issues/37) - Merge ports to single in-page model switch
 
 ## [1.0b106] - 2016-07-25
 - Added:
@@ -127,6 +134,7 @@ This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangel
 
 
 [Unreleased]: https://github.com/inpho/topic-explorer/compare/1.0b106...HEAD
+[1.0b107]: https://github.com/inpho/topic-explorer/compare/1.0b106...1.0b107
 [1.0b106]: https://github.com/inpho/topic-explorer/compare/1.0b88...1.0b106
 [1.0b88]: https://github.com/inpho/topic-explorer/compare/1.0b79...1.0b88
 [1.0b79]: https://github.com/inpho/topic-explorer/compare/1.0b60...1.0b79

@@ -99,6 +99,12 @@ The InPhO Topic Explorer is **only** compatible with Python 2.7. However, Anacon
        *   [IPython Notebooks](http://ipython.org/install.html)
 
 ## Deployment
+The Topic Explorer includes a simple HTTP server through the Bottle Web Framework. This simple server is what the `topicexplorer launch` and `topicexplorer serve` commands use.
+
+If you wish to host a high-traffic version of InPhO-TE, we recommend using the Apache Web Server and the mod_wsgi module. This infrastructure powers the demos at [http://inphodata.cogs.indiana.edu/] and is readily available on cloud compute platforms. Details for that configuration are below.
+
+If you have deployed InPhO-TE using another infrastructure, please submit a pull request with the documentation. The function `topicexplorer.server.create_app` will make a WSGI-compliant application for use with any WSGI-compliant server.
+
 ### mod_wsgi
 
 1.  Install apache2 with mod_wsgi: `apt-get install apache2 libapache2-mod-wsgi`
