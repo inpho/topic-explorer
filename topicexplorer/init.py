@@ -7,15 +7,16 @@ import sys
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
-from topicexplorer.lib.util import (prompt, is_valid_filepath, 
-    listdir_nohidden, contains_pattern)
+from topicexplorer.lib.util import (prompt, is_valid_filepath,
+                                    listdir_nohidden, contains_pattern)
+
 
 def get_corpus_filename(corpus_path, model_path, nltk_stop=False, stop_freq=0,
-			context_type='document'):
+                        context_type='document'):
     corpus_name = os.path.basename(corpus_path)
     if not corpus_name:
         corpus_name = os.path.basename(os.path.dirname(corpus_path))
-    
+
     corpus_name.replace('-txt', '')
 
     if nltk_stop and stop_freq:
@@ -27,13 +28,13 @@ def get_corpus_filename(corpus_path, model_path, nltk_stop=False, stop_freq=0,
     return os.path.join(model_path, filename)
 
 
-def process_pdfs(corpus_path, ignore=['.json','.log','.err','.pickle','.npz']):
+def process_pdfs(corpus_path, ignore=['.json', '.log', '.err', '.pickle', '.npz']):
     from topicexplorer.lib import pdf
     if os.path.isfile(corpus_path):
         print "PDF file detected, extracting plaintext to",\
-            corpus_path.replace('.pdf','.txt')
+            corpus_path.replace('.pdf', '.txt')
         pdf.main(corpus_path)
-        corpus_path = corpus_path.replace('.pdf','.txt')
+        corpus_path = corpus_path.replace('.pdf', '.txt')
     elif os.path.isdir(corpus_path):
         print "PDF files detected, extracting plaintext to", corpus_path + '-txt'
 
@@ -42,8 +43,8 @@ def process_pdfs(corpus_path, ignore=['.json','.log','.err','.pickle','.npz']):
 
         # TODO: Add processing of collections
         contents = listdir_nohidden(corpus_path)
-        contents = [os.path.join(corpus_path,obj) for obj in contents 
-            if not any([obj.endswith(suffix) for suffix in ignore])]
+        contents = [os.path.join(corpus_path, obj) for obj in contents
+                    if not any([obj.endswith(suffix) for suffix in ignore])]
         count_dirs = len(filter(os.path.isdir, contents))
         count_files = len(filter(os.path.isfile, contents))
 
@@ -53,23 +54,24 @@ def process_pdfs(corpus_path, ignore=['.json','.log','.err','.pickle','.npz']):
         elif count_dirs > 0 and count_files == 0:
             # process each subdirectory
             for directory in contents:
-                pdf.main(directory, 
-                         directory.replace(corpus_path, corpus_path+'-txt'))
+                pdf.main(directory,
+                         directory.replace(corpus_path, corpus_path + '-txt'))
         else:
             raise IOError("Invalid Path: empty directory")
-        
+
         corpus_path += '-txt'
     return corpus_path
+
 
 def process_bibtex(corpus_path):
     import pybtex
     from pybtex.database import parse_file
     from topicexplorer.lib.util import overwrite_prompt, safe_symlink
 
-    print "Loading BibTeX from", corpus_path 
+    print "Loading BibTeX from", corpus_path
     bib = parse_file(corpus_path)
-    
-    target_dir = os.path.basename(corpus_path).replace('.bib','')
+
+    target_dir = os.path.basename(corpus_path).replace('.bib', '')
     if not os.path.exists(target_dir):
         os.makedirs(target_dir)
     elif overwrite_prompt(target_dir):
@@ -78,12 +80,11 @@ def process_bibtex(corpus_path):
     else:
         raise IOError("Path exits: {}".format(target_dir))
 
-
     for entry in bib.entries:
         if bib.entries[entry].fields.get('file', None):
-            filename = '/' + bib.entries[entry].fields['file'].replace(':pdf','')[1:]
+            filename = '/' + bib.entries[entry].fields['file'].replace(':pdf', '')[1:]
             if 'C$\\backslash$:' in filename:
-                filename = filename.replace('C$\\backslash$:', '') 
+                filename = filename.replace('C$\\backslash$:', '')
                 filename = filename[1:]
                 filename = os.path.normpath(filename)
             filename = os.path.abspath(filename)
@@ -97,19 +98,20 @@ def process_bibtex(corpus_path):
 
     return target_dir
 
+
 def get_corpusbuilder_fn(corpus_path, sentences=False, ignore=[]):
     relpaths = [os.path.relpath(path, start=corpus_path)
-                    for path in listdir_nohidden(corpus_path, recursive=True) 
-                        if os.path.isfile(path) 
-                            and not any([path.endswith(i) for i in ignore])]
+                for path in listdir_nohidden(corpus_path, recursive=True)
+                if os.path.isfile(path)
+                and not any([path.endswith(i) for i in ignore])]
 
     dir_counts = defaultdict(int)
     for path in relpaths:
         dir_counts[os.path.dirname(path)] += 1
 
     dirs = dir_counts.keys()
-    populated_levels = [dir.count(os.path.sep) 
-        for dir, key in dir_counts.iteritems()]
+    populated_levels = [dir.count(os.path.sep)
+                        for dir, key in dir_counts.iteritems()]
     levels = max(populated_levels) - min(populated_levels)
     print "{} files, {} dirs, {} levels".format(len(relpaths), len(dirs), levels)
 
@@ -137,10 +139,11 @@ def get_corpusbuilder_fn(corpus_path, sentences=False, ignore=[]):
         from vsm.extensions.corpusbuilders import walk_corpus
         return walk_corpus
 
+
 def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=0,
-    context_type='document', ignore=['.json','.log','.err','.pickle','.npz'],
-    decode=True, sentences=False, simple=True, tokenizer='default'):
-   
+                 context_type='document', ignore=['.json', '.log', '.err', '.pickle', '.npz'],
+                 decode=True, sentences=False, simple=True, tokenizer='default'):
+
     from vsm.corpus import Corpus
 
     # import appropriate tokenizer
@@ -160,8 +163,8 @@ def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=0,
         from hyperbrain.parse import brain_tokenizer
         tokenizer = brain_tokenizer
     else:
-        raise NotImplementedError("Tokenizer '{}' is not included in topicexplorer".format(tokenizer))
-
+        raise NotImplementedError(
+            "Tokenizer '{}' is not included in topicexplorer".format(tokenizer))
 
     # pre-process PDF files
     contains_pdfs = corpus_path[-4:] == '.pdf' or contains_pattern(corpus_path, '*.pdf')
@@ -186,7 +189,8 @@ def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=0,
     filename = get_corpus_filename(
         corpus_path, model_path, nltk_stop, stop_freq, context_type)
     c.save(filename)
-    return filename 
+    return filename
+
 
 def main(args):
     # convert to unicode to avoid windows errors
@@ -198,7 +202,6 @@ def main(args):
     if args.bibtex:
         args.bibtex = args.corpus_path
         args.corpus_path = process_bibtex(args.corpus_path)
-        
 
     # set corpus_name
     args.corpus_name = os.path.basename(args.corpus_path)
@@ -211,15 +214,15 @@ def main(args):
     if args.htrc:
         import vsm.extensions.htrc as htrc
         htrc.proc_htrc_coll(args.corpus_path)
-        
+
         import json
         data = [(id, htrc.metadata(id)) for id in listdir_nohidden(args.corpus_path)
-                    if os.path.isdir(id)]
+                if os.path.isdir(id)]
         data = dict(data)
         md_filename = os.path.join(args.corpus_path, '../metadata.json')
         with open(md_filename, 'wb') as outfile:
             json.dump(data, outfile)
-    
+
     # configure model-path
     if args.model_path is None:
         if os.path.isdir(args.corpus_path):
@@ -228,10 +231,10 @@ def main(args):
             args.model_path = os.path.dirname(args.corpus_path)
     if args.model_path and not os.path.exists(args.model_path):
         os.makedirs(args.model_path)
-  
+
     args.corpus_filename = get_corpus_filename(
         args.corpus_path, args.model_path, stop_freq=args.stop_freq)
-    if not args.rebuild and os.path.exists(args.corpus_filename): 
+    if not args.rebuild and os.path.exists(args.corpus_filename):
         while args.rebuild not in ['y', 'n', True]:
             args.rebuild = raw_input("\nCorpus file found. Rebuild? [y/N] ")
             args.rebuild = args.rebuild.lower().strip()
@@ -241,12 +244,12 @@ def main(args):
                 args.rebuild = 'n'
     else:
         args.rebuild = True
-    if args.rebuild == True:
+    if args.rebuild:
         try:
-            args.corpus_filename = build_corpus(args.corpus_path, args.model_path, 
+            args.corpus_filename = build_corpus(args.corpus_path, args.model_path,
                                                 stop_freq=args.stop_freq, decode=args.decode,
                                                 sentences=args.sentences,
-                                                simple=args.simple,tokenizer=args.tokenizer)
+                                                simple=args.simple, tokenizer=args.tokenizer)
         except IOError:
             print "ERROR: invalid path, please specify either:"
             print "  * a single plain-text or PDF file,"
@@ -267,7 +270,7 @@ def main(args):
             else:
                 raise e
             print "\nExiting..."
-            sys.exit(74)        
+            sys.exit(74)
         """
 
     return write_config(args, args.config_file)
@@ -287,21 +290,21 @@ def write_config(args, config_file=None):
         config.set("main", "label_module", "topicexplorer.extensions.bibtex")
         config.add_section("bibtex")
         config.set("bibtex", "path", args.bibtex)
-    
+
     config.add_section("www")
     config.set("www", "corpus_name", args.corpus_print_name)
     config.set("www", "icons", "link")
     config.set("www", "fulltext", "false")
 
     config.add_section("logging")
-    config.set("logging","path","logs/%s/{0}.log" % args.corpus_name)
+    config.set("logging", "path", "logs/%s/{0}.log" % args.corpus_name)
 
     if args.htrc:
-        config.set("main","label_module","topicexplorer.extensions.htrc")
+        config.set("main", "label_module", "topicexplorer.extensions.htrc")
         if not args.corpus_print_name:
-            config.set("www","corpus_name","HTRC Data Capsule")
-        config.set("www","doc_title_format",'<a href="{1}">{0}</a>')
-        config.set("www","doc_url_format", 'http://hdl.handle.net/2027/{0}')
+            config.set("www", "corpus_name", "HTRC Data Capsule")
+        config.set("www", "doc_title_format", '<a href="{1}">{0}</a>')
+        config.set("www", "doc_url_format", 'http://hdl.handle.net/2027/{0}')
         config.set("www", "icons", "htrc,htrcbook,link")
         config.set("main", "htrc", True)
 
@@ -327,47 +330,49 @@ def write_config(args, config_file=None):
                 config_file = raw_input("Enter new filename [default: {0}]: ".format(config_file))\
                     or config_file
             elif overwrite == '' or overwrite == 'y':
-                overwrite=True
-
+                overwrite = True
 
     print "Writing configuration file", config_file
     with open(config_file, "wb") as configfh:
         config.write(configfh)
     return config_file
 
+
 def populate_parser(parser):
     parser.add_argument("corpus_path", help="Path to Corpus",
-        type=lambda x: is_valid_filepath(parser, x))
-    parser.add_argument("--name", dest="corpus_print_name", 
-        metavar="\"CORPUS NAME\"",
-        help="Corpus name (for web interface) [Default: [corpus_path]]")
+                        type=lambda x: is_valid_filepath(parser, x))
+    parser.add_argument("--name", dest="corpus_print_name",
+                        metavar="\"CORPUS NAME\"",
+                        help="Corpus name (for web interface) [Default: [corpus_path]]")
     parser.add_argument("config_file", nargs="?",
-        help="Path to Config [optional]")
+                        help="Path to Config [optional]")
     parser.add_argument("--model-path", dest="model_path",
-        help="Model Path [Default: [corpus_path]/../models]")
+                        help="Model Path [Default: [corpus_path]/../models]")
 
     group = parser.add_mutually_exclusive_group()
     group.add_argument("--unicode", action="store_false", dest='decode',
-        help="Store unicode characters. [Default]")
+                       help="Store unicode characters. [Default]")
     group.add_argument("--decode", action="store_true", dest='decode',
-        help="Convert unicode characters to ascii.")
+                       help="Convert unicode characters to ascii.")
     parser.set_defaults(decode=False)
-    
+
     parser.add_argument("--htrc", action="store_true")
     parser.add_argument("--rebuild", action="store_true")
     parser.add_argument("-q", "--quiet", action="store_true")
-    parser.add_argument("--tokenizer", choices=['zh', 'ltc', 'och', 'inpho', 'default', 'brain'], default="default")
-    
-    parser.add_argument("--simple", action="store_true", default=True, 
-        help="Skip sentence tokenizations [default].")
+    parser.add_argument("--tokenizer", default="default",
+        choices=['zh', 'ltc', 'och', 'inpho', 'default', 'brain'])
+
+    parser.add_argument("--simple", action="store_true", default=True,
+                        help="Skip sentence tokenizations [default].")
     parser.add_argument("--sentences", action="store_true", help="Parse at the sentence level")
     parser.add_argument("--freq", dest="stop_freq", default=5, type=int,
-        help="Filter words occurring less than freq times [Default: 5])")
+                        help="Filter words occurring less than freq times [Default: 5])")
 
-if __name__ == '__main__': 
+
+if __name__ == '__main__':
     from argparse import ArgumentParser
     parser = ArgumentParser()
     populate_parser(parser)
     args = parser.parse_args()
-    
+
     main(args)

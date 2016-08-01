@@ -29,6 +29,7 @@ import pystache
 
 __all__ = ['populate_parser', 'main', '_set_acao_headers']
 
+
 def _set_acao_headers(f):
     """
     Decorator to set Access-Control-Allow-Origin headers to enable cross-InPhO
@@ -50,8 +51,9 @@ def _cache_date(days=1):
 
 
 class Application(Bottle):
+
     def __init__(self, corpus_file='', model_pattern='', topic_range=None,
-                 context_type='', label_module=None, config_file='', 
+                 context_type='', label_module=None, config_file='',
                  fulltext=False, corpus_path='', **kwargs):
         super(Application, self).__init__()
 
@@ -67,13 +69,12 @@ class Application(Bottle):
         self.label_name = self.context_type + '_label'
         self._load_label_module(label_module, config_file)
         self._load_corpus(corpus_file)
-       
+
         # load viewers
         self.v = dict()
         self.topic_range = topic_range
         self.colors = dict()
         self._load_viewers(model_pattern)
-
 
     def _load_label_module(self, label_module, config_file):
         try:
@@ -117,34 +118,34 @@ class Application(Bottle):
         @_set_acao_headers
         def doc_topic_csv(k, doc_id):
             response.content_type = 'text/csv; charset=UTF8'
-        
+
             doc_id = unquote(doc_id)
-        
+
             data = self.v[k].doc_topics(doc_id)
-        
-            output=StringIO()
+
+            output = StringIO()
             writer = csv.writer(output)
-            writer.writerow(['topic','prob'])
-            writer.writerows([(t, "%6f" % p) for t,p in data])
-        
+            writer.writerow(['topic', 'prob'])
+            writer.writerows([(t, "%6f" % p) for t, p in data])
+
             return output.getvalue()
-        
+
         @self.route('/<k:int>/docs/<doc_id>')
         @_set_acao_headers
         def doc_csv(k, doc_id, threshold=0.2):
             response.content_type = 'text/csv; charset=UTF8'
-            
+
             doc_id = unquote(doc_id)
-        
+
             data = self.v[k].dist_doc_doc(doc_id)
-        
-            output=StringIO()
+
+            output = StringIO()
             writer = csv.writer(output)
-            writer.writerow(['doc','prob'])
-            writer.writerows([(d, "%6f" % p) for d,p in data if p > threshold])
-        
+            writer.writerow(['doc', 'prob'])
+            writer.writerows([(d, "%6f" % p) for d, p in data if p > threshold])
+
             return output.getvalue()
-        
+
         @self.route('/<k:int>/topics/<topic_no:int>.json')
         @_set_acao_headers
         def topic_json(k, topic_no, N=40):
@@ -153,27 +154,27 @@ class Application(Bottle):
                 N = int(request.query.n)
             except:
                 pass
-        
+
             if N > 0:
                 data = self.v[k].dist_top_doc([topic_no])[:N]
             else:
                 data = self.v[k].dist_top_doc([topic_no])[N:]
                 data = reversed(data)
-            
-            docs = [doc for doc,prob in data]
+
+            docs = [doc for doc, prob in data]
             doc_topics_mat = self.v[k].doc_topics(docs)
             docs = self.get_docs(docs, id_as_key=True)
-        
+
             js = []
             for doc_prob, topics in zip(data, doc_topics_mat):
                 doc, prob = doc_prob
                 struct = docs[doc]
-                struct.update({'prob' : 1-prob,
-                    'topics' : dict([(str(t), p) for t,p in topics])})
+                struct.update({'prob': 1 - prob,
+                               'topics': dict([(str(t), p) for t, p in topics])})
                 js.append(struct)
-        
+
             return json.dumps(js)
-        
+
         @self.route('/<k:int>/docs_topics/<doc_id:path>.json')
         @_set_acao_headers
         def doc_topics(k, doc_id, N=40):
@@ -181,27 +182,27 @@ class Application(Bottle):
                 N = int(request.query.n)
             except:
                 pass
-        
+
             doc_id = unquote(doc_id)
-        
+
             response.content_type = 'application/json; charset=UTF8'
-        
+
             if N > 0:
                 data = self.v[k].dist_doc_doc(doc_id)[:N]
             else:
                 data = self.v[k].dist_doc_doc(doc_id)[N:]
                 data = reversed(data)
-           
-            docs = [doc for doc,prob in data]
+
+            docs = [doc for doc, prob in data]
             doc_topics_mat = self.v[k].doc_topics(docs)
             docs = self.get_docs(docs, id_as_key=True)
-        
+
             js = []
             for doc_prob, topics in zip(data, doc_topics_mat):
                 doc, prob = doc_prob
                 struct = docs[doc]
-                struct.update({'prob' : 1-prob,
-                    'topics' : dict([(str(t), float(p)) for t,p in topics])})
+                struct.update({'prob': 1 - prob,
+                               'topics': dict([(str(t), float(p)) for t, p in topics])})
                 js.append(struct)
 
             return json.dumps(js)
@@ -224,12 +225,12 @@ class Application(Bottle):
 
             # abort if there are no terms in the query
             if not query:
-                response.status = 400 # Bad Request
+                response.status = 400  # Bad Request
                 return "Search terms not in model"
 
             topics = self.v[k].dist_word_top(query, show_topics=False)
             data = self.v[k].dist_top_doc(topics['i'],
-                       weights=(topics['value'].max() - topics['value']))
+                                          weights=(topics['value'].max() - topics['value']))
 
             if N > 0:
                 data = data[:N]
@@ -237,7 +238,7 @@ class Application(Bottle):
                 data = data[N:]
                 data = reversed(data)
 
-            docs = [doc for doc,prob in data]
+            docs = [doc for doc, prob in data]
             doc_topics_mat = self.v[k].doc_topics(docs)
             docs = self.get_docs(docs, id_as_key=True)
 
@@ -245,8 +246,8 @@ class Application(Bottle):
             for doc_prob, topics in zip(data, doc_topics_mat):
                 doc, prob = doc_prob
                 struct = docs[doc]
-                struct.update({'prob' : 1-prob,
-                    'topics' : dict([(str(t), p) for t,p in topics])})
+                struct.update({'prob': 1 - prob,
+                               'topics': dict([(str(t), p) for t, p in topics])})
                 js.append(struct)
 
             return json.dumps(js)
@@ -263,44 +264,45 @@ class Application(Bottle):
             data = self.v[k].topic_jsds()
 
             js = {}
-            for rank,topic_H in enumerate(data):
+            for rank, topic_H in enumerate(data):
                 topic, H = topic_H
                 js[str(topic)] = {
-                    "H" : float(H),
-                    "color" : rgb2hex(self.colors[k][topic])
+                    "H": float(H),
+                    "color": rgb2hex(self.colors[k][topic])
                 }
-            
+
             # populate word values
             data = self.v[k].topics()
-            
-            wordmax = 10 # for alphabetic languages
-            if kwargs.get('lang', None) == 'cn':
-                wordmax = 25 # for ideographic languages
 
-            for i,topic in enumerate(data):
-                js[str(i)].update({'words' : dict([(unicode(w), float(p)) for w,p in topic[:wordmax]])})
-        
+            wordmax = 10  # for alphabetic languages
+            if kwargs.get('lang', None) == 'cn':
+                wordmax = 25  # for ideographic languages
+
+            for i, topic in enumerate(data):
+                js[str(i)].update({'words': dict([(unicode(w), float(p))
+                                                  for w, p in topic[:wordmax]])})
+
             return json.dumps(js)
-        
+
         @self.route('/docs.json')
         @_set_acao_headers
         def docs(docs=None, q=None):
             response.content_type = 'application/json; charset=UTF8'
             response.set_header('Expires', _cache_date())
-            
+
             try:
                 if request.query.q:
                     q = unquote(request.query.q)
             except:
                 pass
-        
-            try: 
+
+            try:
                 if request.query.id:
                     docs = [unquote(request.query.id)]
             except:
                 pass
-            
-            try: 
+
+            try:
                 response.set_header('Expires', 0)
                 response.set_header('Pragma', 'no-cache')
                 response.set_header('Cache-Control', 'no-cache, no-store, must-revalidate')
@@ -328,12 +330,12 @@ class Application(Bottle):
                       encoding='utf-8') as tmpl_file:
                 template = tmpl_file.read()
 
-            tmpl_params = {'corpus_name' : kwargs.get('corpus_name', ''),
-                 'corpus_link' : kwargs.get('corpus_link', ''),
-                 'context_type' : self.context_type,
-                 'topic_range' : self.topic_range,
-                 'doc_title_format' : kwargs.get('doc_title_format', '{0}'),
-                 'doc_url_format' : kwargs.get('doc_url_format', '')}
+            tmpl_params = {'corpus_name': kwargs.get('corpus_name', ''),
+                           'corpus_link': kwargs.get('corpus_link', ''),
+                           'context_type': self.context_type,
+                           'topic_range': self.topic_range,
+                           'doc_title_format': kwargs.get('doc_title_format', '{0}'),
+                           'doc_url_format': kwargs.get('doc_url_format', '')}
             return self.renderer.render(template, tmpl_params)
 
         @self.route('/<filename:path>')
@@ -346,57 +348,57 @@ class Application(Bottle):
         @_set_acao_headers
         def get_doc(doc_id):
             doc_id = unquote(doc_id).decode('utf-8')
-            pdf_path = os.path.join(corpus_path, re.sub('txt$','pdf', doc_id))
+            pdf_path = os.path.join(corpus_path, re.sub('txt$', 'pdf', doc_id))
             if os.path.exists(pdf_path.encode('utf-8')):
-                doc_id = re.sub('txt$','pdf', doc_id)
-            #here we deal with case where corpus_path and doc_id overlap
-            (fdirs,lastdir) = os.path.split(corpus_path)
+                doc_id = re.sub('txt$', 'pdf', doc_id)
+            # here we deal with case where corpus_path and doc_id overlap
+            (fdirs, lastdir) = os.path.split(corpus_path)
             pattern = lastdir.decode('utf-8')
             doc_id = doc_id.encode('utf-8')
-            if re.match('^'+pattern,doc_id):
+            if re.match('^' + pattern, doc_id):
                 return static_file(doc_id, root=fdirs)
             else:
                 return static_file(doc_id, root=corpus_path)
 
-
     def get_docs(self, docs=None, id_as_key=False, query=None):
         ctx_md = self.c.view_metadata(self.context_type)
-        
+
         if docs:
             # filter to metadata for selected docs
-            ids = [self.c.meta_int(self.context_type, {self.label_name : doc} ) for doc in docs]
+            ids = [self.c.meta_int(self.context_type, {self.label_name: doc}) for doc in docs]
             ctx_md = ctx_md[ids]
         else:
-            #get metadata for all documents
-            docs = self.labels 
-        
+            # get metadata for all documents
+            docs = self.labels
+
         js = dict() if id_as_key else list()
-    
+
         for doc, md in zip(docs, ctx_md):
             if query is None or query.lower() in self.label(doc).lower():
                 struct = {
                     'id': doc,
-                    'label' : self.label(doc),
-                    'metadata' : dict(zip(md.dtype.names, [unicode(m) for m in md])) }
+                    'label': self.label(doc),
+                    'metadata': dict(zip(md.dtype.names, [unicode(m) for m in md]))}
                 if id_as_key:
                     js[doc] = struct
                 else:
                     js.append(struct)
-    
+
         return js
-    
+
+
 def get_host_port(args):
-    config = ConfigParser({ 'port' : '8000', 'host' : '0.0.0.0' })
+    config = ConfigParser({'port': '8000', 'host': '0.0.0.0'})
     config.read(args.config)
 
     # automatic port assignment
     def test_port(port):
         try:
-            host = args.host or config.get("www","host")
+            host = args.host or config.get("www", "host")
             if host == '0.0.0.0':
                 host = 'localhost'
             try:
-                s = socket.create_connection((host,port), 2)
+                s = socket.create_connection((host, port), 2)
                 s.close()
                 raise IOError("Socket connectable on port {0}".format(port))
             except socket.error:
@@ -404,17 +406,17 @@ def get_host_port(args):
             return port
         except IOError:
             port = int_prompt(
-                "Conflict on port {0}. Enter new port:".format(port)) 
+                "Conflict on port {0}. Enter new port:".format(port))
             return test_port(port)
 
-    port = args.port or int(config.get('www','port').format(0))
+    port = args.port or int(config.get('www', 'port').format(0))
     port = test_port(port)
-    
+
     # prompt to save
-    if (int(config.get("www","port").format(0))) != port:
+    if (int(config.get("www", "port").format(0))) != port:
         if bool_prompt("Change default baseport to {0}?".format(port),
                        default=True):
-            config.set("www","port", str(port))
+            config.set("www", "port", str(port))
 
             # create deep copy of configuration
             # see http://stackoverflow.com/a/24343297
@@ -435,9 +437,8 @@ def get_host_port(args):
             with open(args.config, 'wb') as configfh:
                 new_config.write(configfh)
 
-
     # hostname assignment
-    host = args.host or config.get('www','host')
+    host = args.host or config.get('www', 'host')
 
     return host, port
 
@@ -446,14 +447,14 @@ def main(args, app=None):
     if app is None:
         app = create_app(args)
 
-    host, port = get_host_port(args) 
-    
+    host, port = get_host_port(args)
+
     if args.browser:
-    	if host == '0.0.0.0':
+        if host == '0.0.0.0':
             link_host = socket.gethostname()
-	else:
-	    link_host = host
-    	url = "http://{host}:{port}/{k}/"
+        else:
+            link_host = host
+        url = "http://{host}:{port}/{k}/"
         url = url.format(host=link_host, port=port, k=min(app.topic_range))
         webbrowser.open(url)
 
@@ -466,50 +467,50 @@ def main(args, app=None):
 def create_app(args):
     # load in the configuration file
     config = ConfigParser({
-        'certfile' : None,
-        'keyfile' : None,
-        'ca_certs' : None,
-        'ssl' : False,
-        'port' : '8000',
-        'host' : '0.0.0.0',
+        'certfile': None,
+        'keyfile': None,
+        'ca_certs': None,
+        'ssl': False,
+        'port': '8000',
+        'host': '0.0.0.0',
         'icons': 'link',
-        'corpus_link' : None,
-        'doc_title_format' : '{0}',
-        'doc_url_format' : '',
-        'raw_corpus' : None,
-        'label_module' : None,
-        'fulltext' : 'false',
+        'corpus_link': None,
+        'doc_title_format': '{0}',
+        'doc_url_format': '',
+        'raw_corpus': None,
+        'label_module': None,
+        'fulltext': 'false',
         'topics': None,
         'lang': None})
     config.read(args.config)
-        
+
     # path variables
     context_type = config.get('main', 'context_type')
     corpus_file = config.get('main', 'corpus_file')
     model_pattern = config.get('main', 'model_pattern')
 
     # language customization
-    lang = config.get('main','lang')
-   
+    lang = config.get('main', 'lang')
+
     # set topic_range
     if config.get('main', 'topics'):
         topic_range = eval(config.get('main', 'topics'))
 
     # get icons_list
-    config_icons = config.get('www','icons').split(",")
-    if args.fulltext or config.getboolean('www','fulltext'):
+    config_icons = config.get('www', 'icons').split(",")
+    if args.fulltext or config.getboolean('www', 'fulltext'):
         if ('fulltext' not in config_icons and
-            'fulltext-inline' not in config_icons):
-            config_icons.insert(0,'fulltext')
+                'fulltext-inline' not in config_icons):
+            config_icons.insert(0, 'fulltext')
 
     # Create application object
-    corpus_name = config.get('www','corpus_name')
-    corpus_link = config.get('www','corpus_link')
+    corpus_name = config.get('www', 'corpus_name')
+    corpus_link = config.get('www', 'corpus_link')
     doc_title_format = config.get('www', 'doc_title_format')
     doc_url_format = config.get('www', 'doc_url_format')
     label_module = config.get('main', 'label_module')
     corpus_path = config.get('main', 'raw_corpus')
-    fulltext = args.fulltext or config.getboolean('www','fulltext')
+    fulltext = args.fulltext or config.getboolean('www', 'fulltext')
 
     app = Application(corpus_file=corpus_file,
                       model_pattern=model_pattern,
@@ -525,47 +526,47 @@ def create_app(args):
                       corpus_link=corpus_link,
                       doc_title_format=doc_title_format,
                       doc_url_format=doc_url_format)
-    
+
     """
     host, port = get_host_port(args) 
     """
     # app.run(host='0.0.0.0', port=8081)
     return app
 
-    
+
 def populate_parser(parser):
     parser.add_argument('config', type=lambda x: is_valid_configfile(parser, x),
-        help="Configuration file path")
+                        help="Configuration file path")
     parser.add_argument('-k', type=int, required=False,
-        help="Number of Topics")
-    parser.add_argument('-p', dest='port', type=int, 
-        help="Port Number", default=None)
+                        help="Number of Topics")
+    parser.add_argument('-p', dest='port', type=int,
+                        help="Port Number", default=None)
     parser.add_argument('--host', default=None, help='Hostname')
     parser.add_argument('--no-browser', dest='browser', action='store_false')
-    parser.add_argument('--fulltext', action='store_true', 
-        help='Serve raw corpus files.')
-    parser.add_argument('--bibtex', default=None, 
-        type=lambda x: is_valid_filepath(parser, x),
-        help='BibTeX library location')
+    parser.add_argument('--fulltext', action='store_true',
+                        help='Serve raw corpus files.')
+    parser.add_argument('--bibtex', default=None,
+                        type=lambda x: is_valid_filepath(parser, x),
+                        help='BibTeX library location')
     parser.add_argument('--ssl', action='store_true',
-        help="Use SSL (must specify certfile, keyfile, and ca_certs in config)")
+                        help="Use SSL (must specify certfile, keyfile, and ca_certs in config)")
     parser.add_argument('--ssl-certfile', dest='certfile', nargs="?",
-        const='server.pem', default=None,
-        type=lambda x: is_valid_filepath(parser, x),
-        help="SSL certificate file")
+                        const='server.pem', default=None,
+                        type=lambda x: is_valid_filepath(parser, x),
+                        help="SSL certificate file")
     parser.add_argument('--ssl-keyfile', dest='keyfile', default=None,
-        type=lambda x: is_valid_filepath(parser, x),
-        help="SSL certificate key file")
+                        type=lambda x: is_valid_filepath(parser, x),
+                        help="SSL certificate key file")
     parser.add_argument('--ssl-ca', dest='ca_certs', default=None,
-        type=lambda x: is_valid_filepath(parser, x),
-        help="SSL certificate authority file")
+                        type=lambda x: is_valid_filepath(parser, x),
+                        help="SSL certificate authority file")
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
-    
+
     # argument parsing
     parser = ArgumentParser()
     populate_parser(parser)
     args = parser.parse_args()
-    
+
     main(args)

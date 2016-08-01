@@ -12,6 +12,7 @@ def pypi_versions(package_name):
     versions.sort(key=parse_version)
     return versions
 
+
 def get_dist(dist_name):
     """Get the installed version of dist_name avoiding pkg_resources cache"""
     from pip._vendor import pkg_resources
@@ -31,7 +32,7 @@ def process_exists(processname):
 
     import subprocess
     import platform
-    
+
     if platform.system() == 'Windows':
         tlcall = 'TASKLIST', '/FI', 'imagename eq %s' % processname
         # shell=True hides the shell window, stdout to PIPE enables
@@ -46,6 +47,7 @@ def process_exists(processname):
             return False
     else:
         raise NotImplementedError
+
 
 def update(args=None):
     from pip.utils import (get_installed_version, dist_is_editable, dist_location)
@@ -105,25 +107,26 @@ def update(args=None):
                 print "You must switch to the 'master' branch to use `topicexplorer update`."
                 return
 
-
         if not repo.bare:
-            #check for upstream updates
+            # check for upstream updates
             branch = repo.active_branch
             repo.remotes.origin.fetch(branch)
-            commits_behind =list(repo.iter_commits(
+            commits_behind = list(repo.iter_commits(
                 '{BRANCH}..origin/{BRANCH}'.format(BRANCH=branch.name)))
-            commits_ahead =list(repo.iter_commits(
+            commits_ahead = list(repo.iter_commits(
                 'origin/{BRANCH}..{BRANCH}'.format(BRANCH=branch.name)))
             if commits_behind:
-                print "Your branch is {} commits behind GitHub.".format(len(commits_behind)) 
+                print "Your branch is {} commits behind GitHub.".format(len(commits_behind))
                 if platform.system() == 'Windows':
                     import sys
                     if sys.argv[0] != __file__:
                         print "Use the `python -m topicexplorer.update` command to update."
                         return
+                    
                     # TODO: remove process_exists('vsm.exe') on 1.0rc1
                     if process_exists('topicexplorer.exe') or process_exists('vsm.exe'):
-                        print "topicexplorer is currently running, please close all Topic Explorers to update."
+                        print "vsm is currently running,",
+                        print "please close all Topic Explorers to update."
                         return
 
                 print "Pulling changes."
@@ -131,10 +134,10 @@ def update(args=None):
                 # reinstall, just in case dependencies or version have updated
                 try:
                     subprocess.check_call('python setup.py develop',
-                        cwd=dist.location, shell=True)
+                                          cwd=dist.location, shell=True)
                 except:
                     print "ERROR: Update did not comlete installation.\n"
-                else:    
+                else:
                     print "Your local branch was updated.\n"
 
             elif commits_ahead:
@@ -146,7 +149,7 @@ def update(args=None):
                 print "Your local branch is synced with GitHub. No updates available.\n"
 
     else:
-        # TODO: Check if pre-release, if so, then continue beta updates. 
+        # TODO: Check if pre-release, if so, then continue beta updates.
         # If not, then wait for stable release. Allow for override flag.
         from pip._vendor.packaging.version import parse as parse_version
 
@@ -158,16 +161,17 @@ def update(args=None):
             if platform.system() == 'Windows':
                 import sys
                 if sys.argv[0] != __file__:
-                    print "Update available. Use the `python -m topicexplorer.update` command to update."
+                    print "Update available. Use the `python -m topicexplorer.update`",
+                    print "command to update."
                     return
                 # TODO: remove process_exists('vsm.exe') on 1.0rc1
                 if process_exists('topicexplorer.exe') or process_exists('vsm.exe'):
                     print "topicexplorer is currently running, please close all Topic Explorers to update."
                     return
-            
+
             try:
                 subprocess.check_call(
-                    'pip install topicexplorer=={} --no-cache-dir'.format(pypi_version), 
+                    'pip install topicexplorer=={} --no-cache-dir'.format(pypi_version),
                     shell=True)
             except CalledProcessError:
                 print "ERROR: Update did not comlete installation.\n"
@@ -175,6 +179,7 @@ def update(args=None):
                 print "Updated from {} to {}.\n".format(installed_version, pypi_version)
         else:
             print "You have the most recent release. No updates available.\n"
+
 
 def main(args=None):
     update(args)

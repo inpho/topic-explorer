@@ -4,7 +4,7 @@
 
 This file defines the master script for the Topic Explorer CLI.
 The general usage pattern is to create subcommands through new modules
-in the same package - such as `topicexplorer.init`, 
+in the same package - such as `topicexplorer.init`,
 `topicexplorer.prep`, `topicexplorer.train`, etc.
 
 Each submodule defines a `populate_parser()` function which adds
@@ -31,16 +31,19 @@ from topicexplorer import (init, prep, train, server, notebook, demo,
 # import the filepath validator for use with config
 from topicexplorer.lib.util import is_valid_filepath
 
-class ArgumentParserError(Exception): 
+
+class ArgumentParserError(Exception):
     """
     Skeleton class for use in `try` blocks.
     """
     pass
 
+
 class ThrowingArgumentParser(argparse.ArgumentParser):
-    """ 
+    """
     Skeleton subclass of argparse.ArgumentParser to raise exceptions.
     """
+
     def error(self, message):
         raise ArgumentParserError(message)
 
@@ -61,8 +64,9 @@ def vsm():
     # Proceed while deprecated
     main()
 
+
 def main():
-    """ 
+    """
     The primary CLI function for the Topic Explorer.
     """
     # Create the master argparse object.
@@ -71,17 +75,17 @@ def main():
     # Adding the benchmarks flags.
     benchmark_group = parser.add_mutually_exclusive_group()
     benchmark_group.add_argument('-t', '--time', help="Print execution time",
-        action='store_true')
+                                 action='store_true')
     benchmark_group.add_argument('-p', '--profile', help="""Profile the command.
     Optional filename saves results for use with snakeviz, pstats, or
     cprofilev. Automatically launches snakeviz, if installed.""",
-        nargs='?', metavar='STATS_FILE')
+                                 nargs='?', metavar='STATS_FILE')
 
     # Using add_subparsers(metavar) until argparse.SUPPRESS support is fixed.
     # See issue http://bugs.python.org/issue22848
     parsers = parser.add_subparsers(help="select a command",
-        parser_class=ArgumentParser,
-        metavar='{version,demo,update,init,prep,train,launch,notebook}')
+                                    parser_class=ArgumentParser,
+                                    metavar='{version,demo,update,init,prep,train,launch,notebook}')
     version_parser = parsers.add_parser('version', help="Print the version and exit")
     version_parser.set_defaults(func='version')
 
@@ -89,10 +93,10 @@ def main():
     parser_init = parsers.add_parser('init', help="Initialize the topic explorer")
     init.populate_parser(parser_init)
     parser_init.set_defaults(func="init")
-    
+
     # Prep Parser
-    parser_prep = parsers.add_parser('prep', help="Prep the corpus", 
-        formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser_prep = parsers.add_parser('prep', help="Prep the corpus",
+                                     formatter_class=argparse.RawDescriptionHelpFormatter)
     prep.populate_parser(parser_prep)
     parser_prep.set_defaults(func="prep")
 
@@ -100,7 +104,7 @@ def main():
     parser_train = parsers.add_parser('train', help="Train the LDA models")
     train.populate_parser(parser_train)
     parser_train.set_defaults(func="train")
-    
+
     # Launch Parser
     parser_launch = parsers.add_parser('launch', help="Serve the trained LDA models")
     server.populate_parser(parser_launch)
@@ -108,36 +112,36 @@ def main():
 
     # Serve Parser
     parser_serve = parsers.add_parser('serve', 
-        help="Serve a single LDA model, helper for `topicexplorer launch`,"+
+        help="Serve a single LDA model, helper for `topicexplorer launch`," +
              "rarely called directly")
     server.populate_parser(parser_serve)
     parser_serve.set_defaults(func="serve")
-   
+
     # Notebook Parser
-    parser_nb = parsers.add_parser('notebook', 
-        help="Create a set of IPython Notebooks")
+    parser_nb = parsers.add_parser('notebook',
+                                   help="Create a set of IPython Notebooks")
     notebook.populate_parser(parser_nb)
     parser_nb.set_defaults(func="notebook")
 
     # Demo Parser
-    parser_demo = parsers.add_parser('demo', 
-        help="Download and run the AP demo")
+    parser_demo = parsers.add_parser('demo',
+                                     help="Download and run the AP demo")
     parser_demo.set_defaults(func="demo")
 
-    # Update Parser 
-    parser_update = parsers.add_parser('update', 
-        help="Update the Topic Explorer")
+    # Update Parser
+    parser_update = parsers.add_parser('update',
+                                       help="Update the Topic Explorer")
     parser_update.set_defaults(func="update")
-    
-    # Lang Space Parser 
-    parser_langspace = parsers.add_parser('langspace', 
-        help="Add spaces before unicode chars")
+
+    # Lang Space Parser
+    parser_langspace = parsers.add_parser('langspace',
+                                          help="Add spaces before unicode chars")
     langspace.populate_parser(parser_langspace)
     parser_langspace.set_defaults(func="langspace")
 
-    # fancy arg validation for manually injecting tempfile to profile arg 
+    # fancy arg validation for manually injecting tempfile to profile arg
     try:
-        try: 
+        try:
             args = parser.parse_args()
         except ArgumentParserError as e:
             import sys
@@ -148,7 +152,7 @@ def main():
                 profile = new_args.index('-p')
 
                 if (len(new_args) > (profile + 1) and
-                    new_args[profile + 1] in parsers.choices.keys()):
+                        new_args[profile + 1] in parsers.choices.keys()):
                     new_args.insert(profile + 1, '-')
                     args = parser.parse_args(new_args)
                 else:
@@ -167,7 +171,7 @@ def main():
                 # this might cause an error in the subparser, in which case
                 # we actually want to show that error first
                 args = subparser.parse_args(subargs)
-        
+
         # Use the default error mechanism for the master parser.
         # If the code gets here, it means the error was not in a subparser
         ArgumentParser.error(parser, e.message)
@@ -179,13 +183,18 @@ def main():
             print "Saving benchmark data to", args.profile
 
         from profilehooks import profile
-        benchmark = lambda fn: profile(fn, immediate=True, filename=args.profile, stdout=None)
+
+        def benchmark(fn):
+            return profile(fn, immediate=True, filename=args.profile, stdout=None)
 
     elif args.time:
         from profilehooks import timecall
-        benchmark = lambda fn: timecall(fn, immediate=False)
+
+        def benchmark(fn):
+            return timecall(fn, immediate=False)
     else:
-        benchmark = lambda fn: fn
+        def benchmark(fn):
+            return fn
 
     if args.func == 'version':
         from topicexplorer.version import __pretty_version__
@@ -193,7 +202,7 @@ def main():
 
     elif args.func == 'init':
         args.config_file = benchmark(init.main)(args)
-        
+
         print "\nTIP: Only initalizing corpus object and config file."
         print "     Next prepare the corpus using:"
         print "         topicexplorer prep", args.config_file
@@ -202,7 +211,7 @@ def main():
 
     elif args.func == 'prep':
         benchmark(prep.main)(args)
-        
+
         print "\nTIP: Train the LDA models with:"
         print "         topicexplorer train", args.config_file
 
@@ -240,8 +249,9 @@ def main():
             print "\n\n"
             snakeviz.cli.main([args.profile])
         except ImportError:
-            print """\nSnakeviz is not installed. Install with `pip install snakeviz`, 
+            print """\nSnakeviz is not installed. Install with `pip install snakeviz`,
             then run `snakeviz {}`.""".format(args.profile)
+
 
 # Allow `__main__` to be called as a script.
 if __name__ == '__main__':
