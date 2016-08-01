@@ -25,8 +25,7 @@ from ConfigParser import RawConfigParser as ConfigParser
 import os.path
 import warnings
 
-from topicexplorer import (init, prep, train, server, notebook, demo,
-    update, langspace)
+from topicexplorer import init, prep, train, server, notebook, demo, update
 
 # import the filepath validator for use with config
 from topicexplorer.lib.util import is_valid_filepath
@@ -133,12 +132,6 @@ def main():
                                        help="Update the Topic Explorer")
     parser_update.set_defaults(func="update")
 
-    # Lang Space Parser
-    parser_langspace = parsers.add_parser('langspace',
-                                          help="Add spaces before unicode chars")
-    langspace.populate_parser(parser_langspace)
-    parser_langspace.set_defaults(func="langspace")
-
     # fancy arg validation for manually injecting tempfile to profile arg
     try:
         try:
@@ -239,9 +232,6 @@ def main():
 
     elif args.func == 'update':
         benchmark(update.main)(args)
-
-    elif args.func == 'langspace':
-        benchmark(langspace.main)(args)
 
     if args.profile:
         try:
