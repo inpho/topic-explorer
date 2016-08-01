@@ -1,11 +1,6 @@
-<<<<<<< HEAD
-from argparse import ArgumentParser
-import os, os.path, shutil
-=======
 import os
 import os.path
 import shutil
->>>>>>> origin/documentation
 import platform
 from StringIO import StringIO
 import subprocess
