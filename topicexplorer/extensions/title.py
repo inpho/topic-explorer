@@ -1,7 +1,8 @@
-from vsm.viewer.wrappers import doc_label_name, def_label_fn
+from ConfigParser import RawConfigParser as ConfigParser, NoOptionError
 from collections import defaultdict
-
 import numpy as np
+
+from vsm.viewer.wrappers import doc_label_name, def_label_fn
 
 app = None
 metadata = None
