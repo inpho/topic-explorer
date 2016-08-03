@@ -88,6 +88,22 @@ var icon_fns = {"link" : function(ticks, i) {
           url = "http://babel.hathitrust.org/cgi/pt?id={0};seq={1}".format(id, page)
           window.open(url, "_blank");});
   },
+ "doi" : function(ticks, i, docs) {
+      base_fn(ticks,i)
+        .attr("xlink:href","img/icon-doi.png")
+        .attr("class", "doiIcon icon")
+        .on("click", function(d) { 
+          data = docs.filter(function(doc, i) { return doc.id == d})[0]
+          doi = data.metadata.doi;
+          url = "http://dx.doi.org/{0}".format(doi)
+          window.open(url, "_blank");});
+  },
+ "wos" : function(ticks, i, docs) {
+      base_fn(ticks,i)
+        .attr("xlink:href","img/icon-wos.png")
+        .attr("class", "wosIcon icon")
+        .on("click", function(d) { window.open("http://apps.webofknowledge.com/CitedFullRecord.do?product=WOS&search_mode=CitedFullRecord&isickref=" + d, "_blank");});
+  },
  "inpho" : function(ticks, i) { 
       base_fn(ticks,i)
         .attr("xlink:href","/img/inpho.png")
@@ -120,5 +136,7 @@ var icon_tooltips = {
     "htrc" : 'Click for the HathiTrust Details.',
     "htrcbook" : 'Click for the HathiTrust PageTurner.',
     "inpho" : 'Click to see more information<br /> at the InPhO Project.',
-    "sep" : 'Click for the SEP article.'
+    "sep" : 'Click for the SEP article.',
+    "doi" : 'Click to lookup the article by DOI.',
+    "wos" : "Click to open the Thomson Reuters Web of Science record."
     };

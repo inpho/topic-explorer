@@ -29,7 +29,7 @@ class keydefaultdict(defaultdict):
             ret = self[key] = self.default_factory(key)
             return ret
 
-ctx_md = keydefaultdict(lambda ctx: app.c.view_metadata(app.context_type))
+ctx_md = keydefaultdict(lambda ctx: app.c.view_metadata(ctx))
 
 def init(_app, config_file):
     global metadata

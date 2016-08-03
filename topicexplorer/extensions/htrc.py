@@ -22,7 +22,7 @@ class keydefaultdict(defaultdict):
             return ret
 
 
-ctx_md = keydefaultdict(lambda ctx: app.c.view_metadata(app.context_type))
+ctx_md = keydefaultdict(lambda ctx: app.c.view_metadata(ctx))
 
 
 def init(_app, config_file):

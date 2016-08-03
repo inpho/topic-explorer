@@ -25,9 +25,9 @@ from ConfigParser import RawConfigParser as ConfigParser
 import os.path
 import warnings
 
-from topicexplorer import init, prep, train, server, notebook, demo, update
+from topicexplorer import (init, prep, train, server, notebook,
+    demo, update, metadata)
 
-# import the filepath validator for use with config
 from topicexplorer.lib.util import is_valid_filepath
 
 
@@ -84,7 +84,7 @@ def main():
     # See issue http://bugs.python.org/issue22848
     parsers = parser.add_subparsers(help="select a command",
                                     parser_class=ArgumentParser,
-                                    metavar='{version,demo,update,init,prep,train,launch,notebook}')
+                                    metavar='{version,demo,update,init,prep,train,launch,notebook,metadata}')
     version_parser = parsers.add_parser('version', help="Print the version and exit")
     version_parser.set_defaults(func='version')
 
@@ -131,8 +131,14 @@ def main():
     parser_update = parsers.add_parser('update',
                                        help="Update the Topic Explorer")
     parser_update.set_defaults(func="update")
+    
+    # Metadata Parser
+    parser_metadata = parsers.add_parser('metadata', 
+        help="Add spaces before unicode chars")
+    metadata.populate_parser(parser_metadata)
+    parser_metadata.set_defaults(func="metadata")
 
-    # fancy arg validation for manually injecting tempfile to profile arg
+    # fancy arg validation for manually injecting tempfile to profile arg 
     try:
         try:
             args = parser.parse_args()
@@ -232,6 +238,9 @@ def main():
 
     elif args.func == 'update':
         benchmark(update.main)(args)
+
+    elif args.func == 'metadata':
+        benchmark(metadata.main)(args)
 
     if args.profile:
         try:
