@@ -90,7 +90,7 @@ var icon_fns = {"link" : function(ticks, i) {
   },
  "doi" : function(ticks, i, docs) {
       base_fn(ticks,i)
-        .attr("xlink:href","img/icon-doi.png")
+        .attr("xlink:href","/img/icon-doi.png")
         .attr("class", "doiIcon icon")
         .on("click", function(d) { 
           data = docs.filter(function(doc, i) { return doc.id == d})[0]
@@ -100,7 +100,7 @@ var icon_fns = {"link" : function(ticks, i) {
   },
  "wos" : function(ticks, i, docs) {
       base_fn(ticks,i)
-        .attr("xlink:href","img/icon-wos.png")
+        .attr("xlink:href","/img/icon-wos.png")
         .attr("class", "wosIcon icon")
         .on("click", function(d) { window.open("http://apps.webofknowledge.com/CitedFullRecord.do?product=WOS&search_mode=CitedFullRecord&isickref=" + d, "_blank");});
   },
