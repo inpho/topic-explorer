@@ -12,6 +12,7 @@ This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangel
 - Added:
   - topic cluster display
   - documentation for BibTeX support.
+  - `git metadata` command
 
 ## [1.0b107] - 2016-07-30
 - Added:

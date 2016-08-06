@@ -4,7 +4,7 @@ import os.path
 
 import pybtex
 from pybtex.database import parse_file
-from pybtex.excpetions import PybtexError
+from pybtex.exceptions import PybtexError
 
 metadata = None
 

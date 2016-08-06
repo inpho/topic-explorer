@@ -60,9 +60,9 @@ class Application(Bottle):
         # setup routes
         self.renderer = pystache.Renderer(escape=lambda u: u)
         self.icons = kwargs.get('icons', 'link')
-        self._setup_routes(**kwargs)
         if fulltext:
             self._serve_fulltext(corpus_path)
+        self._setup_routes(**kwargs)
 
         # load corpus
         self.context_type = context_type
@@ -479,7 +479,7 @@ def create_app(args):
         'doc_url_format': '',
         'raw_corpus': None,
         'label_module': None,
-        'fulltext': 'false',
+        'fulltext': False,
         'topics': None,
         'lang': None})
     config.read(args.config)

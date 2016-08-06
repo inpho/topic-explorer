@@ -29,6 +29,9 @@ def label(doc):
 
     context_md = ctx_md['page']
     where = np.squeeze(np.where(np.in1d(context_md['page_label'], [str(doc)])))
-    page_no = context_md[where]
-    return page_no['title']
+    if where:
+        title = np.array(context_md[where])['title']
+        return str(title)
+    else:
+        return doc
 
