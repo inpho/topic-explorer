@@ -105,6 +105,9 @@ def main(args):
         c.save(args.corpus_path)
     if args.list:
         extract_labels(c, context_type, args.list)
+    if args.extract:
+        raise NotImplementedError(
+            "topicexplorer metadata --extract is not yet implemented" )
 
 
 def populate_parser(parser):
