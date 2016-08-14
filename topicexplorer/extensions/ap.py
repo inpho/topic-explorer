@@ -1,4 +1,5 @@
 from ConfigParser import RawConfigParser as ConfigParser, NoOptionError
+import os.path
 
 from bottle import static_file
 
