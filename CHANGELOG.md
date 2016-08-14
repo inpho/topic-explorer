@@ -9,10 +9,14 @@ This project follows the [PEP 440](https://www.python.org/dev/peps/pep-0440/) ve
 This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangelog.com/). Versions should group changes in the order: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, and `Security` (see section ["What makes a good change log?"](http://keepachangelog.com/)).
 
 ## [Unreleased]
+
 - Added:
   - topic cluster display
   - documentation for BibTeX support.
   - `git metadata` command
+- Changed:
+  - Ran `autopep8` on `topicexplorer`, `topicexplorer.extensions` and
+    `topicexplorer.lib`
 
 ## [1.0b107] - 2016-07-30
 - Added:
