@@ -10,13 +10,16 @@ This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangel
 
 ## [Unreleased]
 
+## [1.0b109] - 2016-08-14
+
 - Added:
   - topic cluster display
   - documentation for BibTeX support.
   - `git metadata` command
 - Changed:
-  - Ran `autopep8` on `topicexplorer`, `topicexplorer.extensions` and
-    `topicexplorer.lib`
+  - Ran `autopep8` on `topicexplorer`, `topicexplorer.extensions` and `topicexplorer.lib`
+- Fixed:
+  - Duplicate topics (fixed via `vsm==0.4.0b4` regression)
 
 ## [1.0b107] - 2016-07-30
 - Added:
@@ -138,7 +141,8 @@ This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangel
 
 
 
-[Unreleased]: https://github.com/inpho/topic-explorer/compare/1.0b106...HEAD
+[Unreleased]: https://github.com/inpho/topic-explorer/compare/1.0b109...HEAD
+[1.0b109]: https://github.com/inpho/topic-explorer/compare/1.0b107...1.0b109
 [1.0b107]: https://github.com/inpho/topic-explorer/compare/1.0b106...1.0b107
 [1.0b106]: https://github.com/inpho/topic-explorer/compare/1.0b88...1.0b106
 [1.0b88]: https://github.com/inpho/topic-explorer/compare/1.0b79...1.0b88
