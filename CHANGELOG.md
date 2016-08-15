@@ -9,15 +9,18 @@ This project follows the [PEP 440](https://www.python.org/dev/peps/pep-0440/) ve
 This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangelog.com/). Versions should group changes in the order: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, and `Security` (see section ["What makes a good change log?"](http://keepachangelog.com/)).
 
 ## [Unreleased]
-
-## [1.0b109] - 2016-08-14
-
 - Added:
   - topic cluster display
   - documentation for BibTeX support.
+
+## [1.0b110] - 2016-08-14
+
+- Added:
   - `git metadata` command
 - Changed:
   - Ran `autopep8` on `topicexplorer`, `topicexplorer.extensions` and `topicexplorer.lib`
+- Removed:
+  - Dependency for `pyenchant`.
 - Fixed:
   - Duplicate topics (fixed via `vsm==0.4.0b4` regression)
 
@@ -142,7 +145,7 @@ This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangel
 
 
 [Unreleased]: https://github.com/inpho/topic-explorer/compare/1.0b109...HEAD
-[1.0b109]: https://github.com/inpho/topic-explorer/compare/1.0b107...1.0b109
+[1.0b110]: https://github.com/inpho/topic-explorer/compare/1.0b107...1.0b110
 [1.0b107]: https://github.com/inpho/topic-explorer/compare/1.0b106...1.0b107
 [1.0b106]: https://github.com/inpho/topic-explorer/compare/1.0b88...1.0b106
 [1.0b88]: https://github.com/inpho/topic-explorer/compare/1.0b79...1.0b88

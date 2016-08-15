@@ -54,7 +54,7 @@ install_requires = [
         'wget',
         'unidecode',
         'pdfminer',
-        'pyenchant',
+        'pyenchant==1.6.6',
         'networkx>=1.9.1',
         'matplotlib>=1.5.0',
         'pip>=7.1.1',
