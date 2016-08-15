@@ -23,9 +23,17 @@ def parse_metadata_from_csvfile(filename):
 
 def extract_metadata(corpus, ctx_type, filename, format='csv'):
     """
-    Takes a filename to export metadata to.
+    Takes a corpus object, a context_type, and a filename to export
+    all metadata to.
     """
-    pass
+    with open(filename, 'w') as csvfile:
+        writer = csv.writer(csvfile)
+        ctx_index = corpus.context_types.index(ctx_type)
+
+        ctx_data = corpus.context_data[ctx_index]
+        writer.writerow(ctx_data.dtype.names)
+        for row in ctx_data:
+            writer.writerow(row)
 
 
 def extract_labels(corpus, ctx_type, filename):
@@ -106,8 +114,7 @@ def main(args):
     if args.list:
         extract_labels(c, context_type, args.list)
     if args.extract:
-        raise NotImplementedError(
-            "topicexplorer metadata --extract is not yet implemented" )
+        extract_metadata(c, context_type, args.extract)
 
 
 def populate_parser(parser):
