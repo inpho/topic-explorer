@@ -49,7 +49,7 @@ def init(_app, config_file):
 
 
 def label(doc):
-    if app.context_type == 'document':
+    if app.context_type == 'document' or app.context_type == 'article':
         doc = doc.replace('.txt', '')
         try:
             md = metadata[doc]
