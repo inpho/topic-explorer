@@ -2,6 +2,11 @@
 <html>
 <head>
 <title>InPhO Topic Explorer</title>
+<script>
+// redirect for error introduced by CAS
+if (window.location.href.includes('%3d'))
+  window.location.href = window.location.href.replace('%3d','=');
+</script>
 <script src="/lib/jquery-1.11.0.min.js"></script>
 <script src="/lib/jquery.superdom.min.js"></script>
 <script src="/lib/jquery.cookie.min.js"></script>
