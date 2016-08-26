@@ -46,11 +46,19 @@ def _set_acao_headers(f):
 
 
 def _cache_date(days=1):
+    """
+    Helper function to return the date for the cache header.
+    """
     time = datetime.now() + timedelta(days=days)
     return time.strftime("%a, %d %b %Y %I:%M:%S GMT")
 
 
 class Application(Bottle):
+    """
+    This is the primary Bottle application for the Topic Explorer.
+    Each Application corresponds to a single Corpus object, but may
+    have multiple LDA model objects.
+    """
 
     def __init__(self, corpus_file='', model_pattern='', topic_range=None,
                  context_type='', label_module=None, config_file='',
@@ -388,6 +396,9 @@ class Application(Bottle):
 
 
 def get_host_port(args):
+    """
+    Returns the hostname and port number
+    """
     config = ConfigParser({'port': '8000', 'host': '0.0.0.0'})
     config.read(args.config)
 
