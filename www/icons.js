@@ -20,6 +20,29 @@ var icon_fns = {"link" : function(ticks, i) {
         .attr("class", "apIcon icon")
         .attr("onclick", function(d) { return (d) ? "fulltext.popover(this)" : ""; });
   },
+ "fulltext-jeff" : function(ticks, i,docs) {
+      base_fn(ticks,i)
+        .attr("data-doc-id", function (d) {return d})
+        .attr("data-doc-label", function (d) {
+          data = docs.filter(function(doc, i) { return doc.id == d})[0];
+            try {
+              return data.label;
+            } catch (e) {
+              return d;  
+            }; 
+          })
+        .attr("xlink:href","/img/icon-book.png")
+        .attr("class", "fulltextIcon icon")
+        .attr("onclick", function(d) { 
+          data = docs.filter(function(doc, i) { return doc.id == d})[0];
+          if (data.label.startsWith("BOOK")) { 
+            id = data.id.replace(".txt","");
+            url = "http://babel.hathitrust.org/cgi/pt?id={0}".format(id);
+            return "window.open('{0}', '_blank')".format(url);
+          } else
+            return (d) ? "fulltext.popover(this)" : ""; 
+        });
+  },
  "fulltext-inline" : function(ticks, i,docs) {
       base_fn(ticks,i)
         .attr("data-doc-id", function (d) {return d})

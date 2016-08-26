@@ -178,7 +178,7 @@ class Application(Bottle):
                 doc, prob = doc_prob
                 struct = docs[doc]
                 struct.update({'prob': 1 - prob,
-                               'topics': dict([(str(t), p) for t, p in topics])})
+                               'topics': dict([(str(t), float(p)) for t, p in topics])})
                 js.append(struct)
 
             return json.dumps(js)
@@ -490,7 +490,7 @@ def create_app(args):
         'doc_url_format': '',
         'raw_corpus': None,
         'label_module': None,
-        'fulltext': False,
+        'fulltext': 'false',
         'topics': None,
         'lang': None})
     config.read(args.config)
@@ -510,8 +510,7 @@ def create_app(args):
     # get icons_list
     config_icons = config.get('www', 'icons').split(",")
     if args.fulltext or config.getboolean('www', 'fulltext'):
-        if ('fulltext' not in config_icons and
-                'fulltext-inline' not in config_icons):
+        if not any('fulltext' not in icon for icon in config_icons):
             config_icons.insert(0, 'fulltext')
 
     # Create application object

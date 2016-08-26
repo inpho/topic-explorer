@@ -13,16 +13,17 @@ This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangel
   - topic cluster display
   - documentation for BibTeX support.
 
-## [1.0b110] - 2016-08-14
+## [1.0b111] - 2016-08-14
 
 - Added:
-  - `git metadata` command
+  - `git metadata` command with list, export, and import
 - Changed:
   - Ran `autopep8` on `topicexplorer`, `topicexplorer.extensions` and `topicexplorer.lib`
 - Removed:
   - Dependency for `pyenchant`.
 - Fixed:
   - Duplicate topics (fixed via `vsm==0.4.0b4` regression)
+  - Error in topic view due to uncast float.
 
 ## [1.0b107] - 2016-07-30
 - Added:
@@ -144,8 +145,8 @@ This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangel
 
 
 
-[Unreleased]: https://github.com/inpho/topic-explorer/compare/1.0b109...HEAD
-[1.0b110]: https://github.com/inpho/topic-explorer/compare/1.0b107...1.0b110
+[Unreleased]: https://github.com/inpho/topic-explorer/compare/1.0b111...HEAD
+[1.0b111]: https://github.com/inpho/topic-explorer/compare/1.0b107...1.0b111
 [1.0b107]: https://github.com/inpho/topic-explorer/compare/1.0b106...1.0b107
 [1.0b106]: https://github.com/inpho/topic-explorer/compare/1.0b88...1.0b106
 [1.0b88]: https://github.com/inpho/topic-explorer/compare/1.0b79...1.0b88
