@@ -12,6 +12,8 @@ This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangel
 - Added:
   - topic cluster display
   - documentation for BibTeX support.
+- Fixed:
+  - Page labels in HTRC
 
 ## [1.0b111] - 2016-08-14
 
