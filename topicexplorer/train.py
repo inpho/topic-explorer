@@ -69,18 +69,14 @@ def main(args):
         dimension_reduce_model = dimensionReduce(args.config_file)
         print "fitting Isomap \n"    
         dimension_reduce_model.fit_isomap()  
-        n_clusters=None
-        print "Enter Number of clusters"
-        n_clusters = raw_input()
-        if n_clusters == None or int(n_clusters) <1:
-            n_clusters = 5
+        n_clusters = args.cluster
         print "fitting Kmeans \n"    
         dimension_reduce_model.fit_kmeans(int(n_clusters))
         print "writing model files for Isomap and kmeans\n"
-        config.set("main", "cluster", str.split(corpus_filename,'.')[0] +'_'+'_'.join([str(t) for t in str(args.k)]))
+        config.set("main", "cluster", corpus_filename.split('.')[0] + '-cluster.csv')
         with open(args.config_file, "wb") as configfh:
              config.write(configfh)
-        dimension_reduce_model.write_model_file(config.get("main", "cluster"))
+        dimension_reduce_model.write(config.get("main", "cluster"))
         return
 
     if args.k is None:
@@ -213,7 +209,7 @@ def populate_parser(parser):
         help="Number of training iterations")
     parser.add_argument('--dry-run', dest='dry_run', action='store_true',
         help="Run code without training models")
-    parser.add_argument('--cluster', action='store_true',
+    parser.add_argument('--cluster', type=int,
         help="Cluster an existing model")
 
 
