@@ -62,7 +62,10 @@ def label(doc):
         try:
             xml = parse_marc(md['fullrecord'].encode('utf8'))
             vol = get_volume_from_marc(xml[0])
-            return "p%s of %s of %s" % (page_no, vol, md['title'][0])
+            if vol:
+                return "p%s of %s of %s" % (page_no, vol, md['title'][0])
+            else:
+                raise ValueError("No Volume")
         except:
             pass
         try:
