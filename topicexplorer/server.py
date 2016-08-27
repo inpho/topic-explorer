@@ -427,19 +427,12 @@ def main(args):
              'doc_title_format' : doc_title_format,
              'doc_url_format' : doc_url_format})
     
-    @route('/<filename>.csv')
+    @route('/cluster.csv')
     @_set_acao_headers
-    def serve_model_csv(filename):
-        tfilename =config.get('main','cluster')+'_'+filename
-        tfilename += '.csv'
-        root, filename = os.path.split(tfilename)
-        if os.path.exists(tfilename):
-            return static_file(filename, root=root)
-        else:
-            k = int(str.rsplit(filename,'_', 1)[1].replace('.csv', ''))
-            dimension_reduce_model.fit_kmeans(k)
-            dimension_reduce_model.write_kmeans(config.get('main','cluster'))
-            return static_file(filename, root=root)
+    def serve_cluster():
+        filename = config.get('main','cluster')
+        root, filename = os.path.split(filename)
+        return static_file(filename, root=root)
 
     @route('/<filename:path>')
     @_set_acao_headers
