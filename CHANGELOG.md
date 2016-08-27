@@ -13,7 +13,8 @@ This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangel
   - topic cluster display
   - documentation for BibTeX support.
 - Fixed:
-  - Page labels in HTRC
+  - Page labels in HTRC extension
+  - BibTeX extension config file loading
 
 ## [1.0b111] - 2016-08-14
 
