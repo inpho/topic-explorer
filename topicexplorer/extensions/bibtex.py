@@ -1,5 +1,6 @@
 from collections import defaultdict
-import ConfigParser
+from ConfigParser import (RawConfigParser as ConfigParser,
+    NoOptionError, Error as ConfigParserError)
 import os.path
 
 import pybtex
@@ -11,10 +12,12 @@ metadata = None
 
 def init(app, config_file):
     global metadata
+    config = ConfigParser()
+    config.read(config_file)
 
     try:
         filename = config.get('bibtex', 'path')
-    except ConfigParser.Error:
+    except ConfigParserError:
         model_path = config.get('main', 'path')
         filename = os.path.join(model_path, 'library.bib')
 

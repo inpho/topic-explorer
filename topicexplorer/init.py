@@ -92,7 +92,10 @@ def process_bibtex(corpus_path):
                 print "Invalid 'file' field for BibTeX entry {}:\n\t({})".format(entry, filename)
             else:
                 new_path = os.path.join(target_dir, os.path.basename(filename))
-                safe_symlink(filename, new_path)
+                try:
+                    safe_symlink(filename, new_path)
+                except OSError:
+                    print "Error linking file for BibTeX entry {}:\n\t({})".format(entry, filename)
         else:
             print "No 'file' field for BibTeX entry: {}".format(entry)
 
