@@ -346,6 +346,17 @@ class Application(Bottle):
                            'doc_url_format': kwargs.get('doc_url_format', '')}
             return self.renderer.render(template, tmpl_params)
 
+        @self.route('/cluster.csv')
+        @_set_acao_headers
+        def serve_cluster():
+            filename = kwargs.get('cluster_path')
+            if filename and os.path.exists(filename):
+                root, filename = os.path.split(filename)
+                return static_file(filename, root=root)
+            else:
+                raise NotImplementedError(
+                    "Dynamic clustering is not yet implemented.")
+
         @self.route('/<filename:path>')
         @_set_acao_headers
         def send_static(filename):
@@ -492,6 +503,7 @@ def create_app(args):
         'label_module': None,
         'fulltext': 'false',
         'topics': None,
+        'cluster': None,
         'lang': None})
     config.read(args.config)
 
@@ -499,6 +511,7 @@ def create_app(args):
     context_type = config.get('main', 'context_type')
     corpus_file = config.get('main', 'corpus_file')
     model_pattern = config.get('main', 'model_pattern')
+    cluster_path = config.get('main', 'cluster')
 
     # language customization
     lang = config.get('main', 'lang')
@@ -535,7 +548,8 @@ def create_app(args):
                       corpus_name=corpus_name,
                       corpus_link=corpus_link,
                       doc_title_format=doc_title_format,
-                      doc_url_format=doc_url_format)
+                      doc_url_format=doc_url_format,
+                      cluster_path=cluster_path)
 
     """
     host, port = get_host_port(args) 

@@ -2,6 +2,7 @@ from ConfigParser import RawConfigParser as ConfigWriter
 from ConfigParser import SafeConfigParser as ConfigParser
 from ConfigParser import NoOptionError
 import os.path
+from cluster import dimensionReduce
 
 from topicexplorer.lib.util import bool_prompt, int_prompt, is_valid_configfile
 
@@ -64,6 +65,20 @@ def main(args):
     config.read(args.config_file)
     corpus_filename = config.get("main", "corpus_file")
     model_path = config.get("main", "path")
+    
+    if args.cluster:
+        dimension_reduce_model = dimensionReduce(args.config_file)
+        print "fitting Isomap \n"    
+        dimension_reduce_model.fit_isomap()  
+        n_clusters = args.cluster
+        print "fitting Kmeans \n"    
+        dimension_reduce_model.fit_kmeans(int(n_clusters))
+        print "writing model files for Isomap and kmeans\n"
+        config.set("main", "cluster", corpus_filename.split('.')[0] + '-cluster.csv')
+        with open(args.config_file, "wb") as configfh:
+             config.write(configfh)
+        dimension_reduce_model.write(config.get("main", "cluster"))
+        return
 
     if config.getboolean("main", "sentences"):
         from vsm.extensions.ldasentences import CorpusSent as Corpus
@@ -204,6 +219,8 @@ def populate_parser(parser):
     parser.add_argument('--dry-run', dest='dry_run', action='store_true',
                         help="Run code without training models")
     parser.add_argument('--rebuild', action='store_true')
+    parser.add_argument('--cluster', type=int,
+                        help="Cluster an existing model")
 
 
 if __name__ == '__main__':
