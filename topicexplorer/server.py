@@ -348,14 +348,22 @@ class Application(Bottle):
 
         @self.route('/cluster.csv')
         @_set_acao_headers
-        def serve_cluster():
+        def cluster_csv(second=False):
             filename = kwargs.get('cluster_path')
             if filename and os.path.exists(filename):
                 root, filename = os.path.split(filename)
                 return static_file(filename, root=root)
+            elif not second:
+                import topicexplorer.train
+                topicexplorer.train.cluster(10, config_file)
+                return serve_cluster(True)
             else:
-                raise NotImplementedError(
-                    "Dynamic clustering is not yet implemented.")
+                raise IOError("Error with cluster file")
+        
+        @self.route('/')
+        @_set_acao_headers
+        def cluster():
+            return static_file('cluster.html', root=resource_filename(__name__, '../www/'))
 
         @self.route('/<filename:path>')
         @_set_acao_headers
@@ -476,7 +484,7 @@ def main(args, app=None):
             link_host = socket.gethostname()
         else:
             link_host = host
-        url = "http://{host}:{port}/{k}/"
+        url = "http://{host}:{port}/"
         url = url.format(host=link_host, port=port, k=min(app.topic_range))
         webbrowser.open(url)
 
