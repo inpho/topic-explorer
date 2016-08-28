@@ -34,12 +34,12 @@ def metadata(id, sleep_time=1):
         return dict()
 
 
-def get_metadata(folder):
+def get_metadata(folder, output):
     ids = os.listdir(folder)
     data = [(id.strip(), metadata(id.strip())) for id in ids
             if not id.endswith('.log')]
     data = dict(data)
-    with open(os.path.join(folder, '../metadata.json'), 'wb') as outfile:
+    with open(output, 'wb') as outfile:
         json.dump(data, outfile)
 
 
@@ -331,7 +331,8 @@ def main():
                                       help="Get metadata for a folder of HathiTrust volumes")
     parser_getmd.add_argument("folder", nargs="?",
                               type=lambda x: is_valid_filepath(parser_getmd, x),
-                              help="Path to Config [optional]")
+                              help="Folder to retrieve")
+    parser_getmd.add_argument("-o", "--output", help="output file")
     parser_getmd.set_defaults(func='getmd')
 
     # Download Helper
@@ -347,7 +348,9 @@ def main():
     args = parser.parse_args()
 
     if args.func == 'getmd':
-        get_metadata(args.folder)
+        if args.output is None:
+            args.output = os.path.join(args.folder, '../metadata.json')
+        get_metadata(args.folder, args.output)
     if args.func == 'download':
         download(args)
 
