@@ -6,6 +6,7 @@ from functools import partial
 from importlib import import_module
 import json
 import itertools
+import math
 import os.path
 from pkg_resources import resource_filename
 import re
@@ -276,6 +277,8 @@ class Application(Bottle):
             js = {}
             for rank, topic_H in enumerate(data):
                 topic, H = topic_H
+                if math.isnan(H): 
+                    H = 0.0
                 js[str(topic)] = {
                     "H": float(H),
                     "color": rgb2hex(self.colors[k][topic])
@@ -355,6 +358,7 @@ class Application(Bottle):
         @_set_acao_headers
         def cluster_csv(second=False):
             filename = kwargs.get('cluster_path')
+            print "Retireving cluster.csv:", filename, os.path.exists(filename)
             if not filename or not os.path.exists(filename):
                 import topicexplorer.train
                 filename = topicexplorer.train.cluster(10, self.config_file)

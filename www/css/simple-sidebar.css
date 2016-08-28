@@ -35,6 +35,12 @@
     -moz-transition: all 0.5s ease;
     -o-transition: all 0.5s ease;
     transition: all 0.5s ease;
+    display: table;
+}
+
+#sidebar-helper {
+    display: table-cell;
+    vertical-align: middle;
 }
 
 #wrapper.toggled #sidebar-wrapper {
@@ -55,10 +61,10 @@
 /* Sidebar Styles */
 
 .sidebar-nav {
-    position: absolute;
-    top: 0;
+    /*position: absolute;
+    top: 0;*/
     width: 64px;
-    margin: 0;
+    margin: auto 0;
     padding: 0;
     list-style: none;
 }
@@ -74,12 +80,21 @@
     display: block;
     text-decoration: none;
     color: #999999;
+    padding: 8px 0;
 }
 
-.sidebar-nav li a:hover {
+.sidebar-nav li a:hover,
+.sidebar-nav li a.selected{
     text-decoration: none;
     color: #fff;
     background: rgba(255,255,255,0.2);
+}
+.sidebar-nav li a.selected{
+    color: #999999;
+}
+
+.sidebar-nav li a.selected:hover {
+    color: #fff;
 }
 
 .sidebar-nav li a:active,
