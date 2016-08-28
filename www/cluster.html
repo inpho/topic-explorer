@@ -84,11 +84,18 @@ h2 {
 
   <div id="wrapper">
         <div id="sidebar-wrapper">
-          <div id="sidebar-helper">
+          <div class="sidebar-helper">
             <ul class="sidebar-nav">
               <li>
                 <a class="selected" href="#"><span class="glyphicon glyphicon-home"></span></a>
               </li>
+              <li>
+                <a class="selected" href="#"><span class="glyphicon glyphicon-search"></span></a>
+              </li>
+            </ul>
+          </div>
+          <div class="sidebar-helper" style="vertical-align: middle;">
+            <ul id="sidebar-topics" class="sidebar-nav">
             </ul>
           </div>
         </div>
@@ -234,7 +241,7 @@ d3.csv(base_url + "cluster.csv", function(error, data) {
   
   var topics = {}; var node;
   var ks = data.map(d => d.k).filter(function(item, i, ar){ return ar.indexOf(item) === i; });;
-  ks.map(k => $('.sidebar-nav').append('<li><a class="selected" href="javascript:toggleDisplay(' + k + ')">' + k + '</a></li>'));
+  ks.map(k => $('#sidebar-topics').append('<li><a class="selected" href="javascript:toggleDisplay(' + k + ')">' + k + '</a></li>'));
 
   var k_urls = ks.map(k => base_url + k + "/topics.json" );
   console.log(ks, k_urls);

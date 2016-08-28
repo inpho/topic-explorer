@@ -38,9 +38,11 @@
     display: table;
 }
 
-#sidebar-helper {
+.sidebar-helper {
+    display: table-row;
+}
+.sidebar-helper ul {
     display: table-cell;
-    vertical-align: middle;
 }
 
 #wrapper.toggled #sidebar-wrapper {
