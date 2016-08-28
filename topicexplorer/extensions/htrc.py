@@ -1,5 +1,6 @@
 from collections import defaultdict
-from ConfigParser import RawConfigParser as ConfigParser, NoOptionError
+from ConfigParser import (RawConfigParser as ConfigParser, NoOptionError, 
+    NoSectionError)
 import json
 import os.path
 import numpy as np
@@ -30,14 +31,19 @@ def init(_app, config_file):
     global app, metadata
     app = _app
 
-    config = ConfigParser()
+    config = ConfigParser({'metadata': None})
     config.read(config_file)
 
     model_path = config.get('main', 'path')
 
-    filename = os.path.join(model_path, '../metadata.json')
-    print "Loading HTRC metadata from", filename
+    try:
+        filename = config.get('htrc', 'metadata')
+        if not filename:
+            raise ValueError("Not a valid htrc metadata path.")
+    except (NoSectionError, ValueError): 
+        filename = os.path.join(model_path, '../metadata.json')
 
+    print "Loading HTRC metadata from", filename
     with open(filename) as f:
         metadata = json.load(f)
 
