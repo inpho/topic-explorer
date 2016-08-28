@@ -65,6 +65,8 @@ class Application(Bottle):
                  fulltext=False, corpus_path='', **kwargs):
         super(Application, self).__init__()
 
+        self.config_file = config_file
+
         # setup routes
         self.renderer = pystache.Renderer(escape=lambda u: u)
         self.icons = kwargs.get('icons', 'link')
@@ -350,15 +352,12 @@ class Application(Bottle):
         @_set_acao_headers
         def cluster_csv(second=False):
             filename = kwargs.get('cluster_path')
-            if filename and os.path.exists(filename):
-                root, filename = os.path.split(filename)
-                return static_file(filename, root=root)
-            elif not second:
+            if not filename or not os.path.exists(filename):
                 import topicexplorer.train
-                topicexplorer.train.cluster(10, config_file)
-                return serve_cluster(True)
-            else:
-                raise IOError("Error with cluster file")
+                filename = topicexplorer.train.cluster(10, self.config_file)
+
+            root, filename = os.path.split(filename)
+            return static_file(filename, root=root)
         
         @self.route('/')
         @_set_acao_headers

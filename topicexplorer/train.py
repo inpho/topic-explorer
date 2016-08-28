@@ -59,22 +59,22 @@ def continue_training(model_pattern, krange, total_iterations=200, n_proc=1):
     return basefilename
 
 def cluster(n_clusters, config_file):
-    config = ConfigParser()
-    config.read(config_file)
-
-    dimension_reduce_model = dimensionReduce(args.config_file)
+    dimension_reduce_model = dimensionReduce(config_file)
 
     dimension_reduce_model.fit_isomap()  
     dimension_reduce_model.fit_kmeans(int(n_clusters))
 
     print "writing model files for Isomap and kmeans\n"
+    config = ConfigParser()
+    config.read(config_file)
     corpus_filename = config.get("main", "corpus_file")
     filename = corpus_filename.split('.')[0] + '-cluster.csv'
 
     config.set("main", "cluster", filename)
-    with open(args.config_file, "wb") as configfh:
+    with open(config_file, "wb") as configfh:
         config.write(configfh)
     dimension_reduce_model.write(config.get("main", "cluster"))
+    return filename
     
     
 
