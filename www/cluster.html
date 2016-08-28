@@ -16,18 +16,18 @@
         <style>
       
 body {
-  font: 10px sans-serif;
-  overflow: hidden;
 }
-
-.axis path,
-.axis line {
+#chart {
+  font: 10px sans-serif;
+}
+#chart .axis path,
+#chart .axis line {
   fill: none;
   stroke: #000;
   shape-rendering: crispEdges;
 }
 
-.dot {
+#chart .dot {
   stroke: #000;
   stroke-opacity: .7;
   fill-opacity: .7;
@@ -35,22 +35,52 @@ body {
 
 #controls {
   font-size: 14px;
-  position: absolute;
-  top: 20px;
-  left: 150px;
+  position: relative;
+  top: 10px;
+  left: 80px;
 }
 
-input {
+#chart input {
   margin: 4px 4px 0;
 }
     </style>
 
-    
+   <style>
+
+.logo-word {
+  background-image: url('http://inpho.cogs.indiana.edu/img/newlogo.png');
+  background-size: 172px 92px;
+  width: 172px;
+  height: 84px;
+  padding-top: 6px;
+  margin-top: 14px;
+  margin-bottom: 15px;
+  margin-left: -6px;
+  display: inline-block;
+  text-indent: -3000px;
+}
+h1 {
+text-align: center;
+margin-bottom: 0;
+font-size: 59px;
+line-height: 1;
+color: inherit;
+letter-spacing: -1px;
+}
+h1 a, h1 a:hover {
+  color: #000;
+  text-decoration: none;
+}
+h2 {
+  text-align: center;
+  }
+</style>
     
     
   </head>
 
   <body translate="no" >
+
   <div id="wrapper">
         <div id="sidebar-wrapper">
             <ul class="sidebar-nav">
@@ -60,6 +90,18 @@ input {
             </ul>
         </div>
     <div id="page-content-wrapper">
+<div id="main" class="container">
+  <div class="row">
+  <div class="span12">
+  <h1><a href="http://inphodata.cogs.indiana.edu"><span class="logo-word">InPhO</span> Topic Explorer</a></h1>
+  <!--<h2 class="title non-null"></h2>-->
+  <h2>
+  {{#corpus_link}}<a href="{{corpus_link}}">{{corpus_name}}</a>{{/corpus_link}} 
+  {{^corpus_link}}{{corpus_name}}{{/corpus_link}}. </p>
+  </h2>
+  </div>
+  </div>
+</div>
       <div class="container-fluid">
         <div id="chart"></div>
       </div>
@@ -90,7 +132,7 @@ var combineWords = function(words) {
 
 var margin = {top: 20, right: 80, bottom: 80, left: 40},
     width = $('#chart').parent().width() - margin.left - margin.right,
-    height = $(document).height() - margin.top - margin.bottom,
+    height = $(document).height() - Math.min($('#main').height(), 400) - margin.top - margin.bottom,
     padding = 1, // separation between nodes
     radius = 4;
 
@@ -110,19 +152,20 @@ var yAxis = d3.svg.axis()
     .scale(y)
     .orient("left");
 
-var svg = d3.select("#chart").append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-  .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-var controls = d3.select("body").append("label")
+var controls = d3.select("#chart").append("label")
     .attr("id", "controls");
 var checkbox = controls.append("input")
     .attr("id", "collisiondetection")
     .attr("type", "checkbox");
 controls.append("span")
     .text("Collision detection");
+
+var svg = d3.select("#chart").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
 
 var ext_data;
 

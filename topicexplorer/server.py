@@ -332,11 +332,10 @@ class Application(Bottle):
                     .format(icons.read(), json.dumps(self.icons))
             return text
 
-        @self.route('/<k:int>/')
-        def index(k):
+        def _render_template(page):
             response.set_header('Expires', _cache_date())
 
-            with open(resource_filename(__name__, '../www/index.mustache.html'),
+            with open(resource_filename(__name__, '../www/' + page),
                       encoding='utf-8') as tmpl_file:
                 template = tmpl_file.read()
 
@@ -347,6 +346,10 @@ class Application(Bottle):
                            'doc_title_format': kwargs.get('doc_title_format', '{0}'),
                            'doc_url_format': kwargs.get('doc_url_format', '')}
             return self.renderer.render(template, tmpl_params)
+
+        @self.route('/<k:int>/')
+        def index(k):
+            return _render_template('index.mustache.html')
 
         @self.route('/cluster.csv')
         @_set_acao_headers
@@ -362,7 +365,7 @@ class Application(Bottle):
         @self.route('/')
         @_set_acao_headers
         def cluster():
-            return static_file('cluster.html', root=resource_filename(__name__, '../www/'))
+            return _render_template('cluster.html')
 
         @self.route('/<filename:path>')
         @_set_acao_headers
