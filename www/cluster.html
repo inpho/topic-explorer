@@ -238,7 +238,10 @@ d3.csv(base_url + "cluster.csv", function(error, data) {
       .style("text-anchor", "end")
       .text("Sepal Length (cm)");*/
   
-  
+$(document).ready(function() {
+    $.ajaxSetup({ cache: true });
+});
+
   var topics = {}; var node;
   var ks = data.map(d => d.k).filter(function(item, i, ar){ return ar.indexOf(item) === i; });;
   ks.map(k => $('#sidebar-topics').append('<li><a class="selected" href="javascript:toggleDisplay(' + k + ')">' + k + '</a></li>'));

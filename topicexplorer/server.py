@@ -270,6 +270,8 @@ class Application(Bottle):
 
             response.content_type = 'application/json; charset=UTF8'
             response.set_header('Expires', _cache_date())
+            response.set_header('Cache-Control', 'max-age=86400')
+            
 
             # populate partial jsd values
             data = self.v[k].topic_jsds()
@@ -497,7 +499,7 @@ def main(args, app=None):
         print "TIP: Browser launch can be disabled with the '--no-browser' argument:"
         print "topicexplorer serve --no-browser", args.config, "\n"
 
-    app.run(host=host, port=port)
+    app.run(server='paste', host=host, port=port)
 
 
 def create_app(args):

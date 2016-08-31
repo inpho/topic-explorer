@@ -61,6 +61,7 @@ install_requires = [
         'langdetect',
         'profilehooks',
         'pybtex>=0.20',
+        'paste'
         ]
 
 if platform.system() == 'Windows':
