@@ -10,8 +10,11 @@ This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangel
 
 ## [Unreleased]
 - Added:
-  - topic cluster display
   - documentation for BibTeX support.
+
+## [1.0b114] - 2016-09-04
+- Added:
+  - topic cluster display
 - Fixed:
   - Page labels in HTRC extension
   - BibTeX extension config file loading
@@ -148,7 +151,8 @@ This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangel
 
 
 
-[Unreleased]: https://github.com/inpho/topic-explorer/compare/1.0b111...HEAD
+[Unreleased]: https://github.com/inpho/topic-explorer/compare/1.0b114...HEAD
+[1.0b114]: https://github.com/inpho/topic-explorer/compare/1.0b111...1.0b114
 [1.0b111]: https://github.com/inpho/topic-explorer/compare/1.0b107...1.0b111
 [1.0b107]: https://github.com/inpho/topic-explorer/compare/1.0b106...1.0b107
 [1.0b106]: https://github.com/inpho/topic-explorer/compare/1.0b88...1.0b106
