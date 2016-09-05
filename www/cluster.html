@@ -243,10 +243,10 @@ $(document).ready(function() {
 });
 
   var topics = {}; var node;
-  var ks = data.map(d => d.k).filter(function(item, i, ar){ return ar.indexOf(item) === i; });;
+  var ks = data.map(function(d) { return d.k; }).filter(function(item, i, ar){ return ar.indexOf(item) === i; });;
   ks.map(k => $('#sidebar-topics').append('<li><a class="selected" href="javascript:toggleDisplay(' + k + ')">' + k + '</a></li>'));
 
-  var k_urls = ks.map(k => base_url + k + "/topics.json" );
+  var k_urls = ks.map(function(k) { return base_url + k + "/topics.json" });
   console.log(ks, k_urls);
   Promise.all(k_urls.map($.getJSON)).then(function (data) {
     data.forEach(function(d,i) {
