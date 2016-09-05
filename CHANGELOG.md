@@ -12,10 +12,11 @@ This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangel
 - Added:
   - documentation for BibTeX support.
 
-## [1.0b115] - 2016-09-05
+## [1.0b116] - 2016-09-05
 - Added:
   - topic cluster display
 - Fixed:
+  - [#160](https://github.com/inpho/topic-explorer/issues/160) - New isomap display doesn't load in Safari
   - Page labels in HTRC extension
   - BibTeX extension config file loading
 
@@ -151,8 +152,8 @@ This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangel
 
 
 
-[Unreleased]: https://github.com/inpho/topic-explorer/compare/1.0b115...HEAD
-[1.0b114]: https://github.com/inpho/topic-explorer/compare/1.0b111...1.0b115
+[Unreleased]: https://github.com/inpho/topic-explorer/compare/1.0b116...HEAD
+[1.0b116]: https://github.com/inpho/topic-explorer/compare/1.0b111...1.0b116
 [1.0b111]: https://github.com/inpho/topic-explorer/compare/1.0b107...1.0b111
 [1.0b107]: https://github.com/inpho/topic-explorer/compare/1.0b106...1.0b107
 [1.0b106]: https://github.com/inpho/topic-explorer/compare/1.0b88...1.0b106
