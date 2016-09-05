@@ -360,7 +360,7 @@ class Application(Bottle):
         @_set_acao_headers
         def cluster_csv(second=False):
             filename = kwargs.get('cluster_path')
-            print "Retireving cluster.csv:", filename, os.path.exists(filename)
+            print "Retireving cluster.csv:", filename
             if not filename or not os.path.exists(filename):
                 import topicexplorer.train
                 filename = topicexplorer.train.cluster(10, self.config_file)
