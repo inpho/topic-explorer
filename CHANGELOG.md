@@ -12,7 +12,7 @@ This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangel
 - Added:
   - documentation for BibTeX support.
 
-## [1.0b114] - 2016-09-04
+## [1.0b115] - 2016-09-05
 - Added:
   - topic cluster display
 - Fixed:
@@ -151,8 +151,8 @@ This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangel
 
 
 
-[Unreleased]: https://github.com/inpho/topic-explorer/compare/1.0b114...HEAD
-[1.0b114]: https://github.com/inpho/topic-explorer/compare/1.0b111...1.0b114
+[Unreleased]: https://github.com/inpho/topic-explorer/compare/1.0b115...HEAD
+[1.0b114]: https://github.com/inpho/topic-explorer/compare/1.0b111...1.0b115
 [1.0b111]: https://github.com/inpho/topic-explorer/compare/1.0b107...1.0b111
 [1.0b107]: https://github.com/inpho/topic-explorer/compare/1.0b106...1.0b107
 [1.0b106]: https://github.com/inpho/topic-explorer/compare/1.0b88...1.0b106
