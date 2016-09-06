@@ -299,10 +299,9 @@ h1 {
     </div>
     <div class="sidebar-helper" style="vertical-align: middle;">
       <ul id="sidebar-topics" class="sidebar-nav">
-        <li><a title="Launch 20-topic model" data-placement="right">20</a></li>
-        <li><a title="Launch 40-topic model" data-placement="right">40</a></li>
-        <li><a title="Launch 60-topic model" data-placement="right">60</a></li>
-        <li><a title="Launch 80-topic model" data-placement="right">80</a></li>
+        {{#topic_range}}
+        <li><a href="{{.}}/" title="Launch {{.}}-topic model" data-placement="right">{{.}}</a></li>
+        {{/topic_range}}
       </ul>
     </div>
     <div class="sidebar-helper" style="position: absolute; bottom: 0;">
@@ -543,7 +542,7 @@ $('#randomDoc').tooltip({title: "Random Document", placement: 'bottom'});
 
 <script>
 function resetBars() {
-  var ks = [20,40,60]
+  var ks = [{{#topic_range}}{{.}}, {{/topic_range}}];
   $(ks).each(resetBar);
 }
 
@@ -640,7 +639,7 @@ d3.json(host + url, function(error, data) {
 
     $("#bar" + k).before("<dt>"+k+" Topics</dt>");
 
-    var full_explorer_url = "http://inphodata.cogs.indiana.edu/sep/"+k+"/?doc="+docid;
+    var full_explorer_url = ""+k+"/?doc="+docid;
   
   
     calculateTopicMap(data, true, function(a,b) {return data[0].topics[b] - data[0].topics[a];});
@@ -710,7 +709,7 @@ $('#words').on('input', function() {
   wordTimeout = setTimeout(function() { gettopics(words); }, 500);
   });
 
-var ks = [20,40,60]
+var ks = [{{#topic_range}}{{.}}, {{/topic_range}}];
 var k_urls = ks.map(function(k) { return '' + k + "/topics.json" });
 var topics = Promise.all(k_urls.map($.getJSON)).then(function (data) {
     var t = {}; 
