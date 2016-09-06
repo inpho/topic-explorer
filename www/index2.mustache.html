@@ -703,9 +703,11 @@ var combineWords = function(words) {
             }).join(", ") + ", ..."; 
 }
 
-$('#words').change(function() {
+var wordTimeout;
+$('#words').on('input', function() {
+  if (wordTimeout) clearTimeout(wordTimeout);
   var words = $(this).val().split(' ');
-  gettopics(words);
+  wordTimeout = setTimeout(function() { gettopics(words); }, 500);
   });
 
 var ks = [20,40,60]
