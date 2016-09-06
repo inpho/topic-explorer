@@ -299,6 +299,44 @@ class Application(Bottle):
 
             return json.dumps(js)
 
+        @self.route('/topics.json')
+        @_set_acao_headers
+        def word_topic_distance():
+            import numpy as np
+            response.content_type = 'application/json; charset=UTF8'
+
+            # parse query
+            try:
+                query = request.query.q.lower().split('|')
+            except:
+                raise Exception('Must specify a query')
+
+            query = [word for word in query if word in self.c.words]
+
+            # abort if there are no terms in the query
+            if not query:
+                response.status = 400  # Bad Request
+                return "Search terms not in model"
+
+
+            # calculate distances
+            distances = dict()
+            for k, viewer in self.v.iteritems():
+                d = viewer.dist_word_top(query, show_topics=False)
+                distances[k] = np.fromiter(
+                    ((k, row['i'], row['value']) for row in d),
+                    dtype=[('k', '<i8'), ('i', '<i8'), ('value', '<f8')])
+
+            # merge and sort all topics across all models
+            merged_similarity = np.hstack(distances.values())
+            sorted_topics = merged_similarity[np.argsort(merged_similarity['value'])]
+
+            # return data
+            data = [{'k' : t['k'],
+                     't' : t['i'],
+                     'distance' : t['value'] } for t in sorted_topics]
+            return json.dumps(data)
+
         @self.route('/docs.json')
         @_set_acao_headers
         def docs(docs=None, q=None):
