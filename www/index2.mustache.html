@@ -696,22 +696,48 @@ d3.json(host + url, function(error, data) {
 </script>
 
 <script>
+var combineWords = function(words) {
+   return d3.keys(words).sort(function(a,b) {
+              if (words[a] > words[b])
+                return -1;
+              else if (words[a] < words[b])
+                return 1;
+              else
+                return 0;
+            }).join(", ") + ", ..."; 
+}
+
 $('#words').change(function() {
   var words = $(this).val().split(' ');
   gettopics(words);
   });
 
+var ks = [20,40,60]
+var k_urls = ks.map(function(k) { return '' + k + "/topics.json" });
+var topics = Promise.all(k_urls.map($.getJSON)).then(function (data) {
+    var t = {}; 
+    data.forEach(function(d,i) {
+      t[ks[i]] = $.each(d, function(key, val) { d[key] = combineWords(val.words) });
+  });
+    return t;
+});
+
 function gettopics(words) {
   var query = words.join('|');
   $('#wordsDl').html('')
   $.getJSON('topics.json?q=' + query, function(data) {
-    for (var i = 0; i < 10; i++) {
-      $('#wordsDl').append('<dt><a href="'+data[i]['k']+'/?topic='+data[i]['t']+'">' +
-        'Topic ' + data[i]['t'] + 
-        ' <small>(k = ' + data[i]['k'] + ')</small></a></dt>');
-      $('#wordsDl').append('<dd>' + '&hellip; </dd>');
-    }
-    });
+      Promise.resolve(topics).then(function(val) {  
+        for (var i = 0; i < 10; i++) {
+          var k = data[i]['k'];
+          var t = data[i]['t'];
+
+        $('#wordsDl').append('<dt><a href="' + k + '/?topic=' + t + '">' +
+          'Topic ' + t + 
+          ' <small>(k = ' + k + ')</small></a></dt>');
+        $('#wordsDl').append('<dd>' + 
+          val[k][t] + '</dd>'); }
+      });
+  });
 }
 </script>
     
