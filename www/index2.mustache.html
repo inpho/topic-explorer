@@ -1,4 +1,4 @@
-CTYPE html>
+<!DOCTYPE html>
 <html >
   <head>
     <meta charset="UTF-8">
@@ -421,14 +421,12 @@ h1 {
         <form class="form-horizontal col-sm-12">
           <div class="form-group">
             <div class="input-group">
-              <input type="hidden" name="doc" id="hidden_id">
-              <input type="text" id="doc" class="form-control typeahead" placeholder="Type words to select topics." autocomplete="off">
-              <div class="input-group-btn">
-                <button class="btn btn-default" type="button" id="randomDoc" data-original-title="" title=""><span class="glyphicon glyphicon-random"></span></button>
-              </div>
+              <input type="text" id="words" class="form-control" placeholder="Type words to select topics." autocomplete="off">
             </div>
           </div>
         </form>
+        <dl id="wordsDl">
+        </dl>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -549,8 +547,8 @@ $('#randomDoc').tooltip({title: "Random Document", placement: 'bottom'});
 
 <script>
 function resetBars() {
-var ks = [20,40,60]
-$(ks).each(resetBar);
+  var ks = [20,40,60]
+  $(ks).each(resetBar);
 }
 
 function resetBar(i, k) {
@@ -696,7 +694,26 @@ d3.json(host + url, function(error, data) {
 }
 
 </script>
-    
+
+<script>
+$('#words').change(function() {
+  var words = $(this).val().split(' ');
+  gettopics(words);
+  });
+
+function gettopics(words) {
+  var query = words.join('|');
+  $('#wordsDl').html('')
+  $.getJSON('topics.json?q=' + query, function(data) {
+    for (var i = 0; i < 10; i++) {
+      $('#wordsDl').append('<dt><a href="'+data[i]['k']+'/?topic='+data[i]['t']+'">' +
+        'Topic ' + data[i]['t'] + 
+        ' <small>(k = ' + data[i]['k'] + ')</small></a></dt>');
+      $('#wordsDl').append('<dd>' + '&hellip; </dd>');
+    }
+    });
+}
+</script>
     
     
   </body>
