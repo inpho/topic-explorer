@@ -371,7 +371,7 @@ class Application(Bottle):
         @self.route('/')
         @_set_acao_headers
         def cluster():
-            return _render_template('cluster.html')
+            return _render_template('index2.mustache.html')
 
         @self.route('/<filename:path>')
         @_set_acao_headers
