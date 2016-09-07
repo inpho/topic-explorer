@@ -424,8 +424,8 @@ h1 {
             </div>
           </div>
         </form>
-        <dl id="wordsDl">
-        </dl>
+        <div id="wordsDl">
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -736,11 +736,17 @@ function gettopics(words) {
           var k = data[i]['k'];
           var t = data[i]['t'];
 
-        $('#wordsDl').append('<dt><a href="' + k + '/?topic=' + t + '">' +
+        /*$('#wordsDl').append('<dt><a href="' + k + '/?topic=' + t + '">' +
           'Topic ' + t + 
           ' <small>(k = ' + k + ')</small></a></dt>');
         $('#wordsDl').append('<dd>' + 
-          val[k][t] + '</dd>'); }
+          val[k][t] + '</dd>'); }*/
+        $('#wordsDl').append('<div class="col-xs-4"><h4><a href="' + k + '/?topic=' + t + '">' +
+          'Topic ' + t +
+          ' <small>(k = ' + k + ')</small></a></h4><p>' +
+          val[k][t] + '</p></div>');
+        }
+        $('#wordsDl').append('<div class="clear">&nbsp;</div>');
       });
   });
 }
