@@ -337,6 +337,13 @@ class Application(Bottle):
                      'distance' : t['value'] } for t in sorted_topics]
             return json.dumps(data)
 
+
+        @self.route('/topics')
+        @_set_acao_headers
+        def view_clusters():
+            return _render_template('cluster.html')
+
+
         @self.route('/docs.json')
         @_set_acao_headers
         def docs(docs=None, q=None):

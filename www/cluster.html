@@ -121,6 +121,7 @@ h2 {
     <script src='https://code.jquery.com/jquery-2.2.4.min.js'></script>
 <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js'></script>
 <script src='http://d3js.org/d3.v3.min.js'></script>
+<script src="/lib/inpho/util.js"></script>
 
         <script>
 base_url = window.location.origin + '/'; // + window.location.pathname;
@@ -153,6 +154,10 @@ var y = d3.scale.linear()
     .range([height, 0]);
 
 var color = d3.scale.category20();
+
+var opacity = d3.scale.linear()
+    .range([1.0, 0.0]);
+
 
 var xAxis = d3.svg.axis()
     .scale(x)
@@ -249,28 +254,39 @@ $(document).ready(function() {
   var k_urls = ks.map(function(k) { return base_url + k + "/topics.json" });
   console.log(ks, k_urls);
   Promise.all(k_urls.map($.getJSON)).then(function (data) {
-    data.forEach(function(d,i) {
-      topics[ks[i]] = $.each(d, function(key, val) { d[key] = combineWords(val.words) });
-  });
-}).then(function() {
-  
-  node = svg.selectAll(".dot")
-      .data(data, function(d) { return d.k + '-' + d.topic; })
-    .enter().append("circle")
-      .attr("class", "dot")
-      .attr("r", function(d) { return d.radius; })
-      .attr("cx", function(d) { return x(d[xVar]); })
-      .attr("cy", function(d) { return y(d[yVar]); })
-      .style("fill", function(d) { return d.color; })
-      .on("click", function(d) { window.location.href = base_url + d.k + "/?topic=" + d.topic })
-      .attr("title", function(d) {
-        return "<strong>Topic " + d.topic + "</strong> (k=" + d.k + ")"
-          + "<br />" + topics[d.k][d.topic];
-      })
-    .on("mouseover", function (d) { $(this).tooltip('show')})
-    .on("mouseout", function (d) { $(this).tooltip('hide')});
-  
-  $(".dot").tooltip({container:'body', trigger: 'manual', animation: false, html: true});
+      data.forEach(function(d,i) {
+        topics[ks[i]] = $.each(d, function(key, val) { d[key] = combineWords(val.words) });
+      });
+    }).then(function() {
+      var words = inpho.util.getValueForURLParam('q');
+      return $.getJSON('topics.json?q=' + words) })
+    .then(function(distData) {
+          opacity.domain(d3.extent(distData, function(d) { return d['distance']; })).nice();
+          for (var obj in distData) {
+            obj = distData[obj];
+            data.map(function(d) { if (d.k == obj.k.toString() && d.topic == obj.t) d.opacity = obj.distance; });
+          }
+    }).then(function() {
+      console.log(data); 
+      node = svg.selectAll(".dot")
+          .data(data, function(d) { return d.k + '-' + d.topic; })
+        .enter().append("circle")
+          .attr("class", "dot")
+          .attr("r", function(d) { return d.radius; })
+          .attr("cx", function(d) { return x(d[xVar]); })
+          .attr("cy", function(d) { return y(d[yVar]); })
+          //.attr("style", function(d) { return "fill:" + d.color +"; fill-opacity: "+ opacity(d.opacity) + ";"; })
+          .style("fill", function(d) { return d.color; })
+          .style("fill-opacity", function(d) { return opacity(d.opacity); })
+          .on("click", function(d) { window.location.href = base_url + d.k + "/?topic=" + d.topic })
+          .attr("title", function(d) {
+            return "<strong>Topic " + d.topic + "</strong> (k=" + d.k + ")"
+              + "<br />" + topics[d.k][d.topic];
+          })
+        .on("mouseover", function (d) { $(this).tooltip('show')})
+        .on("mouseout", function (d) { $(this).tooltip('hide')});
+      
+      $(".dot").tooltip({container:'body', trigger: 'manual', animation: false, html: true});
 
   });
 
@@ -370,6 +386,8 @@ var toggleDisplay = function(k) {
       //# sourceURL=pen.js
     </script>
 
+<script>
+</script>
     
     
     
