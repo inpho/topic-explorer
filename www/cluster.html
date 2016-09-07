@@ -369,17 +369,18 @@ $(document).ready(function() {
 });
 
 var toggleDisplay = function(k) {
-  var selection =  d3.selectAll(".dot").filter(function(d) { d.k == k });
+  var selection =  d3.selectAll(".dot").filter(function(d) { return d.k.toString() == k.toString() });
+  console.log(selection);
 
   if (selection.style('display') == 'none') {
     selection.style('display', 'inline');
     $('.sidebar-nav li a')
-      .filter(function() { return $(this).text() == k })
+      .filter(function() { return $(this).text() == k.toString() })
         .addClass('selected');
   } else {
     selection.style('display', 'none');
     $('.sidebar-nav li a')
-      .filter(function() { return $(this).text() == k })
+      .filter(function() { return $(this).text() == k.toString() })
         .removeClass('selected');
   }
 }
