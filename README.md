@@ -117,12 +117,12 @@ If you have deployed InPhO-TE using another infrastructure, please submit a pull
 	ErrorLog /var/www/topicexplorer/log/error.log
 	CustomLog /var/www/topicexplorer/log/access.log combined
 
-	WSGIDaemonProcess topicexplorer.ap user=www-data group=www-data \
+	WSGIDaemonProcess topicexplorer user=www-data group=www-data \
 	  python-path=/home/jaimie/anaconda2/lib/python2.7/site-packages/
 	WSGIScriptAlias /ap /var/www/topicexplorer/app.wsgi
 	
 	<Directory /var/www/topicexplorer>
-		WSGIProcessGroup topicexplorer.ap
+		WSGIProcessGroup topicexplorer
 		WSGIApplicationGroup %{GLOBAL}
 		Options All
 		AllowOverride All
