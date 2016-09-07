@@ -258,7 +258,7 @@ $(document).ready(function() {
       var words = inpho.util.getValueForURLParam('q');
       return (words) ? $.getJSON('topics.json?q=' + words) : null })
     .then(function(distData) {
-      if (distData == null) {
+      if (distData != null) {
           opacity.domain(d3.extent(distData, function(d) { return d['distance']; })).nice();
           for (var obj in distData) {
             obj = distData[obj];
