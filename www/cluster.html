@@ -128,8 +128,6 @@ if (window.location.pathname.endsWith('topics')) {
   var base_url = window.location.origin + window.location.pathname;
 }
 
-console.log("hello");
-
 var combineWords = function(words) {
    return d3.keys(words).sort(function(a,b) {
               if (words[a] > words[b])
@@ -293,7 +291,7 @@ $(document).ready(function() {
       $(".dot").tooltip({container:'body', trigger: 'manual', animation: false, html: true});
 
   });
-
+/*
   var legend = svg.selectAll(".legend")
       .data(color.domain())
     .enter().append("g")
@@ -312,7 +310,7 @@ $(document).ready(function() {
       .attr("dy", ".35em")
       .style("text-anchor", "end")
       .text(function(d) { return d; });
-
+*/
   d3.select("#collisiondetection").on("change", function() {
     if (!checkbox.node().checked)
       force    
