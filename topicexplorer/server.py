@@ -409,6 +409,7 @@ class Application(Bottle):
             if not filename or not os.path.exists(filename):
                 import topicexplorer.train
                 filename = topicexplorer.train.cluster(10, self.config_file)
+                kwargs['cluster_path'] = filename
 
             root, filename = os.path.split(filename)
             return static_file(filename, root=root)
