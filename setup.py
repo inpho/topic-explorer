@@ -27,6 +27,7 @@ def _post_install(dir):
     import nltk
     nltk.download('punkt')
     nltk.download('stopwords')
+    nltk.download('wordnet')
 
 # Specializations of some distutils command classes
 # first install data files to actual library directory
