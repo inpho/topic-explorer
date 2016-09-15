@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html >
+  <head>
+    <meta charset="UTF-8">
+
+
+    <title>CodePen - new layout</title>
+    
+    
+    
+    <link rel='stylesheet prefetch' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css'>
+<script src="/lib/d3.v3.min.js"></script>
+
+        <style>
+      /*!
+ * Start Bootstrap - Simple Sidebar (http://startbootstrap.com/)
+ * Copyright 2013-2016 Start Bootstrap
+ * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap/blob/gh-pages/LICENSE)
+ */
+.bar {
+    fill: steelblue;
+}
+.bar:hover {
+    fill: brown;
+}
+rect {
+  opacity: 0.6;
+}
+rect.hover {
+  stroke: #000;
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+  cursor: crosshair;
+  opacity: 0.8;
+}
+.doc:hover rect, .doc.hover rect {
+  cursor: crosshair;
+  opacity: 1.0;
+}
+rect:hover {
+  opacity: 1.0 !important;
+  stroke: #000;
+  stroke-width: 2;
+  shape-rendering: crispEdges;
+}
+.logo-word {
+  background-image: url('http://inphodata.cogs.indiana.edu/img/inpho_logo.png');
+  background-size: 172px 92px;
+  width: 172px;
+  height: 92px;
+  padding-top: 6px;
+  margin-top: 14px;
+  margin-bottom: 10px;
+  margin-left: -6px;
+  display: inline-block;
+  text-indent: -3000px;
+}
+
+h2 {
+  font-weight: bold;
+  text-align: center;
+  padding-top: 80px;
+}
+
+h1 a {
+  color: black;
+}
+h1 a:hover {
+  color: black;
+}
+
+.top {
+  text-align: center;
+  margin-bottom: 15px; 
+  margin-top: -30px;
+}
+.top h1 {
+  font-size: 59px;
+  line-height: 1;
+  color: inherit;
+  letter-spacing: -1px;
+  font-weight: bold;
+}
+.top {
+  margin-bottom: 45px;
+}
+#brand {
+  margin-top: 80px;
+}
+.entry {
+  text-align: center;
+
+}
+.entry .btn {
+  font-weight: bold;
+  font-size: 30px;
+  padding: 20px;
+}
+
+.bar-container {
+  height:25px;  
+}
+
+h1 {
+  text-align: center;
+  font-weight: bold;
+}
+.panel-body {
+  text-align: center;
+  display: none;
+}
+
+ body {
+    overflow-x: hidden;
+ }
+
+/* Toggle Styles */
+
+#wrapper {
+    padding-left: 0;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+#wrapper.toggled {
+    padding-left: 250px;
+}
+
+#sidebar-wrapper {
+    z-index: 1000;
+    position: fixed;
+    left: 250px;
+    width: 0;
+    height: 100%;
+    margin-left: -250px;
+    overflow-y: auto;
+    background: #000;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+    display: table;
+}
+
+.sidebar-helper {
+    display: table-row;
+}
+.sidebar-helper ul {
+    display: table-cell;    
+}
+
+#wrapper.toggled #sidebar-wrapper {
+    width: 250px;
+}
+
+#page-content-wrapper {
+    width: 100%;
+    position: absolute;
+    padding: 15px;
+}
+
+#wrapper.toggled #page-content-wrapper {
+    position: absolute;
+    margin-right: -250px;
+}
+
+/* Sidebar Styles */
+
+.sidebar-nav {
+    /*position: absolute;
+    top: 0;*/
+    width: 64px;
+    margin: auto 0;
+    padding: 0;
+    list-style: none;
+}
+
+#search-bin li, .sidebar-nav li {
+    line-height: 40px;
+    font-size: 32px;
+    text-align: center;
+
+}
+
+#search-bin li {
+    padding: 8px 16px;
+}
+
+.sidebar-nav li a {
+    display: block;
+    text-decoration: none;
+    color: #999999;
+    padding: 8px 0;
+}
+
+.sidebar-nav li a:hover,
+.sidebar-nav li a.selected{
+    text-decoration: none;
+    color: #fff;
+    background: rgba(255,255,255,0.2);
+}
+.sidebar-nav li a.selected{
+    color: #999999;
+}
+
+.sidebar-nav li a.selected:hover {
+    color: #fff;
+}
+
+.sidebar-nav li a:active,
+.sidebar-nav li a:focus {
+    text-decoration: none;
+}
+
+.sidebar-nav > .sidebar-brand {
+    height: 65px;
+    font-size: 18px;
+    line-height: 60px;
+}
+
+.sidebar-nav > .sidebar-brand a {
+    color: #999999;
+}
+
+.sidebar-nav > .sidebar-brand a:hover {
+    color: #fff;
+    background: none;
+}
+
+@media(min-width:768px) {
+    #wrapper {
+        padding-left: 64px;
+    }
+
+    #wrapper.toggled {
+        padding-left: 0;
+    }
+
+    #sidebar-wrapper {
+        width: 64px;
+    }
+  .row p { font-size: 16px; }
+  
+  .tooltip {
+    width: 240px;
+    font-size:16px;
+  }
+  .modal-body .dl-horizontal {
+    margin-left: -80px;
+  }
+  
+    #wrapper.toggled #sidebar-wrapper {
+        width: 0;
+    }
+
+    #page-content-wrapper {
+        padding: 20px;
+        position: relative;
+    }
+
+    #wrapper.toggled #page-content-wrapper {
+        position: relative;
+        margin-right: 0;
+    }
+}
+
+#search-bin {
+  background-color: #999;
+  width: 100%;
+  height: 57px;
+  float:left;
+  position: absolute;
+  top: 0;
+  margin-left: 0px;
+  display:none;
+}
+    </style>
+
+    
+    
+    
+  </head>
+
+  <body translate="no" >
+
+    <div id="wrapper">
+  <div id="sidebar-wrapper">
+    <div class="sidebar-helper">
+      <ul class="sidebar-nav">
+        <!--<li>
+                <a class="selected" href="#"><span class="glyphicon glyphicon-home"></span></a>
+              </li>-->
+        <li>
+          <a class="selected" href="javascript:toggleSearch()"><span class="glyphicon glyphicon-search"></span></a>
+        </li>
+      </ul>
+    </div>
+    <div class="sidebar-helper" style="vertical-align: middle;">
+      <ul id="sidebar-topics" class="sidebar-nav">
+        <li><a class="selected" title="Topic cluster view" data-placement="right" href="topics"><span class="glyphicon glyphicon-stats"></span></a></li>
+        {{#topic_range}}
+        <li><a href="{{.}}/" title="Launch {{.}}-topic model" data-placement="right">{{.}}</a></li>
+        {{/topic_range}}
+      </ul>
+    </div>
+    <div class="sidebar-helper" style="position: absolute; bottom: 0;">
+      <ul class="sidebar-nav">
+        <!--<li>
+                <a class="selected" href="#"><span class="glyphicon glyphicon-home"></span></a>
+              </li>-->
+        <li>
+          <a class="selected" title="Help" href="javascript:toggleSearch()"><strong>?</strong></a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  
+  <div id="search-bin">
+    <ul class="list-inline">
+      <li><span class="glyphicon glyphicon-file"></span></a></li>
+      <li><span class="glyphicon glyphicon-stats"></span></li>
+      <li><span class="glyphicon glyphicon-arrow-up"></span></li>
+    </ul>
+  </div>
+  
+  <div id="page-content-wrapper">
+    <div id="main" class="container">
+      <div class="row" id="top">
+        <div class="col-md-12">
+          <h1>{{corpus_name}}<br/><small><a href="#about">About this corpus <span class="glyphicon glyphicon-arrow-down"></span></a></small></h1>
+          <p style="font-size: 28px; text-align: center; padding-top: 40px;">Topic models are about contexts, rather than individual words.<br />
+            We search a topic model using full documents, rather than keywords.<br /><strong>Enter the model by one of the following methods:</strong></p>
+        </div>
+        <div class="col-sm-4 col-xs-12 entry">
+          <a class="btn btn-primary col-xs-12"  data-toggle="modal" data-target="#myModal">
+            <span class="glyphicon glyphicon-file"  style="font-size: 10vw; padding-left: 1vw;"></span><br />Document
+          </a>
+        </div>
+        <div class="col-sm-4 col-xs-12 entry">
+          <a class="btn btn-primary col-xs-12" data-toggle="modal" data-target="#topicModal"><span class="glyphicon glyphicon-stats"  style="font-size: 10vw; padding-right: 1vw" ></span><br />Topic</a>
+        </div>
+        <div class="col-sm-4 col-xs-12 entry"> 
+          <button class="btn btn-primary col-xs-12" disabled="">
+          <span class="glyphicon glyphicon-open"  style="font-size: 10vw; padding-left: 0.5vw;"></span><br />Upload &beta;
+          </button>
+        </div>
+        </div>
+      <div class="row" id="about">
+        <div class="col-xs-8 col-xs-offset-2">
+          <h2>About this corpus</h2>
+          <p>This collection of documents is from the HathiTrust Research Center.</p>
+          <h2><a href="#top"><small>Back to top <span class="glyphicon glyphicon-arrow-up"> </span></small></a></h2>
+        </div>
+      </div>
+      <div class="row" id="brand">
+         <div class="md-col-12">
+           <h2 style="text-align: center;">Powered by:</h2>
+                <div class="top"><h1 style="text-align: center;"><a href="http://inphodata.cogs.indiana.edu"><span class="logo-word">InPhO</span> Topic Explorer</a></h1></div>
+          <!--<h2 class="title non-null"></h2>-->
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container-fluid">
+    <div id="chart"></div>
+  </div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="myModal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h3 class="modal-title">Document search</h3>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal col-sm-12">
+          <div class="form-group">
+            <div class="input-group">
+              <input type="hidden" name="doc" id="hidden_id">
+              <input type="text" id="doc" class="form-control typeahead" placeholder="Click button on right to select random document →" autocomplete="off">
+              <div class="input-group-btn">
+                <button class="btn btn-default" type="button" id="randomDoc" data-original-title="" title=""><span class="glyphicon glyphicon-random"></span></button>
+              </div>
+            </div>
+          </div>
+        </form>
+        <hr />
+        <p>The topic bars below show the composition of the selected document in different models. Scroll over the bars to see the most likely words in each topic. Click on a bar to open the Topic Explorer for that model focused on this document.</p>
+        <div id="topicBars">
+<dl id="singleBarsDl"  class="dl-horizontal">
+</dl>
+        </div>
+
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+<div class="modal fade" tabindex="-1" role="dialog" id="topicModal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h3 class="modal-title">Topic search</h3>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal col-sm-12">
+          <div class="form-group">
+            <div class="input-group">
+              <input type="text" id="words" class="form-control" placeholder="Type words to select topics." autocomplete="off">
+              <div class="input-group-btn">
+                <a id="wordsBtn2" type="button" class="btn btn-default" href="topics">View topic clusters</a>
+              </div>
+            </div>
+          </div>
+        </form>
+        <div id="wordsDl">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <a id="wordsBtn" type="button" class="btn btn-primary" href="topics">View topic clusters</a>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+    
+    <script src='https://code.jquery.com/jquery-2.2.4.min.js'></script>
+<script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js'></script>
+<script src='https://rawgit.com/twbs/bootstrap/v2.3.2/js/bootstrap-typeahead.js'></script>
+
+
+        <script>
+      function toggleSearch() {
+  
+  $('#search-bin').toggle();
+}
+
+$('#sidebar-topics li a').tooltip();
+
+//$('#topicModal .modal-body').html(data)
+      //# sourceURL=pen.js
+
+var taTimeout;
+$(".typeahead").typeahead({items: 12,
+  source: function(query, process) {
+    if (taTimeout)
+      clearTimeout(taTimeout);
+
+    this.$menu.find('.active').removeClass('active');
+    taTimeout = setTimeout(function () {
+      $.getJSON('docs.json?q=' + encodeURIComponent(query), function(data) {
+        labels = [];
+        mapped = {};
+        $.each(data, function(i, item) {
+          mapped[item.label] = item;
+          labels.push(item.label);
+        });
+      
+        process(labels);
+    })}, 300);
+  },
+  updater: function(item) {
+      if (!item) { 
+        if ($('#autocompleteDoc').hasClass('active')) {
+          $('#autocompleteDoc').removeClass('active');
+          $('span.icon-file', '#autocompleteDoc').removeClass('icon-file').addClass('icon-font');
+        }
+        $('#hidden_id').val('');
+        return this.$element.val();
+      } else {
+        if (!$('#autocompleteDoc').hasClass('active')) {
+          $('#autocompleteDoc').addClass('active');
+          $('span.icon-font', '#autocompleteDoc').removeClass('icon-font').addClass('icon-file');
+        }
+        $('#autocompleteDoc').removeAttr('disabled');
+
+        $('#hidden_id').val(mapped[item].id);
+        resetBars();
+        return item;
+      }
+  },
+  sorter: function(items) {
+      /*if (items.length == 1) {
+        $('#hidden_id').val(mapped[items[0]].id);
+        console.log("setting hidden_id" + $('#hidden_id').val());
+        if (!$('#autocompleteDoc').hasClass('active')) {
+          $('#autocompleteDoc').addClass('active');
+          $('span.icon-font', '#autocompleteDoc').removeClass('icon-font').addClass('icon-file');
+        }
+        items.length = 0;
+      } else*/
+      if(items.length > 0) { 
+        $('#autocompleteDoc').removeAttr('disabled');
+      } else if (items.length == 0) {
+        if ($('#autocompleteDoc').hasClass('active')) {
+          $('#autocompleteDoc').removeClass('active');
+          $('span.icon-file', '#autocompleteDoc').removeClass('icon-file').addClass('icon-font');
+        }
+        $('#autocompleteDoc').attr('disabled','disabled');
+      }
+      var query = this.query;
+      items = items.sort();
+      var start = items.filter(function(item) { return item.lastIndexOf(query, 0) == 0;});
+      var elsewhere = items.filter(function(item) { return item.lastIndexOf(query, 0) != 0;});
+      return start.concat(elsewhere);
+  }
+});
+  
+$('#autocompleteDoc').click(function() {
+  if (!$('#autocompleteDoc').hasClass('active'))
+    $('.typeahead').typeahead('lookup').focus();
+  else {
+    $('#autocompleteDoc').removeClass('active');
+    $('span.icon-file', '#autocompleteDoc').removeClass('icon-file').addClass('icon-font');
+    $('#hidden_id').val('');
+  }
+});
+
+
+$('#randomDoc').click(function() { 
+    $.getJSON('docs.json?random=1', function(rand) {
+      if (!$('#autocompleteDoc').hasClass('active')) {
+        $('#autocompleteDoc').button('toggle');
+        $('span.icon-font', '#autocompleteDoc').removeClass('icon-font').addClass('icon-file');
+      }
+      $('#autocompleteDoc').removeAttr('disabled');
+      $('#hidden_id').val(rand[0].id);
+      $('#doc').val(rand[0].label);
+
+      resetBars();
+  });
+});
+$('#randomDoc').tooltip({title: "Random Document", placement: 'bottom'});
+    </script>
+
+<script>
+function resetBars() {
+  var ks = [{{#topic_range}}{{.}}, {{/topic_range}}];
+  $(ks).each(resetBar);
+}
+
+function resetBar(i, k) {
+var base_bar =
+'<dd class="bar-container" id="bar'+k+'">' 
++ '<div id="status" style="width:100%">'
++ '<div class="progress loading progress-striped active">'
++ '<div class="bar" style="width:25%">Loading documents...</div>'
++ '</div>'
++ '</div>'
++ '<div id="chart"> </div>'
++ '</dd>';
+
+if ($('#bar'+k).length) {
+  $('#bar'+k).remove();
+  $('dt:contains("'+k+' Topics")').remove();
+}
+$('#topicBars dl').append(base_bar);
+visualize(k);
+  
+}
+function visualize(k) {
+
+var maxRows = 25;
+var minCols = 2;
+
+//${c.entity.sep_dir}
+var docid = $('#hidden_id').val();
+if (!docid || docid == '')
+  return;
+
+var width = $('.bar-container').width(),
+    height = 20;
+
+var x = d3.scale.linear()
+    .range([0, width])
+    .domain([0,1.0]);
+ // TODO: Clear existing #bar{k} content
+var svg = d3.select("#bar"+k+" #chart").insert("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .attr("id","main")
+    .attr("class", "main");
+$('#main', '#bar'+k).hide();
+
+function calculateTopicMap(data, scale, sortFn){
+  data.forEach(function(d) {
+    var sizeFactor = (scale) ? d.prob : 1.0
+    var x0 = 0;
+    if (sortFn) d.topicMap =  d3.keys(d.topics)
+      .sort(sortFn)
+      .map(function(name) { return {name: name, x0: x0, x1: x0 += +(d.topics[name]*sizeFactor) }; });
+    else d.topicMap = d3.keys(d.topics)
+      .map(function(name) { return {name: name, x0: x0, x1: x0 += +(d.topics[name]*sizeFactor) }; });
+  });
+  
+}
+
+var url = "/docs_topics/" + $('#hidden_id').val() + '.json?n=1'
+var host = "" + k;
+
+d3.json(host + url, function(error, data) {
+  $('#status .bar', '#bar'+k).css('width', '50%').text('Loading topics...');
+  if (error) {
+    var isError = $('.bar.bar-danger ');
+   console.log(isError[0] +" Hello");    
+    $('#status .progress', '#bar'+k).removeClass('active progress-striped');
+    if(isError[0]){
+       $('#status .progress', '#bar'+k).remove();
+    }
+    else{
+      var errormsg = "Invalid document: " + docid + ".";
+      $('#status .bar', '#bar'+k).addClass('bar-danger').text(errormsg);
+    }
+    return false;
+  }
+  //console.log(data);
+  d3.json(host + "/topics.json", function(error_top, topics) {
+    $('#status .bar', '#bar'+k).css('width', '75%').text('Rendering chart...');
+    if (error_top) {
+       var isError = $('.bar.bar-danger ');
+      $('#status .progress', '#bar'+k).removeClass('active progress-striped');
+      if(isError[0]){
+         $('#status .progress', '#bar'+k).remove();
+      }
+      else{
+      $('#status .bar', '#bar'+k).addClass('bar-danger').text('Could not load topic list.');
+      }
+      return false;
+    }
+
+    var k = d3.keys(topics).length;
+
+    $("#bar" + k).before("<dt>"+k+" Topics</dt>");
+
+    var full_explorer_url = ""+k+"/?doc="+docid;
+  
+  
+    calculateTopicMap(data, true, function(a,b) {return data[0].topics[b] - data[0].topics[a];});
+  
+    // draw total bar
+    var doc = svg.selectAll("doc")
+        .data(data)
+      .enter().append("g")
+        .attr("class","doc");
+  
+    // Draw topic bars
+    doc.selectAll("rect")
+        .data(function(d) { return d.topicMap; })
+      .enter().append("rect")
+        .attr("height", height)
+        .attr("x", function(d) { return x(d.x0); })
+        .attr("width", function(d) { return x(d.x1) - x(d.x0); })
+        .attr("class", function(d) { return "top_" + d.name; })
+        .attr("title", function(d) { return d3.keys(topics[d.name]['words']).sort(function(a,b) {
+              if (topics[d.name]['words'][a] > topics[d.name]['words'][b])
+                return -1;
+              else if (topics[d.name]['words'][a] < topics[d.name]['words'][b])
+                return 1;
+              else
+                return 0;
+            }).join(", ") + ", ..."; })
+        .on("mouseover", function(d) {
+            // SVG element z-index determined by render order, not style sheet
+            // so element must be reappended to the end on hover so border 
+            // is not occluded
+            var parent = $(this).parent();
+            $(this).detach().appendTo(parent);
+          })
+        .on("click", function(d) { window.location = full_explorer_url; })
+        .style("fill", function(d) { return topics[d.name]['color']; });
+  
+  
+    $(".doc rect").tooltip({container:'body', 
+                            animation: false, placement: 'top'});
+    
+    $('#status .bar', '#bar'+k).addClass('bar-success').css('width', '100%').text("Complete!");
+    setTimeout(function() {$('#status', '#bar'+k).hide()}, 250);
+    setTimeout(function() {$('#main', '#bar'+k).show()}, 250);
+
+}); });
+
+}
+
+</script>
+
+<script>
+var combineWords = function(words) {
+   return d3.keys(words).sort(function(a,b) {
+              if (words[a] > words[b])
+                return -1;
+              else if (words[a] < words[b])
+                return 1;
+              else
+                return 0;
+            }).join(", ") + ", ..."; 
+}
+
+var wordTimeout;
+$('#words').on('input', function() {
+  if (wordTimeout) clearTimeout(wordTimeout);
+  var words = $(this).val().split(' ');
+  wordTimeout = setTimeout(function() { 
+    gettopics(words); 
+    $('#wordsBtn').attr('href', 'topics?q=' + words.join('|'));
+    $('#wordsBtn2').attr('href', 'topics?q=' + words.join('|'));
+  }, 500);
+});
+
+var ks = [{{#topic_range}}{{.}}, {{/topic_range}}];
+var k_urls = ks.map(function(k) { return '' + k + "/topics.json" });
+var topics = Promise.all(k_urls.map($.getJSON)).then(function (data) {
+    var t = {}; 
+    data.forEach(function(d,i) {
+      t[ks[i]] = $.each(d, function(key, val) { d[key] = combineWords(val.words) });
+  });
+    return t;
+});
+
+function gettopics(words) {
+  var query = words.join('|');
+  $('#wordsDl').html('')
+  $.getJSON('topics.json?q=' + query, function(data) {
+      Promise.resolve(topics).then(function(val) {  
+        for (var i = 0; i < 10; i++) {
+          var k = data[i]['k'];
+          var t = data[i]['t'];
+
+        /*$('#wordsDl').append('<dt><a href="' + k + '/?topic=' + t + '">' +
+          'Topic ' + t + 
+          ' <small>(k = ' + k + ')</small></a></dt>');
+        $('#wordsDl').append('<dd>' + 
+          val[k][t] + '</dd>'); }*/
+        $('#wordsDl').append('<div class="col-xs-4"><h4><a href="' + k + '/?topic=' + t + '">' +
+          'Topic ' + t +
+          ' <small>(k = ' + k + ')</small></a></h4><p>' +
+          val[k][t] + '</p></div>');
+        }
+        $('#wordsDl').append('<div class="clear">&nbsp;</div>');
+      });
+  });
+}
+</script>
+    
+    
+  </body>
+</html>
+ 
+
+
