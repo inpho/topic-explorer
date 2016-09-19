@@ -70,19 +70,19 @@ h1 a:hover {
   color: black;
 }
 
-#top {
+#h1 {
   text-align: center;
   margin-bottom: 15px; 
   margin-top: -30px;
 }
-#top h1 {
+#brandWord h1 {
   font-size: 59px;
   line-height: 1;
   color: inherit;
   letter-spacing: -1px;
   font-weight: bold;
 }
-#top {
+#brandWord {
   margin-bottom: 45px;
 }
 #brand {
@@ -375,7 +375,7 @@ h1 {
       <div class="row" id="brand">
          <div class="md-col-12">
            <h2 style="text-align: center;">Powered by:</h2>
-                <div class="top"><h1 style="text-align: center;"><a href="http://inphodata.cogs.indiana.edu"><span class="logo-word">InPhO</span> Topic Explorer</a></h1></div>
+                <div id="brandWord"><h1 style="text-align: center;"><a href="http://inphodata.cogs.indiana.edu"><span class="logo-word">InPhO</span> Topic Explorer</a></h1></div>
           <!--<h2 class="title non-null"></h2>-->
         </div>
       </div>
@@ -765,6 +765,12 @@ function gettopics(words) {
 }
 </script>
     
+
+<div style="position: absolute; top:0; right:0;" id="topBrand" class="hidden-sm hidden-xs">
+                <span style="float: right;font-weight: bold; text-align: right; position:absolute; top: 0; right: 0; padding-bottom: -10px;margin-right: 5px;">Powered by:</span>
+                <a href="http://inphodata.cogs.indiana.edu"><span class="logo-word">InPhO</span>
+                <span style="position: absolute; top: 80px; right: 0; text-align:right; width: 250px; opacity: 0.8;font-weight: bold; background-color: #ffffff; font-size: 23px; margin-right: 5px; color: black;">Topic Explorer</span></a>
+</div>
     
   </body>
 </html>
