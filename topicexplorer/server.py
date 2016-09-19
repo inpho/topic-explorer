@@ -414,6 +414,16 @@ class Application(Bottle):
             root, filename = os.path.split(filename)
             return static_file(filename, root=root)
         
+        @self.route('/description.md')
+        @_set_acao_headers
+        def description():
+            filename = kwargs.get('corpus_desc')
+            if not filename:
+                response.status = 404
+                return "File not found"
+            root, filename = os.path.split(filename)
+            return static_file(filename, root=root)
+        
         @self.route('/')
         @_set_acao_headers
         def cluster():
@@ -595,6 +605,7 @@ def create_app(args):
     doc_url_format = config.get('www', 'doc_url_format')
     label_module = config.get('main', 'label_module')
     corpus_path = config.get('main', 'raw_corpus')
+    corpus_desc = config.get('main', 'corpus_desc')
     fulltext = args.fulltext or config.getboolean('www', 'fulltext')
 
     app = Application(corpus_file=corpus_file,
@@ -611,7 +622,8 @@ def create_app(args):
                       corpus_link=corpus_link,
                       doc_title_format=doc_title_format,
                       doc_url_format=doc_url_format,
-                      cluster_path=cluster_path)
+                      cluster_path=cluster_path,
+                      corpus_desc=corpus_desc)
 
     """
     host, port = get_host_port(args) 
