@@ -7,17 +7,19 @@ from topicexplorer.lib.util import isint, is_valid_configfile, bool_prompt
 
 from vsm.viewer.wrappers import doc_label_name
 
-def parse_metadata_from_csvfile(filename):
+def parse_metadata_from_csvfile(filename, context_type):
     """
     Takes a csvfile where the first column in each row is the label.
     Returns a dictionary of dictionaries where each key is the label,
     and each value is a dictionary of field values.
     """
+    label_name = doc_label_name(context_type)
+
     with open(filename) as csvfile:
         reader = csv.DictReader(csvfile)
         metadata = dict()
         for row in reader:
-            metadata[row['article_label']] = row
+            metadata[row[label_name]] = row
 
     return metadata
 
@@ -108,7 +110,7 @@ def main(args):
     context_type = config.get('main', 'context_type')
 
     if args.add:
-        metadata = parse_metadata_from_csvfile(args.add)
+        metadata = parse_metadata_from_csvfile(args.add, context_type)
         c = add_metadata(c, context_type, metadata, force=args.force)
         c.save(args.corpus_path)
     if args.list:
