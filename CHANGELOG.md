@@ -12,18 +12,18 @@ This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangel
 - Added:
   - documentation for BibTeX support.
 
-## [1.0b116] - 2016-09-05
+## [1.0b121] - 2016-09-18
 - Added:
   - topic cluster display
 - Fixed:
   - [#160](https://github.com/inpho/topic-explorer/issues/160) - New isomap display doesn't load in Safari
   - Page labels in HTRC extension
   - BibTeX extension config file loading
+  - `topicexplorer metadata` now works with all context types
 
 ## [1.0b111] - 2016-08-14
-
 - Added:
-  - `git metadata` command with list, export, and import
+  - `topicexplorer metadata` command with list, export, and import
 - Changed:
   - Ran `autopep8` on `topicexplorer`, `topicexplorer.extensions` and `topicexplorer.lib`
 - Removed:
@@ -152,8 +152,8 @@ This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangel
 
 
 
-[Unreleased]: https://github.com/inpho/topic-explorer/compare/1.0b116...HEAD
-[1.0b116]: https://github.com/inpho/topic-explorer/compare/1.0b111...1.0b116
+[Unreleased]: https://github.com/inpho/topic-explorer/compare/1.0b121...HEAD
+[1.0b121]: https://github.com/inpho/topic-explorer/compare/1.0b111...1.0b121
 [1.0b111]: https://github.com/inpho/topic-explorer/compare/1.0b107...1.0b111
 [1.0b107]: https://github.com/inpho/topic-explorer/compare/1.0b106...1.0b107
 [1.0b106]: https://github.com/inpho/topic-explorer/compare/1.0b88...1.0b106
