@@ -576,6 +576,7 @@ def create_app(args):
         'fulltext': 'false',
         'topics': None,
         'cluster': None,
+        'corpus_desc' : None,
         'lang': None})
     config.read(args.config)
 
