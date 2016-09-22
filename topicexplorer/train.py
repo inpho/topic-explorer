@@ -2,7 +2,6 @@ from ConfigParser import RawConfigParser as ConfigWriter
 from ConfigParser import SafeConfigParser as ConfigParser
 from ConfigParser import NoOptionError
 import os.path
-from cluster import dimensionReduce
 
 from topicexplorer.lib.util import bool_prompt, int_prompt, is_valid_configfile
 
@@ -59,6 +58,7 @@ def continue_training(model_pattern, krange, total_iterations=200, n_proc=1):
     return basefilename
 
 def cluster(n_clusters, config_file):
+    from cluster import dimensionReduce
     dimension_reduce_model = dimensionReduce(config_file)
 
     dimension_reduce_model.fit_isomap()  
