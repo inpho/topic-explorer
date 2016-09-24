@@ -69,7 +69,8 @@ class Application(Bottle):
         self.config_file = config_file
 
         # setup routes
-        self.renderer = pystache.Renderer(escape=lambda u: u)
+        self.renderer = pystache.Renderer(escape=lambda u: u,
+            string_encoding='utf8')
         self.icons = kwargs.get('icons', 'link')
         if fulltext:
             self._serve_fulltext(corpus_path)
