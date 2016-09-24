@@ -582,6 +582,7 @@ d3.json(url, function(error, data) {
   
     var legendCols = Math.max(Math.ceil(d3.keys(topics).length / Math.min(data.length, maxRows)), minCols);
     var legendFactor = Math.ceil(d3.keys(topics).length / legendCols);
+    console.log("legendFactor: " + legendFactor);
     computeHeight(data,legendFactor);
     $("#main").attr("height", height + margin.top + margin.bottom);
     $("#legend").attr("height", (legendFactor * 20) + margin.top + margin.bottom);
@@ -719,7 +720,7 @@ d3.json(url, function(error, data) {
         .data(data[0].topicMap.map(function(t) { return t.name;}))
       .enter().append("g")
         .attr("class", function(d) { return "legend top_" + d; })
-        .attr("transform", function(d, i) { return "translate("+(55 * Math.floor(i / legendFactor))+"," + (y(i % legendFactor) - 10*(i % legendFactor)) + ")"; });
+        .attr("transform", function(d, i) { console.log("legendFactor: " + legendFactor + " i: " + (i % legendFactor)); return "translate("+(55 * Math.floor(i / legendFactor))+"," + (20*(i % legendFactor)) + ")"; });
   
     legendElts.append("rect")
         .attr("width", 18)
