@@ -500,17 +500,21 @@ def get_host_port(args):
                 pass
             return port
         except IOError:
-            port = int_prompt(
-                "Conflict on port {0}. Enter new port:".format(port))
-            return test_port(port)
+            if not args.quiet:
+                port = int_prompt(
+                    "Conflict on port {0}. Enter new port:".format(port))
+                return test_port(port)
+            else:
+                raise IOError(
+                    "Conflict on port {0}. Try running with -p to manually set new port.".format(port))
 
     port = args.port or int(config.get('www', 'port').format(0))
     port = test_port(port)
 
     # prompt to save
     if (int(config.get("www", "port").format(0))) != port:
-        if bool_prompt("Change default baseport to {0}?".format(port),
-                       default=True):
+        if not args.quiet and bool_prompt(
+            "Change default baseport to {0}?".format(port), default=True):
             config.set("www", "port", str(port))
 
             # create deep copy of configuration
@@ -643,6 +647,7 @@ def populate_parser(parser):
                         help="Port Number", default=None)
     parser.add_argument('--host', default=None, help='Hostname')
     parser.add_argument('--no-browser', dest='browser', action='store_false')
+    parser.add_argument("-q", "--quiet", action="store_true")
     parser.add_argument('--fulltext', action='store_true',
                         help='Serve raw corpus files.')
     parser.add_argument('--bibtex', default=None,
