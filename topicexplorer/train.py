@@ -129,20 +129,22 @@ def main(args):
     except NoOptionError:
         model_pattern = None
 
-    if (model_pattern is not None and not args.rebuild and
-        bool_prompt("Existing models found. Continue training?", default=True)):
+    if (model_pattern is not None and not args.rebuild and (not args.quiet and
+            bool_prompt("Existing models found. Continue training?", default=True))):
 
         from vsm.model.lda import LDA
         m = LDA.load(model_pattern.format(args.k[0]),
                      multiprocessing=args.processes > 1,
                      n_proc=args.processes)
 
-        if args.iter is None:
+        if args.iter is None and not args.quiet:
             args.iter = int_prompt("Total number of training iterations:",
                                    default=int(m.iteration * 1.5), min=m.iteration)
 
             print "\nTIP: number of training iterations can be specified with argument '--iter N':"
             print "         topicexplorer train --iter %d %s\n" % (args.iter, args.config_file)
+        elif args.iter is None and args.quiet:
+            args.iter = int(m.iteration * 1.5)
 
         del m
 
@@ -164,32 +166,37 @@ def main(args):
         else:
             model_pattern = continue_training(model_pattern, args.k, args.iter,
                                               n_proc=args.processes)
-
     else:
         # build a new model
-        if args.iter is None:
+        if args.iter is None and not args.quiet:
             args.iter = int_prompt("Number of training iterations:", default=200)
 
             print "\nTIP: number of training iterations can be specified with argument '--iter N':"
             print "         topicexplorer train --iter %d %s\n" % (args.iter, args.config_file)
- 
-        ctxs = corpus.context_types
-        ctxs = sorted(ctxs, key=lambda ctx: len(corpus.view_contexts(ctx)))
-        if args.context_type not in ctxs:
-            while args.context_type not in ctxs:
-                contexts = ctxs[:]
-                contexts[0] = contexts[0].upper()
-                contexts = '/'.join(contexts)
-                args.context_type = raw_input("Select a context type [%s] : " % contexts)
-                if args.context_type.strip() == '':
-                    args.context_type = ctxs[0]
-                if args.context_type == ctxs[0].upper():
-                    args.context_type = ctxs[0]
+        elif args.iter is None and args.quiet:
+            args.iter = 200
 
-            print "\nTIP: context type can be specified with argument '--context-type TYPE':"
-            print "         topicexplorer train --context-type %s %s\n" % (args.context_type, args.config_file)
+        # TODO: if only one context_type, make it just the one context type.
+        ctxs = corpus.context_types
+        if len(ctxs) == 1:
+            args.context_type = ctxs[0]
+        else:
+            ctxs = sorted(ctxs, key=lambda ctx: len(corpus.view_contexts(ctx)))
+            if args.context_type not in ctxs:
+                while args.context_type not in ctxs:
+                    contexts = ctxs[:]
+                    contexts[0] = contexts[0].upper()
+                    contexts = '/'.join(contexts)
+                    args.context_type = raw_input("Select a context type [%s] : " % contexts)
+                    if args.context_type.strip() == '':
+                        args.context_type = ctxs[0]
+                    if args.context_type == ctxs[0].upper():
+                        args.context_type = ctxs[0]
     
-    
+                print "\nTIP: context type can be specified with argument '--context-type TYPE':"
+                print "         topicexplorer train --context-type %s %s\n" % (args.context_type, args.config_file)
+
+
         print "\nTIP: This configuration can be automated as:"
         print "         topicexplorer train %s --iter %d --context-type %s -k %s\n" %\
             (args.config_file, args.iter, args.context_type, 
