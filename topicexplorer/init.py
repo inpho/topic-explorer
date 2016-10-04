@@ -74,7 +74,7 @@ def process_bibtex(corpus_path):
     target_dir = os.path.basename(corpus_path).replace('.bib', '')
     if not os.path.exists(target_dir):
         os.makedirs(target_dir)
-    elif overwrite_prompt(target_dir):
+    elif overwrite_prompt(target_dir) and not args.quiet:
         shutil.rmtree(target_dir)
         os.makedirs(target_dir)
     else:
@@ -211,7 +211,7 @@ def main(args):
     if not args.corpus_name:
         args.corpus_name = os.path.basename(os.path.dirname(args.corpus_path))
 
-    if not args.corpus_print_name:
+    if not args.corpus_print_name and not args.quiet:
         args.corpus_print_name = prompt("Corpus Name", default=args.corpus_name)
 
     if args.htrc:
