@@ -11,6 +11,7 @@ This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangel
 ## [Unreleased]
 - Added:
   - documentation for BibTeX support.
+  - [#99](https://github.com/inpho/topic-explorer/issues/99) Add `-q` to all commands to run without prompts
 
 ## [1.0b121] - 2016-09-18
 - Added:
