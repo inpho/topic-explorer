@@ -12,6 +12,8 @@ This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangel
 - Added:
   - documentation for BibTeX support.
   - [#99](https://github.com/inpho/topic-explorer/issues/99) Add `-q` to all commands to run without prompts
+- Fixed:
+  - Metadata now keeps all information in unicode.
 
 ## [1.0b121] - 2016-09-18
 - Added:

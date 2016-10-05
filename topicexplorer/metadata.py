@@ -7,6 +7,13 @@ from topicexplorer.lib.util import isint, is_valid_configfile, bool_prompt
 
 from vsm.viewer.wrappers import doc_label_name
 
+def UnicodeDictReader(utf8_data, **kwargs):
+    # Solution from http://stackoverflow.com/a/5005573
+    csv_reader = csv.DictReader(utf8_data, **kwargs)
+    for row in csv_reader:
+        yield {key: unicode(value, 'utf-8') 
+                    for key, value in row.iteritems()}
+
 def parse_metadata_from_csvfile(filename, context_type):
     """
     Takes a csvfile where the first column in each row is the label.
@@ -15,8 +22,8 @@ def parse_metadata_from_csvfile(filename, context_type):
     """
     label_name = doc_label_name(context_type)
 
-    with open(filename) as csvfile:
-        reader = csv.DictReader(csvfile)
+    with open(filename, encoding='utf8') as csvfile:
+        reader = UnicodeDictReader(csvfile)
         metadata = dict()
         for row in reader:
             metadata[row[label_name]] = row
@@ -60,11 +67,11 @@ def add_metadata(corpus, ctx_type, new_metadata, force=False):
     fields = md.dtype.fields.keys()
 
     # sort new_metadata according to existing md order
-    # n.b., this may raise a KeyError - in which case there's not md
-    # for each entry - which is the desired error to throw.
+    # Note: this may raise a KeyError - in which case there's not md
+    # for each entry.
     label_name = doc_label_name(ctx_type)
     labels = md[label_name]
-    new_data = [new_metadata.get(id, dict()) for id in labels]
+    new_data = [new_metadata[id] for id in labels]
 
     # look for new fields
     new_fields = set()
@@ -83,6 +90,7 @@ def add_metadata(corpus, ctx_type, new_metadata, force=False):
         if force:
             data = [d.get(field, '') for d in new_data]
         else:
+            # new_data is a sorted list of metadata dictionaries
             data = [d[field] for d in new_data]
         corpus = vsm.corpus.add_metadata(corpus, ctx_type, field, data)
 
