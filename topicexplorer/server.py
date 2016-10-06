@@ -601,8 +601,8 @@ def create_app(args):
     # get icons_list
     config_icons = config.get('www', 'icons').split(",")
     if args.fulltext or config.getboolean('www', 'fulltext'):
-        if not any('fulltext' not in icon for icon in config_icons):
-            config_icons.insert(0, 'fulltext')
+        if not any('fulltext' in icon for icon in config_icons):
+            config_icons.insert(0, 'fulltext-inline')
 
     # Create application object
     corpus_name = config.get('www', 'corpus_name')
