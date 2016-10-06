@@ -276,7 +276,31 @@ def main(args):
             sys.exit(74)
         """
 
-    return write_config(args, args.config_file)
+    args.config_file = write_config(args, args.config_file)
+
+    args.corpus_desc = args.config_file + '.md'
+    if not args.quiet and os.path.exists(args.corpus_desc):
+        while args.corpus_desc not in ['y', 'n', False]:
+            args.corpus_desc = raw_input("\nExisting corpus description found. Remove? [y/N] ")
+            args.corpus_desc = args.corpus_desc.lower().strip()
+            if args.corpus_desc == '':
+                args.corpus_desc = False
+        else:
+            if args.corpus_desc == 'y':
+                args.corpus_desc = args.config_file + '.md'
+
+    if args.corpus_desc:
+        with open(args.corpus_desc, 'w') as outfile:
+            outfile.write(
+"""This is an instance of the [InPhO Topic Explorer](http://inphodata.cogs.indiana.edu/). If you would like
+to add a custom corpus description, either:
+- Modify the contents of the file `{}`
+- Change the main:corpus_desc path in `{}` to an existing Markdown file.
+""".format(os.path.abspath(args.corpus_desc), 
+           os.path.abspath(args.config_file)))
+
+    return args.config_file
+
 
 
 def write_config(args, config_file=None):
@@ -289,6 +313,7 @@ def write_config(args, config_file=None):
     config.set("main", "corpus_file", os.path.abspath(args.corpus_filename))
     config.set("main", "raw_corpus", os.path.abspath(args.corpus_path))
     config.set("main", "sentences", args.sentences)
+
     if args.bibtex:
         config.set("main", "label_module", "topicexplorer.extensions.bibtex")
         config.add_section("bibtex")
@@ -298,6 +323,7 @@ def write_config(args, config_file=None):
     config.set("www", "corpus_name", args.corpus_print_name)
     config.set("www", "icons", "link")
     config.set("www", "fulltext", "false")
+
 
     config.add_section("logging")
     config.set("logging", "path", "logs/%s/{0}.log" % args.corpus_name)
@@ -334,6 +360,8 @@ def write_config(args, config_file=None):
                     or config_file
             elif overwrite == '' or overwrite == 'y':
                 overwrite = True
+
+    config.set("main", "corpus_desc", config_file+'.md')
 
     print "Writing configuration file", config_file
     with open(config_file, "wb") as configfh:
