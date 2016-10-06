@@ -201,8 +201,8 @@ d3.csv(base_url + "cluster.csv", function(error, data) {
     .size([width, height])
     .on("tick", tick)
     .charge(-1)
-    .gravity(0)
-    .chargeDistance(20);
+    .gravity(0);
+    //.chargeDistance(20);
 
   x.domain(d3.extent(data, function(d) { return d[xVar]; })).nice();
   y.domain(d3.extent(data, function(d) { return d[yVar]; })).nice();
@@ -316,12 +316,14 @@ $(document).ready(function() {
       force    
         .charge(0)
         .gravity(0)
-        .chargeDistance(0).start();
+        //.chargeDistance(0)
+        .start();
     else
       force    
         .charge(-1)
         .gravity(0)
-        .chargeDistance(20).start();
+        //.chargeDistance(20)
+        .start();
 
   });
 
