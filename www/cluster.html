@@ -145,7 +145,7 @@ var margin = {top: 20, right: 80, bottom: 80, left: 40},
     width = $('#chart').parent().width() - margin.left - margin.right,
     height = $(document).height() - Math.min($('#main').height(), 400) - margin.top - margin.bottom,
     padding = 1, // separation between nodes
-    radius = 4;
+    radius = 20;
 
 var x = d3.scale.linear()
     .range([0, width]);
@@ -181,12 +181,23 @@ var svg = d3.select("#chart").append("svg")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+$(document).ready(function() {
+    $.ajaxSetup({ cache: true });
+});
 
 var ext_data;
 
 
 
 d3.csv(base_url + "cluster.csv", function(error, data) {
+  var topics = {}; var node;
+  var ks = data.map(function(d) { return d.k; }).filter(function(item, i, ar){ return ar.indexOf(item) === i; });;
+  ks.map(function(k) { $('#sidebar-topics').append('<li><a class="selected" href="javascript:toggleDisplay(' + k + ')">' + k + '</a></li>') });
+
+  var sizes = d3.scale.log()
+    .range([radius, 1]);
+  sizes.domain(d3.extent(ks)).nice();
+
   ext_data = data;
   var xVar = "orig_x",
       yVar = "orig_y";
@@ -214,7 +225,7 @@ d3.csv(base_url + "cluster.csv", function(error, data) {
     d.x = x(d[xVar]);
     d.y = y(d[yVar]);
     d.color = color(d.cluster);
-    d.radius = radius * (7 - (parseInt(d.k) / 20));
+    d.radius = sizes(d.k);
     if (d.k != prev) { prev = d.k; currentTop = 0; }
     d.topic = currentTop++;
   });
@@ -243,13 +254,7 @@ d3.csv(base_url + "cluster.csv", function(error, data) {
       .style("text-anchor", "end")
       .text("Sepal Length (cm)");*/
   
-$(document).ready(function() {
-    $.ajaxSetup({ cache: true });
-});
 
-  var topics = {}; var node;
-  var ks = data.map(function(d) { return d.k; }).filter(function(item, i, ar){ return ar.indexOf(item) === i; });;
-  ks.map(function(k) { $('#sidebar-topics').append('<li><a class="selected" href="javascript:toggleDisplay(' + k + ')">' + k + '</a></li>') });
 
   var k_urls = ks.map(function(k) { return base_url + k + "/topics.json" });
   console.log(ks, k_urls);
