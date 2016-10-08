@@ -1,0 +1,59 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: topicexplorer\n"
+"POT-Creation-Date: 2016-10-08 13:08+EDT\n"
+"PO-Revision-Date: 2016-10-08 13:34-0500\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+"X-Generator: Poedit 1.6.10\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-Basepath: /home/workspace/topic-explorer/topicexplorer\n"
+
+#: init.py:37
+msgid "PDF file detected, extracting plaintext to"
+msgstr "Extracting PDF plaintext to"
+
+#: init.py:42
+msgid "PDF files detected, extracting plaintext to"
+msgstr "Extracting PDFs to"
+
+#: init.py:74
+msgid "Loading BibTeX from"
+msgstr "BibTeX is loading from"
+
+#: init.py:180
+msgid "Building corpus from {}"
+msgstr "Corpus being built from {}"
+
+#: init.py:182
+msgid "with {} function"
+msgstr "using the {} function"
+
+#: init.py:245
+msgid "Corpus file found. Rebuild? [y/N] "
+msgstr "Rebuild corpus file? [y/N] "
+
+#: init.py:355
+msgid ""
+"\n"
+"Config file {0} exists. Overwrite? [Y/n] "
+msgstr ""
+"\n"
+" {} exists. Overwrite? [Y/n]"
+
+#: init.py:362
+msgid "Enter new filename [default: {0}]: "
+msgstr "Enter new filename: "
+
+#: init.py:369
+msgid "Writing configuration file {}"
+msgstr "Writing config file"

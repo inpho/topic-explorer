@@ -7,6 +7,11 @@ import sys
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
+import gettext
+t = gettext.translation('topicexplorer',
+    '/home/jammurdo/workspace/topic-explorer/locale', ['en_US'])
+_ = t.ugettext
+
 from topicexplorer.lib.util import (prompt, is_valid_filepath,
                                     listdir_nohidden, contains_pattern)
 
@@ -31,12 +36,12 @@ def get_corpus_filename(corpus_path, model_path, nltk_stop=False, stop_freq=0,
 def process_pdfs(corpus_path, ignore=['.json', '.log', '.err', '.pickle', '.npz']):
     from topicexplorer.lib import pdf
     if os.path.isfile(corpus_path):
-        print "PDF file detected, extracting plaintext to",\
+        print _("PDF file detected, extracting plaintext to"),\
             corpus_path.replace('.pdf', '.txt')
         pdf.main(corpus_path)
         corpus_path = corpus_path.replace('.pdf', '.txt')
     elif os.path.isdir(corpus_path):
-        print "PDF files detected, extracting plaintext to", corpus_path + '-txt'
+        print _("PDF files detected, extracting plaintext to"), corpus_path + '-txt'
 
         if corpus_path.endswith('/'):
             corpus_path = corpus_path[:-1]
@@ -68,7 +73,7 @@ def process_bibtex(corpus_path):
     from pybtex.database import parse_file
     from topicexplorer.lib.util import overwrite_prompt, safe_symlink
 
-    print "Loading BibTeX from", corpus_path
+    print _("Loading BibTeX from"), corpus_path
     bib = parse_file(corpus_path)
 
     target_dir = os.path.basename(corpus_path).replace('.bib', '')
@@ -174,9 +179,9 @@ def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=0,
     if contains_pdfs:
         corpus_path = process_pdfs(corpus_path)
 
-    print "Building corpus from", corpus_path,
+    print _("Building corpus from {}").format(corpus_path),
     corpusbuilder = get_corpusbuilder_fn(corpus_path, sentences, ignore=ignore)
-    print "with {} function".format(corpusbuilder.__name__)
+    print _("with {} function").format(corpusbuilder.__name__)
 
     c = corpusbuilder(corpus_path, nltk_stop=nltk_stop,
                       stop_freq=stop_freq, ignore=ignore, decode=decode,
@@ -239,7 +244,7 @@ def main(args):
         args.corpus_path, args.model_path, stop_freq=args.stop_freq)
     if not args.rebuild and os.path.exists(args.corpus_filename):
         while args.rebuild not in ['y', 'n', True]:
-            args.rebuild = raw_input("\nCorpus file found. Rebuild? [y/N] ")
+            args.rebuild = raw_input("\n" + _("Corpus file found. Rebuild? [y/N] "))
             args.rebuild = args.rebuild.lower().strip()
             if args.rebuild == 'y':
                 args.rebuild = True
@@ -349,21 +354,21 @@ def write_config(args, config_file=None):
 
         overwrite = None if os.path.exists(config_file) and not args.quiet else True
         while not overwrite:
-            overwrite = raw_input("\nConfig file {0} exists. Overwrite? [Y/n] ".format(config_file))
+            overwrite = raw_input(_("\nConfig file {0} exists. Overwrite? [Y/n] ").format(config_file))
             overwrite = overwrite.lower().strip()
             if overwrite == 'n':
                 config_i = 0
                 while os.path.exists(config_file):
                     config_file = args.corpus_name + ".%d.ini" % config_i
                     config_i += 1
-                config_file = raw_input("Enter new filename [default: {0}]: ".format(config_file))\
+                config_file = raw_input(_("Enter new filename [default: {0}]: ").format(config_file))\
                     or config_file
             elif overwrite == '' or overwrite == 'y':
                 overwrite = True
 
     config.set("main", "corpus_desc", config_file+'.md')
 
-    print "Writing configuration file", config_file
+    print _("Writing configuration file {}").format(config_file)
     with open(config_file, "wb") as configfh:
         config.write(configfh)
     return config_file

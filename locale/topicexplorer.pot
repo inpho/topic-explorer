@@ -1,0 +1,63 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2016-10-08 13:53+EDT\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: ENCODING\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: topicexplorer/init.py:39
+msgid "PDF file detected, extracting plaintext to"
+msgstr ""
+
+#: topicexplorer/init.py:44
+msgid "PDF files detected, extracting plaintext to"
+msgstr ""
+
+#: topicexplorer/init.py:76
+msgid "Loading BibTeX from"
+msgstr ""
+
+#: topicexplorer/init.py:182
+msgid "Building corpus from {}"
+msgstr ""
+
+#: topicexplorer/init.py:184
+msgid "with {} function"
+msgstr ""
+
+#: topicexplorer/init.py:247
+msgid "Corpus file found. Rebuild? [y/N] "
+msgstr ""
+
+#: topicexplorer/init.py:357
+msgid ""
+"\n"
+"Config file {0} exists. Overwrite? [Y/n] "
+msgstr ""
+
+#: topicexplorer/init.py:364
+msgid "Enter new filename [default: {0}]: "
+msgstr ""
+
+#: topicexplorer/init.py:371
+msgid "Writing configuration file {}"
+msgstr ""
+
+#: topicexplorer/prep.py:68
+msgid "HTRC metadata file found!"
+msgstr ""
+
+#: topicexplorer/prep.py:90
+msgid "Stoplist the following languages?"
+msgstr ""
+

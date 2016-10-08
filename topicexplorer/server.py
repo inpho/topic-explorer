@@ -25,6 +25,11 @@ from vsm.model.lda import LDA
 from vsm.viewer.ldacgsviewer import LdaCgsViewer as LDAViewer
 from vsm.viewer.wrappers import doc_label_name
 
+import gettext
+t = gettext.translation('topicexplorer',
+    '/home/jammurdo/workspace/topic-explorer/locale', ['en_US'])
+_ = t.ugettext
+
 import random
 import pystache
 

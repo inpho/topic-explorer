@@ -8,6 +8,11 @@ from codecs import open
 from unidecode import unidecode
 from topicexplorer.lib.util import isint, is_valid_configfile, bool_prompt
 
+import gettext
+t = gettext.translation('topicexplorer',
+    '/home/jammurdo/workspace/topic-explorer/locale', ['en_US'])
+_ = t.ugettext
+
 # NLTK Langauges
 langs = dict(da='danish', nl='dutch', en='english', fi='finnish', fr='french',
              de='german', hu='hungarian', it='italian', no='norwegian',
@@ -60,7 +65,7 @@ def get_htrc_langs(args):
     metadata_path = os.path.dirname(args.corpus_path)
     metadata_path = os.path.join(metadata_path, '../metadata.json')
     if os.path.exists(metadata_path):
-        print "HTRC metadata file found!"
+        print _("HTRC metadata file found!")
         with open(metadata_path) as jsonfile:
             data = json.load(jsonfile)
 
@@ -82,7 +87,7 @@ def detect_langs(corpus):
 def lang_prompt(languages):
     global langs
     out_langs = set()
-    print "Stoplist the following languages?",
+    print _("Stoplist the following languages?"),
     for lang in languages:
         if lang in langs:
             if bool_prompt("{}?".format(langs[lang].capitalize()), default=True):
