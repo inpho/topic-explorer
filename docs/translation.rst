@@ -24,6 +24,7 @@ To make a new translation:
 
 1.  `Perform a "developer install" of InPhO-TE <https://github.com/inpho/topic-explorer#developer-install>`_.
 2.  Install `poedit <https://poedit.net/>`_.
+     -  **Linux:** Check your package manager first. The program can be installed on Debian and Ubuntu using: ``sudo apt-get install poedit``
 3.  Open poedit and click "Create new translation".
 4.  Navigate to your developer install and select the ``locale/topicexplorer.pot`` file.
 5.  Type in the language you wish to use.
