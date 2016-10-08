@@ -22,6 +22,8 @@ This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangel
   - Metadata now keeps all information in unicode.
   - `topicexplorer metadata` now allows for label updates with `--rename` flag.
   - Upgrade to D3 for topic cluster display broke other parts of visualization. Reverted D3 and removed chargeDistance property from cluster view.
+  - [#166](https://github.com/inpho/topic-explorer/issues/166) Invalid attribute
+    'quiet'?
 
 ## [1.0b121] - 2016-09-18
 - Added:
