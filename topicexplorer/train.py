@@ -234,7 +234,7 @@ def populate_parser(parser):
     parser.add_argument('--dry-run', dest='dry_run', action='store_true',
                         help="Run code without training models")
     parser.add_argument('--rebuild', action='store_true')
-    parser.add_argument('--quiet', action='store_true')
+    parser.add_argument('-q', '--quiet', action='store_true')
     parser.add_argument('--cluster', type=int,
                         help="Cluster an existing model")
 
