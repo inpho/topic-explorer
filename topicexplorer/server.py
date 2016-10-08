@@ -26,8 +26,9 @@ from vsm.viewer.ldacgsviewer import LdaCgsViewer as LDAViewer
 from vsm.viewer.wrappers import doc_label_name
 
 import gettext
-t = gettext.translation('topicexplorer',
-    '/home/jammurdo/workspace/topic-explorer/locale', ['en_US'])
+TRANSLATION_ROOT = os.path.dirname(__file__)
+TRANSLATION_ROOT = os.path.join(TRANSLATION_ROOT, '../locale')
+t = gettext.translation('topicexplorer', TRANSLATION_ROOT)
 _ = t.ugettext
 
 import random

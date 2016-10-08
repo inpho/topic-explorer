@@ -9,8 +9,9 @@ from unidecode import unidecode
 from topicexplorer.lib.util import isint, is_valid_configfile, bool_prompt
 
 import gettext
-t = gettext.translation('topicexplorer',
-    '/home/jammurdo/workspace/topic-explorer/locale', ['en_US'])
+TRANSLATION_ROOT = os.path.dirname(__file__)
+TRANSLATION_ROOT = os.path.join(TRANSLATION_ROOT, '../locale')
+t = gettext.translation('topicexplorer', TRANSLATION_ROOT)
 _ = t.ugettext
 
 # NLTK Langauges

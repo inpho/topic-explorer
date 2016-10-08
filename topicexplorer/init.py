@@ -7,14 +7,14 @@ import sys
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
-import gettext
-t = gettext.translation('topicexplorer',
-    '/home/jammurdo/workspace/topic-explorer/locale', ['en_US'])
-_ = t.ugettext
-
 from topicexplorer.lib.util import (prompt, is_valid_filepath,
                                     listdir_nohidden, contains_pattern)
 
+import gettext
+TRANSLATION_ROOT = os.path.dirname(__file__)
+TRANSLATION_ROOT = os.path.join(TRANSLATION_ROOT, '../locale')
+t = gettext.translation('topicexplorer', TRANSLATION_ROOT)
+_ = t.ugettext
 
 def get_corpus_filename(corpus_path, model_path, nltk_stop=False, stop_freq=0,
                         context_type='document'):

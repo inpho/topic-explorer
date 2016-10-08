@@ -6,8 +6,9 @@ import os.path
 from topicexplorer.lib.util import bool_prompt, int_prompt, is_valid_configfile
 
 import gettext
-t = gettext.translation('topicexplorer',
-    '/home/jammurdo/workspace/topic-explorer/locale', ['en_US'])
+TRANSLATION_ROOT = os.path.dirname(__file__)
+TRANSLATION_ROOT = os.path.join(TRANSLATION_ROOT, '../locale')
+t = gettext.translation('topicexplorer', TRANSLATION_ROOT)
 _ = t.ugettext
 
 def build_models(corpus, corpus_filename, model_path, context_type, krange,
