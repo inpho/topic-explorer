@@ -1,11 +1,13 @@
-# Translation Guide
+Translation Guide
+===================
 
 The Topic Explorer aims to be accessible in different languages. This guide
 serves as an introduction to *internationalization* (or `i18n` for short, as the
 word "internationalization" has 18 letters following the "i"). After using this
 guide, you should be able to add a translation in a new language.
 
-## Concepts
+Concepts
+----------
 
 The process of making a translation can be seen as generating three different files:
 
@@ -15,9 +17,11 @@ The process of making a translation can be seen as generating three different fi
 
 Topic Explorer uses the [GNU gettext](https://www.gnu.org/software/gettext/) i18n conventions, as implemented by the [Python `gettext` library](https://docs.python.org/2/library/gettext.html). 
 
-## Getting Started
+Getting Started
+-----------------
 
 To make a new translation:
+
 1.  [Perform a "developer install" of InPhO-TE](https://github.com/inpho/topic-explorer#developer-install).
 2.  Install [poedit](https://poedit.net/).
 3.  Open poedit and click "Create new translation".
@@ -30,6 +34,7 @@ To make a new translation:
 
 Contact the developers for further help on merging your translation to the codebase.
 
-## Further Reading
+Further Reading
+-----------------
 - [Translate your Python 3 program with the gettext module](http://inventwithpython.com/blog/2014/12/20/translate-your-python-3-program-with-the-gettext-module/)
 - [Books on Internationalization (i18n)](http://www.i18nguy.com/books.html)
