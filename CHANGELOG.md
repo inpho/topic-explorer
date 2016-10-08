@@ -9,11 +9,19 @@ This project follows the [PEP 440](https://www.python.org/dev/peps/pep-0440/) ve
 This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangelog.com/). Versions should group changes in the order: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, and `Security` (see section ["What makes a good change log?"](http://keepachangelog.com/)).
 
 ## [Unreleased]
+
+## [1.0b128] - 2016-10-06
 - Added:
   - documentation for BibTeX support.
   - [#99](https://github.com/inpho/topic-explorer/issues/99) Add `-q` to all commands to run without prompts
+  - [#153](https://github.com/inpho/topic-explorer/issues/153) Add default index.html
+  - [#143](https://github.com/inpho/topic-explorer/issues/143) Links to corpus home page
+- Changed:
+  - [#154](https://github.com/inpho/topic-explorer/issues/154) Modal fulltext default
 - Fixed:
   - Metadata now keeps all information in unicode.
+  - `topicexplorer metadata` now allows for label updates with `--rename` flag.
+  - Upgrade to D3 for topic cluster display broke other parts of visualization. Reverted D3 and removed chargeDistance property from cluster view.
 
 ## [1.0b121] - 2016-09-18
 - Added:
@@ -156,6 +164,7 @@ This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangel
 
 
 [Unreleased]: https://github.com/inpho/topic-explorer/compare/1.0b121...HEAD
+[1.0b128]: https://github.com/inpho/topic-explorer/compare/1.0b111...1.0b128
 [1.0b121]: https://github.com/inpho/topic-explorer/compare/1.0b111...1.0b121
 [1.0b111]: https://github.com/inpho/topic-explorer/compare/1.0b107...1.0b111
 [1.0b107]: https://github.com/inpho/topic-explorer/compare/1.0b106...1.0b107

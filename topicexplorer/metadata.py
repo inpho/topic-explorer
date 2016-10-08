@@ -3,6 +3,7 @@ from ConfigParser import RawConfigParser as ConfigParser
 from codecs import open 
 import csv
 from unidecode import unidecode
+from sortedcontainers import SortedDict
 from topicexplorer.lib.util import isint, is_valid_configfile, bool_prompt
 
 from vsm.viewer.wrappers import doc_label_name
@@ -11,7 +12,7 @@ def UnicodeDictReader(utf8_data, **kwargs):
     # Solution from http://stackoverflow.com/a/5005573
     csv_reader = csv.DictReader(utf8_data, **kwargs)
     for row in csv_reader:
-        yield {key: unicode(value, 'utf-8') 
+        yield {unicode(key, 'utf-8'): unicode(value, 'utf-8')
                     for key, value in row.iteritems()}
 
 def parse_metadata_from_csvfile(filename, context_type):
@@ -24,7 +25,7 @@ def parse_metadata_from_csvfile(filename, context_type):
 
     with open(filename, encoding='utf8') as csvfile:
         reader = UnicodeDictReader(csvfile)
-        metadata = dict()
+        metadata = SortedDict()
         for row in reader:
             metadata[row[label_name]] = row
 
@@ -58,7 +59,7 @@ def extract_labels(corpus, ctx_type, filename):
             outfile.write(label + '\n')
 
 
-def add_metadata(corpus, ctx_type, new_metadata, force=False):
+def add_metadata(corpus, ctx_type, new_metadata, force=False, rename=False):
     import vsm.corpus
     
     # get existing metadata
@@ -71,7 +72,22 @@ def add_metadata(corpus, ctx_type, new_metadata, force=False):
     # for each entry.
     label_name = doc_label_name(ctx_type)
     labels = md[label_name]
-    new_data = [new_metadata[id] for id in labels]
+    if rename:
+        new_data = new_metadata.values()
+    else:
+        try:
+            new_data = [new_metadata[id] for id in labels]
+            if not new_data:
+                print "No metadata labels match existing labels.",
+                print "If you changed labels, run with the `--rename` flag."
+                sys.exit(0)
+            elif len(new_data) != len(labels):
+                raise KeyError
+        except KeyError:
+            print "New metadata does not span all documents in corpus."
+            print "If you changed labels, run with the `--rename` flag."
+            import sys
+            sys.exit(1)
 
     # look for new fields
     new_fields = set()
@@ -80,7 +96,8 @@ def add_metadata(corpus, ctx_type, new_metadata, force=False):
 
     # differentiate new and updated fields
     updated_fields = new_fields.intersection(fields)
-    updated_fields.remove(label_name)
+    if not rename:
+        updated_fields.remove(label_name)
     new_fields = new_fields.difference(fields)
     if None in new_fields:
         new_fields.remove(None)
@@ -119,7 +136,8 @@ def main(args):
 
     if args.add:
         metadata = parse_metadata_from_csvfile(args.add, context_type)
-        c = add_metadata(c, context_type, metadata, force=args.force)
+        c = add_metadata(c, context_type, metadata, force=args.force,
+            rename=args.rename)
         c.save(args.corpus_path)
     if args.list:
         extract_labels(c, context_type, args.list)
@@ -135,6 +153,8 @@ def populate_parser(parser):
     parser.add_argument("-l", "--list", help="List all labels")
     parser.add_argument("-f", "--force", action='store_true', default=False,
         help="Force insertion of blank metadata")
+    parser.add_argument("--rename", action='store_true', default=False,
+        help="Rename labels, assumes same document order. See documentation.")
 
 
 if __name__ == '__main__':

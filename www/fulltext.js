@@ -53,6 +53,7 @@
     this.status = (typeof data.status === 'undefined') ? false : data.status;
     this.submit = (typeof data.submit === 'undefined') ? false : data.submit;
     this.cancel = (typeof data.cancel === 'undefined') ? false : data.cancel;
+    this.url = (typeof data.url === 'undefined') ? false : data.url;
     this.close = (typeof data.close === 'undefined') ? false : data.close;
 
     var html = '<div class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true">';
@@ -63,7 +64,6 @@
       html += '</div>';
     }
     html += '<div class="modal-body">';
-    if (this.body) html += '<p>' + this.body + '</p>';
     if (this.steps){
       var step_ids = [];
       var l = this.steps.length;
@@ -87,6 +87,7 @@
     if (this.submit || this.cancel){
       html += '<div class="modal-footer">';
       if (this.cancel) html += '<button class="btn" data-dismiss="modal" aria-hidden="true">' + this.cancel + '</button>';
+      //if (this.url) html += '<a target="_blank" class="btn" data-dismiss="modal" aria-hidden="true" href="'+this.url+'" >Open in new tab</a>';
       if (this.submit) html += '<button class="btn btn-primary btn-submit">' + this.submit + '</button>';
       html += '</div>';
     }
@@ -109,6 +110,8 @@
     }
     $container.modal(options);
     this.events = $container.appendTo('body');
+
+    if (this.body) $('.modal-body', $container).append('<p>' + this.body + '</p>');
 
     this.$li = false;
     this.$progress = false;
@@ -245,10 +248,11 @@ fulltext.popover = function(elt) {
 
   var mymodal = new BOOTSTRAP.Modal({
 "title": doclabel,
-"body":  $('<div/>').text(data).html().replaceAll('\n','<br />'),
+"body":  $('<div>').text(data).html().replaceAll('\n','<br />'),
 "status" : docid,
 "submit": 'Close',
 "cancel" : false,
+"url" : '../fulltext/'+encodeURIComponent(docid),
 "close" : true
 
 });

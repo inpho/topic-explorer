@@ -395,7 +395,8 @@ class Application(Bottle):
                            'context_type': self.context_type,
                            'topic_range': self.topic_range,
                            'doc_title_format': kwargs.get('doc_title_format', '{0}'),
-                           'doc_url_format': kwargs.get('doc_url_format', '')}
+                           'doc_url_format': kwargs.get('doc_url_format', ''),
+                           'home_link': kwargs.get('home_link', '/')}
             return self.renderer.render(template, tmpl_params)
 
         @self.route('/<k:int>/')
@@ -582,6 +583,7 @@ def create_app(args):
         'topics': None,
         'cluster': None,
         'corpus_desc' : None,
+        'home_link' : '/',
         'lang': None})
     config.read(args.config)
 
@@ -601,14 +603,15 @@ def create_app(args):
     # get icons_list
     config_icons = config.get('www', 'icons').split(",")
     if args.fulltext or config.getboolean('www', 'fulltext'):
-        if not any('fulltext' not in icon for icon in config_icons):
-            config_icons.insert(0, 'fulltext')
+        if not any('fulltext' in icon for icon in config_icons):
+            config_icons.insert(0, 'fulltext-inline')
 
     # Create application object
     corpus_name = config.get('www', 'corpus_name')
     corpus_link = config.get('www', 'corpus_link')
     doc_title_format = config.get('www', 'doc_title_format')
     doc_url_format = config.get('www', 'doc_url_format')
+    home_link = config.get('www', 'home_link')
     label_module = config.get('main', 'label_module')
     corpus_path = config.get('main', 'raw_corpus')
     corpus_desc = config.get('main', 'corpus_desc')
@@ -629,7 +632,8 @@ def create_app(args):
                       doc_title_format=doc_title_format,
                       doc_url_format=doc_url_format,
                       cluster_path=cluster_path,
-                      corpus_desc=corpus_desc)
+                      corpus_desc=corpus_desc,
+                      home_link=home_link)
 
     """
     host, port = get_host_port(args) 

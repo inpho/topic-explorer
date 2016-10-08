@@ -7,7 +7,8 @@
 if (window.location.href.includes('%3d'))
   window.location.href = window.location.href.replace('%3d','=');
 </script>
-<script src="/lib/jquery-1.11.0.min.js"></script>
+
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 <script src="/lib/jquery.superdom.min.js"></script>
 <script src="/lib/jquery.cookie.min.js"></script>
 <script src="/lib/bootstrap-2.3.2/js/bootstrap.min.js"></script>
@@ -179,7 +180,7 @@ h1 a, h1 a:hover {
 <div class="container">
   <div class="row">
   <div class="span12">
-  <h1><a href="http://inphodata.cogs.indiana.edu"><span class="logo-word">InPhO</span> Topic Explorer</a></h1>
+  <h1><a href="{{home_link}}"><span class="logo-word">InPhO</span> Topic Explorer</a></h1>
   <!--<h2 class="title non-null"></h2>-->
   <p class="null">This visualization shows the similarity of {{context_type}}s in the 
   {{#corpus_link}}<a href="{{corpus_link}}">{{corpus_name}}</a>{{/corpus_link}} 
@@ -582,7 +583,6 @@ d3.json(url, function(error, data) {
   
     var legendCols = Math.max(Math.ceil(d3.keys(topics).length / Math.min(data.length, maxRows)), minCols);
     var legendFactor = Math.ceil(d3.keys(topics).length / legendCols);
-    console.log("legendFactor: " + legendFactor);
     computeHeight(data,legendFactor);
     $("#main").attr("height", height + margin.top + margin.bottom);
     $("#legend").attr("height", (legendFactor * 20) + margin.top + margin.bottom);
@@ -720,7 +720,7 @@ d3.json(url, function(error, data) {
         .data(data[0].topicMap.map(function(t) { return t.name;}))
       .enter().append("g")
         .attr("class", function(d) { return "legend top_" + d; })
-        .attr("transform", function(d, i) { console.log("legendFactor: " + legendFactor + " i: " + (i % legendFactor)); return "translate("+(55 * Math.floor(i / legendFactor))+"," + (20*(i % legendFactor)) + ")"; });
+        .attr("transform", function(d, i) { return "translate("+(55 * Math.floor(i / legendFactor))+"," + (20*(i % legendFactor)) + ")"; });
   
     legendElts.append("rect")
         .attr("width", 18)
