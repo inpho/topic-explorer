@@ -39,5 +39,5 @@ Contact the developers for further help on merging your translation to the codeb
 
 Further Reading
 -----------------
-- [Translate your Python 3 program with the gettext module](http://inventwithpython.com/blog/2014/12/20/translate-your-python-3-program-with-the-gettext-module/)
-- [Books on Internationalization (i18n)](http://www.i18nguy.com/books.html)
+- `Translate your Python 3 program with the gettext module <http://inventwithpython.com/blog/2014/12/20/translate-your-python-3-program-with-the-gettext-module/>`_
+- `Books on Internationalization (i18n) <http://www.i18nguy.com/books.html>`_
