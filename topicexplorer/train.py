@@ -33,7 +33,7 @@ def build_models(corpus, corpus_filename, model_path, context_type, krange,
     if not dry_run:
         from vsm.model.lda import LDA
         for k in krange:
-            print "Training model for k={0} Topics with {1} Processes"\
+            print _("Training model for k={0} Topics with {1} Processes")\
                 .format(k, n_proc)
             m = LDA(corpus, context_type, K=k, multiprocessing=(n_proc > 1),
                     seed_or_seeds=seeds, n_proc=n_proc)
@@ -53,7 +53,7 @@ def continue_training(model_pattern, krange, total_iterations=200, n_proc=1,
         # for some reason, the value of m.iteration is a reference, not
         # explicit. Filed error in vsm: https://github.com/inpho/vsm/issues/144
         orig_iterations = int(m.iteration)
-        print "Continue training {0}-topic model ({1} => {2} iterations)".format(
+        print _("Continue training {0}-topic model ({1} => {2} iterations)").format(
             k, orig_iterations, total_iterations)
 
         basefilename = model_pattern.replace(
@@ -74,7 +74,7 @@ def cluster(n_clusters, config_file):
     dimension_reduce_model.fit_isomap()  
     dimension_reduce_model.fit_kmeans(int(n_clusters))
 
-    print "writing model files for Isomap and kmeans\n"
+    print _("writing model files for Isomap and kmeans\n")
     config = ConfigParser()
     config.read(config_file)
     corpus_filename = config.get("main", "corpus_file")
@@ -114,7 +114,7 @@ def main(args):
             default = ' '.join(map(str, range(20, 100, 20)))
 
         while args.k is None:
-            ks = raw_input("Number of Topics [Default '{0}']: ".format(default))
+            ks = raw_input(_("Number of Topics [Default '{0}']: ").format(default))
             try:
                 if ks:
                     args.k = [int(n) for n in ks.split()]
@@ -132,7 +132,7 @@ def main(args):
         import multiprocessing
         args.processes = multiprocessing.cpu_count() + args.processes
 
-    print "Loading corpus... "
+    print _("Loading corpus...")
     corpus = Corpus.load(corpus_filename)
 
     try:
@@ -141,8 +141,8 @@ def main(args):
         model_pattern = None
 
     if (model_pattern is not None and not args.rebuild and (args.quiet or
-            bool_prompt("""Existing topic models found. You can continue training or start a new model. 
-Do you want to continue training your existing models? """, default=True))):
+            bool_prompt(_("""Existing topic models found. You can continue training or start a new model. 
+Do you want to continue training your existing models? """), default=True))):
 
         from vsm.model.lda import LDA
         m = LDA.load(model_pattern.format(args.k[0]),
@@ -150,7 +150,7 @@ Do you want to continue training your existing models? """, default=True))):
                      n_proc=args.processes)
 
         if args.iter is None and not args.quiet:
-            args.iter = int_prompt("Total number of training iterations:",
+            args.iter = int_prompt(_("Total number of training iterations:"),
                                    default=int(m.iteration * 1.5), min=m.iteration)
 
             print "\nTIP: number of training iterations can be specified with argument '--iter N':"
@@ -184,7 +184,7 @@ Do you want to continue training your existing models? """, default=True))):
     else:
         # build a new model
         if args.iter is None and not args.quiet:
-            args.iter = int_prompt("Number of training iterations:", default=200)
+            args.iter = int_prompt(_("Number of training iterations:"), default=200)
 
             print "\nTIP: number of training iterations can be specified with argument '--iter N':"
             print "         topicexplorer train --iter %d %s\n" % (args.iter, args.config_file)
@@ -202,7 +202,7 @@ Do you want to continue training your existing models? """, default=True))):
                     contexts = ctxs[:]
                     contexts[0] = contexts[0].upper()
                     contexts = '/'.join(contexts)
-                    args.context_type = raw_input("Select a context type [%s] : " % contexts)
+                    args.context_type = raw_input(_("Select a context type [%s] : ") % contexts)
                     if args.context_type.strip() == '':
                         args.context_type = ctxs[0]
                     if args.context_type == ctxs[0].upper():

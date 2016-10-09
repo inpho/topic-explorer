@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2016-10-08 13:53+EDT\n"
+"POT-Creation-Date: 2016-10-09 14:54+EDT\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -35,29 +35,64 @@ msgstr ""
 msgid "with {} function"
 msgstr ""
 
-#: topicexplorer/init.py:247
-msgid "Corpus file found. Rebuild? [y/N] "
-msgstr ""
-
-#: topicexplorer/init.py:357
+#: topicexplorer/init.py:352
 msgid ""
 "\n"
 "Config file {0} exists. Overwrite? [Y/n] "
 msgstr ""
 
-#: topicexplorer/init.py:364
+#: topicexplorer/init.py:359
 msgid "Enter new filename [default: {0}]: "
 msgstr ""
 
-#: topicexplorer/init.py:371
+#: topicexplorer/init.py:366
 msgid "Writing configuration file {}"
 msgstr ""
 
-#: topicexplorer/prep.py:68
+#: topicexplorer/prep.py:69
 msgid "HTRC metadata file found!"
 msgstr ""
 
-#: topicexplorer/prep.py:90
+#: topicexplorer/prep.py:91
 msgid "Stoplist the following languages?"
+msgstr ""
+
+#: topicexplorer/train.py:36
+msgid "Training model for k={0} Topics with {1} Processes"
+msgstr ""
+
+#: topicexplorer/train.py:56
+msgid "Continue training {0}-topic model ({1} => {2} iterations)"
+msgstr ""
+
+#: topicexplorer/train.py:77
+msgid ""
+"writing model files for Isomap and kmeans\n"
+msgstr ""
+
+#: topicexplorer/train.py:117
+msgid "Number of Topics [Default '{0}']: "
+msgstr ""
+
+#: topicexplorer/train.py:135
+msgid "Loading corpus..."
+msgstr ""
+
+#: topicexplorer/train.py:144
+msgid ""
+"Existing topic models found. You can continue training or start a new model. \n"
+"Do you want to continue training your existing models? "
+msgstr ""
+
+#: topicexplorer/train.py:153
+msgid "Total number of training iterations:"
+msgstr ""
+
+#: topicexplorer/train.py:187
+msgid "Number of training iterations:"
+msgstr ""
+
+#: topicexplorer/train.py:205
+msgid "Select a context type [%s] : "
 msgstr ""
 
