@@ -7,7 +7,7 @@ import sys
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
-from topicexplorer.lib.util import (prompt, is_valid_filepath,
+from topicexplorer.lib.util import (prompt, is_valid_filepath, bool_prompt,
                                     listdir_nohidden, contains_pattern)
 
 import gettext
@@ -243,13 +243,8 @@ def main(args):
     args.corpus_filename = get_corpus_filename(
         args.corpus_path, args.model_path, stop_freq=args.stop_freq)
     if not args.rebuild and os.path.exists(args.corpus_filename):
-        while args.rebuild not in ['y', 'n', True]:
-            args.rebuild = raw_input("\n" + _("Corpus file found. Rebuild? [y/N] "))
-            args.rebuild = args.rebuild.lower().strip()
-            if args.rebuild == 'y':
-                args.rebuild = True
-            elif args.rebuild == '':
-                args.rebuild = 'n'
+        args.rebuild = bool_prompt("\nCorpus file found. Rebuild? ", 
+            default=False)
     else:
         args.rebuild = True
     if args.rebuild:
