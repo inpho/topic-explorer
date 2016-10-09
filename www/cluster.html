@@ -145,7 +145,7 @@ var margin = {top: 20, right: 80, bottom: 80, left: 40},
     width = $('#chart').parent().width() - margin.left - margin.right,
     height = $(document).height() - Math.min($('#main').height(), 400) - margin.top - margin.bottom,
     padding = 1, // separation between nodes
-    radius = 20;
+    radius = 30;
 
 var x = d3.scale.linear()
     .range([0, width]);
@@ -191,7 +191,7 @@ var ext_data;
 
 d3.csv(base_url + "cluster.csv", function(error, data) {
   var topics = {}; var node;
-  var ks = data.map(function(d) { return d.k; }).filter(function(item, i, ar){ return ar.indexOf(item) === i; });;
+  var ks = data.map(function(d) { return parseInt(d.k); }).filter(function(item, i, ar){ return ar.indexOf(item) === i; });;
   ks.map(function(k) { $('#sidebar-topics').append('<li><a class="selected" href="javascript:toggleDisplay(' + k + ')">' + k + '</a></li>') });
 
   var sizes = d3.scale.log()
