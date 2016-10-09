@@ -44,8 +44,11 @@ def continue_training(model_pattern, krange, total_iterations=200, n_proc=1):
     for k in krange:
         m = LDA.load(model_pattern.format(k), multiprocessing=(n_proc > 1))
 
-        print "Continue training model for k={0} Topics".format(k)
-        orig_iterations = m.iteration
+        # for some reason, the value of m.iteration is a reference, not
+        # explicit. Filed error in vsm: https://github.com/inpho/vsm/issues/144
+        orig_iterations = int(m.iteration)
+        print "Continue training {0}-topic model ({1} => {2} iterations)".format(
+            k, orig_iterations, total_iterations)
         m.train(n_iterations=total_iterations - orig_iterations)
 
         # save new file
