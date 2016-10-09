@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2016-10-09 14:54+EDT\n"
+"POT-Creation-Date: 2016-10-09 14:57+EDT\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -55,6 +55,54 @@ msgstr ""
 
 #: topicexplorer/prep.py:91
 msgid "Stoplist the following languages?"
+msgstr ""
+
+#: topicexplorer/server.py:100
+msgid "imported label module"
+msgstr ""
+
+#: topicexplorer/server.py:107
+msgid "imported label function"
+msgstr ""
+
+#: topicexplorer/server.py:110
+msgid "using default label function"
+msgstr ""
+
+#: topicexplorer/server.py:114
+msgid "imported id function"
+msgstr ""
+
+#: topicexplorer/server.py:117
+msgid "using default id function"
+msgstr ""
+
+#: topicexplorer/server.py:238 topicexplorer/server.py:319
+msgid "Must specify a query"
+msgstr ""
+
+#: topicexplorer/server.py:247 topicexplorer/server.py:326
+msgid "Search terms not in model"
+msgstr ""
+
+#: topicexplorer/server.py:416
+msgid "Retireving cluster.csv from {}"
+msgstr ""
+
+#: topicexplorer/server.py:505
+msgid "Socket connectable on port {0}"
+msgstr ""
+
+#: topicexplorer/server.py:512
+msgid "Conflict on port {0}. Enter new port:"
+msgstr ""
+
+#: topicexplorer/server.py:516
+msgid "Conflict on port {0}. Try running with -p to manually set new port."
+msgstr ""
+
+#: topicexplorer/server.py:524
+msgid "Change default port to {0}?"
 msgstr ""
 
 #: topicexplorer/train.py:36

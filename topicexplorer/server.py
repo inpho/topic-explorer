@@ -97,24 +97,24 @@ class Application(Bottle):
     def _load_label_module(self, label_module, config_file):
         try:
             label_module = import_module(label_module)
-            print "imported label module"
+            print _("imported label module")
             label_module.init(self, config_file)
         except (ImportError, NoOptionError, AttributeError):
             pass
 
         try:
             self.label = label_module.label
-            print "imported label function"
+            print _("imported label function")
         except (AttributeError, UnboundLocalError):
             self.label = lambda x: x
-            print "using default label function"
+            print _("using default label function")
 
         try:
             self.id_fn = label_module.id_fn
-            print "imported id function"
+            print _("imported id function")
         except (AttributeError, UnboundLocalError):
             self.id_fn = lambda metadata: metadata[self.label_name]
-            print "using default id function"
+            print _("using default id function")
 
     def _load_corpus(self, corpus_file):
         self.c = Corpus.load(corpus_file)
@@ -235,7 +235,7 @@ class Application(Bottle):
             try:
                 query = request.query.q.lower().split('|')
             except:
-                raise Exception('Must specify a query')
+                raise Exception(_('Must specify a query'))
 
             response.content_type = 'application/json; charset=UTF8'
 
@@ -244,7 +244,7 @@ class Application(Bottle):
             # abort if there are no terms in the query
             if not query:
                 response.status = 400  # Bad Request
-                return "Search terms not in model"
+                return _("Search terms not in model")
 
             topics = self.v[k].dist_word_top(query, show_topics=False)
             data = self.v[k].dist_top_doc(topics['i'],
@@ -316,14 +316,14 @@ class Application(Bottle):
             try:
                 query = request.query.q.lower().split('|')
             except:
-                raise Exception('Must specify a query')
+                raise Exception(_('Must specify a query'))
 
             query = [word for word in query if word in self.c.words]
 
             # abort if there are no terms in the query
             if not query:
                 response.status = 400  # Bad Request
-                return "Search terms not in model"
+                return _("Search terms not in model")
 
 
             # calculate distances
@@ -413,7 +413,7 @@ class Application(Bottle):
         @_set_acao_headers
         def cluster_csv(second=False):
             filename = kwargs.get('cluster_path')
-            print "Retireving cluster.csv:", filename
+            print _("Retireving cluster.csv from {}").format(filename)
             if not filename or not os.path.exists(filename):
                 import topicexplorer.train
                 filename = topicexplorer.train.cluster(10, self.config_file)
@@ -502,18 +502,18 @@ def get_host_port(args):
             try:
                 s = socket.create_connection((host, port), 2)
                 s.close()
-                raise IOError("Socket connectable on port {0}".format(port))
+                raise IOError(_("Socket connectable on port {0}").format(port))
             except socket.error:
                 pass
             return port
         except IOError:
             if not args.quiet:
                 port = int_prompt(
-                    "Conflict on port {0}. Enter new port:".format(port))
+                    _("Conflict on port {0}. Enter new port:").format(port))
                 return test_port(port)
             else:
                 raise IOError(
-                    "Conflict on port {0}. Try running with -p to manually set new port.".format(port))
+                    _("Conflict on port {0}. Try running with -p to manually set new port.").format(port))
 
     port = args.port or int(config.get('www', 'port').format(0))
     port = test_port(port)
@@ -521,7 +521,7 @@ def get_host_port(args):
     # prompt to save
     if (int(config.get("www", "port").format(0))) != port:
         if not args.quiet and bool_prompt(
-            "Change default baseport to {0}?".format(port), default=True):
+            _("Change default port to {0}?").format(port), default=True):
             config.set("www", "port", str(port))
 
             # create deep copy of configuration
