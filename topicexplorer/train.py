@@ -133,7 +133,8 @@ def main(args):
         model_pattern = None
 
     if (model_pattern is not None and not args.rebuild and (args.quiet or
-            bool_prompt("Existing models found. Continue training?", default=True))):
+            bool_prompt("""Existing topic models found. You can continue training or start a new model. 
+Do you want to continue training your existing models? """, default=True))):
 
         from vsm.model.lda import LDA
         m = LDA.load(model_pattern.format(args.k[0]),
