@@ -22,6 +22,7 @@ This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangel
   - Metadata now keeps all information in unicode.
   - `topicexplorer metadata` now allows for label updates with `--rename` flag.
   - Upgrade to D3 for topic cluster display broke other parts of visualization. Reverted D3 and removed chargeDistance property from cluster view.
+  - [#168](https://github.com/inpho/topic-explorer/issues/168) Corpus rebuild prompt does not work correctly.
   - [#166](https://github.com/inpho/topic-explorer/issues/166) Invalid attribute 'quiet'?
   - [#165](https://github.com/inpho/topic-explorer/issues/165) Continue training does not remove old clusters
   - [#163](https://github.com/inpho/topic-explorer/issues/163) Continue training does not update model_pattern
