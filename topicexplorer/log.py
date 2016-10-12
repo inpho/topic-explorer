@@ -24,6 +24,9 @@ act = None
 class TEProv(ProvDocument):
     def __init__(self):
         super(TEProv, self).__init__()
+        self._convert()
+
+    def _convert(self):
         self.set_default_namespace('http://example.org/')
         self.add_namespace('te', 'http://inphodata.cogs.indiana.edu/ontology#')
         mainte = self.entity(TE['topicexplorer'])
@@ -84,6 +87,7 @@ class TEProv(ProvDocument):
                 else:
                     new_model = self.add_model(k)
                     self.wasGeneratedBy(new_model, activity=act)
+                    #new_model.wasDerivedFrom('r{}'.format(self.lastRevision), activity=act)
                     self.usage(act, 'r{}'.format(self.lastRevision))
 
             difference = set(self.models.keys()) - set(activity_attributes['k'])
@@ -125,6 +129,13 @@ class TEProv(ProvDocument):
         #self.hadMember(self.config, 'model{}'.format(k))
         return new_model
 
+    @staticmethod
+    def deserialize(source=None, content=None, format='json', **args):
+        doc = ProvDocument.deserialize(source, content, format, **args)
+        doc.__class__ = TEProv        
+        doc._convert()
+        return doc
+
 a = TEProv()
 
 a.add_command('init')
@@ -133,4 +144,4 @@ a.add_command('train', {'k' : [10, 20, 40], 'iter' : 200, 'context-type': 'artic
 a.add_command('train', {'k' : [30, 20, 40], 'iter' : 200, 'context-type': 'article'})
 a.add_command('prep', {'highFilter' : 5000, 'lowFilter' : 20}, invalidate=True)
 a.add_command('train', {'k' : [30, 20, 40], 'iter' : 500, 'context-type': 'article'})
-print(a.serialize(None, 'xml'))
+b = TEProv.deserialize(content=a.serialize(None, 'xml'), format='xml')
