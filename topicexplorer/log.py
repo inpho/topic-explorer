@@ -41,12 +41,12 @@ class TEProv(ProvDocument):
         self.lastRevision = 0
         self.lastAction = 0
 
-    def add_command(self, cmd=None, activity_attributes=None, invalidate=False):
+    def add_command(self, cmd=None, activity_attributes=None, startTime=None, endTime=None):
         global act
         self.lastAction += 1
 
         act = self.activity('r{}act'.format(self.lastAction),
-            startTime=datetime.now(), endTime=datetime.now())
+            startTime=startTime, endTime=endTime)
         if self.lastAction > 1:
             act.wasInformedBy('r{}act'.format(self.lastAction -1))
         assoc = self.association(act, self.user, plan=TE['topicexplorer'])
@@ -72,8 +72,10 @@ class TEProv(ProvDocument):
             elif cmd == 'prep':
                 new_rev.wasDerivedFrom('r{}'.format(self.lastRevision - 1),
                     activity=act, attributes={'prov:type' : PROV['Revision']})
-            
-            if invalidate:
+
+            # Invalidate past results if appropriate 
+            prev = self.get_record('r{}act'.format(self.lastAction - 1))
+            if prev and (PROV['type'], TE['train']) in prev[0].attributes:
                 self.invalidation('r{}'.format(self.lastRevision - 1), activity=act)
                 for k, model in self.models.iteritems():
                     self.invalidation(model, activity=act)
@@ -97,7 +99,7 @@ class TEProv(ProvDocument):
                     del self.models[k]
 
 
-    def revise_corpus(self, invalidate=True): 
+    def revise_corpus(self): 
         new_rev = self.entity('r{}'.format(self.lastRevision))
         new_rev.specializationOf(self.corpus)
         new_rev.wasAttributedTo(self.user)
@@ -116,7 +118,6 @@ class TEProv(ProvDocument):
         new_model.specializationOf('model{}'.format(k))
 
         self.models[k] = new_model
-        
 
     def add_model(self, k):
         self.entity('model{}'.format(k))
@@ -131,10 +132,23 @@ class TEProv(ProvDocument):
 
     @staticmethod
     def deserialize(source=None, content=None, format='json', **args):
+        raise NotImplementedError("deserialization not yet implemented.")
         doc = ProvDocument.deserialize(source, content, format, **args)
         doc.__class__ = TEProv        
         doc._convert()
         return doc
+
+    @staticmethod
+    def load(filename):
+        import pickle
+        with open(filename, 'rb') as provfile:
+            doc = pickle.load(provfile)
+
+    def save(self, filename):
+        import pickle
+        with open(filename, 'wb') as provfile:
+            pickle.dump(self, provfile)
+
 
 a = TEProv()
 
@@ -142,6 +156,5 @@ a.add_command('init')
 a.add_command('prep', {'highFilter' : 10000, 'lowFilter' : 10, 'lang' : 'en'})
 a.add_command('train', {'k' : [10, 20, 40], 'iter' : 200, 'context-type': 'article'})
 a.add_command('train', {'k' : [30, 20, 40], 'iter' : 200, 'context-type': 'article'})
-a.add_command('prep', {'highFilter' : 5000, 'lowFilter' : 20}, invalidate=True)
+a.add_command('prep', {'highFilter' : 5000, 'lowFilter' : 20})
 a.add_command('train', {'k' : [30, 20, 40], 'iter' : 500, 'context-type': 'article'})
-b = TEProv.deserialize(content=a.serialize(None, 'xml'), format='xml')
