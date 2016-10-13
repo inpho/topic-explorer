@@ -5,6 +5,7 @@ import re
 import sys
 
 from codecs import open
+from datetime import datetime
 from unidecode import unidecode
 from topicexplorer.lib.util import isint, is_valid_configfile, bool_prompt
 
@@ -299,6 +300,8 @@ def get_low_filter(args, c, words=None):
 
 
 def main(args):
+    startTime = datetime.now()
+
     config = ConfigParser({"htrc": False,
                            "sentences": "False"})
     config.read(args.config_file)
@@ -441,7 +444,37 @@ def main(args):
     config.remove_option("main", "model_pattern")
     with open(args.config_file, 'wb') as configfh:
         config.write(configfh)
+    args.prov_file = config.get("main", "prov")
+    write_prov(args, startTime)
 
+
+def write_prov(args, startTime):
+    from topicexplorer.log import TEProv
+    if os.path.exists(args.prov_file):
+        prov = TEProv.load(args.prov_file)
+    else:
+        prov = TEProv()
+
+    attributes = {}
+    if args.low_filter:
+        attributes['lowFilter'] = args.low_filter
+    if args.high_filter:
+        attributes['highFilter'] = args.high_filter
+    if args.special_chars:
+        attributes['preprocessing'] = 'no-special-chars'
+    if args.min_word_len:
+        attributes['wordLenFilter'] = args.min_word_len
+    if args.stopword_file:
+        attributes['stopwordFile'] = os.path.abspath(args.stopword_file)
+    if args.lang:
+        attributes['lang'] = args.lang
+
+
+    act = prov.add_command('prep', 
+        activity_attributes=attributes,
+        startTime=startTime, endTime=datetime.now())
+
+    prov.save(args.prov_file)
 
 def populate_parser(parser):
     parser.epilog = ('Available language stoplists (use 2-letter code): \n\t' +

@@ -98,6 +98,8 @@ class TEProv(ProvDocument):
                     self.invalidation(self.models[k], activity=act)
                     del self.models[k]
 
+        return act
+
 
     def revise_corpus(self): 
         new_rev = self.entity('r{}'.format(self.lastRevision))

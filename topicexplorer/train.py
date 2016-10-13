@@ -1,6 +1,7 @@
 from ConfigParser import RawConfigParser as ConfigWriter
 from ConfigParser import SafeConfigParser as ConfigParser
 from ConfigParser import NoOptionError
+from datetime import datetime
 import os.path
 
 from topicexplorer.lib.util import bool_prompt, int_prompt, is_valid_configfile
@@ -85,6 +86,7 @@ def cluster(n_clusters, config_file):
     
 
 def main(args):
+    startTime = datetime.now()
     if args.cluster:
         cluster(args.cluster, args.config_file)
         return
@@ -223,6 +225,7 @@ Do you want to continue training your existing models? """, default=True))):
     args.k.sort()
     config.set("main", "topics", str(args.k))
 
+
     if not args.dry_run:
         if config.has_option("main", "cluster"):
             cluster_path = config.get("main", "cluster", None)
@@ -233,10 +236,36 @@ Do you want to continue training your existing models? """, default=True))):
                 # fail silently on IOError
                 pass
 
+        args.prov_file = config.get("main", "prov")
+        write_prov(args, startTime)
 
         with open(args.config_file, "wb") as configfh:
             config.write(configfh)
 
+def write_prov(args, startTime):
+    from topicexplorer.log import TEProv
+    if os.path.exists(args.prov_file):
+        prov = TEProv.load(args.prov_file)
+    else:
+        prov = TEProv()
+
+    attributes = {}
+    if args.k:
+        attributes['k'] = args.k
+    if args.context_type:
+        attributes['context'] = args.context_type
+    if args.processes:
+        attributes['processes'] = args.processes
+    if args.iter:
+        attributes['iter'] = args.iter
+    if args.seed:
+        attributes['seed'] = args.seed
+
+    act = prov.add_command('train', 
+        activity_attributes=attributes,
+        startTime=startTime, endTime=datetime.now())
+
+    prov.save(args.prov_file)
 
 def populate_parser(parser):
     parser.add_argument("config_file", help="Path to Config",
