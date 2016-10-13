@@ -143,6 +143,7 @@ class TEProv(ProvDocument):
         import pickle
         with open(filename, 'rb') as provfile:
             doc = pickle.load(provfile)
+        return doc
 
     def save(self, filename):
         import pickle
