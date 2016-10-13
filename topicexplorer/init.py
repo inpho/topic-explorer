@@ -307,19 +307,19 @@ def write_prov(args, startTime):
         prov = TEProv.load(args.prov_file)
     else:
         prov = TEProv()
-    attributes = {'te:source' : args.corpus_path,
-            'te:name' : args.corpus_name }
+    attributes = {'source' : os.path.abspath(args.corpus_path),
+            'name' : args.corpus_name }
     if args.htrc:
-        attributes['te:preprocessing'] = 'htrc'
+        attributes['preprocessing'] = 'htrc'
     if args.decode:
-        attributes['te:preprocessing'] = 'unidecode'
+        attributes['preprocessing'] = 'unidecode'
     if args.tokenizer:
-        attributes['te:tokenizer'] = args.tokenizer
+        attributes['tokenizer'] = args.tokenizer
     if args.sentences:
-        attributes['te:tokenizer'] = 'sentences'
+        attributes['tokenizer'] = 'sentences'
 
     if args.stop_freq:
-        attributes['te:lowFilter'] = args.stop_freq
+        attributes['lowFilter'] = args.stop_freq
 
     prov.add_command('init', 
         activity_attributes=attributes,
