@@ -1,5 +1,6 @@
 from ConfigParser import RawConfigParser as ConfigParser
 from collections import defaultdict
+from datetime import datetime
 import os
 import os.path
 import shutil
@@ -196,6 +197,8 @@ def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=0,
 
 
 def main(args):
+    startTime = datetime.now()
+
     # convert to unicode to avoid windows errors
     args.corpus_path = unicode(args.corpus_path, 'utf-8')
 
@@ -293,9 +296,36 @@ to add a custom corpus description, either:
 - Change the main:corpus_desc path in `{}` to an existing Markdown file.
 """.format(os.path.abspath(args.corpus_desc), 
            os.path.abspath(args.config_file)))
+    args.prov_file = args.config_file + '.prov.pyo'
+    write_prov(args, startTime)
 
     return args.config_file
 
+def write_prov(args, startTime):
+    from topicexplorer.log import TEProv
+    if os.path.exists(args.prov_file):
+        prov = TEProv.load(args.prov_file)
+    else:
+        prov = TEProv()
+    attributes = {'te:source' : args.corpus_path,
+            'te:name' : args.corpus_name }
+    if args.htrc:
+        attributes['te:preprocessing'] = 'htrc'
+    if args.decode:
+        attributes['te:preprocessing'] = 'unidecode'
+    if args.tokenizer:
+        attributes['te:tokenizer'] = args.tokenizer
+    if args.sentences:
+        attributes['te:tokenizer'] = 'sentences'
+
+    if args.stop_freq:
+        attributes['te:lowFilter'] = args.stop_freq
+
+    prov.add_command('init', 
+        activity_attributes=attributes,
+        startTime=startTime, endTime=datetime.now())
+
+    prov.save(args.prov_file)
 
 
 def write_config(args, config_file=None):
@@ -357,6 +387,7 @@ def write_config(args, config_file=None):
                 overwrite = True
 
     config.set("main", "corpus_desc", config_file+'.md')
+    config.set("main", "prov", config_file+'.prov.pyo')
 
     print "Writing configuration file", config_file
     with open(config_file, "wb") as configfh:
