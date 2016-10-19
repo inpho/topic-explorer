@@ -115,6 +115,7 @@ def get_corpusbuilder_fn(corpus_path, sentences=False, ignore=[]):
     dirs = dir_counts.keys()
     populated_levels = [dir.count(os.path.sep)
                         for dir, key in dir_counts.iteritems()]
+
     levels = max(populated_levels) - min(populated_levels)
     print "{} files, {} dirs, {} levels".format(len(relpaths), len(dirs), levels)
 
@@ -135,7 +136,7 @@ def get_corpusbuilder_fn(corpus_path, sentences=False, ignore=[]):
         raise NotImplementedError("""Collection corpuses are too large for
         sentence parsing. Reduce your corpus to a single folder or
         file.""")
-    elif levels == 0:
+    elif levels == 0 and max(populated_levels) == 1:
         from vsm.extensions.corpusbuilders import coll_corpus
         return coll_corpus
     else:
