@@ -107,7 +107,7 @@ else:
             # reload mmseg to re-init
             reset_mmseg()
     
-            #directory of morden dictionary
+            #directory of modern dictionary
             dirname = os.path.dirname(__file__)
             dictionary = os.path.join(dirname, 'modern words.dic')
             mmseg.dict_load_defaults()
