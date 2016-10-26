@@ -13,6 +13,14 @@ from topicexplorer.lib.util import (prompt, is_valid_filepath, bool_prompt,
 import gettext
 TRANSLATION_ROOT = os.path.dirname(__file__)
 TRANSLATION_ROOT = os.path.join(TRANSLATION_ROOT, '../locale')
+
+# Windows hotfix
+if sys.platform.startswith('win'):
+    import locale
+    if os.getenv('LANG') is None:
+        lang, enc = locale.getdefaultlocale()
+        os.environ['LANG'] = lang
+
 t = gettext.translation('topicexplorer', TRANSLATION_ROOT)
 _ = t.ugettext
 
