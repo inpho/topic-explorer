@@ -294,7 +294,7 @@ h1 {
                 <a class="selected" href="#"><span class="glyphicon glyphicon-home"></span></a>
               </li>-->
         <li>
-          <a class="selected" href="javascript:toggleSearch()"><span class="glyphicon glyphicon-search"></span></a>
+          <!--<a class="selected" href="javascript:toggleSearch()"><span class="glyphicon glyphicon-search"></span></a>-->
         </li>
       </ul>
     </div>
@@ -311,9 +311,8 @@ h1 {
         <!--<li>
                 <a class="selected" href="#"><span class="glyphicon glyphicon-home"></span></a>
               </li>-->
-        <li>
-          <a class="selected" title="Help" href="javascript:toggleSearch()"><strong>?</strong></a>
-        </li>
+        <li><a class="selected" title="Help" href="javascript:toggleSearch()"><strong>?</strong></a></li>
+        <li><a href="#" class="selected" title="Usage" data-toggle="modal" data-target="#rightsModal"><strong>&copy;</strong></a></li>
       </ul>
     </div>
   </div>
@@ -446,6 +445,28 @@ h1 {
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
         <a id="wordsBtn" type="button" class="btn btn-primary" href="topics">View topic clusters</a>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" tabindex="-1" role="dialog" id="rightsModal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h3 class="modal-title">Usage and Copyright</h3>
+      </div>
+      <div class="modal-body">
+        <p>The InPhO Topic Explorer (InPhO-TE) software is &copy; 2014-16 Trustees of Indiana University and the Indiana Philosophy Ontology (InPhO) Project.</p>
+        <p>While copyright is reserved, the software itself is released via the permissive <a href="https://github.com/inpho/topic-explorer/blob/master/LICENSE.txt" target="_blank">MIT License</a>, with open-source code available via <a href="https://github.com/inpho/topic-explorer/">GitHub</a>.</p>
+        <p>Explicit rights are granted for reuse of all visualizations and other derivatives of this software via the <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a> (CC-BY).</p>
+        <p>To satisfy the license in electronic works, please link to the primary project page at <a href="http://inphodata.cogs.indiana.edu/">http://inphodata.cogs.indiana.edu/</a>. If you use InPhO-TE in a published work, the authors request that you cite InPhO-TE as:
+            <blockquote style="font-size: inherit;">Jaimie Murdock and Colin Allen. (2015) "Visualization Techniques for Topic Model Checking" in Proceedings of the 29th AAAI Conference on Artificial Intelligence (AAAI-15). Austin, Texas, USA, January 25-29, 2015. http://inphodata.cogs.indiana.edu/</blockquote></p>
+        <p>Content for each corpus is copyright by their respective creators. Topic models performed using this content fall under fair use provisions as non-consumptive research.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
       </div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
