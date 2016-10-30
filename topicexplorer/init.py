@@ -7,7 +7,7 @@ import sys
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
-from topicexplorer.lib.util import (prompt, is_valid_filepath,
+from topicexplorer.lib.util import (prompt, is_valid_filepath, bool_prompt,
                                     listdir_nohidden, contains_pattern)
 
 
@@ -115,6 +115,7 @@ def get_corpusbuilder_fn(corpus_path, sentences=False, ignore=[]):
     dirs = dir_counts.keys()
     populated_levels = [dir.count(os.path.sep)
                         for dir, key in dir_counts.iteritems()]
+
     levels = max(populated_levels) - min(populated_levels)
     print "{} files, {} dirs, {} levels".format(len(relpaths), len(dirs), levels)
 
@@ -135,7 +136,7 @@ def get_corpusbuilder_fn(corpus_path, sentences=False, ignore=[]):
         raise NotImplementedError("""Collection corpuses are too large for
         sentence parsing. Reduce your corpus to a single folder or
         file.""")
-    elif levels == 0:
+    elif levels == 0 and max(populated_levels) == 1:
         from vsm.extensions.corpusbuilders import coll_corpus
         return coll_corpus
     else:
@@ -238,13 +239,8 @@ def main(args):
     args.corpus_filename = get_corpus_filename(
         args.corpus_path, args.model_path, stop_freq=args.stop_freq)
     if not args.rebuild and os.path.exists(args.corpus_filename):
-        while args.rebuild not in ['y', 'n', True]:
-            args.rebuild = raw_input("\nCorpus file found. Rebuild? [y/N] ")
-            args.rebuild = args.rebuild.lower().strip()
-            if args.rebuild == 'y':
-                args.rebuild = True
-            elif args.rebuild == '':
-                args.rebuild = 'n'
+        args.rebuild = bool_prompt("\nCorpus file found. Rebuild? ", 
+            default=False)
     else:
         args.rebuild = True
     if args.rebuild:

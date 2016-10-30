@@ -39,21 +39,26 @@ def build_models(corpus, corpus_filename, model_path, context_type, krange,
     return basefilename
 
 
-def continue_training(model_pattern, krange, total_iterations=200, n_proc=1):
+def continue_training(model_pattern, krange, total_iterations=200, n_proc=1,
+                      dry_run=False):
     from vsm.model.lda import LDA
     for k in krange:
         m = LDA.load(model_pattern.format(k), multiprocessing=(n_proc > 1))
 
-        print "Continue training model for k={0} Topics".format(k)
-        orig_iterations = m.iteration
-        m.train(n_iterations=total_iterations - orig_iterations)
+        # for some reason, the value of m.iteration is a reference, not
+        # explicit. Filed error in vsm: https://github.com/inpho/vsm/issues/144
+        orig_iterations = int(m.iteration)
+        print "Continue training {0}-topic model ({1} => {2} iterations)".format(
+            k, orig_iterations, total_iterations)
 
-        # save new file
         basefilename = model_pattern.replace(
             "-{orig}.npz".format(orig=orig_iterations),
             "-{new}.npz".format(new=total_iterations))
-        m.save(basefilename.format(k))
-        print " "
+
+        if not dry_run:
+            m.train(n_iterations=total_iterations - orig_iterations)
+            m.save(basefilename.format(k))
+            print " "
 
     return basefilename
 
@@ -74,6 +79,7 @@ def cluster(n_clusters, config_file):
     with open(config_file, "wb") as configfh:
         config.write(configfh)
     dimension_reduce_model.write(config.get("main", "cluster"))
+
     return filename
     
     
@@ -130,7 +136,8 @@ def main(args):
         model_pattern = None
 
     if (model_pattern is not None and not args.rebuild and (args.quiet or
-            bool_prompt("Existing models found. Continue training?", default=True))):
+            bool_prompt("""Existing topic models found. You can continue training or start a new model. 
+Do you want to continue training your existing models? """, default=True))):
 
         from vsm.model.lda import LDA
         m = LDA.load(model_pattern.format(args.k[0]),
@@ -158,14 +165,17 @@ def main(args):
             build_models(corpus, corpus_filename, model_path,
                          config.get("main", "context_type"),
                          new_models, n_iterations=args.iter,
-                         n_proc=args.processes, seed=args.seed)
+                         n_proc=args.processes, seed=args.seed,
+                         dry_run=args.dry_run)
 
             model_pattern = continue_training(model_pattern, continuing_models,
-                                              args.iter, n_proc=args.processes)
+                                              args.iter, n_proc=args.processes,
+                                              dry_run=args.dry_run)
 
         else:
             model_pattern = continue_training(model_pattern, args.k, args.iter,
-                                              n_proc=args.processes)
+                                              n_proc=args.processes, 
+                                              dry_run=args.dry_run)
     else:
         # build a new model
         if args.iter is None and not args.quiet:
@@ -214,6 +224,16 @@ def main(args):
     config.set("main", "topics", str(args.k))
 
     if not args.dry_run:
+        if config.has_option("main", "cluster"):
+            cluster_path = config.get("main", "cluster", None)
+            config.remove_option("main", "cluster")
+            try:
+                os.remove(cluster_path)
+            except IOError:
+                # fail silently on IOError
+                pass
+
+
         with open(args.config_file, "wb") as configfh:
             config.write(configfh)
 
