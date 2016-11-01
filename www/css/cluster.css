@@ -1,0 +1,60 @@
+body {
+}
+#chart {
+  font: 10px sans-serif;
+}
+#chart .axis path,
+#chart .axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+#chart .dot {
+  stroke: #000;
+  stroke-opacity: .7;
+  fill-opacity: .7;
+}
+
+#controls {
+  font-size: 14px;
+  position: relative;
+  top: 10px;
+  left: 80px;
+}
+
+#chart input {
+  margin: 4px 4px 0;
+}
+    </style>
+
+   <style>
+
+.logo-word {
+  background-image: url('/img/inpho_logo.png');
+  background-size: 172px 92px;
+  width: 172px;
+  height: 84px;
+  padding-top: 6px;
+  margin-top: 14px;
+  margin-bottom: 15px;
+  margin-left: -6px;
+  display: inline-block;
+  text-indent: -3000px;
+}
+h1 {
+text-align: center;
+margin-bottom: 0;
+font-size: 59px;
+line-height: 1;
+color: inherit;
+letter-spacing: -1px;
+}
+h1 a, h1 a:hover {
+  color: #000;
+  text-decoration: none;
+}
+h2 {
+  text-align: center;
+  margin-top: -20px;
+}

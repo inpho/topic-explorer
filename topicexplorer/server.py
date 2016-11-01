@@ -342,7 +342,13 @@ class Application(Bottle):
         @self.route('/topics')
         @_set_acao_headers
         def view_clusters():
-            return _render_template('cluster.html')
+            with open(resource_filename(__name__, '../www/master.mustache.html'),
+                      encoding='utf-8') as tmpl_file:
+                template = tmpl_file.read()
+
+            tmpl_params = {'body' : _render_template('cluster.mustache.html'),
+                           'topic_range': self.topic_range}
+            return self.renderer.render(template, tmpl_params)
 
 
         @self.route('/docs.json')

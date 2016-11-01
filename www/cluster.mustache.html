@@ -1,121 +1,19 @@
-
-
-<!DOCTYPE html>
-<html >
-  <head>
-    <meta charset="UTF-8">
-
-
-    <title>The InPhO Topic Explorer</title>
-    
-    
-    
-<link rel="stylesheet" type="text/css" href="/lib/bootstrap-3.3.6/css/bootstrap.min.css" />
-<link rel='stylesheet prefetch' href='/css/simple-sidebar.css'>
-
-        <style>
-      
-body {
-}
-#chart {
-  font: 10px sans-serif;
-}
-#chart .axis path,
-#chart .axis line {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
-}
-
-#chart .dot {
-  stroke: #000;
-  stroke-opacity: .7;
-  fill-opacity: .7;
-}
-
-#controls {
-  font-size: 14px;
-  position: relative;
-  top: 10px;
-  left: 80px;
-}
-
-#chart input {
-  margin: 4px 4px 0;
-}
-    </style>
-
-   <style>
-
-.logo-word {
-  background-image: url('/img/inpho_logo.png');
-  background-size: 172px 92px;
-  width: 172px;
-  height: 84px;
-  padding-top: 6px;
-  margin-top: 14px;
-  margin-bottom: 15px;
-  margin-left: -6px;
-  display: inline-block;
-  text-indent: -3000px;
-}
-h1 {
-text-align: center;
-margin-bottom: 0;
-font-size: 59px;
-line-height: 1;
-color: inherit;
-letter-spacing: -1px;
-}
-h1 a, h1 a:hover {
-  color: #000;
-  text-decoration: none;
-}
-h2 {
-  text-align: center;
-  margin-top: -20px;
-  }
-</style>
-    
-    
-  </head>
-
-  <body translate="no" >
-
-  <div id="wrapper">
-        <div id="sidebar-wrapper">
-          <div class="sidebar-helper">
-            <ul class="sidebar-nav">
-              <li>
-                <a class="selected" href="/"><span class="glyphicon glyphicon-home"></span></a>
-              </li>
-            </ul>
-          </div>
-          <div class="sidebar-helper" style="vertical-align: middle;">
-            <ul id="sidebar-topics" class="sidebar-nav">
-            </ul>
-          </div>
-        </div>
-    <div id="page-content-wrapper">
 <div id="main" class="container">
   <div class="row">
-  <div class="span12">
-  <h1><a href="{{home_link}}"><span class="logo-word">InPhO</span> Topic Explorer</a></h1>
-  <!--<h2 class="title non-null"></h2>-->
-  <h2>
-  {{#corpus_link}}<a href="{{corpus_link}}">{{corpus_name}}</a>{{/corpus_link}} 
-  {{^corpus_link}}{{corpus_name}}{{/corpus_link}}. </p>
-  </h2>
-  </div>
-  </div>
-</div>
-      <div class="container-fluid">
-        <div id="chart"></div>
-      </div>
+    <div class="span12">
+    <h1><a href="{{home_link}}"><span class="logo-word">InPhO</span> Topic Explorer</a></h1>
+    <!--<h2 class="title non-null"></h2>-->
+    <h2>
+    {{#corpus_link}}<a href="{{corpus_link}}">{{corpus_name}}</a>{{/corpus_link}} 
+    {{^corpus_link}}{{corpus_name}}{{/corpus_link}}. </p>
+    </h2>
     </div>
   </div>
+</div>
+<div class="container-fluid">
+  <div id="chart"></div>
+</div>
     
-<script src="/lib/d3.v3.min.js"></script>
 <script src="/lib/jquery-2.2.4.min.js"></script>
 <script src="/lib/bootstrap-3.3.6/js/bootstrap.min.js"></script>
 <script src="/lib/inpho/util.js"></script>
@@ -192,6 +90,9 @@ var ext_data;
 d3.csv(base_url + "cluster.csv", function(error, data) {
   var topics = {}; var node;
   var ks = data.map(function(d) { return parseInt(d.k); }).filter(function(item, i, ar){ return ar.indexOf(item) === i; });;
+  var cluster_view = $('#sidebar-topics li:first-child').html();
+  $('#sidebar-topics').html('');
+  $('#sidebar-topics').append("<li>" + cluster_view"</li>");
   ks.map(function(k) { $('#sidebar-topics').append('<li><a class="selected" href="javascript:toggleDisplay(' + k + ')">' + k + '</a></li>') });
 
   var sizes = d3.scale.log()
@@ -395,13 +296,3 @@ var toggleDisplay = function(k) {
 }
       //# sourceURL=pen.js
     </script>
-
-<script>
-</script>
-    
-    
-    
-  </body>
-</html>
- 
-

@@ -23,7 +23,9 @@
   <link rel="stylesheet" type="text/css" href="/lib/bootstrap-3.3.6/css/bootstrap.min.css" />
   <!-- <link rel="stylesheet" type="text/css" href="/lib/bootstrap-2.3.2/css/bootstrap.min.css" /> -->
   <link rel="stylesheet" type="text/css" href="/css/bars.css" />
-  <link rel="stylesheet" type="text/css" href="/css/splash.css" />
+  <!--<link rel="stylesheet" type="text/css" href="/css/splash.css" /> -->
+  <link rel='stylesheet prefetch' href='/css/simple-sidebar.css'>
+  <link rel='stylesheet prefetch' href='/css/cluster.css'>
 </head>
 
 <body>
@@ -39,9 +41,9 @@
       </div>
       <div class="sidebar-helper" style="vertical-align: middle;">
         <ul id="sidebar-topics" class="sidebar-nav">
-          <li><a class="selected" title="Topic cluster view" data-placement="right" href="topics"><span class="glyphicon glyphicon-stats"></span></a></li>
+          <li><a class="selected" title="Topic cluster view" data-placement="right" href="/topics"><span class="glyphicon glyphicon-stats"></span></a></li>
           {{#topic_range}}
-          <li><a href="{{.}}/" title="Launch {{.}}-topic model" data-placement="right">{{.}}</a></li>
+          <li><a href="/{{.}}/" title="Launch {{.}}-topic model" data-placement="right">{{.}}</a></li>
           {{/topic_range}}
         </ul>
       </div>
