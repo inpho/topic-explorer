@@ -405,8 +405,9 @@ class Application(Bottle):
                       encoding='utf-8') as tmpl_file:
                 template = tmpl_file.read()
 
-            return self.renderer.render(
-                template, body=_render_template('bars.mustache.html'))
+            tmpl_params = {'body' : _render_template('bars.mustache.html'),
+                           'topic_range': self.topic_range}
+            return self.renderer.render(template, tmpl_params)
 
         @self.route('/cluster.csv')
         @_set_acao_headers
@@ -434,7 +435,13 @@ class Application(Bottle):
         @self.route('/')
         @_set_acao_headers
         def cluster():
-            return _render_template('index2.mustache.html')
+            with open(resource_filename(__name__, '../www/master.mustache.html'),
+                      encoding='utf-8') as tmpl_file:
+                template = tmpl_file.read()
+
+            tmpl_params = {'body' : _render_template('splash.mustache.html'),
+                           'topic_range': self.topic_range}
+            return self.renderer.render(template, tmpl_params)
 
         @self.route('/<filename:path>')
         @_set_acao_headers
