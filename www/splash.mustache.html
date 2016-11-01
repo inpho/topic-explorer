@@ -1,47 +1,7 @@
+<link rel="stylesheet" type="text/css" href="/css/splash.css" />
 <script src="/lib/jquery-2.2.4.min.js"></script>
 <script src="/lib/bootstrap-3.3.6/js/bootstrap.min.js"></script>
 <script src="/lib/bootstrap-2.3.2/js/bootstrap.min.js"></script>
-
-    <div id="wrapper">
-  <div id="sidebar-wrapper">
-    <div class="sidebar-helper">
-      <ul class="sidebar-nav">
-        <!--<li>
-                <a class="selected" href="#"><span class="glyphicon glyphicon-home"></span></a>
-              </li>-->
-        <li>
-          <!--<a class="selected" href="javascript:toggleSearch()"><span class="glyphicon glyphicon-search"></span></a>-->
-        </li>
-      </ul>
-    </div>
-    <div class="sidebar-helper" style="vertical-align: middle;">
-      <ul id="sidebar-topics" class="sidebar-nav">
-        <li><a class="selected" title="Topic cluster view" data-placement="right" href="topics"><span class="glyphicon glyphicon-stats"></span></a></li>
-        {{#topic_range}}
-        <li><a href="{{.}}/" title="Launch {{.}}-topic model" data-placement="right">{{.}}</a></li>
-        {{/topic_range}}
-      </ul>
-    </div>
-    <div class="sidebar-helper" style="position: absolute; bottom: 0;">
-      <ul class="sidebar-nav">
-        <!--<li>
-                <a class="selected" href="#"><span class="glyphicon glyphicon-home"></span></a>
-              </li>-->
-        <li><a class="selected" title="Help" href="javascript:toggleSearch()"><strong>?</strong></a></li>
-        <li><a href="#" class="selected" title="Usage" data-toggle="modal" data-target="#rightsModal"><strong>&copy;</strong></a></li>
-      </ul>
-    </div>
-  </div>
-  
-  <div id="search-bin">
-    <ul class="list-inline">
-      <li><span class="glyphicon glyphicon-file"></span></a></li>
-      <li><span class="glyphicon glyphicon-stats"></span></li>
-      <li><span class="glyphicon glyphicon-arrow-up"></span></li>
-    </ul>
-  </div>
-  
-  <div id="page-content-wrapper">
     <div id="main" class="container">
       <div class="row" id="top">
         <div class="col-md-12">
@@ -95,9 +55,6 @@
         </div>
       </div>
     </div>
-  </div>
-  <div class="container-fluid">
-    <div id="chart"></div>
   </div>
 </div>
 
