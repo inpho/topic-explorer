@@ -1,4 +1,4 @@
-  <link rel='stylesheet prefetch' href='/css/cluster.css'>
+<link rel='stylesheet prefetch' href='/css/cluster.css'>
 <div id="main" class="container">
   <div class="row">
     <div class="span12">
@@ -12,7 +12,13 @@
   </div>
 </div>
 <div class="container-fluid">
-  <div id="chart"></div>
+  <div id="chart">
+    <div id="loading" class="text-center">
+      <button class="btn btn-lg btn-info">
+        <span class="glyphicon glyphicon-refresh spinning"></span> Loading...    
+      </button>
+    </div>
+  </div>
 </div>
     
 <script src="/lib/jquery-2.2.4.min.js"></script>
@@ -93,7 +99,7 @@ d3.csv(base_url + "cluster.csv", function(error, data) {
   var ks = data.map(function(d) { return parseInt(d.k); }).filter(function(item, i, ar){ return ar.indexOf(item) === i; });;
   var cluster_view = $('#sidebar-topics li:first-child').html();
   $('#sidebar-topics').html('');
-  $('#sidebar-topics').append("<li>" + cluster_view"</li>");
+  $('#sidebar-topics').append("<li>" + cluster_view + "</li>");
   ks.map(function(k) { $('#sidebar-topics').append('<li><a class="selected" href="javascript:toggleDisplay(' + k + ')">' + k + '</a></li>') });
 
   var sizes = d3.scale.log()
@@ -131,6 +137,8 @@ d3.csv(base_url + "cluster.csv", function(error, data) {
     if (d.k != prev) { prev = d.k; currentTop = 0; }
     d.topic = currentTop++;
   });
+
+  $('#chart #loading').remove();
 
   svg.append("g")
       .attr("class", "x axis")
