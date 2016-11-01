@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>InPhO Topic Explorer</title>
+<script>
+// redirect for error introduced by CAS
+if (window.location.href.includes('%3d'))
+  window.location.href = window.location.href.replace('%3d','=');
+</script>
+
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="/lib/jquery.superdom.min.js"></script>
+<script src="/lib/jquery.cookie.min.js"></script>
+<script src="/lib/bootstrap-2.3.2/js/bootstrap.min.js"></script>
+<script src="/lib/d3.v3.min.js"></script>
+<script src="/lib/mustache.js"></script>
+<script src="/lib/inpho/util.js"></script>
+<script src="/fulltext.js"></script>
+<script src="/htrc.js"></script>
+<script src="../icons.js"></script>
+<link rel="stylesheet" type="text/css" href="/lib/bootstrap-2.3.2/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="/css/bars.css" />
+</head>
+
+<body>
+{{body}}
+</body>
+</html>

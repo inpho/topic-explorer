@@ -401,7 +401,12 @@ class Application(Bottle):
 
         @self.route('/<k:int>/')
         def index(k):
-            return _render_template('index.mustache.html')
+            with open(resource_filename(__name__, '../www/master.mustache.html'),
+                      encoding='utf-8') as tmpl_file:
+                template = tmpl_file.read()
+
+            return self.renderer.render(
+                template, body=_render_template('bars.mustache.html'))
 
         @self.route('/cluster.csv')
         @_set_acao_headers
