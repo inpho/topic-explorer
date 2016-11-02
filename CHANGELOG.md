@@ -8,6 +8,11 @@ This project follows the [PEP 440](https://www.python.org/dev/peps/pep-0440/) ve
 
 This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangelog.com/). Versions should group changes in the order: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, and `Security` (see section ["What makes a good change log?"](http://keepachangelog.com/)).
 ## [Unreleased]
+- Added:
+  - [#144](https://github.com/inpho/topic-explorer/issues/144) permissions string - modal now accessible via © button in lower left.
+- Fixed:
+  - `topicexplorer demo` now has a corpus description.
+  - [#169](https://github.com/inpho/topic-explorer/issues/169) directory structure error during init
 
 ## [1.0b134] - 2016-10-09
 - Added:
