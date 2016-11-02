@@ -44,7 +44,7 @@
     </div>
     <div class="form-group">
       <div class="col-sm-offset-4 col-sm-4">
-        <a class="btn btn-default form-control topdoc" id="topicBtn">Click a topic segment below to find related documents.</a>
+        <button class="btn btn-default form-control topdoc" disabled id="topicBtn" type="button">Click a topic segment below to find related documents.</button>
       </div>
     </div>
     <!--
@@ -176,6 +176,7 @@ if (roottopic) {
   $('.topdoc').css('font-weight', 'bold');
   $('.topdoc').addClass('btn-default');
   $('.topdoc').removeClass('btn-primary');
+  $('.topdoc').removeAttr('disabled');
 }
 
 if (docid || roottopic || q)
@@ -751,6 +752,9 @@ d3.json(url, function(error, data) {
     $('.topicsort').attr('disabled',true);
     $('.selected').removeClass('selected');
     $('.topdoc').text('Click a topic segment below to find related documents.');
+    $('.topdoc').removeClass('btn-primary');
+    $('.topdoc').addClass('btn-default');
+    $('.topdoc').attr('disabled', 'disabled');
     if (!($('.sort')[0].checked))
       sortDataset(function(a,b) { return b.prob - a.prob; });
 
@@ -767,8 +771,8 @@ d3.json(url, function(error, data) {
       $('.reset').removeAttr('disabled');
       if (topic == roottopic) {
         $('.topdoc').css('font-weight', 'bold');
-        $('.topdoc').addClass('btn-default');
         $('.topdoc').removeClass('btn-primary');
+        $('.topdoc').addClass('btn-default');
       } else {
         $('.topdoc').css('font-weight', 'normal');
         $('.topdoc').removeClass('btn-default');
