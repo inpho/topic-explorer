@@ -308,7 +308,10 @@ class Application(Bottle):
 
             # parse query
             try:
-                query = request.query.q.lower().split('|')
+                if '|' in request.query.q:
+                    query = request.query.q.lower().split('|')
+                else:
+                    query = request.query.q.lower().split(' ')
             except:
                 raise Exception('Must specify a query')
 

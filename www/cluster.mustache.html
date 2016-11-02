@@ -10,6 +10,21 @@
     </h2>
     </div>
   </div>
+  <div class="row">
+    <div class="col-xs-12">
+      <form method="GET" class="form-horizontal" id="searchForm">
+        <div class="form-group">
+          <label for="words" class="col-sm-2 control-label">Words</label>
+          <div class="col-sm-8">
+              <input type="text" id="words" name="q" class="form-control" placeholder="Enter search terms to highlight relevant topics ..." autocomplete="off">
+          </div>
+          <div class="col-sm-2">
+            <button type="submit" id="submit" class="btn btn-primary">View Topic Clusters</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
 <div class="container-fluid">
   <div id="chart">
@@ -25,7 +40,19 @@
 <script src="/lib/bootstrap-3.3.6/js/bootstrap.min.js"></script>
 <script src="/lib/inpho/util.js"></script>
 
-        <script>
+<script>
+
+var q = inpho.util.getValueForURLParam('q') || null;
+if (q) {
+  q = decodeURIComponent(q);
+  q = q.split('+').join(' ');
+  $('#words').val(q);
+  $('#words').css('font-weight', 'bold');
+  $('#words').change(function() {
+    $('#words').css('font-weight', 'normal');
+  });
+};
+
 if (window.location.pathname.endsWith('topics')) {
   var i = window.location.pathname.lastIndexOf('topics');
   var base_url = window.location.origin + window.location.pathname.substr(0,i);
