@@ -26,10 +26,6 @@ body {
 #chart input {
   margin: 4px 4px 0;
 }
-    </style>
-
-   <style>
-
 .logo-word {
   background-image: url('/img/inpho_logo.png');
   background-size: 172px 92px;
@@ -56,6 +52,7 @@ h1 a, h1 a:hover {
 }
 h2 {
   text-align: center;
+  margin-top: -25px;    
 }
 
 

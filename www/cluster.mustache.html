@@ -1,4 +1,4 @@
-<link rel='stylesheet prefetch' href='/css/cluster.css'>
+<link rel='stylesheet' href='/css/cluster.css'>
 <div id="main" class="container">
   <div class="row">
     <div class="col-xs-12">
@@ -73,7 +73,8 @@ var yAxis = d3.svg.axis()
     .orient("left");
 
 var controls = d3.select("#chart").append("label")
-    .attr("id", "controls");
+    .attr("id", "controls")
+    .attr("class", "hide");
 var checkbox = controls.append("input")
     .attr("id", "collisiondetection")
     .attr("type", "checkbox");
@@ -139,6 +140,7 @@ d3.csv(base_url + "cluster.csv", function(error, data) {
   });
 
   $('#chart #loading').remove();
+  controls.attr('class', '')
 
   svg.append("g")
       .attr("class", "x axis")
