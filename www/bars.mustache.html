@@ -778,6 +778,7 @@ d3.json(url, function(error, data) {
         $('.topdoc').removeClass('btn-default');
         $('.topdoc').addClass('btn-primary');
       }
+      $('.topdoc').removeAttr('disabled');
       $('.topdoc').text('Top Documents for Topic ' + topic);
       $('.topdoc').click(function() { location.href = location.origin + location.pathname + '?topic=' + topic;});
       $('.topdoc').mouseenter(function() {
