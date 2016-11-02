@@ -114,8 +114,8 @@ font-size: 59px;
 line-height: 1;
 color: inherit;
 letter-spacing: -1px;
-
 }
+
 h1 a, h1 a:hover {
   color: #000;
   text-decoration: none;
@@ -149,4 +149,7 @@ h1 a, h1 a:hover {
   }
 .popover {
   z-index: 1100;
+}
+h2 {
+    margin-top: -25px;    
 }

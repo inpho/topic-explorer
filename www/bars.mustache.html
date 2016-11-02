@@ -1,45 +1,53 @@
 <link rel="stylesheet" type="text/css" href="/css/bars.css" />
-<div class="container">
+<div id="main" class="container">
+  <div class="row">
+    <div class="col-xs-12">
+      <h1><a href="{{home_link}}"><span class="logo-word">InPhO</span> Topic Explorer</a></h1>
+      <!--<h2 class="title non-null"></h2>-->
+      <h2 class="text-center">
+      {{#corpus_link}}<a href="{{corpus_link}}">{{corpus_name}}</a>{{/corpus_link}} 
+      {{^corpus_link}}{{corpus_name}}{{/corpus_link}}</p>
+      </h2>
+    </div>
+  </div>
   <div class="row">
   <div class="col-xs-12">
-  <h1><a href="{{home_link}}"><span class="logo-word">InPhO</span> Topic Explorer</a></h1>
-  <!--<h2 class="title non-null"></h2>-->
-  <p class="null">This visualization shows the similarity of {{context_type}}s in the 
-  {{#corpus_link}}<a href="{{corpus_link}}">{{corpus_name}}</a>{{/corpus_link}} 
-  {{^corpus_link}}{{corpus_name}}{{/corpus_link}}. </p>
-  <p class="non-null">This visualization shows the similarity of {{context_type}}s in the 
-  {{#corpus_link}}<a href="{{corpus_link}}">{{corpus_name}}</a>{{/corpus_link}} 
-  {{^corpus_link}}{{corpus_name}}{{/corpus_link}} to <span class="title"></span>.</p>
 
   
-  <form method="GET" class="form-inline" id="searchForm">
-    <div class="form-group">
+  <form method="GET" class="form-horizontal" id="searchForm">
       <input type="hidden" name="doc" id="hidden_id">
       <script>
         $('#autocompleteDoc').tooltip({title: 'Toggle Word/Document Search', placement: 'bottom'});
       </script>
-      <div class="input-group">
-        <input type="text" id="doc" class="typeahead form-control" placeholder="Document or Search Terms" autocomplete="off">
-        <!-- TODO: find out why this can't be a <button> --> 
-        <div disabled class="btn btn-default input-group-addon" type="button" id="autocompleteDoc"><span class="glyphicon glyphicon-font"></span></div>
-        <div class="btn btn-default input-group-addon" type="button" id="randomDoc"><span class="glyphicon glyphicon-random"></span></div>
+    <div class="form-group">
+
+      <label for="doc" class="col-sm-2 control-label">Focal document</label>
+      <div class="col-sm-8">
+        <div class="input-group">
+          <input type="text" id="doc" class="typeahead form-control" placeholder="Document or Search Terms" autocomplete="off">
+          <!-- TODO: find out why this can't be a <button> --> 
+          <div disabled class="btn btn-default input-group-addon" type="button" id="autocompleteDoc"><span class="glyphicon glyphicon-font"></span></div>
+          <div class="btn btn-default input-group-addon" type="button" id="randomDoc"><span class="glyphicon glyphicon-random"></span></div>
+        </div>
       </div>
-      <div class="btn-group">
-        <button type="submit" id="submit" class="btn btn-default">Visualize</button>
-        <a class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
-        <ul class="dropdown-menu">
-        {{#topic_range}}
-        <li><a href="javascript:visualize({{.}})">{{.}} Topics</a></li>
-        {{/topic_range}}
-        </ul>
+      <div class="col-sm-2">
+        <div class="btn-group">
+          <button type="submit" id="submit" class="btn btn-primary">Visualize</button>
+          <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            {{#topic_range}}
+            <li><a href="javascript:visualize({{.}})">{{.}} Topics</a></li>
+            {{/topic_range}}
+          </ul>
+        </div>
       </div>
     </div>
+    <!--
     <div class="pull-right">
-      <button class="btn btn-default" type="button" id="citeBtn">Cite</button>
-  
       <a href="https://twitter.com/share" class="twitter-share-button pull-right" data-text="InPhO Topic Explorer" data-via="JaimieMurdock" data-size="large" data-hashtags="dighum" data-counturl="inphodata.cogs.indiana.edu">Tweet</a>
       <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
     </div>
+    -->
   </form>
 
   <div id="cite" class="alert alert-success">
@@ -113,14 +121,17 @@
       </div>
     </div>
   </div>
-  
 </div>
+  
 <script>
 var q = inpho.util.getValueForURLParam('q') || null;
 if (q) {
   q = decodeURIComponent(q);
   q = q.replace(/\|/g, ' ');
 }
+
+$('#doc').css('font-weight', 'bold');
+$('#doc').on('change', function() { $(this).css('font-weight', 'normal')});
 
 var docid = inpho.util.getValueForURLParam('doc') || null;
 if (docid) {
@@ -268,6 +279,7 @@ $('#randomDoc').click(function() {
       $('#autocompleteDoc').removeAttr('disabled');
       $('#hidden_id').val(rand[0].id);
       $('#doc').val(rand[0].label);
+      $('#doc').css('font-weight', 'normal');
   });
 });
 $('#randomDoc').tooltip({title: "Random Document", placement: 'bottom'});
@@ -313,7 +325,7 @@ var yAxis = d3.svg.axis()
 
 function computeWidth(numCols) { 
   $('#legend').attr("width", margin.right + (numCols*55) + 20 + margin.right);
-  $('#main').attr("width", Math.max($(window).width() - $('#legend').width() - 200 + margin.right, 750));
+  $('#chart #main').attr("width", Math.max($(window).width() - $('#legend').width() - 200 + margin.right, 750));
   $('#controls').css("left", Math.max($(window).width() - $('#legend').width() - 200 + margin.right, 750) + 40);
   width = Math.max($(window).width() - $('#legend').width() - 200 + margin.right, 750) - margin.left - margin.right;
   x = d3.scale.linear()
@@ -410,7 +422,7 @@ d3.json(url, function(error, data) {
     var legendCols = Math.max(Math.ceil(d3.keys(topics).length / Math.min(data.length, maxRows)), minCols);
     var legendFactor = Math.ceil(d3.keys(topics).length / legendCols);
     computeHeight(data,legendFactor);
-    $("#main").attr("height", height + margin.top + margin.bottom);
+    $("#chart #main").attr("height", height + margin.top + margin.bottom);
     $("#legend").attr("height", (legendFactor * 20) + margin.top + margin.bottom);
     computeWidth(legendCols);
   
