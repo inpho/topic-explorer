@@ -32,7 +32,7 @@
       </div>
       <div class="col-sm-2">
         <div class="btn-group">
-          <button type="submit" id="submit" class="btn btn-primary">Visualize</button>
+          <button type="submit" id="submit" class="btn btn-default">Visualize</button>
           <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
           <ul class="dropdown-menu">
             {{#topic_range}}
@@ -40,6 +40,11 @@
             {{/topic_range}}
           </ul>
         </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-4 col-sm-4">
+        <a class="btn btn-default form-control topdoc" id="topicBtn">Click a topic segment below to find related documents.</a>
       </div>
     </div>
     <!--
@@ -167,6 +172,10 @@ var roottopic = inpho.util.getValueForURLParam('topic') || null;
 if (roottopic) {
   $('.title').html('Topic ' + roottopic);
   $('.twitter-share-button').attr('data-text', "Check out topic "+ roottopic+" at the #InPhO Topic Explorer!");
+  $('.topdoc').text('Top Documents for Topic ' + roottopic);
+  $('.topdoc').css('font-weight', 'bold');
+  $('.topdoc').addClass('btn-default');
+  $('.topdoc').removeClass('btn-primary');
 }
 
 if (docid || roottopic || q)
@@ -280,6 +289,8 @@ $('#randomDoc').click(function() {
       $('#hidden_id').val(rand[0].id);
       $('#doc').val(rand[0].label);
       $('#doc').css('font-weight', 'normal');
+      $('#submit').removeClass('btn-default');
+      $('#submit').addClass('btn-primary');
   });
 });
 $('#randomDoc').tooltip({title: "Random Document", placement: 'bottom'});
@@ -293,7 +304,6 @@ $('#randomDoc').tooltip({title: "Random Document", placement: 'bottom'});
   <label class="checkbox"><input class="sort" type="checkbox"> Alphabetical sort</label>
   <label class="checkbox"><input class="scale" type="checkbox"> Normalize topic bars</label>
   <button class="btn btn-default reset" onclick="resetTopicSort()" disabled>Reset Topic Sort</button><br>
-  <button class="btn btn-default topdoc" style="display:none">Top Documents for [Topic]</button>
 </div>
 
 <!--<script src="topics.js"></script>-->
@@ -740,8 +750,7 @@ d3.json(url, function(error, data) {
     $('.reset').attr('disabled',true);
     $('.topicsort').attr('disabled',true);
     $('.selected').removeClass('selected');
-    $('.topdoc').hide();
-    $('.topdoc').text('Top Documents for [Topic]');
+    $('.topdoc').text('Click a topic segment below to find related documents.');
     if (!($('.sort')[0].checked))
       sortDataset(function(a,b) { return b.prob - a.prob; });
 
@@ -756,9 +765,17 @@ d3.json(url, function(error, data) {
       $('.selected').removeClass('selected');
       $(".top_" + topic).addClass('selected');
       $('.reset').removeAttr('disabled');
+      if (topic == roottopic) {
+        $('.topdoc').css('font-weight', 'bold');
+        $('.topdoc').addClass('btn-default');
+        $('.topdoc').removeClass('btn-primary');
+      } else {
+        $('.topdoc').css('font-weight', 'normal');
+        $('.topdoc').removeClass('btn-default');
+        $('.topdoc').addClass('btn-primary');
+      }
       $('.topdoc').text('Top Documents for Topic ' + topic);
-      $('.topdoc').show();
-      $('.topdoc').click(function URL() {location.href = location.origin + location.pathname + '?topic=' + topic;});
+      $('.topdoc').click(function() { location.href = location.origin + location.pathname + '?topic=' + topic;});
       $('.topdoc').mouseenter(function() {
           $('.legend rect').not('.top_' + topic).tooltip('hide');
           $(".legend rect.top_" + topic).tooltip('show'); });
