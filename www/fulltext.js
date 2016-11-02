@@ -56,7 +56,9 @@
     this.url = (typeof data.url === 'undefined') ? false : data.url;
     this.close = (typeof data.close === 'undefined') ? false : data.close;
 
-    var html = '<div class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true">';
+    var html = '<div class="modal fade" tabindex="-1" role="dialog">';
+    html += '<div class="modal-dialog" role="document">';
+    html += '<div class="modal-content">';
     if (this.title || this.cancel){
       html += '<div class="modal-header">';
       if (this.cancel) html += '<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>';
@@ -91,6 +93,8 @@
       if (this.submit) html += '<button class="btn btn-primary btn-submit">' + this.submit + '</button>';
       html += '</div>';
     }
+    html += '</div>';
+    html += '</div>';
     html += '</div>';
 
     var options = {"show": false};
