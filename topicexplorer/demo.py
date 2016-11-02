@@ -86,11 +86,12 @@ def main(args=None):
     config = ConfigParser()
     config.read('ap.ini')
     config.set("main", "label_module", "topicexplorer.extensions.ap")
+    config.set("main", "corpus_desc", "ap.md")
     config.set("www", "icons", "ap,link")
     config.set("www", "fulltext", "True")
+    shutil.copyfile(os.path.join(os.path.dirname(__file__), '../demo/ap.md'), 'ap.md')
     with open("ap.ini", "wb") as configfh:
         config.write(configfh)
-
 
 if __name__ == '__main__':
     main()

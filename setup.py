@@ -16,6 +16,7 @@ def get_datafiles(datadir):
                 for root, dirs, files in os.walk(datadir)]
 
 datafiles = get_datafiles('www')
+datafiles.extend(get_datafiles('demo'))
 datafiles.extend(get_datafiles('ipynb'))
 
 # After install, download nltk packages 'punkt' and 'stopwords'
