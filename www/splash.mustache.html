@@ -78,6 +78,7 @@
           </div>
         </form>
         <hr />
+        <h4>Topic Fingerprint</h4>
         <p>The topic bars below show the composition of the selected document in different models. Scroll over the bars to see the most likely words in each topic. Click on a bar to open the Topic Explorer for that model focused on this document.</p>
         <div id="topicBars">
 <dl id="singleBarsDl"  class="dl-horizontal">
@@ -397,8 +398,8 @@ $('#words').on('input', function() {
   var words = $(this).val().split(' ');
   wordTimeout = setTimeout(function() { 
     gettopics(words); 
-    $('#wordsBtn').attr('href', 'topics?q=' + words.join('|'));
-    $('#wordsBtn2').attr('href', 'topics?q=' + words.join('|'));
+    $('#wordsBtn').attr('href', 'topics?q=' + words.join('+'));
+    $('#wordsBtn2').attr('href', 'topics?q=' + words.join('+'));
   }, 500);
 });
 
