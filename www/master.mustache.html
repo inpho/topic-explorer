@@ -24,6 +24,7 @@
   <link rel="stylesheet" type="text/css" href="/lib/bootstrap-3.3.6/css/bootstrap.min.css" />
   <!-- <link rel="stylesheet" type="text/css" href="/lib/bootstrap-2.3.2/css/bootstrap.min.css" /> -->
   <link rel='stylesheet prefetch' href='/css/simple-sidebar.css'>
+  <link rel='stylesheet prefetch' href='/css/master.css'>
 </head>
 
 <body>
@@ -31,7 +32,7 @@
     <div id="sidebar-wrapper">
       <div class="sidebar-helper">
         <ul class="sidebar-nav">
-          <li><a class="selected" href="/"><span class="glyphicon glyphicon-home"></span></a></li>
+          <li><a class="selected" data-placement="right" title="Home" href="/"><span class="glyphicon glyphicon-home"></span></a></li>
           <li>
             <!--<a class="selected" href="javascript:toggleSearch()"><span class="glyphicon glyphicon-search"></span></a>-->
           </li>
@@ -47,8 +48,8 @@
       </div>
       <div class="sidebar-helper" style="position: absolute; bottom: 0;">
         <ul class="sidebar-nav">
-          <li><a class="selected" title="Help" href="javascript:toggleSearch()"><strong>?</strong></a></li>
-          <li><a href="#" class="selected" title="Usage" data-toggle="modal" data-target="#rightsModal"><strong>&copy;</strong></a></li>
+          <li><a class="selected" data-placement="right" title="Help" href="javascript:toggleSearch()"><strong>?</strong></a></li>
+          <li><a href="#" class="selected" data-placement="right" title="Usage" data-toggle="modal" data-target="#rightsModal"><strong>&copy;</strong></a></li>
         </ul>
       </div>
     </div>
@@ -79,6 +80,9 @@
       </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
   </div><!-- /.modal #rightsModal -->
+  <script>
+    $('#sidebar-wrapper li a').tooltip();
+  </script>
 
 </body>
 </html>

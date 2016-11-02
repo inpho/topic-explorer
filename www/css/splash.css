@@ -211,10 +211,6 @@ h1 {
     }
   .row p { font-size: 16px; }
   
-  .tooltip {
-    width: 240px;
-    font-size:16px;
-  }
   .modal-body .dl-horizontal {
     margin-left: -80px;
   }

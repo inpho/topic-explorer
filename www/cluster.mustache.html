@@ -125,10 +125,13 @@ var ext_data;
 d3.csv(base_url + "cluster.csv", function(error, data) {
   var topics = {}; var node;
   var ks = data.map(function(d) { return parseInt(d.k); }).filter(function(item, i, ar){ return ar.indexOf(item) === i; });;
+
+  // sidebar items
   var cluster_view = $('#sidebar-topics li:first-child').html();
   $('#sidebar-topics').html('');
-  $('#sidebar-topics').append("<li>" + cluster_view + "</li>");
-  ks.map(function(k) { $('#sidebar-topics').append('<li><a class="selected" href="javascript:toggleDisplay(' + k + ')">' + k + '</a></li>') });
+  $('#sidebar-topics').append('<li>' + cluster_view + "</li>");
+  ks.map(function(k) { $('#sidebar-topics').append('<li><a class="selected" title="Toggle '+k+'-topic clusters" data-placement="right" href="javascript:toggleDisplay(' + k + ')">' + k + '</a></li>') });
+  $('#sidebar-topics li a').tooltip();
 
   var sizes = d3.scale.log()
     .range([radius, 1]);
