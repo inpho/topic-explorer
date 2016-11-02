@@ -87,6 +87,7 @@ def main(args=None):
     config.read('ap.ini')
     config.set("main", "label_module", "topicexplorer.extensions.ap")
     config.set("www", "icons", "ap,link")
+    config.set("www", "fulltext", "True")
     with open("ap.ini", "wb") as configfh:
         config.write(configfh)
 
