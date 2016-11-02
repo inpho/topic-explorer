@@ -5,7 +5,11 @@
     <div id="main" class="container">
       <div class="row" id="top">
         <div class="col-md-12">
-          <h1>{{corpus_name}}<br/><small><a href="#about">About this corpus <span class="glyphicon glyphicon-arrow-down"></span></a></small></h1>
+          <h1><a href="{{home_link}}"><span class="logo-word">InPhO</span> Topic Explorer</a></h1>
+          <h2>
+            {{#corpus_link}}<a href="{{corpus_link}}">{{corpus_name}}</a>{{/corpus_link}} 
+            {{^corpus_link}}{{corpus_name}}{{/corpus_link}} <br />
+            <small><a href="#about">About this corpus <span class="glyphicon glyphicon-arrow-down"></span></a></small></h2>
           <p style="font-size: 28px; text-align: center; padding-top: 40px;">Topic models are about contexts, rather than individual words.<br />
           We search a topic model using full documents, rather than keywords.<br /><strong>Enter the model by one of the following methods:</strong></p>
         </div>
@@ -47,13 +51,12 @@
           <h2 class="back"><a href="#top"><small>Back to top <span class="glyphicon glyphicon-arrow-up"> </span></small></a></h2>
         </div>
       </div>
-      <div class="row" id="brand">
+      <!-- <div class="row" id="brand">
          <div class="md-col-12">
            <h2 style="text-align: center;">Powered by:</h2>
                 <div id="brandWord"><h1 style="text-align: center;"><a href="http://inphodata.cogs.indiana.edu"><span class="logo-word">InPhO</span> Topic Explorer</a></h1></div>
-          <!--<h2 class="title non-null"></h2>-->
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 </div>

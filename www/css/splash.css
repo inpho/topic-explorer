@@ -55,24 +55,6 @@ h1 a:hover {
   color: black;
 }
 
-#h1 {
-  text-align: center;
-  margin-bottom: 15px; 
-  margin-top: -30px;
-}
-#brandWord h1 {
-  font-size: 59px;
-  line-height: 1;
-  color: inherit;
-  letter-spacing: -1px;
-  font-weight: bold;
-}
-#brandWord {
-  margin-bottom: 45px;
-}
-#brand {
-  margin-top: 80px;
-}
 .entry {
   text-align: center;
 
@@ -261,4 +243,33 @@ h1 {
   top: 0;
   margin-left: 0px;
   display:none;
+}
+.logo-word {
+  background-image: url('/img/inpho_logo.png');
+  background-size: 172px 92px;
+  width: 172px;
+  height: 84px;
+  padding-top: 6px;
+  margin-top: 14px;
+  margin-bottom: 15px;
+  margin-left: -6px;
+  display: inline-block;
+  text-indent: -3000px;
+}
+h1 {
+text-align: center;
+margin-bottom: 0;
+font-size: 59px;
+line-height: 1;
+color: inherit;
+letter-spacing: -1px;
+}
+h1 a, h1 a:hover, h2 a, h2 a:hover {
+  color: #000;
+  text-decoration: none;
+}
+#top h2 {
+  text-align: center;
+  margin-top: -25px;    
+  padding-top: 0px;
 }
