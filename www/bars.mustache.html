@@ -26,7 +26,7 @@
         <div class="input-group">
           <input type="text" id="doc" class="typeahead form-control" placeholder="Click button on right to select random document →" autocomplete="off">
           <!-- TODO: find out why this can't be a <button> --> 
-          <div disabled class="btn btn-default input-group-addon" type="button" id="autocompleteDoc"><span class="glyphicon glyphicon-font"></span></div>
+          <div disabled class="btn btn-default input-group-addon hide" type="button" id="autocompleteDoc"><span class="glyphicon glyphicon-font"></span></div>
           <div class="btn btn-default input-group-addon" type="button" id="randomDoc"><span class="glyphicon glyphicon-random"></span></div>
         </div>
       </div>
@@ -43,8 +43,8 @@
       </div>
     </div>
     <div class="form-group">
-      <div class="col-sm-offset-4 col-sm-4">
-        <button class="btn btn-default form-control topdoc" disabled id="topicBtn" type="button">Click a topic segment below to find related documents.</button>
+      <div class="col-lg-offset-4 col-lg-4 col-md-offset-2 col-md-8">
+        <button class="btn btn-default form-control topdoc" disabled id="topicBtn" type="button">Click a segment below to focus on relation to that topic.</button>
       </div>
     </div>
     <!--

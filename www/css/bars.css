@@ -167,3 +167,7 @@ dt {
     }
 }
 
+.btn-group {
+    display: inline-flex;
+    white-space: nowrap;
+}
