@@ -19,6 +19,7 @@ This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangel
   - `topicexplorer demo` now has a corpus description.
   - [#169](https://github.com/inpho/topic-explorer/issues/169) directory structure error during init
   - Variety of rendering errors in the Document-view page.
+  - Fixed issue with histogram bar width
 
 ## [1.0b134] - 2016-10-09
 - Added:

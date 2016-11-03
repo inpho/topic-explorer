@@ -163,7 +163,7 @@ def get_high_filter(args, c, words=None):
                 percentage = 1. - (counts[counts < bin].sum() / float(counts.sum()))
                 print "{0:>5.0f}x".format(bin - 1).rjust(8),
                 print '{0:2.1f}%'.format(percentage * 100).rjust(8),
-                print (u'\u2588' * (percentage * 36)).ljust(36),
+                print (u'\u2588' * int(percentage * 36)).ljust(36),
                 print "  {0:0.0f} words".format(count).rjust(14),
                 print "> {0:>5.0f}x".format(bin - 1).ljust(8)
 
@@ -244,7 +244,7 @@ def get_low_filter(args, c, words=None):
                 percentage = (counts[counts <= bin].sum() / float(counts.sum()))
                 print "{0:>5.0f}x".format(bin - 1).rjust(8),
                 print '{0:2.1f}%'.format(percentage * 100).rjust(8),
-                print (u'\u2588' * (percentage * 36)).ljust(36),
+                print (u'\u2588' * int(percentage * 36)).ljust(36),
                 print "  {0:0.0f} words".format(count).rjust(14),
                 print "<= {0:>5.0f}x".format(bin - 1).ljust(8)
 
