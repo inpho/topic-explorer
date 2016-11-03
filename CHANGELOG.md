@@ -11,11 +11,14 @@ This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangel
 - Added:
   - [#144](https://github.com/inpho/topic-explorer/issues/144) permissions string - modal now accessible via © button in lower left.
   - Sidebar is now on all subpages.
+  - Topic Fingerprint view now available via the Document view page.
 - Changed:
   - All pages now load from a single `master.mustache.html` filled in with the appropriate subpage.
+  - Upgraded all sites to Bootstrap 3.
 - Fixed:
   - `topicexplorer demo` now has a corpus description.
   - [#169](https://github.com/inpho/topic-explorer/issues/169) directory structure error during init
+  - Variety of rendering errors in the Document-view page.
 
 ## [1.0b134] - 2016-10-09
 - Added:
