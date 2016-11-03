@@ -83,6 +83,11 @@
         <hr />
         <h4><img src="/img/icon-fingerprint.png" alt="Fingerprint icon" /> Topic Fingerprint </h4>
         <p>The topic bars below show the composition of the selected document in different models. Scroll over the bars to see the most likely words in each topic. Click on a bar to open the Topic Explorer for that model focused on this document.</p>
+        <div id="loading" class="text-center" style="display: none;">
+          <button class="btn btn-lg btn-info">
+            <span class="glyphicon glyphicon-refresh spinning"></span> Loading...    
+          </button>
+        </div>
         <div id="topicBars">
           <dl id="singleBarsDl"  class="dl-horizontal">
           </dl>

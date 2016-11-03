@@ -56,6 +56,7 @@ $('#randomDoc', '#fingerprintModal').tooltip({title: "Random Document", placemen
 
 function resetBars() {
   $('#singleBarsDl').html('');
+  $('#loading').show();
   $(ks).each(resetBar);
 }
 
@@ -198,7 +199,9 @@ var fingerprint = {
         
         $('#status .bar', '#bar'+k).addClass('bar-success').css('width', '100%').text("Complete!");
         setTimeout(function() {$('#status', '#bar'+k).hide()}, 250);
-        setTimeout(function() {$('#bar'+k).show(); 
+        setTimeout(function() {
+          $('#loading').hide();
+          $('#bar'+k).show(); 
             $("#bar" + k).before("<dt>"+k+" Topics</dt>");
           }, 250);
     
