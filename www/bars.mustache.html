@@ -1,4 +1,11 @@
 <link rel="stylesheet" type="text/css" href="/css/bars.css" />
+<script>
+$('#home-link').attr('href', '../');
+$('#cluster-link').attr('href', '../topics');
+$('.topic-link').each(function(i,elt) {
+    $(this).attr('href', '../' + $(elt).attr('href'));
+  }); 
+</script>
 <div id="main" class="container">
   <div class="row">
     <div class="col-xs-12">
