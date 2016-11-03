@@ -1,14 +1,4 @@
 <link rel="stylesheet" type="text/css" href="/css/bars.css" />
-<script src="../fingerprint.js"></script>
-<script>
-fingerprint.host = '../';
-
-$('#home-link').attr('href', '../');
-$('#cluster-link').attr('href', '../topics');
-$('.topic-link').each(function(i,elt) {
-    $(this).attr('href', '../' + $(elt).attr('href'));
-  }); 
-</script>
 <div id="main" class="container">
   <div class="row">
     <div class="col-xs-12">
@@ -272,21 +262,21 @@ $('#autocompleteDoc').click(function() {
 });
 
 
-$('#main #randomDoc').click(function() { 
+$('#randomDoc', '#searchForm').click(function() { 
     $.getJSON('../docs.json?random=1', function(rand) {
       if (!$('#autocompleteDoc').hasClass('active')) {
         $('#autocompleteDoc').button('toggle');
         $('span.glyphicon-font', '#autocompleteDoc').removeClass('glyphicon-font').addClass('glyphicon-file');
       }
       $('#autocompleteDoc').removeAttr('disabled');
-      $('#hidden_id').val(rand[0].id);
-      $('#doc').val(rand[0].label);
-      $('#doc').css('font-weight', 'normal');
-      $('#submit').removeClass('btn-default');
-      $('#submit').addClass('btn-primary');
+      $('#hidden_id', '#searchForm').val(rand[0].id);
+      $('#doc', '#searchForm').val(rand[0].label);
+      $('#doc', '#searchForm').css('font-weight', 'normal');
+      $('#submit', '#searchForm').removeClass('btn-default');
+      $('#submit', '#searchForm').addClass('btn-primary');
   });
 });
-$('#randomDoc').tooltip({title: "Random Document", placement: 'bottom'});
+$('#randomDoc', '#searchForm').tooltip({title: "Random Document", placement: 'bottom'});
 
 </script>
 
@@ -860,3 +850,13 @@ d3.json(url, function(error, data) {
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+<script src="../fingerprint.js"></script>
+<script>
+fingerprint.host = '../';
+
+$('#home-link').attr('href', '../');
+$('#cluster-link').attr('href', '../topics');
+$('.topic-link').each(function(i,elt) {
+    $(this).attr('href', '../' + $(elt).attr('href'));
+  }); 
+</script>
