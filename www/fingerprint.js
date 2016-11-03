@@ -55,7 +55,6 @@ $('#randomDoc', '#fingerprintModal').click(function() {
 $('#randomDoc', '#fingerprintModal').tooltip({title: "Random Document", placement: 'bottom'});
 
 function resetBars() {
-  console.log(ks);
   $('#singleBarsDl').html('');
   $(ks).each(resetBar);
 }
@@ -105,7 +104,6 @@ var fingerprint = {
         .range([0, width])
         .domain([0,1.0]);
      // TODO: Clear existing #bar{k} content
-    console.log(width)
     var svg = d3.select("#bar"+k+" #chart").insert("svg")
         .attr("width", width)
         .attr("height", height)
@@ -133,7 +131,6 @@ var fingerprint = {
       $('#fingerprintModal #status .bar', '#bar'+k).css('width', '50%').text('Loading topics...');
       if (error) {
         var isError = $('.bar.bar-danger ');
-       console.log(isError[0] +" Hello");    
         $('#fingerprintModal #status .progress', '#bar'+k).removeClass('active progress-striped');
         if(isError[0]){
            $('#fingerprintModal #status .progress', '#bar'+k).remove();
@@ -144,7 +141,6 @@ var fingerprint = {
         }
         return false;
       }
-      //console.log(data);
       d3.json(host + "/topics.json", function(error_top, topics) {
         $('#fingerprintModal #status .bar', '#bar'+k).css('width', '75%').text('Rendering chart...');
         if (error_top) {
@@ -205,7 +201,6 @@ var fingerprint = {
         setTimeout(function() {$('#bar'+k).show(); 
             $("#bar" + k).before("<dt>"+k+" Topics</dt>");
           }, 250);
-        console.log("doneeee");
     
     }); });
   } 

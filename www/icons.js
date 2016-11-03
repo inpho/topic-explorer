@@ -6,6 +6,28 @@ var base_fn = function(ticks,i) {
         .attr("x", -margin.left + 5 + (i*20))
         .attr("y", -9);
 }
+var string_escape = function (string) {
+  return ('' + string).replace(/["'\\\n\r\u2028\u2029]/g, function (character) {
+    // Escape all characters not included in SingleStringCharacters and
+    // DoubleStringCharacters on
+    // http://www.ecma-international.org/ecma-262/5.1/#sec-7.8.4
+    switch (character) {
+      case '"':
+      case "'":
+      case '\\':
+        return '\\' + character
+      // Four possible LineTerminator characters need to be escaped:
+      case '\n':
+        return '\\n'
+      case '\r':
+        return '\\r'
+      case '\u2028':
+        return '\\u2028'
+      case '\u2029':
+        return '\\u2029'
+    }
+  })
+}
 
 var icon_fns = {"link" : function(ticks, i) {
       base_fn(ticks,i)
@@ -21,7 +43,7 @@ var icon_fns = {"link" : function(ticks, i) {
         .attr("onclick", function(d) {
           if (d) {      
             data = docs.filter(function(doc, i) { return doc.id == d})[0];
-            return "showFingerprint('" + d + "', '" + data.label + "')"
+            return "showFingerprint('" + d + "', '" + string_escape(data.label) + "')"
           } else {
             return "";
           }
