@@ -153,3 +153,17 @@ h1 a, h1 a:hover {
 h2 {
     margin-top: -25px;    
 }
+
+.bar-container {
+  height:25px;  
+}
+
+dt {
+    margin-left: -80px;    
+}
+@media(min-width:768px) {
+    dd {
+        margin-left: 100px !important;
+    }
+}
+

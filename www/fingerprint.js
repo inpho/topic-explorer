@@ -160,11 +160,7 @@ var fingerprint = {
         }
     
         var k = d3.keys(topics).length;
-    
-        $("#bar" + k).before("<dt>"+k+" Topics</dt>");
-    
-        var full_explorer_url = ""+k+"/?doc="+docid;
-      
+        var full_explorer_url = host+"/?doc="+docid;
       
         calculateTopicMap(data, true, function(a,b) {return data[0].topics[b] - data[0].topics[a];});
       
@@ -206,7 +202,9 @@ var fingerprint = {
         
         $('#status .bar', '#bar'+k).addClass('bar-success').css('width', '100%').text("Complete!");
         setTimeout(function() {$('#status', '#bar'+k).hide()}, 250);
-        setTimeout(function() {$('#bar'+k).show()}, 250);
+        setTimeout(function() {$('#bar'+k).show(); 
+            $("#bar" + k).before("<dt>"+k+" Topics</dt>");
+          }, 250);
         console.log("doneeee");
     
     }); });
