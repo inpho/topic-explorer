@@ -53,6 +53,11 @@
         </ul>
       </div>
     </div>
+  
+    <script>
+    var ks = [{{#topic_range}}{{.}}, {{/topic_range}}];
+    $('#sidebar-wrapper li a').tooltip();
+    </script>
     
     <div id="page-content-wrapper">
       {{body}}
@@ -80,9 +85,7 @@
       </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
   </div><!-- /.modal #rightsModal -->
-  <script>
-    $('#sidebar-wrapper li a').tooltip();
-  </script>
+
 
 </body>
 </html>

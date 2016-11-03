@@ -13,6 +13,20 @@ var icon_fns = {"link" : function(ticks, i) {
         .attr("class", "linkIcon icon")
         .on("click", function(d) { window.location.href = window.location.origin + window.location.pathname + "?doc=" + encodeURIComponent(d);});
   },
+ "fingerprint" : function(ticks, i, docs) {
+      base_fn(ticks,i)
+        .attr("data-doc-id", function (d) {return d})
+        .attr("xlink:href","/img/icon-fingerprint.png")
+        .attr("class", "fingerprintIcon icon")
+        .attr("onclick", function(d) {
+          if (d) {      
+            data = docs.filter(function(doc, i) { return doc.id == d})[0];
+            return "showFingerprint('" + d + "', '" + data.label + "')"
+          } else {
+            return "";
+          }
+        });
+  },
  "ap" : function(ticks, i) {
       base_fn(ticks,i)
         .attr("data-doc-id", function (d) {return d})
@@ -153,6 +167,7 @@ String.prototype.format = String.prototype.f = function() {
 
 var icon_tooltips = {
     "link" : 'Click to refocus the Topic Explorer on this document.',
+    "fingerprint" : 'Click to see the Topic Fingerprint of this document.',
     "ap" : 'Click for the full-text.',
     "fulltext" : 'Click for the full-text.',
     "oldbailey" : 'Click to open Old Bailey Online Record.',

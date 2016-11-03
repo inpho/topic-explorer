@@ -1,5 +1,8 @@
 <link rel="stylesheet" type="text/css" href="/css/bars.css" />
+<script src="../fingerprint.js"></script>
 <script>
+fingerprint.host = '../';
+
 $('#home-link').attr('href', '../');
 $('#cluster-link').attr('href', '../topics');
 $('.topic-link').each(function(i,elt) {
@@ -62,24 +65,6 @@ $('.topic-link').each(function(i,elt) {
     -->
   </form>
 
-  <div id="cite" class="alert alert-success">
-    <p>Cite the topic explorer as: 
-
-    <blockquote>Jaimie Murdock and Colin Allen. (2015) Visualization Techniques for Topic Model Checking in Proceedings of the 29th AAAI Conference on Artificial Intelligence (AAAI-15). Austin, Texas, USA, January 25-29, 2015. <a href="http://inphodata.cogs.indiana.edu/">http://inphodata.cogs.indiana.edu/</a></blockquote>
-    
-    <a class="btn btn-default" target="_blank" href="papers/aaai15-topic-explorer-demo.bib">BibTeX</a>
-    <a class="btn btn-default" target="_blank" href="papers/aaai15-topic-explorer-demo.pdf">PDF</a></p>
-  </div>
-
-  <div id="help" class="help alert alert-info">
-    <p>Use the search box above to select an entry or click the <span class="glyphicon glyphicon-random"></span> button to populate the box with a random {{context_type}}.</p>
-    <p>The color bands within each article's row show the topic distribution within that article, and the relative sizes of each band indicates the weight of that topic in the article. The total width of each row indicates similarity to the focal topic or document, measured by the quantity <span class="formula">sim(<em>doc</em>) = 1 &ndash; JSD(<em>doc</em>, <span class="title"></span>)</span>, where <span class="formula">JSD</span> is the <a href="http://en.wikipedia.org/wiki/Jensen–Shannon_divergence">Jensen-Shannon distance</a> between the word probability distributions of each item. Each topic's label is arbitrarily assigned, while the color corresponds to the topic's oscillation across documents. Both label and color are consistent across articles in the browser.</p>
-    <p>Display options include topic normalization, alphabetical sort and topic sort. By normalizing topics, the combined width of each bar expands so that topic weights per document can be compared. By clicking a topic, the documents will reorder acoording to that topic's weight and topic bars will reorder according to the topic weights in the highest weighted document. When a topic is selected, clicking "Top Documents for [Topic]" will take you to a new page showing the most similar documents to that topic's word distribution. The original sort order can be restored with the "Reset Topic Sort" button.</p>
-    <p>This data was generated using the <a href="http://github.com/inpho/vsm" target="_blank">InPhO VSM module's</a> LDA implementation.  See <a href="http://en.wikipedia.org/wiki/Latent_Dirichlet_allocation" target="_blank">Wikipedia: Latent Dirichlet Allocation</a> for more on the LDA topic modeling approach or <a href="http://dl.acm.org/citation.cfm?id=2133826" target="_blank">"Probabilistic Topic Models" (Blei, 2012)</a> for a recent review.</p>
-    <p><a href="http://github.com/inpho/topic-explorer/" target="_blank">Source code</a> and <a href="http://github.com/inpho/topic-explorer/issues/" target="_blank">issue tracking</a> for this page available at <a href="http://github.com/inpho/topic-explorer/" target="_blank">GitHub</a>. Contact Jaimie Murdock (<span class="iumail">jammurdo</span>) with further comments.</p>
-    <script>var mail = $('.iumail').text();
-      $('.iumail').html('<a href="mailto:'+mail+'@indiana.edu">'+mail+'@indiana.edu</a>');</script>
-  </div>
   <script>
 
   $(document).ready(function () {
@@ -287,7 +272,7 @@ $('#autocompleteDoc').click(function() {
 });
 
 
-$('#randomDoc').click(function() { 
+$('#main #randomDoc').click(function() { 
     $.getJSON('../docs.json?random=1', function(rand) {
       if (!$('#autocompleteDoc').hasClass('active')) {
         $('#autocompleteDoc').button('toggle');
@@ -841,3 +826,37 @@ d3.json(url, function(error, data) {
 
   }
 </script>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="fingerprintModal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h3 class="modal-title">Document search</h3>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal col-sm-12">
+          <div class="form-group">
+            <div class="input-group">
+              <input type="hidden" name="doc" id="hidden_id">
+              <input type="text" id="doc" class="form-control typeahead" placeholder="Click button on right to select random document →" autocomplete="off">
+              <div class="input-group-btn">
+                <button class="btn btn-default" type="button" id="randomDoc" data-original-title="" title=""><span class="glyphicon glyphicon-random"></span></button>
+              </div>
+            </div>
+          </div>
+        </form>
+        <hr />
+        <h4><img src="/img/icon-fingerprint.png" alt="Fingerprint icon" /> Topic Fingerprint </h4>
+        <p>The topic bars below show the composition of the selected document in different models. Scroll over the bars to see the most likely words in each topic. Click on a bar to open the Topic Explorer for that model focused on this document.</p>
+        <div id="topicBars">
+          <dl id="singleBarsDl"  class="dl-horizontal">
+          </dl>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

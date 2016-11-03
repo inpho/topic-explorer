@@ -14,7 +14,7 @@
           We search a topic model using full documents, rather than keywords.<br /><strong>Enter the model by one of the following methods:</strong></p>
         </div>
         <div class="col-sm-4 col-xs-12 entry">
-          <a class="btn btn-primary col-xs-12"  data-toggle="modal" data-target="#myModal">
+          <a class="btn btn-primary col-xs-12"  data-toggle="modal" data-target="#fingerprintModal">
             <span class="glyphicon glyphicon-file"  style="font-size: 10vw; padding-left: 1vw;"></span><br />Document
           </a>
         </div>
@@ -61,7 +61,7 @@
   </div>
 </div>
 
-<div class="modal fade" tabindex="-1" role="dialog" id="myModal">
+<div class="modal fade" tabindex="-1" role="dialog" id="fingerprintModal">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -81,14 +81,12 @@
           </div>
         </form>
         <hr />
-        <h4>Topic Fingerprint</h4>
+        <h4><img src="/img/icon-fingerprint.png" alt="Fingerprint icon" /> Topic Fingerprint </h4>
         <p>The topic bars below show the composition of the selected document in different models. Scroll over the bars to see the most likely words in each topic. Click on a bar to open the Topic Explorer for that model focused on this document.</p>
         <div id="topicBars">
-<dl id="singleBarsDl"  class="dl-horizontal">
-</dl>
+          <dl id="singleBarsDl"  class="dl-horizontal">
+          </dl>
         </div>
-
-        
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -129,259 +127,7 @@
     
 
 
-        <script>
-      function toggleSearch() {
-  
-  $('#search-bin').toggle();
-}
-
-$('#sidebar-topics li a').tooltip();
-
-//$('#topicModal .modal-body').html(data)
-      //# sourceURL=pen.js
-
-var taTimeout;
-$(".typeahead").typeahead({items: 12,
-  source: function(query, process) {
-    if (taTimeout)
-      clearTimeout(taTimeout);
-
-    this.$menu.find('.active').removeClass('active');
-    taTimeout = setTimeout(function () {
-      $.getJSON('docs.json?q=' + encodeURIComponent(query), function(data) {
-        labels = [];
-        mapped = {};
-        $.each(data, function(i, item) {
-          mapped[item.label] = item;
-          labels.push(item.label);
-        });
-      
-        process(labels);
-    })}, 300);
-  },
-  updater: function(item) {
-      if (!item) { 
-        if ($('#autocompleteDoc').hasClass('active')) {
-          $('#autocompleteDoc').removeClass('active');
-          $('span.icon-file', '#autocompleteDoc').removeClass('icon-file').addClass('icon-font');
-        }
-        $('#hidden_id').val('');
-        return this.$element.val();
-      } else {
-        if (!$('#autocompleteDoc').hasClass('active')) {
-          $('#autocompleteDoc').addClass('active');
-          $('span.icon-font', '#autocompleteDoc').removeClass('icon-font').addClass('icon-file');
-        }
-        $('#autocompleteDoc').removeAttr('disabled');
-
-        $('#hidden_id').val(mapped[item].id);
-        resetBars();
-        return item;
-      }
-  },
-  sorter: function(items) {
-      /*if (items.length == 1) {
-        $('#hidden_id').val(mapped[items[0]].id);
-        console.log("setting hidden_id" + $('#hidden_id').val());
-        if (!$('#autocompleteDoc').hasClass('active')) {
-          $('#autocompleteDoc').addClass('active');
-          $('span.icon-font', '#autocompleteDoc').removeClass('icon-font').addClass('icon-file');
-        }
-        items.length = 0;
-      } else*/
-      if(items.length > 0) { 
-        $('#autocompleteDoc').removeAttr('disabled');
-      } else if (items.length == 0) {
-        if ($('#autocompleteDoc').hasClass('active')) {
-          $('#autocompleteDoc').removeClass('active');
-          $('span.icon-file', '#autocompleteDoc').removeClass('icon-file').addClass('icon-font');
-        }
-        $('#autocompleteDoc').attr('disabled','disabled');
-      }
-      var query = this.query;
-      items = items.sort();
-      var start = items.filter(function(item) { return item.lastIndexOf(query, 0) == 0;});
-      var elsewhere = items.filter(function(item) { return item.lastIndexOf(query, 0) != 0;});
-      return start.concat(elsewhere);
-  }
-});
-  
-$('#autocompleteDoc').click(function() {
-  if (!$('#autocompleteDoc').hasClass('active'))
-    $('.typeahead').typeahead('lookup').focus();
-  else {
-    $('#autocompleteDoc').removeClass('active');
-    $('span.icon-file', '#autocompleteDoc').removeClass('icon-file').addClass('icon-font');
-    $('#hidden_id').val('');
-  }
-});
-
-
-$('#randomDoc').click(function() { 
-    $.getJSON('docs.json?random=1', function(rand) {
-      if (!$('#autocompleteDoc').hasClass('active')) {
-        $('#autocompleteDoc').button('toggle');
-        $('span.icon-font', '#autocompleteDoc').removeClass('icon-font').addClass('icon-file');
-      }
-      $('#autocompleteDoc').removeAttr('disabled');
-      $('#hidden_id').val(rand[0].id);
-      $('#doc').val(rand[0].label);
-
-      resetBars();
-  });
-});
-$('#randomDoc').tooltip({title: "Random Document", placement: 'bottom'});
-    </script>
-
-<script>
-function resetBars() {
-  var ks = [{{#topic_range}}{{.}}, {{/topic_range}}];
-  $(ks).each(resetBar);
-}
-
-function resetBar(i, k) {
-var base_bar =
-'<dd class="bar-container" id="bar'+k+'">' 
-+ '<div id="status" style="width:100%">'
-+ '<div class="progress loading progress-striped active">'
-+ '<div class="bar" style="width:25%">Loading documents...</div>'
-+ '</div>'
-+ '</div>'
-+ '<div id="chart"> </div>'
-+ '</dd>';
-
-if ($('#bar'+k).length) {
-  $('#bar'+k).remove();
-  $('dt:contains("'+k+' Topics")').remove();
-}
-$('#topicBars dl').append(base_bar);
-visualize(k);
-  
-}
-function visualize(k) {
-
-var maxRows = 25;
-var minCols = 2;
-
-//${c.entity.sep_dir}
-var docid = $('#hidden_id').val();
-if (!docid || docid == '')
-  return;
-
-var width = $('.bar-container').width(),
-    height = 20;
-
-var x = d3.scale.linear()
-    .range([0, width])
-    .domain([0,1.0]);
- // TODO: Clear existing #bar{k} content
-var svg = d3.select("#bar"+k+" #chart").insert("svg")
-    .attr("width", width)
-    .attr("height", height)
-    .attr("id","main")
-    .attr("class", "main");
-$('#main', '#bar'+k).hide();
-
-function calculateTopicMap(data, scale, sortFn){
-  data.forEach(function(d) {
-    var sizeFactor = (scale) ? d.prob : 1.0
-    var x0 = 0;
-    if (sortFn) d.topicMap =  d3.keys(d.topics)
-      .sort(sortFn)
-      .map(function(name) { return {name: name, x0: x0, x1: x0 += +(d.topics[name]*sizeFactor) }; });
-    else d.topicMap = d3.keys(d.topics)
-      .map(function(name) { return {name: name, x0: x0, x1: x0 += +(d.topics[name]*sizeFactor) }; });
-  });
-  
-}
-
-var url = "/docs_topics/" + $('#hidden_id').val() + '.json?n=1'
-var host = "" + k;
-
-d3.json(host + url, function(error, data) {
-  $('#status .bar', '#bar'+k).css('width', '50%').text('Loading topics...');
-  if (error) {
-    var isError = $('.bar.bar-danger ');
-   console.log(isError[0] +" Hello");    
-    $('#status .progress', '#bar'+k).removeClass('active progress-striped');
-    if(isError[0]){
-       $('#status .progress', '#bar'+k).remove();
-    }
-    else{
-      var errormsg = "Invalid document: " + docid + ".";
-      $('#status .bar', '#bar'+k).addClass('bar-danger').text(errormsg);
-    }
-    return false;
-  }
-  //console.log(data);
-  d3.json(host + "/topics.json", function(error_top, topics) {
-    $('#status .bar', '#bar'+k).css('width', '75%').text('Rendering chart...');
-    if (error_top) {
-       var isError = $('.bar.bar-danger ');
-      $('#status .progress', '#bar'+k).removeClass('active progress-striped');
-      if(isError[0]){
-         $('#status .progress', '#bar'+k).remove();
-      }
-      else{
-      $('#status .bar', '#bar'+k).addClass('bar-danger').text('Could not load topic list.');
-      }
-      return false;
-    }
-
-    var k = d3.keys(topics).length;
-
-    $("#bar" + k).before("<dt>"+k+" Topics</dt>");
-
-    var full_explorer_url = ""+k+"/?doc="+docid;
-  
-  
-    calculateTopicMap(data, true, function(a,b) {return data[0].topics[b] - data[0].topics[a];});
-  
-    // draw total bar
-    var doc = svg.selectAll("doc")
-        .data(data)
-      .enter().append("g")
-        .attr("class","doc");
-  
-    // Draw topic bars
-    doc.selectAll("rect")
-        .data(function(d) { return d.topicMap; })
-      .enter().append("rect")
-        .attr("height", height)
-        .attr("x", function(d) { return x(d.x0); })
-        .attr("width", function(d) { return x(d.x1) - x(d.x0); })
-        .attr("class", function(d) { return "top_" + d.name; })
-        .attr("title", function(d) { return d3.keys(topics[d.name]['words']).sort(function(a,b) {
-              if (topics[d.name]['words'][a] > topics[d.name]['words'][b])
-                return -1;
-              else if (topics[d.name]['words'][a] < topics[d.name]['words'][b])
-                return 1;
-              else
-                return 0;
-            }).join(", ") + ", ..."; })
-        .on("mouseover", function(d) {
-            // SVG element z-index determined by render order, not style sheet
-            // so element must be reappended to the end on hover so border 
-            // is not occluded
-            var parent = $(this).parent();
-            $(this).detach().appendTo(parent);
-          })
-        .on("click", function(d) { window.location = full_explorer_url; })
-        .style("fill", function(d) { return topics[d.name]['color']; });
-  
-  
-    $(".doc rect").tooltip({container:'body', 
-                            animation: false, placement: 'top'});
-    
-    $('#status .bar', '#bar'+k).addClass('bar-success').css('width', '100%').text("Complete!");
-    setTimeout(function() {$('#status', '#bar'+k).hide()}, 250);
-    setTimeout(function() {$('#main', '#bar'+k).show()}, 250);
-
-}); });
-
-}
-
-</script>
+<script src="fingerprint.js"></script>
 
 <script>
 var combineWords = function(words) {
@@ -406,7 +152,6 @@ $('#words').on('input', function() {
   }, 500);
 });
 
-var ks = [{{#topic_range}}{{.}}, {{/topic_range}}];
 var k_urls = ks.map(function(k) { return '' + k + "/topics.json" });
 var topics = Promise.all(k_urls.map($.getJSON)).then(function (data) {
     var t = {}; 
