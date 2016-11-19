@@ -8,6 +8,7 @@ This project follows the [PEP 440](https://www.python.org/dev/peps/pep-0440/) ve
 
 This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangelog.com/). Versions should group changes in the order: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, and `Security` (see section ["What makes a good change log?"](http://keepachangelog.com/)).
 ## [Unreleased]
+## [1.0b143]
 - Added:
   - [#144](https://github.com/inpho/topic-explorer/issues/144) permissions string - modal now accessible via © button in lower left.
   - Sidebar is now on all subpages.
@@ -30,6 +31,7 @@ This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangel
 - Changed:
   - [#154](https://github.com/inpho/topic-explorer/issues/154) Modal fulltext default
   - [#120](https://github.com/inpho/topic-explorer/issues/120) "continue training" is ambiguous
+  - Updated `vsm` to `0.4.0b6`
 - Fixed:
   - Metadata now keeps all information in unicode.
   - `topicexplorer metadata` now allows for label updates with `--rename` flag.
