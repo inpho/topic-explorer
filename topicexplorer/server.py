@@ -222,12 +222,17 @@ class Application(Bottle):
         @self.route('/<k:int>/word_docs.json')
         @_set_acao_headers
         def word_docs(k, N=40):
+            import numpy as np
             try:
                 N = int(request.query.n)
             except:
                 pass
             try:
-                query = request.query.q.lower().split('|')
+                query = request.query.q.lower()
+                if self.c.words.dtype.type == np.string_:
+                    query = query.encode('ascii', 'ignore')
+                
+                query = query.split('|')
             except:
                 raise Exception('Must specify a query')
 
@@ -309,9 +314,17 @@ class Application(Bottle):
             # parse query
             try:
                 if '|' in request.query.q:
-                    query = request.query.q.lower().split('|')
+                    query = request.query.q.lower()
+                    if self.c.words.dtype.type == np.string_:
+                        query = query.encode('ascii', 'ignore')
+                
+                    query = query.split('|')
                 else:
-                    query = request.query.q.lower().split(' ')
+                    query = request.query.q.lower()
+                    if self.c.words.dtype.type == np.string_:
+                        query = query.encode('ascii', 'ignore')
+                
+                    query = query.split(' ')
             except:
                 raise Exception('Must specify a query')
 
