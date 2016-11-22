@@ -8,7 +8,7 @@ This project follows the [PEP 440](https://www.python.org/dev/peps/pep-0440/) ve
 
 This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangelog.com/). Versions should group changes in the order: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, and `Security` (see section ["What makes a good change log?"](http://keepachangelog.com/)).
 ## [Unreleased]
-## [1.0b145] - 2016-11-19
+## [1.0b146] - 2016-11-22
 - Added:
   - [#144](https://github.com/inpho/topic-explorer/issues/144) permissions string - modal now accessible via © button in lower left.
   - Sidebar is now on all subpages.
@@ -18,6 +18,7 @@ This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangel
   - Upgraded all sites to Bootstrap 3.
 - Fixed:
   - `topicexplorer demo` now has a corpus description.
+  - [#177](https://github.com/inpho/topic-explorer/issues/177) 1.04b145 unpickling error
   - [#172](https://github.com/inpho/topic-explorer/issues/172) unicode error with metadata import
   - [#171](https://github.com/inpho/topic-explorer/issues/171) term search for topics internal server error
   - [#169](https://github.com/inpho/topic-explorer/issues/169) directory structure error during init
@@ -184,8 +185,8 @@ This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangel
 
 
 
-[Unreleased]: https://github.com/inpho/topic-explorer/compare/1.0b145...HEAD
-[1.0b145]: https://github.com/inpho/topic-explorer/compare/1.0b1134...1.0b145
+[Unreleased]: https://github.com/inpho/topic-explorer/compare/1.0b146...HEAD
+[1.0b146]: https://github.com/inpho/topic-explorer/compare/1.0b1134...1.0b146
 [1.0b134]: https://github.com/inpho/topic-explorer/compare/1.0b1121...1.0b134
 [1.0b121]: https://github.com/inpho/topic-explorer/compare/1.0b111...1.0b121
 [1.0b111]: https://github.com/inpho/topic-explorer/compare/1.0b107...1.0b111
