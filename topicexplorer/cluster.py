@@ -50,7 +50,11 @@ class dimensionReduce:
             """
     
     def fit_isomap(self):
-        isomap_object = manifold.Isomap(n_neighbors=3, n_components=2, eigen_solver='auto', tol=0, max_iter=300, path_method='auto', neighbors_algorithm='auto')
+        n_neighbors = int(self.merge_word_topic.shape[0] * 0.1)
+        isomap_object = manifold.Isomap(n_neighbors=n_neighbors, n_components=2,
+                                        eigen_solver='auto', tol=0, 
+                                        max_iter=30000, path_method='auto', 
+                                        neighbors_algorithm='auto')
         self.isomap = isomap_object.fit(self.merge_word_topic)
     
     def fit_kmeans(self,n_clusters):

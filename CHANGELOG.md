@@ -8,6 +8,9 @@ This project follows the [PEP 440](https://www.python.org/dev/peps/pep-0440/) ve
 
 This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangelog.com/). Versions should group changes in the order: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, and `Security` (see section ["What makes a good change log?"](http://keepachangelog.com/)).
 ## [Unreleased]
+- Changed:
+  - Isomap now exmaines more nearest neighbors, which leads to lower numbers of overlapping topics in cluster view.
+
 ## [1.0b146] - 2016-11-22
 - Added:
   - [#144](https://github.com/inpho/topic-explorer/issues/144) permissions string - modal now accessible via © button in lower left.
