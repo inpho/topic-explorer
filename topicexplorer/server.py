@@ -181,7 +181,7 @@ class Application(Bottle):
             for doc_prob, topics in zip(data, doc_topics_mat):
                 doc, prob = doc_prob
                 struct = docs[doc]
-                struct.update({'prob': 1 - prob,
+                struct.update({'prob': float(1 - prob),
                                'topics': dict([(str(t), float(p)) for t, p in topics])})
                 js.append(struct)
 
@@ -213,7 +213,7 @@ class Application(Bottle):
             for doc_prob, topics in zip(data, doc_topics_mat):
                 doc, prob = doc_prob
                 struct = docs[doc]
-                struct.update({'prob': 1 - prob,
+                struct.update({'prob': float(1 - prob),
                                'topics': dict([(str(t), float(p)) for t, p in topics])})
                 js.append(struct)
 
@@ -263,8 +263,8 @@ class Application(Bottle):
             for doc_prob, topics in zip(data, doc_topics_mat):
                 doc, prob = doc_prob
                 struct = docs[doc]
-                struct.update({'prob': 1 - prob,
-                               'topics': dict([(str(t), p) for t, p in topics])})
+                struct.update({'prob': float(1 - prob),
+                               'topics': dict([(str(t), float(p)) for t, p in topics])})
                 js.append(struct)
 
             return json.dumps(js)
