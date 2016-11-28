@@ -21,7 +21,7 @@
       </script>
     <div class="form-group">
 
-      <label for="doc" class="col-sm-2 control-label">Focal document</label>
+      <label for="doc" class="col-sm-2 control-label" id="search-label">Focal document</label>
       <div class="col-sm-8">
         <div class="input-group">
           <input type="text" id="doc" class="typeahead form-control" placeholder="Click button on right to select random document →" autocomplete="off">
@@ -139,6 +139,7 @@ if (docid) {
     }
   });
 } else if (q) {
+    $('#search-label').html("Words")
     $('.title').html('the query "'+q+'"');
     $('#doc').val(q);  
 /*  TODO: Migrate to call /docs.json?q=q
