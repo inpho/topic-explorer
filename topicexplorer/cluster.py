@@ -50,7 +50,9 @@ class dimensionReduce:
             """
     
     def fit_isomap(self):
-        n_neighbors = int(self.merge_word_topic.shape[0] * 0.1)
+        import math
+        total_topics = self.merge_word_topic.shape[0]
+        n_neighbors = int(min(3 * math.log(total_topics), .1 * total_topics))
         isomap_object = manifold.Isomap(n_neighbors=n_neighbors, n_components=2,
                                         eigen_solver='auto', tol=0, 
                                         max_iter=30000, path_method='auto', 
