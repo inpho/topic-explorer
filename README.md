@@ -34,10 +34,10 @@ There are two types of install: Default and Developer.
 1.  Initialize the Topic Explorer on a file, folder of text files, or folder of folders:
 
     ```
-    topicexplorer init PATH [CONFIG]
+    topicexplorer init PATH
     ```
 
-    This will generate a configuration file called *CONFIG*.
+    This will generate a configuration file called *CONFIG*.  
 
 2.  Train LDA models using the on-screen instructions:
 

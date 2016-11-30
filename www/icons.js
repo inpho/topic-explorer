@@ -6,12 +6,48 @@ var base_fn = function(ticks,i) {
         .attr("x", -margin.left + 5 + (i*20))
         .attr("y", -9);
 }
+var string_escape = function (string) {
+  return ('' + string).replace(/["'\\\n\r\u2028\u2029]/g, function (character) {
+    // Escape all characters not included in SingleStringCharacters and
+    // DoubleStringCharacters on
+    // http://www.ecma-international.org/ecma-262/5.1/#sec-7.8.4
+    switch (character) {
+      case '"':
+      case "'":
+      case '\\':
+        return '\\' + character
+      // Four possible LineTerminator characters need to be escaped:
+      case '\n':
+        return '\\n'
+      case '\r':
+        return '\\r'
+      case '\u2028':
+        return '\\u2028'
+      case '\u2029':
+        return '\\u2029'
+    }
+  })
+}
 
 var icon_fns = {"link" : function(ticks, i) {
       base_fn(ticks,i)
         .attr("xlink:href","/img/link.png")
         .attr("class", "linkIcon icon")
         .on("click", function(d) { window.location.href = window.location.origin + window.location.pathname + "?doc=" + encodeURIComponent(d);});
+  },
+ "fingerprint" : function(ticks, i, docs) {
+      base_fn(ticks,i)
+        .attr("data-doc-id", function (d) {return d})
+        .attr("xlink:href","/img/icon-fingerprint.png")
+        .attr("class", "fingerprintIcon icon")
+        .attr("onclick", function(d) {
+          if (d) {      
+            data = docs.filter(function(doc, i) { return doc.id == d})[0];
+            return "showFingerprint('" + d + "', '" + string_escape(data.label) + "')"
+          } else {
+            return "";
+          }
+        });
   },
  "ap" : function(ticks, i) {
       base_fn(ticks,i)
@@ -153,6 +189,7 @@ String.prototype.format = String.prototype.f = function() {
 
 var icon_tooltips = {
     "link" : 'Click to refocus the Topic Explorer on this document.',
+    "fingerprint" : 'Click to see the Topic Fingerprint of this document.',
     "ap" : 'Click for the full-text.',
     "fulltext" : 'Click for the full-text.',
     "oldbailey" : 'Click to open Old Bailey Online Record.',

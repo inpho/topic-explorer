@@ -187,7 +187,7 @@ class Application(Bottle):
             for doc_prob, topics in zip(data, doc_topics_mat):
                 doc, prob = doc_prob
                 struct = docs[doc]
-                struct.update({'prob': 1 - prob,
+                struct.update({'prob': float(1 - prob),
                                'topics': dict([(str(t), float(p)) for t, p in topics])})
                 js.append(struct)
 
@@ -219,7 +219,7 @@ class Application(Bottle):
             for doc_prob, topics in zip(data, doc_topics_mat):
                 doc, prob = doc_prob
                 struct = docs[doc]
-                struct.update({'prob': 1 - prob,
+                struct.update({'prob': float(1 - prob),
                                'topics': dict([(str(t), float(p)) for t, p in topics])})
                 js.append(struct)
 
@@ -228,12 +228,17 @@ class Application(Bottle):
         @self.route('/<k:int>/word_docs.json')
         @_set_acao_headers
         def word_docs(k, N=40):
+            import numpy as np
             try:
                 N = int(request.query.n)
             except:
                 pass
             try:
-                query = request.query.q.lower().split('|')
+                query = request.query.q.lower()
+                if self.c.words.dtype.type == np.string_:
+                    query = query.encode('ascii', 'ignore')
+                
+                query = query.split('|')
             except:
                 raise Exception(_('Must specify a query'))
 
@@ -264,8 +269,8 @@ class Application(Bottle):
             for doc_prob, topics in zip(data, doc_topics_mat):
                 doc, prob = doc_prob
                 struct = docs[doc]
-                struct.update({'prob': 1 - prob,
-                               'topics': dict([(str(t), p) for t, p in topics])})
+                struct.update({'prob': float(1 - prob),
+                               'topics': dict([(str(t), float(p)) for t, p in topics])})
                 js.append(struct)
 
             return json.dumps(js)
@@ -314,7 +319,18 @@ class Application(Bottle):
 
             # parse query
             try:
-                query = request.query.q.lower().split('|')
+                if '|' in request.query.q:
+                    query = request.query.q.lower()
+                    if self.c.words.dtype.type == np.string_:
+                        query = query.encode('ascii', 'ignore')
+                
+                    query = query.split('|')
+                else:
+                    query = request.query.q.lower()
+                    if self.c.words.dtype.type == np.string_:
+                        query = query.encode('ascii', 'ignore')
+                
+                    query = query.split(' ')
             except:
                 raise Exception(_('Must specify a query'))
 
@@ -348,7 +364,13 @@ class Application(Bottle):
         @self.route('/topics')
         @_set_acao_headers
         def view_clusters():
-            return _render_template('cluster.html')
+            with open(resource_filename(__name__, '../www/master.mustache.html'),
+                      encoding='utf-8') as tmpl_file:
+                template = tmpl_file.read()
+
+            tmpl_params = {'body' : _render_template('cluster.mustache.html'),
+                           'topic_range': self.topic_range}
+            return self.renderer.render(template, tmpl_params)
 
 
         @self.route('/docs.json')
@@ -407,7 +429,13 @@ class Application(Bottle):
 
         @self.route('/<k:int>/')
         def index(k):
-            return _render_template('index.mustache.html')
+            with open(resource_filename(__name__, '../www/master.mustache.html'),
+                      encoding='utf-8') as tmpl_file:
+                template = tmpl_file.read()
+
+            tmpl_params = {'body' : _render_template('bars.mustache.html'),
+                           'topic_range': self.topic_range}
+            return self.renderer.render(template, tmpl_params)
 
         @self.route('/cluster.csv')
         @_set_acao_headers
@@ -435,7 +463,13 @@ class Application(Bottle):
         @self.route('/')
         @_set_acao_headers
         def cluster():
-            return _render_template('index2.mustache.html')
+            with open(resource_filename(__name__, '../www/master.mustache.html'),
+                      encoding='utf-8') as tmpl_file:
+                template = tmpl_file.read()
+
+            tmpl_params = {'body' : _render_template('splash.mustache.html'),
+                           'topic_range': self.topic_range}
+            return self.renderer.render(template, tmpl_params)
 
         @self.route('/<filename:path>')
         @_set_acao_headers
