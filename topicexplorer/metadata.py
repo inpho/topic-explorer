@@ -9,13 +9,18 @@ from sortedcontainers import SortedDict
 from unidecode import unidecode
 
 from vsm.viewer.wrappers import doc_label_name
+def parse_value(value):
+    try:
+        return literal_eval(value)
+    except SyntaxError:
+        return value
 
 def UnicodeDictReader(utf8_data, **kwargs):
     # Solution from http://stackoverflow.com/a/5005573
     # added literal_eval to convert to native types.
     csv_reader = csv.DictReader(utf8_data, **kwargs)
     for row in csv_reader:
-        yield {unicode(key, 'utf-8'): literal_eval(unicode(value, 'utf-8'))
+        yield {unicode(key, 'utf-8'): parse_value(unicode(value, 'utf-8'))
                     for key, value in row.iteritems()}
 
 def parse_metadata_from_csvfile(filename, context_type):

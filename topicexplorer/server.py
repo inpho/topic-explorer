@@ -181,7 +181,7 @@ class Application(Bottle):
             for doc_prob, topics in zip(data, doc_topics_mat):
                 doc, prob = doc_prob
                 struct = docs[doc]
-                struct.update({'prob': 1 - prob,
+                struct.update({'prob': float(1 - prob),
                                'topics': dict([(str(t), float(p)) for t, p in topics])})
                 js.append(struct)
 
@@ -213,7 +213,7 @@ class Application(Bottle):
             for doc_prob, topics in zip(data, doc_topics_mat):
                 doc, prob = doc_prob
                 struct = docs[doc]
-                struct.update({'prob': 1 - prob,
+                struct.update({'prob': float(1 - prob),
                                'topics': dict([(str(t), float(p)) for t, p in topics])})
                 js.append(struct)
 
@@ -222,12 +222,17 @@ class Application(Bottle):
         @self.route('/<k:int>/word_docs.json')
         @_set_acao_headers
         def word_docs(k, N=40):
+            import numpy as np
             try:
                 N = int(request.query.n)
             except:
                 pass
             try:
-                query = request.query.q.lower().split('|')
+                query = request.query.q.lower()
+                if self.c.words.dtype.type == np.string_:
+                    query = query.encode('ascii', 'ignore')
+                
+                query = query.split('|')
             except:
                 raise Exception('Must specify a query')
 
@@ -258,8 +263,8 @@ class Application(Bottle):
             for doc_prob, topics in zip(data, doc_topics_mat):
                 doc, prob = doc_prob
                 struct = docs[doc]
-                struct.update({'prob': 1 - prob,
-                               'topics': dict([(str(t), p) for t, p in topics])})
+                struct.update({'prob': float(1 - prob),
+                               'topics': dict([(str(t), float(p)) for t, p in topics])})
                 js.append(struct)
 
             return json.dumps(js)
@@ -309,9 +314,17 @@ class Application(Bottle):
             # parse query
             try:
                 if '|' in request.query.q:
-                    query = request.query.q.lower().split('|')
+                    query = request.query.q.lower()
+                    if self.c.words.dtype.type == np.string_:
+                        query = query.encode('ascii', 'ignore')
+                
+                    query = query.split('|')
                 else:
-                    query = request.query.q.lower().split(' ')
+                    query = request.query.q.lower()
+                    if self.c.words.dtype.type == np.string_:
+                        query = query.encode('ascii', 'ignore')
+                
+                    query = query.split(' ')
             except:
                 raise Exception('Must specify a query')
 
@@ -422,7 +435,7 @@ class Application(Bottle):
         @_set_acao_headers
         def cluster_csv(second=False):
             filename = kwargs.get('cluster_path')
-            print "Retireving cluster.csv:", filename
+            print "Retrieving cluster.csv:", filename
             if not filename or not os.path.exists(filename):
                 import topicexplorer.train
                 filename = topicexplorer.train.cluster(10, self.config_file)
