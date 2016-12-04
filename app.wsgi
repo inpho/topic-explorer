@@ -79,9 +79,14 @@ for model, path in config.iteritems():
             partial(topicexplorer.server._set_acao_headers(static_child),
                     model=model))
 
-        child_app.route('/', 'GET',
-            partial(topicexplorer.server._set_acao_headers(static_child),
-                    model=model, filename='/{}/index.html'.format(model)))
+        # Override default route if custom index is defined.
+        index_path = model + '/index.html'
+        www_path = os.path.join(WWW_DIR, index_path)
+        static_path = os.path.join(STATIC_DIR, index_path)
+        if os.path.exists(www_path) or os.path.exists(static_path):
+            child_app.route('/', 'GET',
+                partial(topicexplorer.server._set_acao_headers(static_child),
+                        model=model, filename='/{}/index.html'.format(model)))
 
         application.mount('/{}/'.format(model), child_app)
 
