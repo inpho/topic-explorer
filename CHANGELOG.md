@@ -12,6 +12,8 @@ This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangel
   - Support for custom index.html in app.wsgi multi-model Apache config.
 - Changed:
   - Isomap now exmaines more nearest neighbors, which leads to lower numbers of overlapping topics in cluster view.
+- Fixed:
+  - [#183](https://github.com/inpho/topic-explorer/issues/183) init is not selecting correct corpus structure when exclude files are present
 
 ## [1.0b146] - 2016-11-22
 - Added:

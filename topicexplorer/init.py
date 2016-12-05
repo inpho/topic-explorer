@@ -102,7 +102,8 @@ def process_bibtex(corpus_path):
     return target_dir
 
 
-def get_corpusbuilder_fn(corpus_path, sentences=False, ignore=[]):
+def get_corpusbuilder_fn(corpus_path, sentences=False,
+                         ignore=['.json', '.log', '.err', '.pickle', '.npz']):
     relpaths = [os.path.relpath(path, start=corpus_path)
                 for path in listdir_nohidden(corpus_path, recursive=True)
                 if os.path.isfile(path)
@@ -113,7 +114,7 @@ def get_corpusbuilder_fn(corpus_path, sentences=False, ignore=[]):
         dir_counts[os.path.dirname(path)] += 1
 
     dirs = dir_counts.keys()
-    populated_levels = [dir.count(os.path.sep)
+    populated_levels = [1 + dir.count(os.path.sep)
                         for dir, key in dir_counts.iteritems()]
 
     levels = max(populated_levels) - min(populated_levels)
