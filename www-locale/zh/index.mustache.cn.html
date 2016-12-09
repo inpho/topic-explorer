@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>InPhO Topic Explorer</title>
+  <script>
+  // redirect for error introduced by CAS
+  if (window.location.href.includes('%3d'))
+    window.location.href = window.location.href.replace('%3d','=');
+  </script>
+
+  <script src="/lib/jquery-2.2.4.min.js"></script>
+  <!--<script src="https://code.jquery.com/jquery-1.12.4.js"></script>-->
+  <script src="/lib/jquery.superdom.min.js"></script>
+  <script src="/lib/jquery.cookie.min.js"></script>
+  <script src="/lib/bootstrap-2.3.2/js/bootstrap.min.js"></script>
+  <script src="/lib/d3.v3.min.js"></script>
+  <script src="/lib/mustache.js"></script>
+  <script src="/lib/showdown.min.js"></script>
+  <script src="/lib/inpho/util.js"></script>
+  <script src="/fulltext.js"></script>
+  <script src="/htrc.js"></script>
+  <script src="../icons.js"></script>
+  <link rel="stylesheet" type="text/css" href="/lib/bootstrap-3.3.6/css/bootstrap.min.css" />
+  <!-- <link rel="stylesheet" type="text/css" href="/lib/bootstrap-2.3.2/css/bootstrap.min.css" /> -->
+  <link rel='stylesheet prefetch' href='/css/simple-sidebar.css'>
+  <link rel='stylesheet prefetch' href='/css/master.css'>
+</head>
+
+<body>
+  <div id="wrapper">
+    <div id="sidebar-wrapper">
+      <div class="sidebar-helper">
+        <ul class="sidebar-nav">
+          <li><a id="home-link" class="selected" data-placement="right" title="Home" href="/"><span class="glyphicon glyphicon-home"></span></a></li>
+          <li>
+            <!--<a class="selected" href="javascript:toggleSearch()"><span class="glyphicon glyphicon-search"></span></a>-->
+          </li>
+        </ul>
+      </div>
+      <div class="sidebar-helper" style="vertical-align: middle;">
+        <ul id="sidebar-topics" class="sidebar-nav">
+          <li><a class="selected" id="cluster-link" title="Topic cluster view" data-placement="right" href="/topics"><span class="glyphicon glyphicon-stats"></span></a></li>
+          {{#topic_range}}
+          <li><a class="topic-link" href="{{.}}/" title="Launch {{.}}-topic model" data-placement="right">{{.}}</a></li>
+          {{/topic_range}}
+        </ul>
+      </div>
+      <div class="sidebar-helper" style="position: absolute; bottom: 0;">
+        <ul class="sidebar-nav">
+          <li><a class="selected" data-placement="right" title="Help" href="javascript:toggleSearch()"><strong>?</strong></a></li>
+          <li><a href="#" class="selected" data-placement="right" title="Usage" data-toggle="modal" data-target="#rightsModal"><strong>&copy;</strong></a></li>
+        </ul>
+      </div>
+    </div>
+  
+    <script>
+    var ks = [{{#topic_range}}{{.}}, {{/topic_range}}];
+    $('#sidebar-wrapper li a').tooltip();
+    </script>
+    
+    <div id="page-content-wrapper">
+      {{body}}
+    </div>
+  </div>
+  
+  <div class="modal fade" tabindex="-1" role="dialog" id="rightsModal">
+    <div class="modal-dialog" role="document copyright">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h3 class="modal-title">使用与版权</h3>
+        </div>
+        <div class="modal-body">
+          <p>The InPhO Topic Explorer (InPhO-TE)软件归属于印第安纳大学和InPhO项目</p>
+          <p>尽管版权被保留，​但软件本身是被许可发布的 <a href="https://github.com/inpho/topic-explorer/blob/master/LICENSE.txt" target="_blank">MIT License</a>，开源代码可以在 <a href="https://github.com/inpho/topic-explorer/">GitHub</a>上获得。</p>
+          <p>对本软件的所有可视化和其他衍生工具的再使用已被明确授权 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">知识共享署名4.0国际许可证</a> (CC-BY).</p>
+          <p>要获取电子作品的许可证，请链接到主项目页面 <a href="http://inphodata.cogs.indiana.edu/">http://inphodata.cogs.indiana.edu/</a>。如果您在发表的作品中使用InPhO-TE，开发者要求您按如下方式引用：
+              <blockquote style="font-size: inherit;">Jaimie Murdock and Colin Allen. (2015) "Visualization Techniques for Topic Model Checking" in Proceedings of the 29th AAAI Conference on Artificial Intelligence (AAAI-15). Austin, Texas, USA, January 25-29, 2015. http://inphodata.cogs.indiana.edu/</blockquote></p>
+          <p>每个语料库的内容由其各自创建者保留版权。 使用本内容的主题模型是非消耗性研究，符合合理使用的规定。</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal #rightsModal -->
+
+
+</body>
+</html>
