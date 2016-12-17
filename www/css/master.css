@@ -47,3 +47,13 @@ h2 {
     width: 240px;
     font-size:16px;
   }
+
+.modal {
+    max-height: 100%;
+}
+.modal-body {
+    max-height: 60vh;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+

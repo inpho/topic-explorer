@@ -13,6 +13,7 @@ This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangel
 - Changed:
   - Isomap now exmaines more nearest neighbors, which leads to lower numbers of overlapping topics in cluster view.
 - Fixed:
+  - [#184](https://github.com/inpho/topic-explorer/issues/184) longer texts are not scrollable
   - [#183](https://github.com/inpho/topic-explorer/issues/183) init is not selecting correct corpus structure when exclude files are present
   - Issue with decoding unicode URL parameters
 
