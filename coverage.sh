@@ -16,5 +16,5 @@ $CMD -m topicexplorer update
 # EXIT=$EXIT+$?
 
 coverage report
-
+echo 'Exiting with code $exit'
 exit $exit
