@@ -84,7 +84,7 @@ def cluster(n_clusters, config_file):
     filename = corpus_filename.split('.')[0] + '-cluster.csv'
 
     config.set("main", "cluster", filename)
-    with open(config_file, "wb") as configfh:
+    with open(config_file, "w") as configfh:
         config.write(configfh)
     dimension_reduce_model.write(config.get("main", "cluster"))
 

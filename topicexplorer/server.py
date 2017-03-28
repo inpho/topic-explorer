@@ -573,7 +573,7 @@ def get_host_port(args):
 
             # write deep copy without DEFAULT section
             # this preserves DEFAULT for rest of program
-            with open(args.config, 'wb') as configfh:
+            with open(args.config, 'w') as configfh:
                 new_config.write(configfh)
 
     # hostname assignment

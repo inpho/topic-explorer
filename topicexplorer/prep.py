@@ -446,7 +446,7 @@ def main(args):
 
     config.set("main", "corpus_file", args.corpus_path)
     config.remove_option("main", "model_pattern")
-    with open(args.config_file, 'wb') as configfh:
+    with open(args.config_file, 'w') as configfh:
         config.write(configfh)
 
 

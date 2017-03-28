@@ -4,6 +4,12 @@ standard_library.install_aliases()
 from builtins import input
 from builtins import range
 
+try:
+    # Python 3 or Python 2 w/backport
+    from importlib import reload
+except ImportError:
+    # Python 2 without backports, use default reload
+    pass
 
 def pypi_versions(package_name):
     # Based on: http://stackoverflow.com/a/27239645

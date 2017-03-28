@@ -1,4 +1,5 @@
 from __future__ import print_function
+
 from future import standard_library
 standard_library.install_aliases()
 from builtins import str
@@ -9,6 +10,14 @@ from collections import defaultdict
 import os
 import os.path
 import shutil
+
+try:
+    # Python 3 or Python 2 w/backport
+    from importlib import reload
+except ImportError:
+    # Python 2 without backports, use default reload
+    pass
+
 import sys
 if sys.version_info.major == 2:
     reload(sys)
@@ -205,8 +214,9 @@ def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=0,
 
 
 def main(args):
+    # TODO: remove this code, check if there is an issue and unit test
     # convert to unicode to avoid windows errors
-    args.corpus_path = str(args.corpus_path, 'utf-8')
+    # args.corpus_path = args.corpus_path
 
     # config corpus_path
     # process bibtex files
@@ -232,7 +242,7 @@ def main(args):
                 if os.path.isdir(id)]
         data = dict(data)
         md_filename = os.path.join(args.corpus_path, '../metadata.json')
-        with open(md_filename, 'wb') as outfile:
+        with open(md_filename, 'w') as outfile:
             json.dump(data, outfile)
 
     # configure model-path
@@ -368,7 +378,7 @@ def write_config(args, config_file=None):
     config.set("main", "corpus_desc", config_file+'.md')
 
     print("Writing configuration file", config_file)
-    with open(config_file, "wb") as configfh:
+    with open(config_file, "w") as configfh:
         config.write(configfh)
     return config_file
 
