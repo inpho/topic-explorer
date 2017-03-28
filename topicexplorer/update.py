@@ -1,13 +1,18 @@
+from __future__ import print_function
+from future import standard_library
+standard_library.install_aliases()
+from builtins import input
+from builtins import range
 
 
 def pypi_versions(package_name):
     # Based on: http://stackoverflow.com/a/27239645
     from pip._vendor.packaging.version import parse as parse_version
     import json
-    import urllib2
+    import urllib.request, urllib.error, urllib.parse
 
     url = "https://pypi.python.org/pypi/%s/json" % (package_name,)
-    data = json.load(urllib2.urlopen(urllib2.Request(url)))
+    data = json.load(urllib.request.urlopen(urllib.request.Request(url)))
     versions = data["releases"].keys()
     versions.sort(key=parse_version)
     return versions
@@ -59,15 +64,15 @@ def update(args=None):
     dist = get_dist('topicexplorer')
 
     if dist_is_editable(dist):
-        print "You have an editable install, so updates will be pulled from git."
-        print "Your install directory is: {}\n".format(dist.location)
+        print("You have an editable install, so updates will be pulled from git.")
+        print("Your install directory is: {}\n".format(dist.location))
         for attempt in range(2):
             try:
                 import git
                 from git.exc import InvalidGitRepositoryError
                 break
             except ImportError:
-                install = raw_input(
+                install = input(
                     "GitPython is required, but is not installed. Install? [Y/n] ")
                 if install == '' or install.lower()[0] == 'y':
                     subprocess.check_call('pip install gitpython', shell=True)
@@ -81,30 +86,30 @@ def update(args=None):
                     reload(git)
                     from git.exc import InvalidGitRepositoryError
         else:
-            print "GitPython is required to work with an editable install,"
-            print "but it was not successfully installed.\n"
+            print("GitPython is required to work with an editable install,")
+            print("but it was not successfully installed.\n")
             return
 
         try:
             repo = git.Repo(dist.location)
         except InvalidGitRepositoryError:
-            print "pip has detected an editable install, but the install directory"
-            print "is not a valid git repository.\n"
+            print("pip has detected an editable install, but the install directory")
+            print("is not a valid git repository.\n")
             return
 
         if repo.is_dirty():
-            print "There are uncommitted changes in your local repository."
-            print "Please commit before running `topicexplorer update`.\n"
+            print("There are uncommitted changes in your local repository.")
+            print("Please commit before running `topicexplorer update`.\n")
             return
 
         if repo.active_branch != repo.heads.master:
-            print "You are on the '{}' branch.".format(repo.active_branch),
-            install = raw_input("Switch to the 'master' branch? [Y/n] ")
+            print("You are on the '{}' branch.".format(repo.active_branch), end=' ')
+            install = input("Switch to the 'master' branch? [Y/n] ")
             if install == '' or install.lower()[0] == 'y':
-                print "Switched to 'master' branch."
+                print("Switched to 'master' branch.")
                 repo.heads.master.checkout()
             else:
-                print "You must switch to the 'master' branch to use `topicexplorer update`."
+                print("You must switch to the 'master' branch to use `topicexplorer update`.")
                 return
 
         if not repo.bare:
@@ -116,37 +121,37 @@ def update(args=None):
             commits_ahead = list(repo.iter_commits(
                 'origin/{BRANCH}..{BRANCH}'.format(BRANCH=branch.name)))
             if commits_behind:
-                print "Your branch is {} commits behind GitHub.".format(len(commits_behind))
+                print("Your branch is {} commits behind GitHub.".format(len(commits_behind)))
                 if platform.system() == 'Windows':
                     import sys
                     if sys.argv[0] != __file__:
-                        print "Use the `python -m topicexplorer.update` command to update."
+                        print("Use the `python -m topicexplorer.update` command to update.")
                         return
                     
                     # TODO: remove process_exists('vsm.exe') on 1.0rc1
                     if process_exists('topicexplorer.exe') or process_exists('vsm.exe'):
-                        print "vsm is currently running,",
-                        print "please close all Topic Explorers to update."
+                        print("vsm is currently running,", end=' ')
+                        print("please close all Topic Explorers to update.")
                         return
 
-                print "Pulling changes."
+                print("Pulling changes.")
                 repo.remotes.origin.pull()
                 # reinstall, just in case dependencies or version have updated
                 try:
                     subprocess.check_call('python setup.py develop',
                                           cwd=dist.location, shell=True)
                 except:
-                    print "ERROR: Update did not comlete installation.\n"
+                    print("ERROR: Update did not comlete installation.\n")
                 else:
-                    print "Your local branch was updated.\n"
+                    print("Your local branch was updated.\n")
 
             elif commits_ahead:
-                print "Your branch is {} commits ahead of GitHub.".format(len(commits_ahead))
-                push = raw_input("Do you want to push? [Y/n] ")
+                print("Your branch is {} commits ahead of GitHub.".format(len(commits_ahead)))
+                push = input("Do you want to push? [Y/n] ")
                 if push == '' or push.lower()[0] == 'y':
                     repo.remotes.origin.push()
             else:
-                print "Your local branch is synced with GitHub. No updates available.\n"
+                print("Your local branch is synced with GitHub. No updates available.\n")
 
     else:
         # TODO: Check if pre-release, if so, then continue beta updates.
@@ -161,12 +166,12 @@ def update(args=None):
             if platform.system() == 'Windows':
                 import sys
                 if sys.argv[0] != __file__:
-                    print "Update available. Use the `python -m topicexplorer.update`",
-                    print "command to update."
+                    print("Update available. Use the `python -m topicexplorer.update`", end=' ')
+                    print("command to update.")
                     return
                 # TODO: remove process_exists('vsm.exe') on 1.0rc1
                 if process_exists('topicexplorer.exe') or process_exists('vsm.exe'):
-                    print "topicexplorer is currently running, please close all Topic Explorers to update."
+                    print("topicexplorer is currently running, please close all Topic Explorers to update.")
                     return
 
             try:
@@ -174,11 +179,11 @@ def update(args=None):
                     'pip install topicexplorer=={} --no-cache-dir'.format(pypi_version),
                     shell=True)
             except CalledProcessError:
-                print "ERROR: Update did not comlete installation.\n"
+                print("ERROR: Update did not comlete installation.\n")
             else:
-                print "Updated from {} to {}.\n".format(installed_version, pypi_version)
+                print("Updated from {} to {}.\n".format(installed_version, pypi_version))
         else:
-            print "You have the most recent release. No updates available.\n"
+            print("You have the most recent release. No updates available.\n")
 
 
 def main(args=None):
