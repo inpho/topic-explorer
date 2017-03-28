@@ -52,10 +52,9 @@ install_requires = [
         'bottle>=0.12', 
         'brewer2mpl>=1.4',
         'pystache>=0.5.4',
-        'vsm==0.4.0b8',
+        'vsm',
         'wget',
         'unidecode',
-        'pdfminer',
         'pyenchant==1.6.6',
         'networkx>=1.9.1',
         'matplotlib>=1.5.0',
@@ -73,6 +72,9 @@ if platform.system() == 'Windows':
 
 if platform.python_version_tuple()[0] == '2':
     install_requires.append("futures>=3.0.0")
+    install_requires.append("pdfminer")
+elif platform.python_version_tuple()[0] == '3':
+    install_requires.append("pdfminer3k")
 
 setup(
     name='topicexplorer',

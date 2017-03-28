@@ -10,8 +10,9 @@ import os
 import os.path
 import shutil
 import sys
-reload(sys)
-sys.setdefaultencoding("utf-8")
+if sys.version_info.major == 2:
+    reload(sys)
+    sys.setdefaultencoding("utf-8")
 
 from topicexplorer.lib.util import (prompt, is_valid_filepath, bool_prompt,
                                     listdir_nohidden, contains_pattern)
