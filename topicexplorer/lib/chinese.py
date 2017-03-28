@@ -1,3 +1,10 @@
+ # -*- coding: UTF-8 -*-
+import os
+import sys
+reload(sys)
+sys.setdefaultencoding( "utf-8" )
+ 
+
 import platform
 #updated to use pymmseg function calls instead of plain mmseg
 
@@ -58,6 +65,11 @@ chinese_punctuation = [
                        u'\uFF3C',
                        u'\uFF3D',
                        u'\u250B']
+import string 
+for a in string.lowercase[:],string.uppercase[:],range(0,10):
+    for b in a:        
+        chinese_punctuation.append(str(b).decode('utf-8'))
+
 
 
 if platform.system() == 'Windows':
@@ -84,7 +96,7 @@ else:
             # directory of ancient dictionary
             dirname = os.path.dirname(__file__)
             dictionary = os.path.join(dirname, 'ancient words.dic')
-            mmseg.dict_load_defaults()
+            # mmseg.dict_load_defaults()
             mmseg.Dictionary.load_words(dictionary)
             TOKENIZER = 'Ancient'
 
@@ -94,7 +106,8 @@ else:
         for token in tokenizer:
             token = token.text.decode('utf-8-sig', errors='replace').replace(u'\x00', '')
             if token:
-                if token not in chinese_punctuation:
+                #if token not in chinese_punctuation:
+		if set(token)&set(chinese_punctuation) == set([]):
                     tokens.append(token)
 
         return tokens
