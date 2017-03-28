@@ -1,3 +1,5 @@
+from __future__ import print_function
+from builtins import str
 from glob import glob
 import os
 import os.path
@@ -26,21 +28,21 @@ def main(args):
         corpus_py = corpus_py.safe_substitute(config_file=args.config_file)
 
     ipynb_path = os.path.join(os.path.dirname(args.config_file), "notebooks")
-    print ipynb_path
+    print(ipynb_path)
     if not os.path.exists(ipynb_path):
         os.makedirs(ipynb_path)
 
     filename = os.path.join(ipynb_path, "corpus.py")
 
     if overwrite_prompt(filename, default=True):
-        print "Writing", filename
+        print("Writing", filename)
         with open(filename, 'w') as corpusloader:
             corpusloader.write(corpus_py)
 
     for notebook in glob(template_dir + '/*.ipynb'):
         new_nb_path = os.path.join(ipynb_path, os.path.basename(notebook))
         if overwrite_prompt(new_nb_path, default=False):
-            print "Copying", notebook
+            print("Copying", notebook)
             shutil.copy(notebook, ipynb_path)
 
     if args.launch:
@@ -58,8 +60,8 @@ def main(args):
             # stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
         except OSError:
-            print "ERROR: Command `ipython notebook` not found."
-            print "       If IPython or Anaconda is installed, check your PATH variable."
+            print("ERROR: Command `ipython notebook` not found.")
+            print("       If IPython or Anaconda is installed, check your PATH variable.")
             sys.exit(1)
 
         # CLEAN EXIT AND SHUTDOWN OF IPYTHON NOTEBOOK
@@ -75,7 +77,7 @@ def main(args):
         signal.signal(signal.SIGINT, signal_handler)
         signal.signal(signal.SIGTERM, signal_handler)
 
-        print "\nPress Ctrl+C to shutdown the IPython notebook server\n"
+        print("\nPress Ctrl+C to shutdown the IPython notebook server\n")
 
         # Cross-platform Compatability
         try:
