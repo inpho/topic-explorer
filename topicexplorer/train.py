@@ -1,6 +1,15 @@
-from ConfigParser import RawConfigParser as ConfigWriter
-from ConfigParser import SafeConfigParser as ConfigParser
-from ConfigParser import NoOptionError
+from __future__ import print_function
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import input
+from builtins import map
+from builtins import range
+
+from configparser import RawConfigParser as ConfigWriter
+from configparser import SafeConfigParser as ConfigParser
+from configparser import NoOptionError
 import os.path
 
 from topicexplorer.lib.util import bool_prompt, int_prompt, is_valid_configfile
@@ -28,13 +37,12 @@ def build_models(corpus, corpus_filename, model_path, context_type, krange,
     if not dry_run:
         from vsm.model.lda import LDA
         for k in krange:
-            print "Training model for k={0} Topics with {1} Processes"\
-                .format(k, n_proc)
+            print("Training model for k={0} Topics with {1} Processes".format(k, n_proc))
             m = LDA(corpus, context_type, K=k, multiprocessing=(n_proc > 1),
                     seed_or_seeds=seeds, n_proc=n_proc)
             m.train(n_iterations=n_iterations)
             m.save(basefilename.format(k))
-            print " "
+            print(" ")
 
     return basefilename
 
@@ -48,8 +56,8 @@ def continue_training(model_pattern, krange, total_iterations=200, n_proc=1,
         # for some reason, the value of m.iteration is a reference, not
         # explicit. Filed error in vsm: https://github.com/inpho/vsm/issues/144
         orig_iterations = int(m.iteration)
-        print "Continue training {0}-topic model ({1} => {2} iterations)".format(
-            k, orig_iterations, total_iterations)
+        print("Continue training {0}-topic model ({1} => {2} iterations)".format(
+            k, orig_iterations, total_iterations))
 
         basefilename = model_pattern.replace(
             "-{orig}.npz".format(orig=orig_iterations),
@@ -58,18 +66,18 @@ def continue_training(model_pattern, krange, total_iterations=200, n_proc=1,
         if not dry_run:
             m.train(n_iterations=total_iterations - orig_iterations)
             m.save(basefilename.format(k))
-            print " "
+            print(" ")
 
     return basefilename
 
 def cluster(n_clusters, config_file):
-    from cluster import dimensionReduce
+    from .cluster import dimensionReduce
     dimension_reduce_model = dimensionReduce(config_file)
 
     dimension_reduce_model.fit_isomap()  
     dimension_reduce_model.fit_kmeans(int(n_clusters))
 
-    print "writing model files for Isomap and kmeans\n"
+    print("writing model files for Isomap and kmeans\n")
     config = ConfigParser()
     config.read(config_file)
     corpus_filename = config.get("main", "corpus_file")
@@ -109,7 +117,7 @@ def main(args):
             default = ' '.join(map(str, range(20, 100, 20)))
 
         while args.k is None:
-            ks = raw_input("Number of Topics [Default '{0}']: ".format(default))
+            ks = input("Number of Topics [Default '{0}']: ".format(default))
             try:
                 if ks:
                     args.k = [int(n) for n in ks.split()]
@@ -117,17 +125,17 @@ def main(args):
                     args.k = [int(n) for n in default.split()]
 
                 if args.k:
-                    print "\nTIP: number of topics can be specified with argument '-k N N N ...':"
-                    print "         topicexplorer train %s -k %s\n" %\
-                        (args.config_file, ' '.join(map(str, args.k)))
+                    print("\nTIP: number of topics can be specified with argument '-k N N N ...':")
+                    print("         topicexplorer train %s -k %s\n" %\
+                        (args.config_file, ' '.join(map(str, args.k))))
             except ValueError:
-                print "Enter valid integers, separated by spaces!"
+                print("Enter valid integers, separated by spaces!")
 
     if args.processes < 0:
         import multiprocessing
         args.processes = multiprocessing.cpu_count() + args.processes
 
-    print "Loading corpus... "
+    print("Loading corpus... ")
     corpus = Corpus.load(corpus_filename)
 
     try:
@@ -148,8 +156,8 @@ Do you want to continue training your existing models? """, default=True))):
             args.iter = int_prompt("Total number of training iterations:",
                                    default=int(m.iteration * 1.5), min=m.iteration)
 
-            print "\nTIP: number of training iterations can be specified with argument '--iter N':"
-            print "         topicexplorer train --iter %d %s\n" % (args.iter, args.config_file)
+            print("\nTIP: number of training iterations can be specified with argument '--iter N':")
+            print("         topicexplorer train --iter %d %s\n" % (args.iter, args.config_file))
         elif args.iter is None and args.quiet:
             args.iter = int(m.iteration * 1.5)
 
@@ -181,8 +189,8 @@ Do you want to continue training your existing models? """, default=True))):
         if args.iter is None and not args.quiet:
             args.iter = int_prompt("Number of training iterations:", default=200)
 
-            print "\nTIP: number of training iterations can be specified with argument '--iter N':"
-            print "         topicexplorer train --iter %d %s\n" % (args.iter, args.config_file)
+            print("\nTIP: number of training iterations can be specified with argument '--iter N':")
+            print("         topicexplorer train --iter %d %s\n" % (args.iter, args.config_file))
         elif args.iter is None and args.quiet:
             args.iter = 200
 
@@ -197,20 +205,20 @@ Do you want to continue training your existing models? """, default=True))):
                     contexts = ctxs[:]
                     contexts[0] = contexts[0].upper()
                     contexts = '/'.join(contexts)
-                    args.context_type = raw_input("Select a context type [%s] : " % contexts)
+                    args.context_type = input("Select a context type [%s] : " % contexts)
                     if args.context_type.strip() == '':
                         args.context_type = ctxs[0]
                     if args.context_type == ctxs[0].upper():
                         args.context_type = ctxs[0]
     
-                print "\nTIP: context type can be specified with argument '--context-type TYPE':"
-                print "         topicexplorer train --context-type %s %s\n" % (args.context_type, args.config_file)
+                print("\nTIP: context type can be specified with argument '--context-type TYPE':")
+                print("         topicexplorer train --context-type %s %s\n" % (args.context_type, args.config_file))
 
 
-        print "\nTIP: This configuration can be automated as:"
-        print "         topicexplorer train %s --iter %d --context-type %s -k %s\n" %\
+        print("\nTIP: This configuration can be automated as:")
+        print("         topicexplorer train %s --iter %d --context-type %s -k %s\n" %\
             (args.config_file, args.iter, args.context_type, 
-                ' '.join(map(str, args.k)))
+                ' '.join(map(str, args.k))))
         model_pattern = build_models(corpus, corpus_filename, model_path,
                                      args.context_type, args.k,
                                      n_iterations=args.iter,
