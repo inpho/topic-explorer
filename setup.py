@@ -89,6 +89,7 @@ setup(
     classifiers = [
         "Programming Language :: Python",
         "Programming Language :: Python :: 2",
+        "Programming Language :: Python :: 3",
         "Development Status :: 4 - Beta",
         "Environment :: Web Environment",
         "Framework :: Bottle",
@@ -105,7 +106,7 @@ setup(
     data_files=datafiles,
     install_requires=install_requires,
     dependency_links=[
-        #'https://github.com/inpho/vsm/archive/master.zip#egg=vsm-0.4.0b1',
+        'https://github.com/inpho/vsm/archive/py3k.zip#egg=vsm',
         'https://inpho.cogs.indiana.edu/pypi/pymmseg/'
         ],
     include_package_data=True,
