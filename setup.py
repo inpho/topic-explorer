@@ -52,7 +52,7 @@ install_requires = [
         'bottle>=0.12', 
         'brewer2mpl>=1.4',
         'pystache>=0.5.4',
-        'vsm',
+        'vsm==dev',
         'wget',
         'unidecode',
         'pyenchant==1.6.6',
@@ -106,7 +106,7 @@ setup(
     data_files=datafiles,
     install_requires=install_requires,
     dependency_links=[
-        'https://github.com/inpho/vsm/archive/py3k.zip#egg=vsm',
+        'https://github.com/inpho/vsm/archive/py3k.zip#egg=vsm-dev',
         'https://inpho.cogs.indiana.edu/pypi/pymmseg/'
         ],
     include_package_data=True,
