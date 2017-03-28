@@ -23,8 +23,8 @@ from topicexplorer import init, prep, train
 def download_and_extract():
     # parse the pseudo-xml document into a python-native dict
     if not os.path.exists('ap.tgz'):
-        print("Downloading demo-data/ap.tgz")
-        filename = wget.download('http://www.cs.princeton.edu/~blei/lda-c/ap.tgz')
+        print "Downloading demo-data/ap.tgz"
+        filename = wget.download('http://www.cs.columbia.edu/~blei/lda-c/ap.tgz')
     else:
         print("Processing demo-data/ap.tgz")
         filename = 'ap.tgz'
