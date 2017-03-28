@@ -22,6 +22,13 @@ datafiles.extend(get_datafiles('ipynb'))
 # After install, download nltk packages 'punkt' and 'stopwords'
 # http://blog.diffbrent.com/correctly-adding-nltk-to-your-python-package-using-setup-py-post-install-commands/
 def _post_install(dir):
+    try:
+        # Python 3 or Python 2 w/backport
+        from importlib import reload
+    except ImportError:
+        # Python 2 without backports, use default reload
+        pass
+
     import site
     reload(site)
 

@@ -69,6 +69,13 @@ else:
     TOKENIZER = None
 
     def reset_mmseg():
+        try:
+            # Python 3 or Python 2 w/backport
+            from importlib import reload
+        except ImportError:
+            # Python 2 without backports, use default reload
+            pass
+
         global TOKENIZER
         global mmseg
         TOKENIZER = None
