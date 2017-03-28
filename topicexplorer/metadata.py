@@ -24,7 +24,7 @@ def UnicodeDictReader(utf8_data, **kwargs):
     # added literal_eval to convert to native types.
     csv_reader = csv.DictReader(utf8_data, **kwargs)
     for row in csv_reader:
-        yield {str(key, 'utf-8'): parse_value(str(value, 'utf-8'))
+        yield {key: parse_value(value)
                     for key, value in row.items()}
 
 def parse_metadata_from_csvfile(filename, context_type):
@@ -77,7 +77,7 @@ def add_metadata(corpus, ctx_type, new_metadata, force=False, rename=False):
     # get existing metadata
     i = corpus.context_types.index(ctx_type)
     md = corpus.context_data[i]
-    fields = list(md.dtype.fields.keys())
+    fields = md.dtype.fields.keys()
 
     # sort new_metadata according to existing md order
     # Note: this may raise a KeyError - in which case there's not md
@@ -85,12 +85,12 @@ def add_metadata(corpus, ctx_type, new_metadata, force=False, rename=False):
     label_name = doc_label_name(ctx_type)
     labels = md[label_name]
     if rename:
-        new_data = list(new_metadata.values())
+        new_data = new_metadata.values()
     else:
         try:
             new_data = [new_metadata[id] for id in labels]
             if not new_data:
-                print("No metadata labels match existing labels.", end=' ')
+                print("No metadata labels match existing labels.")
                 print("If you changed labels, run with the `--rename` flag.")
                 sys.exit(0)
             elif len(new_data) != len(labels):
@@ -103,8 +103,8 @@ def add_metadata(corpus, ctx_type, new_metadata, force=False, rename=False):
 
     # look for new fields
     new_fields = set()
-    for vals in list(new_metadata.values()):
-        new_fields.update(list(vals.keys()))
+    for vals in new_metadata.values():
+        new_fields.update(vals.keys())
 
     # differentiate new and updated fields
     updated_fields = new_fields.intersection(fields)
