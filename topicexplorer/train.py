@@ -242,7 +242,7 @@ Do you want to continue training your existing models? """, default=True))):
                 pass
 
 
-        with open(args.config_file, "wb") as configfh:
+        with open(args.config_file, "w") as configfh:
             config.write(configfh)
 
 
