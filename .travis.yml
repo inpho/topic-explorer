@@ -27,7 +27,8 @@ install:
   - export PATH=$HOME/py/bin:$PATH
   - pip install coveralls
   # install topic explorer
-  - pip install . --extra-index-url https://inpho.cogs.indiana.edu/pypi --process-dependecy-links
+  - pip install https://github.com/inpho/vsm/archive/py3k.zip#egg=vsm-dev
+  - pip install . --extra-index-url https://inpho.cogs.indiana.edu/pypi 
 # command to run tests
 script: bash coverage.sh
 after_success: coveralls
