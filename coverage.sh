@@ -6,15 +6,15 @@ coverage debug sys
 
 EXIT=0
 $CMD -m topicexplorer version
-EXIT=$EXIT+$?
+EXIT=$(($EXIT+$?))
 $CMD -m topicexplorer.demo
-EXIT=$EXIT+$?
+EXIT=$(($EXIT+$?))
 $CMD -m topicexplorer.train ap.ini --rebuild -k 20 40 60 --iter 20 --context-type article
-EXIT=$EXIT+$?
+EXIT=$(($EXIT+$?))
 $CMD -m topicexplorer update
 # TODO: enable once status code for invalid branch is implemented
 # EXIT=$EXIT+$?
 
 coverage report
-echo 'Exiting with code $EXIT'
+echo "Exiting with code ${EXIT}"
 exit $EXIT
