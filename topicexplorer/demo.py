@@ -1,7 +1,10 @@
 from __future__ import print_function
+from __future__ import unicode_literals
+
 from future import standard_library
 standard_library.install_aliases()
 from builtins import input
+
 from argparse import ArgumentParser
 import os
 import os.path
@@ -30,7 +33,7 @@ def download_and_extract():
     with tarfile.open(filename, 'r') as apfile:
         member = apfile.getmember('ap/ap.txt')
         ap89_f = apfile.extractfile(member)
-        ap89_plain = ap89_f.read()
+        ap89_plain = ap89_f.read().decode('utf-8')
 
     ap89_plain = '<DOCS>\n' + ap89_plain + '</DOCS>\n'
     ap89_plain = ap89_plain.replace('&', '&#038;')
