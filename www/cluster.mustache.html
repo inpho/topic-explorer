@@ -138,7 +138,7 @@ d3.csv(base_url + "cluster.csv", function(error, data) {
   $('#sidebar-topics li a').tooltip();
 
   var sizes = d3.scale.log()
-    .range([radius, 1]);
+    .range([radius, 5]);
   sizes.domain(d3.extent(ks)).nice();
 
   ext_data = data;
