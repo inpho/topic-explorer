@@ -328,12 +328,17 @@ class Application(Bottle):
             except:
                 raise Exception('Must specify a query')
 
+            stopped_words = [word for word in query 
+                                 if word in self.c.stopped_words]
             query = [word for word in query if word in self.c.words]
 
             # abort if there are no terms in the query
-            if not query:
-                response.status = 400  # Bad Request
-                return "Search terms not in model"
+            if not query and stopped_words:
+                response.status = 410  # Gone
+                return "Search terms removed using stoplist: " + ' '.join(query)
+            elif not query:
+                response.status = 404  # Not Found
+                return "Search terms not in corpus"
 
 
             # calculate distances

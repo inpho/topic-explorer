@@ -211,8 +211,22 @@ d3.csv(base_url + "cluster.csv", function(error, data) {
     }).then(function() {
       var words = inpho.util.getValueForURLParam('q');
       return (words) ? $.getJSON('topics.json?q=' + words) : null })
-    .then(function(distData) {
+    .catch(function(error) {
+      var words = inpho.util.getValueForURLParam('q');
+      if (error.status == 404) {
+        $('#words').parents('.form-group').addClass('has-error');
+        $('#words').attr('placeholder', 'Terms not in corpus: "' + words + '". Try another query...');
+        $('#words').val('');
+      } else if (error.status == 410) { 
+        $('#words').parents('.form-group').addClass('has-warning');
+        $('#words').attr('placeholder', 'Terms removed by stoplisting: "' + words + '". Try another query...');
+        $('#words').val('');
+      }
+    }).then(function(distData) {
       if (distData != null) {
+          $('#words').parents('.form-group').removeClass('has-error');
+          $('#words').parents('.form-group').removeClass('has-warning');
+          $('#words').parents('.form-group').addClass('has-success');
           opacity.domain(d3.extent(distData, function(d) { return d['distance']; })).nice();
           for (var obj in distData) {
             obj = distData[obj];
