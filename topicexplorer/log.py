@@ -33,7 +33,8 @@ class TEProv(ProvDocument):
         mainte.add_asserted_type(PROV['Plan'])
         self.user = self.agent('user')
         #self.config = self.collection('config')
-        self.corpus = self.entity('corpus')
+        self.corpus = self.entity('corpus', 
+            other_attributes={PROV['label'] : 'workset'})
         #self.hadMember(self.config, self.corpus)
         self.models = {}
         self.modelRevisions = defaultdict(int)
@@ -46,7 +47,8 @@ class TEProv(ProvDocument):
         self.lastAction += 1
 
         act = self.activity('r{}act'.format(self.lastAction),
-            startTime=startTime, endTime=endTime)
+            startTime=startTime, endTime=endTime,
+            other_attributes={PROV['label'] : 'topicexplorer {}'.format(cmd) })
         if self.lastAction > 1:
             act.wasInformedBy('r{}act'.format(self.lastAction -1))
         assoc = self.association(act, self.user, plan=TE['topicexplorer'])
@@ -65,13 +67,16 @@ class TEProv(ProvDocument):
 
         if cmd == 'init' or cmd == 'prep':
             self.lastRevision += 1
-            new_rev = self.revise_corpus()
+            if activity_attributes:
+                new_rev = self.revise_corpus(name=activity_attributes.get('name'))
+            else:
+                new_rev = self.revise_corpus()
             
             if cmd == 'init':
                 self.wasGeneratedBy(new_rev, activity=act)
             elif cmd == 'prep':
                 new_rev.wasDerivedFrom('r{}'.format(self.lastRevision - 1),
-                    activity=act, attributes={'prov:type' : PROV['Revision']})
+                    activity=act, attributes={PROV['type'] : PROV['Revision']})
 
             # Invalidate past results if appropriate 
             prev = self.get_record('r{}act'.format(self.lastAction - 1))
@@ -101,8 +106,11 @@ class TEProv(ProvDocument):
         return act
 
 
-    def revise_corpus(self): 
-        new_rev = self.entity('r{}'.format(self.lastRevision))
+    def revise_corpus(self, name=''): 
+        rev_num = 'r{}'.format(self.lastRevision)
+        rev_label = name or rev_num
+        new_rev = self.entity(rev_num, 
+            other_attributes={PROV['label'] : rev_label})
         new_rev.specializationOf(self.corpus)
         new_rev.wasAttributedTo(self.user)
         new_rev.add_asserted_type(TE['Corpus'])
@@ -113,20 +121,24 @@ class TEProv(ProvDocument):
         new_model = self.entity('model{}r{}'.format(k, self.modelRevisions[k]))
         old_model = self.models[k]
         new_model.wasDerivedFrom(old_model, activity=act, 
-            attributes={'prov:type' : PROV['Revision']})
+            attributes={PROV['type'] : PROV['Revision']})
         new_model.add_asserted_type(TE['Model'])
-        new_model.add_attributes({TE['k'] : k})
+        new_model.add_attributes({TE['k'] : k,
+            PROV['label'] : 'k={} (r{})'.format(k, self.modelRevisions[k])})
+        print('updating LABEL')
         new_model.wasAttributedTo(self.user)
         new_model.specializationOf('model{}'.format(k))
 
         self.models[k] = new_model
 
     def add_model(self, k):
-        self.entity('model{}'.format(k))
+        self.entity('model{}'.format(k), 
+            other_attributes={PROV['label'] : 'k={}'.format(k)})
         new_model = self.entity('model{}r{}'.format(k, self.modelRevisions[k]))
         self.models[k] = new_model
         new_model.add_asserted_type(TE['Model'])
-        new_model.add_attributes({TE['k'] : k})
+        new_model.add_attributes({TE['k'] : k,
+            PROV['label'] : 'k={} (r{})'.format(k, self.modelRevisions[k])})
         new_model.wasAttributedTo(self.user)
         new_model.specializationOf('model{}'.format(k))
         #self.hadMember(self.config, 'model{}'.format(k))

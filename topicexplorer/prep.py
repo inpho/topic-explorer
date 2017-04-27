@@ -435,6 +435,7 @@ def main(args):
 
     dirname = os.path.basename(args.corpus_path).split('-nltk-')[0].replace('.npz', '')
     corpus_name = name_corpus(dirname, ['en'], args.low_filter, args.high_filter)
+    args.corpus_name = dirname
 
     model_path = os.path.dirname(args.corpus_path)
     args.corpus_path = os.path.join(model_path, corpus_name)
@@ -455,7 +456,7 @@ def write_prov(args, startTime):
     else:
         prov = TEProv()
 
-    attributes = {}
+    attributes = {'name' : args.corpus_name}
     if args.low_filter:
         attributes['lowFilter'] = args.low_filter
     if args.high_filter:
