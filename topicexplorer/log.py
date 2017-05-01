@@ -33,8 +33,9 @@ class TEProv(ProvDocument):
         mainte.add_asserted_type(PROV['Plan'])
         self.user = self.agent('user')
         #self.config = self.collection('config')
-        self.corpus = self.entity('corpus', 
+        self.corpus = self.collection('corpus',
             other_attributes={PROV['label'] : 'workset'})
+        self.corpus.wasAttributedTo(self.agent('curator'))
         #self.hadMember(self.config, self.corpus)
         self.models = {}
         self.modelRevisions = defaultdict(int)
@@ -111,7 +112,8 @@ class TEProv(ProvDocument):
         rev_label = name or rev_num
         new_rev = self.entity(rev_num, 
             other_attributes={PROV['label'] : rev_label})
-        new_rev.specializationOf(self.corpus)
+        if self.lastRevision == 1:
+            new_rev.wasDerivedFrom(self.corpus)
         new_rev.wasAttributedTo(self.user)
         new_rev.add_asserted_type(TE['Corpus'])
         return new_rev
@@ -125,23 +127,16 @@ class TEProv(ProvDocument):
         new_model.add_asserted_type(TE['Model'])
         new_model.add_attributes({TE['k'] : k,
             PROV['label'] : 'k={} (r{})'.format(k, self.modelRevisions[k])})
-        print('updating LABEL')
         new_model.wasAttributedTo(self.user)
-        new_model.specializationOf('model{}'.format(k))
-
         self.models[k] = new_model
 
     def add_model(self, k):
-        self.entity('model{}'.format(k), 
-            other_attributes={PROV['label'] : 'k={}'.format(k)})
         new_model = self.entity('model{}r{}'.format(k, self.modelRevisions[k]))
         self.models[k] = new_model
         new_model.add_asserted_type(TE['Model'])
         new_model.add_attributes({TE['k'] : k,
-            PROV['label'] : 'k={} (r{})'.format(k, self.modelRevisions[k])})
+            PROV['label'] : 'k={}'.format(k)})
         new_model.wasAttributedTo(self.user)
-        new_model.specializationOf('model{}'.format(k))
-        #self.hadMember(self.config, 'model{}'.format(k))
         return new_model
 
     @staticmethod
