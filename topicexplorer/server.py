@@ -131,7 +131,7 @@ class Application(Bottle):
         def doc_topic_csv(k, doc_id):
             response.content_type = 'text/csv; charset=UTF8'
 
-            doc_id = unquote(doc_id)
+            doc_id = unquote(doc_id).decode('utf-8')
 
             data = self.v[k].doc_topics(doc_id)
 
@@ -147,7 +147,7 @@ class Application(Bottle):
         def doc_csv(k, doc_id, threshold=0.2):
             response.content_type = 'text/csv; charset=UTF8'
 
-            doc_id = unquote(doc_id)
+            doc_id = unquote(doc_id).decode('utf-8')
 
             data = self.v[k].dist_doc_doc(doc_id)
 
@@ -181,7 +181,7 @@ class Application(Bottle):
             for doc_prob, topics in zip(data, doc_topics_mat):
                 doc, prob = doc_prob
                 struct = docs[doc]
-                struct.update({'prob': 1 - prob,
+                struct.update({'prob': float(1 - prob),
                                'topics': dict([(str(t), float(p)) for t, p in topics])})
                 js.append(struct)
 
@@ -195,7 +195,7 @@ class Application(Bottle):
             except:
                 pass
 
-            doc_id = unquote(doc_id)
+            doc_id = unquote(doc_id).decode('utf-8')
 
             response.content_type = 'application/json; charset=UTF8'
 
@@ -213,7 +213,7 @@ class Application(Bottle):
             for doc_prob, topics in zip(data, doc_topics_mat):
                 doc, prob = doc_prob
                 struct = docs[doc]
-                struct.update({'prob': 1 - prob,
+                struct.update({'prob': float(1 - prob),
                                'topics': dict([(str(t), float(p)) for t, p in topics])})
                 js.append(struct)
 
@@ -222,12 +222,17 @@ class Application(Bottle):
         @self.route('/<k:int>/word_docs.json')
         @_set_acao_headers
         def word_docs(k, N=40):
+            import numpy as np
             try:
                 N = int(request.query.n)
             except:
                 pass
             try:
-                query = request.query.q.lower().split('|')
+                query = request.query.q.lower()
+                if self.c.words.dtype.type == np.string_:
+                    query = query.encode('ascii', 'ignore')
+                
+                query = query.split('|')
             except:
                 raise Exception('Must specify a query')
 
@@ -258,8 +263,8 @@ class Application(Bottle):
             for doc_prob, topics in zip(data, doc_topics_mat):
                 doc, prob = doc_prob
                 struct = docs[doc]
-                struct.update({'prob': 1 - prob,
-                               'topics': dict([(str(t), p) for t, p in topics])})
+                struct.update({'prob': float(1 - prob),
+                               'topics': dict([(str(t), float(p)) for t, p in topics])})
                 js.append(struct)
 
             return json.dumps(js)
@@ -308,16 +313,32 @@ class Application(Bottle):
 
             # parse query
             try:
-                query = request.query.q.lower().split('|')
+                if '|' in request.query.q:
+                    query = request.query.q.lower()
+                    if self.c.words.dtype.type == np.string_:
+                        query = query.encode('ascii', 'ignore')
+                
+                    query = query.split('|')
+                else:
+                    query = request.query.q.lower()
+                    if self.c.words.dtype.type == np.string_:
+                        query = query.encode('ascii', 'ignore')
+                
+                    query = query.split(' ')
             except:
                 raise Exception('Must specify a query')
 
+            stopped_words = [word for word in query 
+                                 if word in self.c.stopped_words]
             query = [word for word in query if word in self.c.words]
 
             # abort if there are no terms in the query
-            if not query:
-                response.status = 400  # Bad Request
-                return "Search terms not in model"
+            if not query and stopped_words:
+                response.status = 410  # Gone
+                return "Search terms removed using stoplist: " + ' '.join(query)
+            elif not query:
+                response.status = 404  # Not Found
+                return "Search terms not in corpus"
 
 
             # calculate distances
@@ -342,7 +363,13 @@ class Application(Bottle):
         @self.route('/topics')
         @_set_acao_headers
         def view_clusters():
-            return _render_template('cluster.html')
+            with open(resource_filename(__name__, '../www/master.mustache.html'),
+                      encoding='utf-8') as tmpl_file:
+                template = tmpl_file.read()
+
+            tmpl_params = {'body' : _render_template('cluster.mustache.html'),
+                           'topic_range': self.topic_range}
+            return self.renderer.render(template, tmpl_params)
 
 
         @self.route('/docs.json')
@@ -353,13 +380,13 @@ class Application(Bottle):
 
             try:
                 if request.query.q:
-                    q = unquote(request.query.q)
+                    q = unquote(request.query.q).decode('utf-8')
             except:
                 pass
 
             try:
                 if request.query.id:
-                    docs = [unquote(request.query.id)]
+                    docs = [unquote(request.query.id).decode('utf-8')]
             except:
                 pass
 
@@ -401,13 +428,19 @@ class Application(Bottle):
 
         @self.route('/<k:int>/')
         def index(k):
-            return _render_template('index.mustache.html')
+            with open(resource_filename(__name__, '../www/master.mustache.html'),
+                      encoding='utf-8') as tmpl_file:
+                template = tmpl_file.read()
+
+            tmpl_params = {'body' : _render_template('bars.mustache.html'),
+                           'topic_range': self.topic_range}
+            return self.renderer.render(template, tmpl_params)
 
         @self.route('/cluster.csv')
         @_set_acao_headers
         def cluster_csv(second=False):
             filename = kwargs.get('cluster_path')
-            print "Retireving cluster.csv:", filename
+            print "Retrieving cluster.csv:", filename
             if not filename or not os.path.exists(filename):
                 import topicexplorer.train
                 filename = topicexplorer.train.cluster(10, self.config_file)
@@ -429,7 +462,13 @@ class Application(Bottle):
         @self.route('/')
         @_set_acao_headers
         def cluster():
-            return _render_template('index2.mustache.html')
+            with open(resource_filename(__name__, '../www/master.mustache.html'),
+                      encoding='utf-8') as tmpl_file:
+                template = tmpl_file.read()
+
+            tmpl_params = {'body' : _render_template('splash.mustache.html'),
+                           'topic_range': self.topic_range}
+            return self.renderer.render(template, tmpl_params)
 
         @self.route('/<filename:path>')
         @_set_acao_headers

@@ -1,126 +1,62 @@
-
-
-<!DOCTYPE html>
-<html >
-  <head>
-    <meta charset="UTF-8">
-
-
-    <title>The InPhO Topic Explorer</title>
-    
-    
-    
-<link rel="stylesheet" type="text/css" href="/lib/bootstrap-3.3.6/css/bootstrap.min.css" />
-<link rel='stylesheet prefetch' href='/css/simple-sidebar.css'>
-
-        <style>
-      
-body {
-}
-#chart {
-  font: 10px sans-serif;
-}
-#chart .axis path,
-#chart .axis line {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
-}
-
-#chart .dot {
-  stroke: #000;
-  stroke-opacity: .7;
-  fill-opacity: .7;
-}
-
-#controls {
-  font-size: 14px;
-  position: relative;
-  top: 10px;
-  left: 80px;
-}
-
-#chart input {
-  margin: 4px 4px 0;
-}
-    </style>
-
-   <style>
-
-.logo-word {
-  background-image: url('/img/inpho_logo.png');
-  background-size: 172px 92px;
-  width: 172px;
-  height: 84px;
-  padding-top: 6px;
-  margin-top: 14px;
-  margin-bottom: 15px;
-  margin-left: -6px;
-  display: inline-block;
-  text-indent: -3000px;
-}
-h1 {
-text-align: center;
-margin-bottom: 0;
-font-size: 59px;
-line-height: 1;
-color: inherit;
-letter-spacing: -1px;
-}
-h1 a, h1 a:hover {
-  color: #000;
-  text-decoration: none;
-}
-h2 {
-  text-align: center;
-  margin-top: -20px;
-  }
-</style>
-    
-    
-  </head>
-
-  <body translate="no" >
-
-  <div id="wrapper">
-        <div id="sidebar-wrapper">
-          <div class="sidebar-helper">
-            <ul class="sidebar-nav">
-              <li>
-                <a class="selected" href="/"><span class="glyphicon glyphicon-home"></span></a>
-              </li>
-            </ul>
-          </div>
-          <div class="sidebar-helper" style="vertical-align: middle;">
-            <ul id="sidebar-topics" class="sidebar-nav">
-            </ul>
-          </div>
-        </div>
-    <div id="page-content-wrapper">
+<link rel='stylesheet' href='/css/cluster.css'>
+<script>
+$('#home-link').attr('href', '../');
+$('#cluster-link').attr('href', '#');
+</script>
 <div id="main" class="container">
   <div class="row">
-  <div class="span12">
-  <h1><a href="{{home_link}}"><span class="logo-word">InPhO</span> Topic Explorer</a></h1>
-  <!--<h2 class="title non-null"></h2>-->
-  <h2>
-  {{#corpus_link}}<a href="{{corpus_link}}">{{corpus_name}}</a>{{/corpus_link}} 
-  {{^corpus_link}}{{corpus_name}}{{/corpus_link}}. </p>
-  </h2>
-  </div>
-  </div>
-</div>
-      <div class="container-fluid">
-        <div id="chart"></div>
-      </div>
+    <div class="col-xs-12">
+    <h1><a href="{{home_link}}"><span class="logo-word">InPhO</span> Topic Explorer</a></h1>
+    <!--<h2 class="title non-null"></h2>-->
+    <h2>
+    {{#corpus_link}}<a href="{{corpus_link}}">{{corpus_name}}</a>{{/corpus_link}} 
+    {{^corpus_link}}{{corpus_name}}{{/corpus_link}}
+    </h2>
     </div>
   </div>
+  <div class="row">
+    <div class="col-xs-12">
+      <form method="GET" class="form-horizontal" id="searchForm">
+        <div class="form-group">
+          <label for="words" class="col-sm-2 control-label">Words</label>
+          <div class="col-sm-8">
+              <input type="text" id="words" name="q" class="form-control" placeholder="Enter search terms to highlight relevant topics ..." autocomplete="off">
+          </div>
+          <div class="col-sm-2">
+            <button type="submit" id="submit" class="btn btn-primary">View Topic Clusters</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<div class="container-fluid">
+  <div id="chart">
+    <div id="loading" class="text-center">
+      <button class="btn btn-lg btn-info">
+        <span class="glyphicon glyphicon-refresh spinning"></span> Loading...    
+      </button>
+    </div>
+  </div>
+</div>
     
-<script src="/lib/d3.v3.min.js"></script>
 <script src="/lib/jquery-2.2.4.min.js"></script>
 <script src="/lib/bootstrap-3.3.6/js/bootstrap.min.js"></script>
 <script src="/lib/inpho/util.js"></script>
 
-        <script>
+<script>
+
+var q = inpho.util.getValueForURLParam('q') || null;
+if (q) {
+  q = decodeURIComponent(q);
+  q = q.split('+').join(' ');
+  $('#words').val(q);
+  $('#words').css('font-weight', 'bold');
+  $('#words').change(function() {
+    $('#words').css('font-weight', 'normal');
+  });
+};
+
 if (window.location.pathname.endsWith('topics')) {
   var i = window.location.pathname.lastIndexOf('topics');
   var base_url = window.location.origin + window.location.pathname.substr(0,i);
@@ -168,7 +104,8 @@ var yAxis = d3.svg.axis()
     .orient("left");
 
 var controls = d3.select("#chart").append("label")
-    .attr("id", "controls");
+    .attr("id", "controls")
+    .attr("class", "hide");
 var checkbox = controls.append("input")
     .attr("id", "collisiondetection")
     .attr("type", "checkbox");
@@ -192,10 +129,16 @@ var ext_data;
 d3.csv(base_url + "cluster.csv", function(error, data) {
   var topics = {}; var node;
   var ks = data.map(function(d) { return parseInt(d.k); }).filter(function(item, i, ar){ return ar.indexOf(item) === i; });;
-  ks.map(function(k) { $('#sidebar-topics').append('<li><a class="selected" href="javascript:toggleDisplay(' + k + ')">' + k + '</a></li>') });
+
+  // sidebar items
+  var cluster_view = $('#sidebar-topics li:first-child').html();
+  $('#sidebar-topics').html('');
+  $('#sidebar-topics').append('<li>' + cluster_view + "</li>");
+  ks.map(function(k) { $('#sidebar-topics').append('<li><a class="bg-info" title="Toggle '+k+'-topic clusters" data-placement="right" href="javascript:toggleDisplay(' + k + ')">' + k + '</a></li>') });
+  $('#sidebar-topics li a').tooltip();
 
   var sizes = d3.scale.log()
-    .range([radius, 1]);
+    .range([radius, 5]);
   sizes.domain(d3.extent(ks)).nice();
 
   ext_data = data;
@@ -229,6 +172,9 @@ d3.csv(base_url + "cluster.csv", function(error, data) {
     if (d.k != prev) { prev = d.k; currentTop = 0; }
     d.topic = currentTop++;
   });
+
+  $('#chart #loading').remove();
+  controls.attr('class', '')
 
   svg.append("g")
       .attr("class", "x axis")
@@ -265,8 +211,22 @@ d3.csv(base_url + "cluster.csv", function(error, data) {
     }).then(function() {
       var words = inpho.util.getValueForURLParam('q');
       return (words) ? $.getJSON('topics.json?q=' + words) : null })
-    .then(function(distData) {
+    .catch(function(error) {
+      var words = inpho.util.getValueForURLParam('q');
+      if (error.status == 404) {
+        $('#words').parents('.form-group').addClass('has-error');
+        $('#words').attr('placeholder', 'Terms not in corpus: "' + words + '". Try another query...');
+        $('#words').val('');
+      } else if (error.status == 410) { 
+        $('#words').parents('.form-group').addClass('has-warning');
+        $('#words').attr('placeholder', 'Terms removed by stoplisting: "' + words + '". Try another query...');
+        $('#words').val('');
+      }
+    }).then(function(distData) {
       if (distData != null) {
+          $('#words').parents('.form-group').removeClass('has-error');
+          $('#words').parents('.form-group').removeClass('has-warning');
+          $('#words').parents('.form-group').addClass('has-success');
           opacity.domain(d3.extent(distData, function(d) { return d['distance']; })).nice();
           for (var obj in distData) {
             obj = distData[obj];
@@ -385,23 +345,13 @@ var toggleDisplay = function(k) {
     selection.style('display', 'inline');
     $('.sidebar-nav li a')
       .filter(function() { return $(this).text() == k.toString() })
-        .addClass('selected');
+        .addClass('bg-info');
   } else {
     selection.style('display', 'none');
     $('.sidebar-nav li a')
       .filter(function() { return $(this).text() == k.toString() })
-        .removeClass('selected');
+        .removeClass('bg-info');
   }
 }
       //# sourceURL=pen.js
     </script>
-
-<script>
-</script>
-    
-    
-    
-  </body>
-</html>
- 
-

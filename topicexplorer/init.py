@@ -103,7 +103,8 @@ def process_bibtex(corpus_path):
     return target_dir
 
 
-def get_corpusbuilder_fn(corpus_path, sentences=False, ignore=[]):
+def get_corpusbuilder_fn(corpus_path, sentences=False,
+                         ignore=['.json', '.log', '.err', '.pickle', '.npz']):
     relpaths = [os.path.relpath(path, start=corpus_path)
                 for path in listdir_nohidden(corpus_path, recursive=True)
                 if os.path.isfile(path)
@@ -114,8 +115,9 @@ def get_corpusbuilder_fn(corpus_path, sentences=False, ignore=[]):
         dir_counts[os.path.dirname(path)] += 1
 
     dirs = dir_counts.keys()
-    populated_levels = [dir.count(os.path.sep)
+    populated_levels = [1 + dir.count(os.path.sep)
                         for dir, key in dir_counts.iteritems()]
+
     levels = max(populated_levels) - min(populated_levels)
     print "{} files, {} dirs, {} levels".format(len(relpaths), len(dirs), levels)
 
@@ -136,7 +138,7 @@ def get_corpusbuilder_fn(corpus_path, sentences=False, ignore=[]):
         raise NotImplementedError("""Collection corpuses are too large for
         sentence parsing. Reduce your corpus to a single folder or
         file.""")
-    elif levels == 0:
+    elif levels == 0 and max(populated_levels) == 1:
         from vsm.extensions.corpusbuilders import coll_corpus
         return coll_corpus
     else:
@@ -346,7 +348,7 @@ def write_config(args, config_file=None):
 
     config.add_section("www")
     config.set("www", "corpus_name", args.corpus_print_name)
-    config.set("www", "icons", "link")
+    config.set("www", "icons", "fingerprint,link")
     config.set("www", "fulltext", "false")
 
 

@@ -8,6 +8,35 @@ This project follows the [PEP 440](https://www.python.org/dev/peps/pep-0440/) ve
 
 This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangelog.com/). Versions should group changes in the order: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, and `Security` (see section ["What makes a good change log?"](http://keepachangelog.com/)).
 ## [Unreleased]
+- Added:
+  - Support for custom index.html in app.wsgi multi-model Apache config.
+- Changed:
+  - Isomap now exmaines more nearest neighbors, which leads to lower numbers of overlapping topics in cluster view.
+- Fixed:
+  - [#199](https://github.com/inpho/topic-explorer/issues/199) warn user when term is not in corpus
+  - [#198](https://github.com/inpho/topic-explorer/issues/198) uBlock Origin blocks `fingerprint.js` from loading, preventing document search
+  - [#187](https://github.com/inpho/topic-explorer/issues/187) true button in handian document modals
+  - [#184](https://github.com/inpho/topic-explorer/issues/184) longer texts are not scrollable
+  - [#183](https://github.com/inpho/topic-explorer/issues/183) init is not selecting correct corpus structure when exclude files are present
+  - Issue with decoding unicode URL parameters
+
+## [1.0b146] - 2016-11-22
+- Added:
+  - [#144](https://github.com/inpho/topic-explorer/issues/144) permissions string - modal now accessible via © button in lower left.
+  - Sidebar is now on all subpages.
+  - Topic Fingerprint view now available via the Document view page.
+- Changed:
+  - All pages now load from a single `master.mustache.html` filled in with the appropriate subpage.
+  - Upgraded all sites to Bootstrap 3.
+- Fixed:
+  - `topicexplorer demo` now has a corpus description.
+  - [#177](https://github.com/inpho/topic-explorer/issues/177) 1.04b145 unpickling error
+  - [#172](https://github.com/inpho/topic-explorer/issues/172) unicode error with metadata import
+  - [#171](https://github.com/inpho/topic-explorer/issues/171) term search for topics internal server error
+  - [#169](https://github.com/inpho/topic-explorer/issues/169) directory structure error during init
+  - [#104](https://github.com/inpho/topic-explorer/issues/104) Metadata import 
+  - Variety of rendering errors in the Document-view page.
+  - Fixed issue with histogram bar width
 
 ## [1.0b134] - 2016-10-09
 - Added:
@@ -18,6 +47,7 @@ This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangel
 - Changed:
   - [#154](https://github.com/inpho/topic-explorer/issues/154) Modal fulltext default
   - [#120](https://github.com/inpho/topic-explorer/issues/120) "continue training" is ambiguous
+  - Updated `vsm` to `0.4.0b6`
 - Fixed:
   - Metadata now keeps all information in unicode.
   - `topicexplorer metadata` now allows for label updates with `--rename` flag.
@@ -167,7 +197,8 @@ This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangel
 
 
 
-[Unreleased]: https://github.com/inpho/topic-explorer/compare/1.0b134...HEAD
+[Unreleased]: https://github.com/inpho/topic-explorer/compare/1.0b146...HEAD
+[1.0b146]: https://github.com/inpho/topic-explorer/compare/1.0b1134...1.0b146
 [1.0b134]: https://github.com/inpho/topic-explorer/compare/1.0b1121...1.0b134
 [1.0b121]: https://github.com/inpho/topic-explorer/compare/1.0b111...1.0b121
 [1.0b111]: https://github.com/inpho/topic-explorer/compare/1.0b107...1.0b111
