@@ -64,7 +64,7 @@ install_requires = [
         'profilehooks',
         'pybtex>=0.20',
         'paste',
-        'prov==1.4.0',
+        'prov==1.5.0',
         'pydotplus'
         ]
 
