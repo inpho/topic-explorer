@@ -562,7 +562,7 @@ d3.json(url, function(error, data) {
         //.attr("data-toggle", "tooltip")
         .attr("data-placement", "right")
         .attr("title", function(d) { 
-          return "<strong>Topic {0}:</strong> <!--H(T<sub>{0}</sub>)={1}-->".format(d, topics[d].H.toFixed(2)) + "<br />"
+          return "<strong>Topic {0}:</strong>".format(d) + "<br />"
             + d3.keys(topics[d].words).sort(function(a,b) {
               if (topics[d].words[a] > topics[d].words[b])
                 return -1;

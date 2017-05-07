@@ -278,30 +278,20 @@ class Application(Bottle):
             response.set_header('Expires', _cache_date())
             response.set_header('Cache-Control', 'max-age=86400')
             
-
-            # populate partial jsd values
-            data = self.v[k].topic_jsds()
-
-            js = {}
-            for rank, topic_H in enumerate(data):
-                topic, H = topic_H
-                if math.isnan(H): 
-                    H = 0.0
-                js[str(topic)] = {
-                    "H": float(H),
-                    "color": rgb2hex(self.colors[k][topic])
-                }
-
             # populate word values
             data = self.v[k].topics()
 
+            js = {}
             wordmax = 10  # for alphabetic languages
             if kwargs.get('lang', None) == 'cn':
                 wordmax = 25  # for ideographic languages
 
             for i, topic in enumerate(data):
-                js[str(i)].update({'words': dict([(unicode(w), float(p))
-                                                  for w, p in topic[:wordmax]])})
+                js[str(i)] = {
+                    "color": rgb2hex(self.colors[k][i]),
+                    'words': dict([(unicode(w), float(p))
+                                       for w, p in topic[:wordmax]])
+                    }
 
             return json.dumps(js)
 
