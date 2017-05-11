@@ -10,6 +10,7 @@ This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangel
 ## [Unreleased]
 - Added:
   - Support for custom index.html in app.wsgi multi-model Apache config.
+  - Added support for the [htrc-feature-reader](https://github.com/htrc/htrc-feature-reader).
 - Changed:
   - Isomap now exmaines more nearest neighbors, which leads to lower numbers of overlapping topics in cluster view.
 - Fixed:
