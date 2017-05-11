@@ -216,18 +216,6 @@ def main(args):
     if not args.corpus_print_name and not args.quiet:
         args.corpus_print_name = prompt("Corpus Name", default=args.corpus_name)
 
-    if args.htrc:
-        import vsm.extensions.htrc as htrc
-        htrc.proc_htrc_coll(args.corpus_path)
-
-        import json
-        data = [(id, htrc.metadata(id)) for id in listdir_nohidden(args.corpus_path)
-                if os.path.isdir(id)]
-        data = dict(data)
-        md_filename = os.path.join(args.corpus_path, '../metadata.json')
-        with open(md_filename, 'wb') as outfile:
-            json.dump(data, outfile)
-
     # configure model-path
     if args.model_path is None:
         if os.path.isdir(args.corpus_path):
@@ -244,7 +232,31 @@ def main(args):
             default=False)
     else:
         args.rebuild = True
-    if args.rebuild:
+
+    if args.htrc:
+        import vsm.extensions.htrc as htrc
+        if os.path.isdir(args.corpus_path):
+            htrc.proc_htrc_coll(args.corpus_path)
+            ids = listdir_nohidden(args.corpus_path)
+        else:
+            import topicexplorer.extensions.htrc_features as htrc_features
+            with open(args.corpus_path) as idfile:
+                ids = [row.strip() for row in idfile]
+
+            c = htrc_features.create_corpus(ids)
+            c.save(args.corpus_filename)
+
+
+        import json
+        data = [(id, htrc.metadata(id)) for id in ids
+                    if os.path.isdir(id)]
+        data = dict(data)
+        md_filename = os.path.join(os.path.dirname(args.corpus_path), 
+                                   '../metadata.json')
+        with open(md_filename, 'wb') as outfile:
+            json.dump(data, outfile)
+
+    if args.rebuild and (not args.htrc or os.path.isdir(args.corpus_path)):
         try:
             args.corpus_filename = build_corpus(args.corpus_path, args.model_path,
                                                 stop_freq=args.stop_freq, decode=args.decode,
