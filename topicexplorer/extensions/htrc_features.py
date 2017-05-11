@@ -1,8 +1,10 @@
 from __future__ import absolute_import
 
+import os.path
 import tempfile
 
 from progressbar import ProgressBar, Percentage, Bar
+import concurrent.futures
 
 from htrc_features.utils import download_file
 from htrc_features import FeatureReader
@@ -17,27 +19,46 @@ def download_vols(ids, output_dir=None):
     # Download extracted features
     download_file(htids=ids, outdir=output_dir)
     
-    return map(lambda x: '{}/{}.json.bz2'.format(output_dir, x), ids)
+    paths = map(lambda x: '{}/{}.json.bz2'.format(output_dir, x), ids)
+    paths = [p for p in paths if os.path.exists(p)]
+    return paths
+
+def process_pages(vol):
+    corpus = []
+    for _, page in vol.tokenlist(section='body', case=False, pos=False).iteritems():
+        tokens = [process_word(token[-1]) for token, count in page.iteritems() for i in range(count)]
+        tokens = [t for t in tokens if t]
+        if tokens:
+            corpus.extend(tokens)
+
+    return corpus
+
 
 def create_corpus(ids, verbose=1):
     paths = download_vols(ids)
+    filtered_ids = [os.path.basename(p).replace('.json.bz2','') for p in paths]
 
     if verbose:
         pbar = ProgressBar(widgets=[Percentage(), Bar()], maxval=len(ids))
         pbar = pbar.start()
+        n = 0
 
     fr = FeatureReader(paths)
     corpus = []
-    for id_n, vol in enumerate(fr.volumes()):
-        for _, page in vol.tokenlist(section='body', case=False, pos=False).iteritems():
-            tokens = [process_word(token[-1]) for token, count in page.iteritems() for i in range(count)]
-            tokens = [t for t in tokens if t]
-            if tokens:
-                corpus.append(tokens)
-        pbar.update(id_n+1)
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        vols = [executor.submit(process_pages, vol) 
+                    for id_n, vol in enumerate(fr.volumes())]
+        
+        if verbose:
+            for f in concurrent.futures.as_completed(vols):
+                n += 1
+                pbar.update(n)
+
+        corpus = map(concurrent.futures.Future.result, vols)
+        pbar.finish()
 
     c = corpus_fromlist(corpus, context_type='book')
     c = apply_stoplist(c, nltk_stop=True, freq=5)
-    c.context_data[0]['book_label'] = ids
+    c.context_data[0]['book_label'] = filtered_ids
 
     return c
