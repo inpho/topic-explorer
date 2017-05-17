@@ -37,7 +37,7 @@ def init(_app, config_file):
     model_path = config.get('main', 'path')
 
     try:
-        filename = config.get('htrc', 'metadata')
+        filename = config.get('www', 'htrc_metadata')
         if not filename:
             raise ValueError("Not a valid htrc metadata path.")
     except (NoSectionError, ValueError): 
@@ -52,7 +52,7 @@ def label(doc):
     if app.context_type == 'book':
         try:
             md = metadata[doc]
-            return md['title'][0]
+            return md['titles'][0]
         except:
             return doc
     elif app.context_type == 'page':

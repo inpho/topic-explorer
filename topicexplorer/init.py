@@ -238,6 +238,9 @@ def main(args):
         if os.path.isdir(args.corpus_path):
             htrc.proc_htrc_coll(args.corpus_path)
             ids = listdir_nohidden(args.corpus_path)
+
+            args.htrc_metapath = os.path.abspath(args.corpus_path + '/../')
+            args.htrc_metapath = os.path.dirname(args.htrc_metapath) + '.metadata.json'
         else:
             import topicexplorer.extensions.htrc_features as htrc_features
             with open(args.corpus_path) as idfile:
@@ -246,15 +249,13 @@ def main(args):
             c = htrc_features.create_corpus(ids)
             c.save(args.corpus_filename)
 
+            args.htrc_metapath = os.path.abspath(args.corpus_path)
+            args.htrc_metapath = os.path.join(
+                os.path.dirname(args.htrc_metapath),
+                os.path.basename(args.htrc_metapath) + '.metadata.json')
 
-        import json
-        data = [(id, htrc.metadata(id)) for id in ids
-                    if os.path.isdir(id)]
-        data = dict(data)
-        md_filename = os.path.join(os.path.dirname(args.corpus_path), 
-                                   '../metadata.json')
-        with open(md_filename, 'wb') as outfile:
-            json.dump(data, outfile)
+        import htrc.metadata
+        htrc.metadata.get_metadata(ids, output_file=args.htrc_metapath)
 
     if args.rebuild and (not args.htrc or os.path.isdir(args.corpus_path)):
         try:
@@ -345,6 +346,8 @@ def write_config(args, config_file=None):
         config.set("www", "doc_url_format", 'http://hdl.handle.net/2027/{0}')
         config.set("www", "icons", "htrc,htrcbook,link")
         config.set("main", "htrc", True)
+        # TODO: Fix HTRC Metadata download
+        config.set("www", "htrc_metadata", args.htrc_metapath)
 
     if args.tokenizer in ['zh','ltc','och']:
         config.set("main", "lang", "cn")

@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 
 import os.path
 import tempfile
@@ -52,6 +52,7 @@ def create_corpus(ids, verbose=1):
         if verbose:
             for f in concurrent.futures.as_completed(vols):
                 n += 1
+                print(n)
                 pbar.update(n)
 
         corpus = map(concurrent.futures.Future.result, vols)
