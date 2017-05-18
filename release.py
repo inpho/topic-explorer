@@ -1,3 +1,5 @@
+from __future__ import print_function
+from builtins import range
 import os
 from subprocess import check_output, CalledProcessError
 import sys
@@ -26,23 +28,23 @@ commits_ahead =list(repo.iter_commits(
 if not commits_ahead and not commits_behind:
     pass
 elif commits_ahead and not commits_behind:
-    print "Git branch '{}' ahead of origin. Pushing changes.\n".format(branch.name)
+    print("Git branch '{}' ahead of origin. Pushing changes.\n".format(branch.name))
     repo.remotes.origin.push(branch.name)
 else:
-    print "Git branch '{}' out of sync. Aborting release.\n".format(branch.name)
+    print("Git branch '{}' out of sync. Aborting release.\n".format(branch.name))
     sys.exit(1)
 
 current_commit = repo.head.commit.hexsha
 
 ### Check version numbers are not already online
 if __version__ in repo.tags and current_commit != repo.tags[__version__]:
-    print "Local version tag already exists: ", __version__
-    print "Increment the version number and run release again.\n"
+    print("Local version tag already exists: ", __version__)
+    print("Increment the version number and run release again.\n")
     sys.exit(1)
 elif (__version__ in repo.remotes.origin.repo.tags and 
       current_commit != repo.remotes.origin.repo.tags[__version__]):
-    print "GitHub version tag already exists: ", __version__
-    print "Increment the version number and run release again.\n"
+    print("GitHub version tag already exists: ", __version__)
+    print("Increment the version number and run release again.\n")
     sys.exit(1)
 
 # check for a no-travis flag
@@ -52,31 +54,31 @@ if sys.argv[-1] != '--no-travis':
         t = TravisPy.github_auth(open('.travis.key').read().strip())
     except IOError as e:
         if e.errno == 2:
-            print ".travis.key file required to hold GitHub Auth Token."
+            print(".travis.key file required to hold GitHub Auth Token.")
             url = "https://github.com/settings/tokens/new"
             url += "?scopes=repo_deployment,repo:status,write:repo_hook,read:org,user:email"
             url += "&description=travis%20ci%20token"
             # TODO: Prompt to open browser or automate token grab
-            print url + '\n'
+            print(url + '\n')
             sys.exit(1)
         else:
             raise e
     except TravisError:
         if not open('.travis.key').read().strip():
-            print ".travis.key file is empty. Fill with a GitHub Auth Token from:"
+            print(".travis.key file is empty. Fill with a GitHub Auth Token from:")
             url = "https://github.com/settings/tokens/new"
             url += "?scopes=repo_deployment,repo:status,write:repo_hook,read:org,user:email"
             url += "&description=travis%20ci%20token"
             # TODO: Prompt to open browser or automate token grab
-            print url
+            print(url)
         else:
-            print ".travis.key file detected, but there was an error communicating with Travis."
-            print "Check your GitHub Auth Token or check the Travis status page at:"
-            print "https://www.traviscistatus.com/"
-        print " "
+            print(".travis.key file detected, but there was an error communicating with Travis.")
+            print("Check your GitHub Auth Token or check the Travis status page at:")
+            print("https://www.traviscistatus.com/")
+        print(" ")
         sys.exit(1)
             
-    print "Waitng for Travis-CI .",
+    print("Waitng for Travis-CI .", end=' ')
     for attempt in range(900):
         try:
             branch = t.branch(repo.active_branch, 'inpho/topic-explorer')
@@ -87,16 +89,16 @@ if sys.argv[-1] != '--no-travis':
                 raise RuntimeError("Need to wait for test to finish.")
             break
         except (TravisError, RuntimeError):
-            print ".",
+            print(".", end=' ')
             sleep(10)
     else:
-        print "Travis build not complete. Aborting release.\n"
+        print("Travis build not complete. Aborting release.\n")
         sys.exit(1)
     
     if branch.finished and branch.passed:
-        print "Travis build of release {} passed!\n".format(__version__) 
+        print("Travis build of release {} passed!\n".format(__version__)) 
     else:
-        print "Travis build of release {} failed. Aborting release.\n".format(__version__)
+        print("Travis build of release {} failed. Aborting release.\n".format(__version__))
         sys.exit(1)
 
 ### Convert documentation for PyPI ###
@@ -105,25 +107,25 @@ try:
     if sys.argv[-1] == 'test':
         check_output("python setup.py register -r pypitest", shell=True)
     else:
-        print "Registering package with PyPI."
+        print("Registering package with PyPI.")
         check_output("python setup.py register", shell=True)
         
-        print "Uploading source to PyPI."
+        print("Uploading source to PyPI.")
         check_output("python setup.py sdist upload", shell=True)
 
-        print "Uploading egg to PyPI."
+        print("Uploading egg to PyPI.")
         check_output("python setup.py bdist_egg upload", shell=True)
 
 except CalledProcessError as e:
-    print "\nFailed to register and upload the package to PyPI.\n"
+    print("\nFailed to register and upload the package to PyPI.\n")
     sys.exit(1)
 finally:
     os.remove('README.txt')
 
-print "Creating local tag for release.\n"
+print("Creating local tag for release.\n")
 repo.create_tag(__version__)
 
-print "Pushing tag to GitHub.\n"
+print("Pushing tag to GitHub.\n")
 repo.remotes.origin.push(__version__)
 
-print "Release complete.\n"
+print("Release complete.\n")
