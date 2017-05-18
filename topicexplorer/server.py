@@ -3,6 +3,7 @@ from future import standard_library
 standard_library.install_aliases()
 from builtins import zip
 from builtins import str
+
 from codecs import open
 from configparser import RawConfigParser as ConfigParser, NoOptionError
 import csv
@@ -200,7 +201,7 @@ class Application(Bottle):
             except:
                 pass
 
-            doc_id = unquote(doc_id).decode('utf-8')
+            doc_id = unquote(doc_id)
 
             response.content_type = 'application/json; charset=UTF8'
 
