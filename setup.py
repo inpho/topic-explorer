@@ -68,7 +68,8 @@ install_requires = [
         'langdetect',
         'profilehooks',
         'pybtex>=0.20',
-        'paste'
+        'paste',
+        'htrc-feature-reader>=1.90'
         ]
 
 if platform.system() == 'Windows':

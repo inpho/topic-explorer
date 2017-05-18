@@ -232,19 +232,7 @@ def main(args):
 
     if not args.corpus_print_name and not args.quiet:
         args.corpus_print_name = prompt("Corpus Name", default=args.corpus_name)
-
-    if args.htrc:
-        import vsm.extensions.htrc as htrc
-        htrc.proc_htrc_coll(args.corpus_path)
-
-        import json
-        data = [(id, htrc.metadata(id)) for id in listdir_nohidden(args.corpus_path)
-                if os.path.isdir(id)]
-        data = dict(data)
-        md_filename = os.path.join(args.corpus_path, '../metadata.json')
-        with open(md_filename, 'w') as outfile:
-            json.dump(data, outfile)
-
+    
     # configure model-path
     if args.model_path is None:
         if os.path.isdir(args.corpus_path):
@@ -261,7 +249,32 @@ def main(args):
             default=False)
     else:
         args.rebuild = True
-    if args.rebuild:
+
+    if args.htrc:
+        import vsm.extensions.htrc as htrc
+        if os.path.isdir(args.corpus_path):
+            htrc.proc_htrc_coll(args.corpus_path)
+            ids = listdir_nohidden(args.corpus_path)
+
+            args.htrc_metapath = os.path.abspath(args.corpus_path + '/../')
+            args.htrc_metapath = os.path.dirname(args.htrc_metapath) + '.metadata.json'
+        else:
+            import topicexplorer.extensions.htrc_features as htrc_features
+            with open(args.corpus_path) as idfile:
+                ids = [row.strip() for row in idfile]
+
+            c = htrc_features.create_corpus(ids)
+            c.save(args.corpus_filename)
+
+            args.htrc_metapath = os.path.abspath(args.corpus_path)
+            args.htrc_metapath = os.path.join(
+                os.path.dirname(args.htrc_metapath),
+                os.path.basename(args.htrc_metapath) + '.metadata.json')
+
+        import htrc.metadata
+        htrc.metadata.get_metadata(ids, output_file=args.htrc_metapath)
+
+    if args.rebuild and (not args.htrc or os.path.isdir(args.corpus_path)):
         try:
             args.corpus_filename = build_corpus(args.corpus_path, args.model_path,
                                                 stop_freq=args.stop_freq, decode=args.decode,
@@ -350,6 +363,8 @@ def write_config(args, config_file=None):
         config.set("www", "doc_url_format", 'http://hdl.handle.net/2027/{0}')
         config.set("www", "icons", "htrc,htrcbook,link")
         config.set("main", "htrc", True)
+        # TODO: Fix HTRC Metadata download
+        config.set("www", "htrc_metadata", args.htrc_metapath)
 
     if args.tokenizer in ['zh','ltc','och']:
         config.set("main", "lang", "cn")
