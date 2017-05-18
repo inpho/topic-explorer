@@ -52,12 +52,12 @@ def create_corpus(ids, verbose=1):
         if verbose:
             for f in concurrent.futures.as_completed(vols):
                 n += 1
-                print(n)
                 pbar.update(n)
 
         corpus = map(concurrent.futures.Future.result, vols)
         pbar.finish()
-
+    corpus = list(corpus)
+    
     c = corpus_fromlist(corpus, context_type='book')
     c = apply_stoplist(c, nltk_stop=True, freq=5)
     c.context_data[0]['book_label'] = filtered_ids
