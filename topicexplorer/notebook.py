@@ -50,7 +50,6 @@ def main(args):
 
     if args.launch:
         import subprocess
-        import sys
         os.chdir(ipynb_path)
         try:
             # TODO: Fix KeyboardInterrupt errors
@@ -58,12 +57,12 @@ def main(args):
                 grp_fn = os.setsid
             except AttributeError:
                 grp_fn = None
-            proc = subprocess.Popen("ipython notebook", shell=True, preexec_fn=grp_fn)
+            proc = subprocess.Popen("jupyter notebook", shell=True, preexec_fn=grp_fn)
             # stdin=subprocess.PIPE, preexec_fn=grp_fn)
             # stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
         except OSError:
-            print("ERROR: Command `ipython notebook` not found.")
+            print("ERROR: Command `jupyter notebook` not found.")
             print("       If IPython or Anaconda is installed, check your PATH variable.")
             sys.exit(1)
 
