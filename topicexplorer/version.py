@@ -7,7 +7,7 @@ class _VersionModule(types.ModuleType):
 
     @property
     def __version__(self):
-        return "1.0b162"
+        return "1.0b163"
 
     @property
     def __pretty_version__(self):
