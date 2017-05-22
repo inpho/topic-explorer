@@ -25,27 +25,17 @@ datafiles = get_datafiles('www')
 datafiles.extend(get_datafiles('demo'))
 datafiles.extend(get_datafiles('ipynb'))
 
-# After install, download nltk packages 'punkt' and 'stopwords'
-# http://blog.diffbrent.com/correctly-adding-nltk-to-your-python-package-using-setup-py-post-install-commands/
-def _post_install(dir):
-    import site
-    reload(site)
-
-    import nltk
-    nltk.download('punkt')
-    nltk.download('stopwords')
-    nltk.download('wordnet')
-
 # Specializations of some distutils command classes
 # first install data files to actual library directory
-class wx_smart_install_data(_install_data):
+class PostInstallData(_install_data):
     """need to change self.install_dir to the actual library dir"""
     def run(self):
-        install_cmd = self.get_finalized_command('install')
-        self.install_dir = getattr(install_cmd, 'install_lib')
-        self.execute(_post_install, (self.install_dir,),
-                     msg="Running post install task")
-        return _install_data.run(self)
+        import nltk
+        runcmd = _install_data.run(self)
+        nltk.download('punkt')
+        nltk.download('stopwords')
+        nltk.download('wordnet')
+        return runcmd
 
 # PyPandoc
 import os
@@ -53,6 +43,8 @@ if os.path.exists('README.txt'):
     long_description = open('README.txt').read()
 else:
     long_description = '' 
+
+setup_requires = [ 'nltk' ]
 
 install_requires = [
         'bottle>=0.12', 
@@ -112,6 +104,7 @@ setup(
         ],
     packages=find_packages(),
     data_files=datafiles,
+    setup_requires=setup_requires,
     install_requires=install_requires,
     dependency_links=[
         'https://github.com/inpho/vsm/archive/py3k.zip#egg=vsm-dev',
@@ -119,7 +112,7 @@ setup(
         ],
     include_package_data=True,
     zip_safe=False,
-    cmdclass = { 'install_data': wx_smart_install_data },
+    cmdclass = { 'install_data': PostInstallData },
     entry_points={
         'console_scripts' : ['vsm = topicexplorer.__main__:vsm',
                 'topicexplorer = topicexplorer.__main__:main',
