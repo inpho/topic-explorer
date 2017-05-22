@@ -89,7 +89,11 @@ if sys.argv[-1] != '--no-travis':
                 raise RuntimeError("Need to wait for test to finish.")
             break
         except (TravisError, RuntimeError):
-            print(".", end=' ', flush=True)
+            if sys.version_info.major == 3:
+                print(".", end=' ', flush=True)
+            else:
+                print(".", end=' ')
+                sys.stdout.flush()
             sleep(10)
     else:
         print("Travis build not complete. Aborting release.\n")
