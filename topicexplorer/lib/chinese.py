@@ -1,4 +1,4 @@
- # -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 import os
 import sys
 reload(sys)
@@ -47,6 +47,7 @@ chinese_punctuation = [
                        u'\uFF08',
                        u'\uFF09',
                        u'\uFF0C',
+                       u'\uFF0D',
                        u'\uFF0E',
                        u'\uFF10',
                        u'\uFF11',
@@ -65,13 +66,19 @@ chinese_punctuation = [
                        u'\uFF3C',
                        u'\uFF3D',
                        u'\u250B']
+
 import string 
 for a in string.lowercase[:],string.uppercase[:],range(0,10):
     for b in a:        
         chinese_punctuation.append(str(b).decode('utf-8'))
 
+for n in range(32,90):
+    chinese_punctuation.append(("\uff"+format(n,"x")).decode('unicode-escape').decode('utf-8'))
 
 
+
+print chinese_punctuation
+    
 if platform.system() == 'Windows':
     raise NotImplementedError("mmseg Chinese language parser not implemented for Windows systems.")
 else:
@@ -107,7 +114,7 @@ else:
             token = token.text.decode('utf-8-sig', errors='replace').replace(u'\x00', '')
             if token:
                 #if token not in chinese_punctuation:
-		if set(token)&set(chinese_punctuation) == set([]):
+                if set(token)&set(chinese_punctuation) == set([]):
                     tokens.append(token)
 
         return tokens
@@ -122,7 +129,7 @@ else:
             dirname = os.path.dirname(__file__)
             dictionary = os.path.join(dirname, 'modern words.dic')
             mmseg.dict_load_defaults()
-            mmseg.dict_load_words(dictionary)
+            mmseg.Dictionary.load_words(dictionary)
             TOKENIZER = 'Modern'
 
         # process text
@@ -133,6 +140,7 @@ else:
         for token in tokenizer:
             token = token.text.decode('utf-8-sig', errors='replace').replace(u'\x00', '')
             if token:
-                tokens.append(token)
+                if set(token)&set(chinese_punctuation) == set([]):
+                    tokens.append(token)
 
         return tokens
