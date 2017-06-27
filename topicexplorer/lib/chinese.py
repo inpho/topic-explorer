@@ -116,7 +116,7 @@ else:
             dirname = os.path.dirname(__file__)
             dictionary = os.path.join(dirname, 'modern words.dic')
             mmseg.dict_load_defaults()
-            mmseg.dict_load_words(dictionary)
+            mmseg.Dictionary.load_words(dictionary)
             TOKENIZER = 'Modern'
 
         # process text
@@ -127,6 +127,7 @@ else:
         for token in tokenizer:
             token = token.text.decode('utf-8-sig', errors='replace').replace(u'\x00', '')
             if token:
-                tokens.append(token)
+                 if set(token)&set(chinese_punctuation) == set([]):
+                    tokens.append(token)
 
         return tokens
