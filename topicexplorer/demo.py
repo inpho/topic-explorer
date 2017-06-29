@@ -1,9 +1,16 @@
+from __future__ import print_function
+from __future__ import unicode_literals
+
+from future import standard_library
+standard_library.install_aliases()
+from builtins import input
+
 from argparse import ArgumentParser
 import os
 import os.path
 import shutil
 import platform
-from StringIO import StringIO
+from io import StringIO
 import subprocess
 import sys
 import tarfile
@@ -16,17 +23,17 @@ from topicexplorer import init, prep, train
 def download_and_extract():
     # parse the pseudo-xml document into a python-native dict
     if not os.path.exists('ap.tgz'):
-        print "Downloading demo-data/ap.tgz"
-        filename = wget.download('http://www.cs.princeton.edu/~blei/lda-c/ap.tgz')
+        print("Downloading demo-data/ap.tgz")
+        filename = wget.download('http://www.cs.columbia.edu/~blei/lda-c/ap.tgz')
     else:
-        print "Processing demo-data/ap.tgz"
+        print("Processing demo-data/ap.tgz")
         filename = 'ap.tgz'
 
-    print "\nParsing ap/ap.txt"
+    print("\nParsing ap/ap.txt")
     with tarfile.open(filename, 'r') as apfile:
         member = apfile.getmember('ap/ap.txt')
         ap89_f = apfile.extractfile(member)
-        ap89_plain = ap89_f.read()
+        ap89_plain = ap89_f.read().decode('utf-8')
 
     ap89_plain = '<DOCS>\n' + ap89_plain + '</DOCS>\n'
     ap89_plain = ap89_plain.replace('&', '&#038;')
@@ -43,10 +50,10 @@ def download_and_extract():
 
     # check if directory already exists
     if os.path.exists("ap"):
-        print "Folder 'ap' already exists!"
+        print("Folder 'ap' already exists!")
         remove = None
         while remove is None or not (remove.startswith('y') or remove.startswith('n')):
-            remove = raw_input("Remove? [Y/n] ")
+            remove = input("Remove? [Y/n] ")
             remove = remove.strip().lower()
             if remove == '' or remove.startswith('y'):
                 shutil.rmtree("ap")
@@ -55,7 +62,7 @@ def download_and_extract():
 
     # extracting to individual files
     os.mkdir("ap")
-    print "Extracting documents to ap folder"
+    print("Extracting documents to ap folder")
     for doc, text in corpus.items():
         with open('ap/' + doc, 'w') as outfile:
             outfile.write(text)
@@ -82,7 +89,7 @@ def main(args=None):
     args = train_parser.parse_args("ap.ini -k 20 40 60 --context-type article --iter 20".split())
     train.main(args)
 
-    from ConfigParser import RawConfigParser as ConfigParser
+    from configparser import RawConfigParser as ConfigParser
     config = ConfigParser()
     config.read('ap.ini')
     config.set("main", "label_module", "topicexplorer.extensions.ap")
@@ -90,7 +97,7 @@ def main(args=None):
     config.set("www", "icons", "ap,link")
     config.set("www", "fulltext", "True")
     shutil.copyfile(os.path.join(os.path.dirname(__file__), '../demo/ap.md'), 'ap.md')
-    with open("ap.ini", "wb") as configfh:
+    with open("ap.ini", "w") as configfh:
         config.write(configfh)
 
 if __name__ == '__main__':

@@ -1,3 +1,8 @@
+from __future__ import division
+from __future__ import print_function
+from builtins import zip
+from builtins import range
+
 from collections import defaultdict
 import itertools
 
@@ -105,7 +110,7 @@ def get_topic_colors(v):
     ncolors = None
 
     while ncolors is None or ncolors > 9:
-        print weight, ncolors
+        print(weight, ncolors)
         # clean previous color assignments and edges
         colors = defaultdict(int)
         G.remove_edges_from(G.edges())
@@ -128,14 +133,14 @@ def get_topic_colors(v):
                 #    colors[n] = max(colors.values()) + 1
 
         ncolors = len(set(colors.values()))
-        print ncolors
+        print(ncolors)
 
         weight += 1
 
     bmap = brewer.get_map('Set1', 'Qualitative', ncolors)
 
-    topic_colors = [(n, bmap.mpl_colormap(color / float(ncolors - 1)))
-                    for n, color in colors.iteritems()]
+    topic_colors = [(n, bmap.mpl_colormap(color / (ncolors - 1)))
+                    for n, color in colors.items()]
 
     topic_colors.sort(key=lambda x: x[0])
     return topic_colors
@@ -146,7 +151,7 @@ def get_topic_colors(v):
     ncolors = 8
     bmap = brewer.get_map('Set1', 'Qualitative', ncolors)
 
-    topic_colors = [(n, bmap.mpl_colormap(float(n % ncolors) / (ncolors - 1)))
+    topic_colors = [(n, bmap.mpl_colormap((n % ncolors) / (ncolors - 1)))
                     for n in range(v.model.K)]
 
     topic_colors.sort(key=lambda x: x[0])

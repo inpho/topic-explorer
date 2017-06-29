@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
 import os
-import sys
-reload(sys)
-sys.setdefaultencoding( "utf-8" )
- 
 
 import platform
 #updated to use pymmseg function calls instead of plain mmseg
@@ -72,13 +68,9 @@ for a in string.lowercase[:],string.uppercase[:],range(0,10):
     for b in a:        
         chinese_punctuation.append(str(b).decode('utf-8'))
 
-for n in range(32,90):
-    chinese_punctuation.append(("\uff"+format(n,"x")).decode('unicode-escape').decode('utf-8'))
+for n in range(32,91):
+    chinese_punctuation.append(chr(n).decode('utf-8'))
 
-
-
-print chinese_punctuation
-    
 if platform.system() == 'Windows':
     raise NotImplementedError("mmseg Chinese language parser not implemented for Windows systems.")
 else:
@@ -88,11 +80,12 @@ else:
     TOKENIZER = None
 
     def reset_mmseg():
+        import importlib
+
         global TOKENIZER
         global mmseg
         TOKENIZER = None
-        reload(mmseg)
-        import mmseg
+        mmseg = importlib.import_module('mmseg')
 
     def ancient_chinese_tokenizer(raw_text):
         global TOKENIZER
@@ -113,8 +106,7 @@ else:
         for token in tokenizer:
             token = token.text.decode('utf-8-sig', errors='replace').replace(u'\x00', '')
             if token:
-                #if token not in chinese_punctuation:
-                if set(token)&set(chinese_punctuation) == set([]):
+                if token not in chinese_punctuation:
                     tokens.append(token)
 
         return tokens
@@ -140,7 +132,7 @@ else:
         for token in tokenizer:
             token = token.text.decode('utf-8-sig', errors='replace').replace(u'\x00', '')
             if token:
-                if set(token)&set(chinese_punctuation) == set([]):
+                if token not in chinese_punctuation:
                     tokens.append(token)
 
         return tokens

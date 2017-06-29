@@ -4,10 +4,12 @@ to the next handlers.
 
 See: http://stackoverflow.com/a/15472811 for more details
 """
+from future import standard_library
+standard_library.install_aliases()
 import os
 import imp
 import ctypes
-import thread
+import _thread
 import win32api
 import sys
 
@@ -32,7 +34,7 @@ else:
 
 # Now set our handler for CTRL_C_EVENT. Other control event
 # types will chain to the next handler.
-def handler(dwCtrlType, hook_sigint=thread.interrupt_main):
+def handler(dwCtrlType, hook_sigint=_thread.interrupt_main):
     if dwCtrlType == 0:  # CTRL_C_EVENT
         hook_sigint()
         return 1         # chain to the next handler

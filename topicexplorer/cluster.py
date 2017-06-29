@@ -4,17 +4,22 @@ Created on Sun Apr 17 23:15:56 2016
 
 @author: adi
 """
+from __future__ import absolute_import
 
+from builtins import zip
+from builtins import map
+from builtins import range
+from builtins import object
 from codecs import open
-import config
-from config import moduleLoad
+from . import config
+from .config import moduleLoad
 import numpy as np
 from sklearn import manifold
 from sklearn import cluster
 import os.path
-from itertools import repeat, chain, izip
+from itertools import repeat, chain
 
-class dimensionReduce:
+class dimensionReduce(object):
     def __init__(self,config_name):
         self.config_file = config_name        
         self.model = moduleLoad(self.config_file)
@@ -39,7 +44,7 @@ class dimensionReduce:
         if len(self.topic_range) < 1:
             raise IndexError("No topic range")
         else:
-            keys = self.model_v.keys()
+            keys = list(self.model_v.keys())
             return np.vstack(self.model_v[keys[i]].phi.T 
                 for i in np.argsort(keys))
             """
@@ -62,7 +67,7 @@ class dimensionReduce:
     def fit_kmeans(self,n_clusters):
         # Get the seed from the model to provide a consistent world
         # for kmeans clustering. Ensures determinism.
-        keys = self.model_v.keys()
+        keys = list(self.model_v.keys())
         try:
             # assume sequential
             seed = self.model_v[keys[0]].model.seed
@@ -77,7 +82,7 @@ class dimensionReduce:
     def write(self,filename):
         ks = [repeat(k, k) for k in self.topic_range]
         ks = chain(*ks)
-        topics = [xrange(k) for k in self.topic_range]
+        topics = [range(k) for k in self.topic_range]
         topics = chain(*topics)
 
         with open(filename, 'w') as outfile:

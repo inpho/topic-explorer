@@ -1,5 +1,8 @@
+from __future__ import print_function
+from future import standard_library
+standard_library.install_aliases()
 from collections import defaultdict
-from ConfigParser import RawConfigParser as ConfigParser, NoOptionError
+from configparser import RawConfigParser as ConfigParser, NoOptionError
 import json
 import os.path
 import numpy as np
@@ -13,7 +16,7 @@ from bottle import route, static_file
 @route('/fulltext/<doc_id>')
 def get_doc(doc_id):
     return static_file(doc_id, root=os.path.abspath('TJCombo/'))
-print "Loading TJCombo letters from:", os.path.abspath('TJCombo/')
+print("Loading TJCombo letters from:", os.path.abspath('TJCombo/'))
 
 metadata = None
 app = None
@@ -42,7 +45,7 @@ def init(_app, config_file):
     model_path = config.get('main', 'path')
 
     filename = os.path.join(model_path, '../metadata.json')
-    print "Loading HTRC metadata from", filename
+    print("Loading HTRC metadata from", filename)
 
     with open(filename) as f:
         metadata = json.load(f)

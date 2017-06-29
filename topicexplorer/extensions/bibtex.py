@@ -1,5 +1,8 @@
+from __future__ import print_function
+from future import standard_library
+standard_library.install_aliases()
 from collections import defaultdict
-from ConfigParser import (RawConfigParser as ConfigParser,
+from configparser import (RawConfigParser as ConfigParser,
     NoOptionError, Error as ConfigParserError)
 import os.path
 
@@ -21,7 +24,7 @@ def init(app, config_file):
         model_path = config.get('main', 'path')
         filename = os.path.join(model_path, 'library.bib')
 
-    print "Loading Bibtex metadata from", filename
+    print("Loading Bibtex metadata from", filename)
     bib = parse_file(filename)
 
     metadata = dict()

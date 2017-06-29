@@ -4,12 +4,15 @@ Created on Sun Apr 17 17:49:05 2016
 
 @author: adi
 """
+from future import standard_library
+standard_library.install_aliases()
+from builtins import object
 from vsm import *
 from vsm.viewer.wrappers import doc_label_name
 
 import os.path
 from collections import defaultdict
-from ConfigParser import ConfigParser as ConfigParser
+from configparser import ConfigParser as ConfigParser
 
 # load the topic models
 class keydefaultdict(defaultdict):
@@ -22,7 +25,7 @@ class keydefaultdict(defaultdict):
             return ret
             
 # load in the configuration file
-class moduleLoad:
+class moduleLoad(object):
     
     def __init__(self,config_name):
         self.config_file = config_name

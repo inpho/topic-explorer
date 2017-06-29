@@ -1,4 +1,5 @@
 recursive-include www *
+include demo/*
 include ipynb/*
 include README.md
 include LICENSE.txt

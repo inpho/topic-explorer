@@ -1,5 +1,9 @@
 #!/usr/bin/env python
-from cStringIO import StringIO
+from __future__ import print_function
+from future import standard_library
+standard_library.install_aliases()
+from past.builtins import basestring
+from io import StringIO
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
@@ -70,7 +74,7 @@ def convert_and_write(fname, output_dir=None, overwrite=False, verbose=False):
         with open(output, 'wb') as outfile:
             outfile.write(convert(fname))
             if verbose:
-                print "converted", fname, "->", output
+                print("converted", fname, "->", output)
 
 
 def main(path_or_paths, output_dir=None, verbose=1):
@@ -86,7 +90,7 @@ def main(path_or_paths, output_dir=None, verbose=1):
                         futures.append(executor.submit(
                             convert_and_write, pdffile, output_dir, True))
                     except (PDFException, PSException):
-                        print "Skipping {0} due to PDF Exception".format(pdffile)
+                        print("Skipping {0} due to PDF Exception".format(pdffile))
             else:
                 futures.append(executor.submit(convert_and_write, pdffile, output_dir, True, True))
 

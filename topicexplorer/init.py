@@ -1,11 +1,27 @@
-from ConfigParser import RawConfigParser as ConfigParser
+from __future__ import print_function
+
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import filter
+from builtins import input
+from configparser import RawConfigParser as ConfigParser
 from collections import defaultdict
 import os
 import os.path
 import shutil
+
+try:
+    # Python 3 or Python 2 w/backport
+    from importlib import reload
+except ImportError:
+    # Python 2 without backports, use default reload
+    pass
+
 import sys
-reload(sys)
-sys.setdefaultencoding("utf-8")
+if sys.version_info.major == 2:
+    reload(sys)
+    sys.setdefaultencoding("utf-8")
 
 from topicexplorer.lib.util import (prompt, is_valid_filepath, bool_prompt,
                                     listdir_nohidden, contains_pattern)
@@ -31,12 +47,12 @@ def get_corpus_filename(corpus_path, model_path, nltk_stop=False, stop_freq=0,
 def process_pdfs(corpus_path, ignore=['.json', '.log', '.err', '.pickle', '.npz']):
     from topicexplorer.lib import pdf
     if os.path.isfile(corpus_path):
-        print "PDF file detected, extracting plaintext to",\
-            corpus_path.replace('.pdf', '.txt')
+        print("PDF file detected, extracting plaintext to",
+            corpus_path.replace('.pdf', '.txt'))
         pdf.main(corpus_path)
         corpus_path = corpus_path.replace('.pdf', '.txt')
     elif os.path.isdir(corpus_path):
-        print "PDF files detected, extracting plaintext to", corpus_path + '-txt'
+        print("PDF files detected, extracting plaintext to", corpus_path + '-txt')
 
         if corpus_path.endswith('/'):
             corpus_path = corpus_path[:-1]
@@ -68,7 +84,7 @@ def process_bibtex(corpus_path):
     from pybtex.database import parse_file
     from topicexplorer.lib.util import overwrite_prompt, safe_symlink
 
-    print "Loading BibTeX from", corpus_path
+    print("Loading BibTeX from", corpus_path)
     bib = parse_file(corpus_path)
 
     target_dir = os.path.basename(corpus_path).replace('.bib', '')
@@ -89,15 +105,15 @@ def process_bibtex(corpus_path):
                 filename = os.path.normpath(filename)
             filename = os.path.abspath(filename)
             if not os.path.exists(filename):
-                print "Invalid 'file' field for BibTeX entry {}:\n\t({})".format(entry, filename)
+                print("Invalid 'file' field for BibTeX entry {}:\n\t({})".format(entry, filename))
             else:
                 new_path = os.path.join(target_dir, os.path.basename(filename))
                 try:
                     safe_symlink(filename, new_path)
                 except OSError:
-                    print "Error linking file for BibTeX entry {}:\n\t({})".format(entry, filename)
+                    print("Error linking file for BibTeX entry {}:\n\t({})".format(entry, filename))
         else:
-            print "No 'file' field for BibTeX entry: {}".format(entry)
+            print("No 'file' field for BibTeX entry: {}".format(entry))
 
     return target_dir
 
@@ -115,10 +131,10 @@ def get_corpusbuilder_fn(corpus_path, sentences=False,
 
     dirs = dir_counts.keys()
     populated_levels = [1 + dir.count(os.path.sep)
-                        for dir, key in dir_counts.iteritems()]
+                        for dir, key in dir_counts.items()]
 
     levels = max(populated_levels) - min(populated_levels)
-    print "{} files, {} dirs, {} levels".format(len(relpaths), len(dirs), levels)
+    print("{} files, {} dirs, {} levels".format(len(relpaths), len(dirs), levels))
 
     if len(relpaths) == 1:
         if sentences:
@@ -176,9 +192,9 @@ def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=0,
     if contains_pdfs:
         corpus_path = process_pdfs(corpus_path)
 
-    print "Building corpus from", corpus_path,
+    print("Building corpus from", corpus_path, end=' ')
     corpusbuilder = get_corpusbuilder_fn(corpus_path, sentences, ignore=ignore)
-    print "with {} function".format(corpusbuilder.__name__)
+    print("with {} function".format(corpusbuilder.__name__))
 
     c = corpusbuilder(corpus_path, nltk_stop=nltk_stop,
                       stop_freq=stop_freq, ignore=ignore, decode=decode,
@@ -198,8 +214,9 @@ def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=0,
 
 
 def main(args):
+    # TODO: remove this code, check if there is an issue and unit test
     # convert to unicode to avoid windows errors
-    args.corpus_path = unicode(args.corpus_path, 'utf-8')
+    # args.corpus_path = args.corpus_path
 
     # config corpus_path
     # process bibtex files
@@ -215,19 +232,7 @@ def main(args):
 
     if not args.corpus_print_name and not args.quiet:
         args.corpus_print_name = prompt("Corpus Name", default=args.corpus_name)
-
-    if args.htrc:
-        import vsm.extensions.htrc as htrc
-        htrc.proc_htrc_coll(args.corpus_path)
-
-        import json
-        data = [(id, htrc.metadata(id)) for id in listdir_nohidden(args.corpus_path)
-                if os.path.isdir(id)]
-        data = dict(data)
-        md_filename = os.path.join(args.corpus_path, '../metadata.json')
-        with open(md_filename, 'wb') as outfile:
-            json.dump(data, outfile)
-
+    
     # configure model-path
     if args.model_path is None:
         if os.path.isdir(args.corpus_path):
@@ -244,19 +249,44 @@ def main(args):
             default=False)
     else:
         args.rebuild = True
-    if args.rebuild:
+
+    if args.htrc:
+        import vsm.extensions.htrc as htrc
+        if os.path.isdir(args.corpus_path):
+            htrc.proc_htrc_coll(args.corpus_path)
+            ids = listdir_nohidden(args.corpus_path)
+
+            args.htrc_metapath = os.path.abspath(args.corpus_path + '/../')
+            args.htrc_metapath = os.path.dirname(args.htrc_metapath) + '.metadata.json'
+        else:
+            import topicexplorer.extensions.htrc_features as htrc_features
+            with open(args.corpus_path) as idfile:
+                ids = [row.strip() for row in idfile]
+
+            c = htrc_features.create_corpus(ids)
+            c.save(args.corpus_filename)
+
+            args.htrc_metapath = os.path.abspath(args.corpus_path)
+            args.htrc_metapath = os.path.join(
+                os.path.dirname(args.htrc_metapath),
+                os.path.basename(args.htrc_metapath) + '.metadata.json')
+
+        import htrc.metadata
+        htrc.metadata.get_metadata(ids, output_file=args.htrc_metapath)
+
+    if args.rebuild and (not args.htrc or os.path.isdir(args.corpus_path)):
         try:
             args.corpus_filename = build_corpus(args.corpus_path, args.model_path,
                                                 stop_freq=args.stop_freq, decode=args.decode,
                                                 sentences=args.sentences,
                                                 simple=args.simple, tokenizer=args.tokenizer)
         except IOError:
-            print "ERROR: invalid path, please specify either:"
-            print "  * a single plain-text or PDF file,"
-            print "  * a single bibtex (.bib) file with 'file' fields,"
-            print "  * a folder of plain-text or PDF files, or"
-            print "  * a folder of folders of plain-text or PDF files."
-            print "\nExiting..."
+            print("ERROR: invalid path, please specify either:")
+            print("  * a single plain-text or PDF file,")
+            print("  * a single bibtex (.bib) file with 'file' fields,")
+            print("  * a folder of plain-text or PDF files, or")
+            print("  * a folder of folders of plain-text or PDF files.")
+            print("\nExiting...")
             sys.exit(74)
         """
         except LookupError as e:
@@ -278,7 +308,7 @@ def main(args):
     args.corpus_desc = args.config_file + '.md'
     if not args.quiet and os.path.exists(args.corpus_desc):
         while args.corpus_desc not in ['y', 'n', False]:
-            args.corpus_desc = raw_input("\nExisting corpus description found. Remove? [y/N] ")
+            args.corpus_desc = input("\nExisting corpus description found. Remove? [y/N] ")
             args.corpus_desc = args.corpus_desc.lower().strip()
             if args.corpus_desc == '':
                 args.corpus_desc = False
@@ -333,6 +363,8 @@ def write_config(args, config_file=None):
         config.set("www", "doc_url_format", 'http://hdl.handle.net/2027/{0}')
         config.set("www", "icons", "htrc,htrcbook,link")
         config.set("main", "htrc", True)
+        # TODO: Fix HTRC Metadata download
+        config.set("www", "htrc_metadata", args.htrc_metapath)
 
     if args.tokenizer in ['zh','ltc','och']:
         config.set("main", "lang", "cn")
@@ -346,22 +378,22 @@ def write_config(args, config_file=None):
 
         overwrite = None if os.path.exists(config_file) and not args.quiet else True
         while not overwrite:
-            overwrite = raw_input("\nConfig file {0} exists. Overwrite? [Y/n] ".format(config_file))
+            overwrite = input("\nConfig file {0} exists. Overwrite? [Y/n] ".format(config_file))
             overwrite = overwrite.lower().strip()
             if overwrite == 'n':
                 config_i = 0
                 while os.path.exists(config_file):
                     config_file = args.corpus_name + ".%d.ini" % config_i
                     config_i += 1
-                config_file = raw_input("Enter new filename [default: {0}]: ".format(config_file))\
+                config_file = input("Enter new filename [default: {0}]: ".format(config_file))\
                     or config_file
             elif overwrite == '' or overwrite == 'y':
                 overwrite = True
 
     config.set("main", "corpus_desc", config_file+'.md')
 
-    print "Writing configuration file", config_file
-    with open(config_file, "wb") as configfh:
+    print("Writing configuration file", config_file)
+    with open(config_file, "w") as configfh:
         config.write(configfh)
     return config_file
 

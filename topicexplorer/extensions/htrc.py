@@ -1,5 +1,8 @@
+from __future__ import print_function
+from future import standard_library
+standard_library.install_aliases()
 from collections import defaultdict
-from ConfigParser import (RawConfigParser as ConfigParser, NoOptionError, 
+from configparser import (RawConfigParser as ConfigParser, NoOptionError, 
     NoSectionError)
 import json
 import os.path
@@ -37,13 +40,13 @@ def init(_app, config_file):
     model_path = config.get('main', 'path')
 
     try:
-        filename = config.get('htrc', 'metadata')
+        filename = config.get('www', 'htrc_metadata')
         if not filename:
             raise ValueError("Not a valid htrc metadata path.")
     except (NoSectionError, ValueError): 
         filename = os.path.join(model_path, '../metadata.json')
 
-    print "Loading HTRC metadata from", filename
+    print("Loading HTRC metadata from", filename)
     with open(filename) as f:
         metadata = json.load(f)
 
@@ -52,7 +55,7 @@ def label(doc):
     if app.context_type == 'book':
         try:
             md = metadata[doc]
-            return md['title'][0]
+            return md['titles'][0]
         except:
             return doc
     elif app.context_type == 'page':
