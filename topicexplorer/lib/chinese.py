@@ -68,8 +68,9 @@ for a in string.lowercase[:],string.uppercase[:],range(0,10):
     for b in a:        
         chinese_punctuation.append(str(b).decode('utf-8'))
 
+# escape ASCII in the chinese range
 for n in range(32,91):
-    chinese_punctuation.append(chr(n).decode('utf-8'))
+    chinese_punctuation.append(chr(n+65280).decode('utf-8'))
 
 if platform.system() == 'Windows':
     raise NotImplementedError("mmseg Chinese language parser not implemented for Windows systems.")
