@@ -1,6 +1,11 @@
 """
 topicexplorer.lib.util contains some helper functions for command prompts, argparse, and globing
 """
+from __future__ import print_function
+from future import standard_library
+standard_library.install_aliases()
+from builtins import input
+from past.builtins import basestring
 
 import os
 import fnmatch
@@ -44,13 +49,13 @@ def is_valid_filepath(parser, arg):
 def is_valid_configfile(parser, arg):
     if not arg.endswith('.ini'):
         if os.path.isdir(arg):
-            print "{0} is a directory, using the config file {0}.ini".format(arg)
+            print("{0} is a directory, using the config file {0}.ini".format(arg))
         else:
-            print "{0} is missing the '.ini' extension, using the config file {0}.ini".format(arg)
+            print("{0} is missing the '.ini' extension, using the config file {0}.ini".format(arg))
         arg = arg + '.ini'
 
     if os.path.exists(arg):
-        from ConfigParser import RawConfigParser as ConfigParser
+        from configparser import RawConfigParser as ConfigParser
         config = ConfigParser()
         try:
             if config.read(arg):
@@ -103,19 +108,19 @@ def int_prompt(prompt_str, default=None, min=None, max=None):
     try:
         result = int(result)
     except:
-        print "ERROR: You must enter a number."
+        print("ERROR: You must enter a number.")
         return int_prompt(prompt_str, default=default, min=min, max=max)
     if max and min and not (result <= max and result > min):
-        print "ERROR: You must enter a number between {min} and {max}."\
-            .format(min=min, max=max)
+        print("ERROR: You must enter a number between {min} and {max}."\
+            .format(min=min, max=max))
         return int_prompt(prompt_str, default=default, min=min, max=max)
     elif max and result > max:
-        print "ERROR: You must enter a number less than {max}."\
-            .format(min=min, max=max)
+        print("ERROR: You must enter a number less than {max}."\
+            .format(min=min, max=max))
         return int_prompt(prompt_str, default=default, min=min, max=max)
     elif min and result <= min:
-        print "ERROR: You must enter a number greater than {min}."\
-            .format(min=min, max=max)
+        print("ERROR: You must enter a number greater than {min}."\
+            .format(min=min, max=max))
         return int_prompt(prompt_str, default=default, min=min, max=max)
     else:
         return result
@@ -141,7 +146,7 @@ def prompt(prompt, options=None, default=None):
     # Wait for valid response
     result = None
     while result is None or (options and result not in options):
-        result = raw_input(prompt)
+        result = input(prompt)
         result = result.lower().strip()
         if default and result == '':
             result = default
@@ -162,7 +167,7 @@ def find_files(directory, pattern, include_hidden=False):
 
 def contains_pattern(directory, pattern):
     try:
-        find_files(directory, pattern).next()
+        next(find_files(directory, pattern))
         return True
     except StopIteration:
         return False

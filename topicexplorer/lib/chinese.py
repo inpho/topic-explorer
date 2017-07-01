@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+import os
+
 import platform
 #updated to use pymmseg function calls instead of plain mmseg
 
@@ -40,6 +43,7 @@ chinese_punctuation = [
                        u'\uFF08',
                        u'\uFF09',
                        u'\uFF0C',
+                       u'\uFF0D',
                        u'\uFF0E',
                        u'\uFF10',
                        u'\uFF11',
@@ -59,6 +63,14 @@ chinese_punctuation = [
                        u'\uFF3D',
                        u'\u250B']
 
+import string 
+for a in string.lowercase[:],string.uppercase[:],range(0,10):
+    for b in a:        
+        chinese_punctuation.append(str(b).decode('utf-8'))
+
+# escape ASCII in the chinese range
+for n in range(32,91):
+    chinese_punctuation.append(chr(n+65280).decode('utf-8'))
 
 if platform.system() == 'Windows':
     raise NotImplementedError("mmseg Chinese language parser not implemented for Windows systems.")
@@ -69,11 +81,12 @@ else:
     TOKENIZER = None
 
     def reset_mmseg():
+        import importlib
+
         global TOKENIZER
         global mmseg
         TOKENIZER = None
-        reload(mmseg)
-        import mmseg
+        mmseg = importlib.import_module('mmseg')
 
     def ancient_chinese_tokenizer(raw_text):
         global TOKENIZER
@@ -84,7 +97,7 @@ else:
             # directory of ancient dictionary
             dirname = os.path.dirname(__file__)
             dictionary = os.path.join(dirname, 'ancient words.dic')
-            mmseg.dict_load_defaults()
+            # mmseg.dict_load_defaults()
             mmseg.Dictionary.load_words(dictionary)
             TOKENIZER = 'Ancient'
 
@@ -109,7 +122,7 @@ else:
             dirname = os.path.dirname(__file__)
             dictionary = os.path.join(dirname, 'modern words.dic')
             mmseg.dict_load_defaults()
-            mmseg.dict_load_words(dictionary)
+            mmseg.Dictionary.load_words(dictionary)
             TOKENIZER = 'Modern'
 
         # process text
@@ -120,6 +133,7 @@ else:
         for token in tokenizer:
             token = token.text.decode('utf-8-sig', errors='replace').replace(u'\x00', '')
             if token:
-                tokens.append(token)
+                if token not in chinese_punctuation:
+                    tokens.append(token)
 
         return tokens

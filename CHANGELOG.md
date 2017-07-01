@@ -7,7 +7,11 @@ Not all beta releases are documented below. We give the summary of all changes b
 This project follows the [PEP 440](https://www.python.org/dev/peps/pep-0440/) versioning conventions. See [Semantic Versioning](http://semver.org/) for justification. The only difference between PEP 440 and SemVer.org is the pre-release format **1.0b20** vs. 1.0-beta.20.
 
 This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangelog.com/). Versions should group changes in the order: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, and `Security` (see section ["What makes a good change log?"](http://keepachangelog.com/)).
-## [Unreleased]
+## Unreleased
+- Added:
+  - Added support for the [htrc-feature-reader](https://github.com/htrc/htrc-feature-reader).
+
+## [1.0b159] - 2017-04-26
 - Added:
   - Support for custom index.html in app.wsgi multi-model Apache config.
 - Changed:

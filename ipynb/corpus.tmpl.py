@@ -1,3 +1,8 @@
+from __future__ import print_function
+from future import standard_library
+standard_library.install_aliases()
+from builtins import map
+from builtins import range
 from vsm import *
 from vsm.viewer.wrappers import doc_label_name
 
@@ -5,7 +10,7 @@ import os.path
 from collections import defaultdict
 
 # load in the configuration file
-from ConfigParser import ConfigParser as ConfigParser
+from configparser import ConfigParser as ConfigParser
 config_file = r"$config_file" 
 config = ConfigParser({
         'topic_range': None,
@@ -26,8 +31,8 @@ all_ids = ctx_metadata[doc_label_name(context_type)]
 # create topic model patterns
 pattern = config.get('main', 'model_pattern')
 if config.get('main', 'topic_range'):
-    topic_range = map(int, config.get('main', 'topic_range').split(','))
-    topic_range = range(*topic_range)
+    topic_range = list(map(int, config.get('main', 'topic_range').split(',')))
+    topic_range = list(range(*topic_range))
 if config.get('main', 'topics'):
     topic_range = eval(config.get('main', 'topics'))
 
@@ -52,7 +57,7 @@ def load_viewer(k):
 
 lda_m = keydefaultdict(load_model)
 lda_v = keydefaultdict(load_viewer)
-print topic_range
-print pattern
+print(topic_range)
+print(pattern)
 
 from topicexplorer.lib.color import get_topic_colors

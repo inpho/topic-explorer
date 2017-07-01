@@ -1,5 +1,11 @@
+from __future__ import print_function
+from future import standard_library
+standard_library.install_aliases()
+from builtins import zip
+from builtins import str
+
 from codecs import open
-from ConfigParser import RawConfigParser as ConfigParser, NoOptionError
+from configparser import RawConfigParser as ConfigParser, NoOptionError
 import csv
 from datetime import datetime, timedelta
 from functools import partial
@@ -11,9 +17,9 @@ import os.path
 from pkg_resources import resource_filename
 import re
 import socket
-from urllib2 import unquote
+from urllib.parse import unquote
 import webbrowser
-from StringIO import StringIO
+from io import StringIO
 
 from bottle import request, response, route, run, static_file, Bottle
 from topicexplorer.lib.color import get_topic_colors, rgb2hex
@@ -91,24 +97,24 @@ class Application(Bottle):
     def _load_label_module(self, label_module, config_file):
         try:
             label_module = import_module(label_module)
-            print "imported label module"
+            print("imported label module")
             label_module.init(self, config_file)
         except (ImportError, NoOptionError, AttributeError):
             pass
 
         try:
             self.label = label_module.label
-            print "imported label function"
+            print("imported label function")
         except (AttributeError, UnboundLocalError):
             self.label = lambda x: x
-            print "using default label function"
+            print("using default label function")
 
         try:
             self.id_fn = label_module.id_fn
-            print "imported id function"
+            print("imported id function")
         except (AttributeError, UnboundLocalError):
             self.id_fn = lambda metadata: metadata[self.label_name]
-            print "using default id function"
+            print("using default id function")
 
     def _load_corpus(self, corpus_file):
         self.c = Corpus.load(corpus_file)
@@ -195,7 +201,7 @@ class Application(Bottle):
             except:
                 pass
 
-            doc_id = unquote(doc_id).decode('utf-8')
+            doc_id = unquote(doc_id)
 
             response.content_type = 'application/json; charset=UTF8'
 
@@ -333,14 +339,14 @@ class Application(Bottle):
 
             # calculate distances
             distances = dict()
-            for k, viewer in self.v.iteritems():
+            for k, viewer in self.v.items():
                 d = viewer.dist_word_top(query, show_topics=False)
                 distances[k] = np.fromiter(
                     ((k, row['i'], row['value']) for row in d),
                     dtype=[('k', '<i8'), ('i', '<i8'), ('value', '<f8')])
 
             # merge and sort all topics across all models
-            merged_similarity = np.hstack(distances.values())
+            merged_similarity = np.hstack(list(distances.values()))
             sorted_topics = merged_similarity[np.argsort(merged_similarity['value'])]
 
             # return data
@@ -430,7 +436,7 @@ class Application(Bottle):
         @_set_acao_headers
         def cluster_csv(second=False):
             filename = kwargs.get('cluster_path')
-            print "Retrieving cluster.csv:", filename
+            print("Retrieving cluster.csv:", filename)
             if not filename or not os.path.exists(filename):
                 import topicexplorer.train
                 filename = topicexplorer.train.cluster(10, self.config_file)
@@ -500,7 +506,7 @@ class Application(Bottle):
                 struct = {
                     'id': doc,
                     'label': self.label(doc),
-                    'metadata': dict(zip(md.dtype.names, [unicode(m) for m in md]))}
+                    'metadata': dict(zip(md.dtype.names, (str(m) for m in md)))}
                 if id_as_key:
                     js[doc] = struct
                 else:
@@ -563,7 +569,7 @@ def get_host_port(args):
 
             # write deep copy without DEFAULT section
             # this preserves DEFAULT for rest of program
-            with open(args.config, 'wb') as configfh:
+            with open(args.config, 'w') as configfh:
                 new_config.write(configfh)
 
     # hostname assignment
@@ -587,8 +593,8 @@ def main(args, app=None):
         url = url.format(host=link_host, port=port, k=min(app.topic_range))
         webbrowser.open(url)
 
-        print "TIP: Browser launch can be disabled with the '--no-browser' argument:"
-        print "topicexplorer serve --no-browser", args.config, "\n"
+        print("TIP: Browser launch can be disabled with the '--no-browser' argument:")
+        print("topicexplorer serve --no-browser", args.config, "\n")
 
     app.run(server='paste', host=host, port=port)
 

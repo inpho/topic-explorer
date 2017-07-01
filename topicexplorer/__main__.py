@@ -17,11 +17,14 @@ In addition, `topicexplorer.__main__` defines the benchmark commands
 for execution time and profiling.
 
 """
+from __future__ import print_function
+from future import standard_library
+standard_library.install_aliases()
 
 # Import the standard library modules
 import argparse
 from argparse import ArgumentParser
-from ConfigParser import RawConfigParser as ConfigParser
+from configparser import RawConfigParser as ConfigParser
 import os.path
 import warnings
 
@@ -54,11 +57,11 @@ def vsm():
     warnings.warn(warning_msg, DeprecationWarning)
 
     # Force error to print
-    print "WARNING: " + warning_msg
+    print("WARNING: " + warning_msg)
     import sys
     if sys.argv[0].endswith('vsm') and len(sys.argv) > 1:
-        print "\nTIP: Use the following command instead:"
-        print '    topicexplorer ' + ' '.join(sys.argv[1:]) + '\n'
+        print("\nTIP: Use the following command instead:")
+        print('    topicexplorer ' + ' '.join(sys.argv[1:]) + '\n')
 
     # Proceed while deprecated
     main()
@@ -179,7 +182,7 @@ def main():
         if args.profile == '-':
             import tempfile
             temphandle, args.profile = tempfile.mkstemp(suffix='.prof', prefix='vsm.')
-            print "Saving benchmark data to", args.profile
+            print("Saving benchmark data to", args.profile)
 
         from profilehooks import profile
 
@@ -197,31 +200,31 @@ def main():
 
     if args.func == 'version':
         from topicexplorer.version import __pretty_version__
-        print __pretty_version__,
+        print(__pretty_version__, end='')
 
     elif args.func == 'init':
         args.config_file = benchmark(init.main)(args)
 
-        print "\nTIP: Only initalizing corpus object and config file."
-        print "     Next prepare the corpus using:"
-        print "         topicexplorer prep", args.config_file
-        print "     Or skip directly to training LDA models using:"
-        print "         topicexplorer train", args.config_file
+        print("\nTIP: Only initalizing corpus object and config file.")
+        print("     Next prepare the corpus using:")
+        print("         topicexplorer prep", args.config_file)
+        print("     Or skip directly to training LDA models using:")
+        print("         topicexplorer train", args.config_file)
 
     elif args.func == 'prep':
         benchmark(prep.main)(args)
 
-        print "\nTIP: Train the LDA models with:"
-        print "         topicexplorer train", args.config_file
+        print("\nTIP: Train the LDA models with:")
+        print("         topicexplorer train", args.config_file)
 
     elif args.func == 'train':
         benchmark(train.main)(args)
 
         if not args.dry_run:
-            print "\nTIP: launch the topic explorer with:"
-            print "         topicexplorer launch", args.config_file
-            print "     or the notebook server with:"
-            print "         topicexplorer notebook", args.config_file
+            print("\nTIP: launch the topic explorer with:")
+            print("         topicexplorer launch", args.config_file)
+            print("     or the notebook server with:")
+            print("         topicexplorer notebook", args.config_file)
 
     elif args.func == 'launch' or args.func == 'serve':
         # Note that we are only benchmarking the creation process - obviously
@@ -245,11 +248,11 @@ def main():
     if args.profile:
         try:
             import snakeviz.cli
-            print "\n\n"
+            print("\n\n")
             snakeviz.cli.main([args.profile])
         except ImportError:
-            print """\nSnakeviz is not installed. Install with `pip install snakeviz`,
-            then run `snakeviz {}`.""".format(args.profile)
+            print("""\nSnakeviz is not installed. Install with `pip install snakeviz`,
+            then run `snakeviz {}`.""".format(args.profile))
 
 
 # Allow `__main__` to be called as a script.

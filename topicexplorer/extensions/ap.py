@@ -1,4 +1,6 @@
-from ConfigParser import RawConfigParser as ConfigParser, NoOptionError
+from future import standard_library
+standard_library.install_aliases()
+from configparser import RawConfigParser as ConfigParser, NoOptionError
 import os.path
 
 from bottle import static_file

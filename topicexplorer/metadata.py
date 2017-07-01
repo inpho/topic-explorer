@@ -1,4 +1,8 @@
-from ConfigParser import RawConfigParser as ConfigParser
+from __future__ import print_function
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from configparser import RawConfigParser as ConfigParser
 
 from ast import literal_eval
 from codecs import open 
@@ -20,8 +24,8 @@ def UnicodeDictReader(utf8_data, **kwargs):
     # added literal_eval to convert to native types.
     csv_reader = csv.DictReader(utf8_data, **kwargs)
     for row in csv_reader:
-        yield {unicode(key, 'utf-8'): parse_value(unicode(value, 'utf-8'))
-                    for key, value in row.iteritems()}
+        yield {key: parse_value(value)
+                    for key, value in row.items()}
 
 def parse_metadata_from_csvfile(filename, context_type):
     """
@@ -86,14 +90,14 @@ def add_metadata(corpus, ctx_type, new_metadata, force=False, rename=False):
         try:
             new_data = [new_metadata[id] for id in labels]
             if not new_data:
-                print "No metadata labels match existing labels.",
-                print "If you changed labels, run with the `--rename` flag."
+                print("No metadata labels match existing labels.")
+                print("If you changed labels, run with the `--rename` flag.")
                 sys.exit(0)
             elif len(new_data) != len(labels):
                 raise KeyError
         except KeyError:
-            print "New metadata does not span all documents in corpus."
-            print "If you changed labels, run with the `--rename` flag."
+            print("New metadata does not span all documents in corpus.")
+            print("If you changed labels, run with the `--rename` flag.")
             import sys
             sys.exit(1)
 

@@ -1,4 +1,6 @@
-from HTMLParser import HTMLParser
+from future import standard_library
+standard_library.install_aliases()
+from html.parser import HTMLParser
 import re
 
 def get_titles():
@@ -20,7 +22,7 @@ def get_titles():
 def init(app, config_file):
     global labels
     labels = get_titles()
-    for id, label in labels.iteritems():
+    for id, label in labels.items():
         label = re.sub("<.+>(.+)<\/.+>","\g<1>", label)
         labels[id] = HTMLParser().unescape(label)
 

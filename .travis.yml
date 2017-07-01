@@ -1,6 +1,7 @@
 language: python
 python:
   - "2.7"
+  - "3.6"
 # command to install dependencies
 addons:
   apt:
@@ -19,14 +20,15 @@ install:
   - conda config --set always_yes yes --set changeps1 no
   # Useful for debugging any issues with conda
   - conda update -q conda --yes
-  - conda create -n py -q --yes pip numpy scipy nltk unidecode matplotlib cython pyyaml networkx wget decorator chardet progressbar "python=$TRAVIS_PYTHON_VERSION"
+  - conda create -n py -q --yes pip numpy scipy nltk unidecode matplotlib cython pyyaml networkx wget decorator chardet "python=$TRAVIS_PYTHON_VERSION"
   - source activate py
   - python --version
   - pip --version
   - export PATH=$HOME/py/bin:$PATH
   - pip install coveralls
   # install topic explorer
-  - pip install . --extra-index-url https://inpho.cogs.indiana.edu/pypi
+  - pip install https://github.com/inpho/vsm/archive/py3k.zip#egg=vsm-dev
+  - pip install . --extra-index-url https://inpho.cogs.indiana.edu/pypi 
 # command to run tests
 script: bash coverage.sh
 after_success: coveralls
