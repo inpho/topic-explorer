@@ -7,10 +7,11 @@ standard_library.install_aliases()
 from builtins import input
 from past.builtins import basestring
 
-import os
+from codecs import open
 import fnmatch
-import os.path
 from glob import glob
+import os
+import os.path
 import shutil
 
 
@@ -59,6 +60,8 @@ def is_valid_configfile(parser, arg):
         config = ConfigParser()
         try:
             if config.read(arg):
+            with open(arg, encoding='utf-8') as configfile:
+                config.read_file(configfile)
                 return arg
         except:
             parser.error("Invalid config file {0}".format(arg))
