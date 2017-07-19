@@ -60,8 +60,8 @@ def is_valid_configfile(parser, arg):
         config = ConfigParser()
         try:
             if config.read(arg):
-            with open(arg, encoding='utf-8') as configfile:
-                config.read_file(configfile)
+                with open(arg, encoding='utf-8') as configfile:
+                    config.read_file(configfile)
                 return arg
         except:
             parser.error("Invalid config file {0}".format(arg))
