@@ -520,7 +520,8 @@ def get_host_port(args):
     Returns the hostname and port number
     """
     config = ConfigParser({'port': '8000', 'host': '0.0.0.0'})
-    config.read(args.config)
+    with open(args.config, encoding='utf8') as configfile:
+        config.read_file(configfile)
 
     # automatic port assignment
     def test_port(port):
@@ -565,7 +566,7 @@ def get_host_port(args):
 
             # read deep copy
             new_config = ConfigParser()
-            new_config.readfp(config_string)
+            config.read_file(config_string)
 
             # write deep copy without DEFAULT section
             # this preserves DEFAULT for rest of program
@@ -620,7 +621,9 @@ def create_app(args):
         'corpus_desc' : None,
         'home_link' : '/',
         'lang': None})
-    config.read(args.config)
+
+    with open(args.config, encoding='utf8') as configfile:
+        config.read_file(configfile)
 
     # path variables
     context_type = config.get('main', 'context_type')
