@@ -59,10 +59,9 @@ def is_valid_configfile(parser, arg):
         from configparser import RawConfigParser as ConfigParser
         config = ConfigParser()
         try:
-            if config.read(arg):
-                with open(arg, encoding='utf-8') as configfile:
-                    config.read_file(configfile)
-                return arg
+            with open(arg, encoding='utf-8') as configfile:
+                config.read_file(configfile)
+            return arg
         except:
             parser.error("Invalid config file {0}".format(arg))
     else:
