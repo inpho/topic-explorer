@@ -29,7 +29,7 @@ import os.path
 import warnings
 
 from topicexplorer import (init, prep, train, server, notebook,
-    demo, update, metadata)
+    demo, update, metadata, export)
 
 from topicexplorer.lib.util import is_valid_filepath
 
@@ -140,6 +140,11 @@ def main():
         help="Add spaces before unicode chars")
     metadata.populate_parser(parser_metadata)
     parser_metadata.set_defaults(func="metadata")
+    
+    # Export Parser
+    parser_export = parsers.add_parser('export', help="Export the instance")
+    export.populate_parser(parser_export)
+    parser_export.set_defaults(func="export")
 
     # fancy arg validation for manually injecting tempfile to profile arg 
     try:
@@ -244,6 +249,9 @@ def main():
 
     elif args.func == 'metadata':
         benchmark(metadata.main)(args)
+    
+    elif args.func == 'export':
+        benchmark(export.main)(args)
 
     if args.profile:
         try:
