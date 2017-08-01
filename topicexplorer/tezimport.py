@@ -4,9 +4,38 @@ standard_library.install_aliases()
 from builtins import input
 from builtins import range
 
+from configparser import RawConfigParser as ConfigParser
 import os
 import os.path
 from zipfile import ZipFile
+
+def absolutize_config_file(config_file, output_dir):
+    config_file = os.path.join(output_dir, config_file)
+
+    config = ConfigParser({'cluster': None }) 
+    with open(config_file, encoding='utf8') as configfile:
+        config.read_file(configfile)
+
+    # path variables
+    corpus_file = config.get('main', 'corpus_file')
+    corpus_file = os.path.join(output_dir, corpus_file)
+    corpus_file = os.path.abspath(corpus_file)
+    config.set('main', 'corpus_file', corpus_file)
+
+    model_pattern = config.get('main', 'model_pattern')
+    model_pattern = os.path.join(output_dir, model_pattern)
+    model_pattern = os.path.abspath(model_pattern)
+    config.set('main', 'model_pattern', model_pattern)
+    
+    cluster_path = config.get('main', 'cluster')
+    if cluster_path is not None and cluster_path != 'None':
+        cluster_path = os.path.join(output_dir, cluster_path)
+        cluster_path = os.path.abspath(cluster_path)
+        config.set('main', 'cluster', cluster_path)
+
+    with open(config_file, 'w', encoding='utf8') as configfile:
+        config.write(configfile)
+
 
 def populate_parser(parser):
     parser.add_argument('tezfile', help='TEZ archive file')
@@ -24,6 +53,17 @@ def main(args):
     with ZipFile(args.tezfile) as tezfile:
         print("Extracting files...")
         tezfile.extractall(args.output)
+    
+    with ZipFile(args.tezfile) as tezfile:
+        files = tezfile.namelist()
+        config_candidates = [f for f in files if f.endswith('.ini')]
+        if len(config_candidates) > 1:
+            raise IOError("Multiple config files in tez archive")
+        elif not config_candidates:
+            raise IOError("No config file in tez archive")
+        else:
+            absolutize_config_file(config_candidates[0], args.output)
+
 
 if __name__ == '__main__':
     main()

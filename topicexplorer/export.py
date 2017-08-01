@@ -30,12 +30,10 @@ def create_relative_config_file(config_file, manifest):
         config.read_file(configfile)
 
     # path variables
-    context_type = config.get('main', 'context_type')
     corpus_file = config.get('main', 'corpus_file')
     model_pattern = config.get('main', 'model_pattern')
     cluster_path = config.get('main', 'cluster')
     
-    config.set('main', 'context_type', context_type.replace(root, ''))
     config.set('main', 'corpus_file', corpus_file.replace(root, ''))
     config.set('main', 'model_pattern', model_pattern.replace(root, ''))
     if cluster_path is not None:
