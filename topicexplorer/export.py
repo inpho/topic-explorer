@@ -6,6 +6,7 @@ from builtins import range
 
 from configparser import RawConfigParser as ConfigParser
 import os.path
+from tempfile import NamedTemporaryFile
 from zipfile import ZipFile
 
 from topicexplorer.lib.util import is_valid_configfile
@@ -21,10 +22,40 @@ def build_manifest(config_file, corpus_file, model_pattern, topic_range,
         files.append(cluster_path)
     return files
 
+def create_relative_config_file(config_file, manifest):
+    root = os.path.commonpath(map(os.path.abspath, manifest)) + '/'
+    
+    config = ConfigParser({'cluster': None }) 
+    with open(config_file, encoding='utf8') as configfile:
+        config.read_file(configfile)
+
+    # path variables
+    context_type = config.get('main', 'context_type')
+    corpus_file = config.get('main', 'corpus_file')
+    model_pattern = config.get('main', 'model_pattern')
+    cluster_path = config.get('main', 'cluster')
+    
+    config.set('main', 'context_type', context_type.replace(root, ''))
+    config.set('main', 'corpus_file', corpus_file.replace(root, ''))
+    config.set('main', 'model_pattern', model_pattern.replace(root, ''))
+    if cluster_path is not None:
+        config.set('main', 'cluster', cluster_path.replace(root, ''))
+
+    tempfh = NamedTemporaryFile(prefix='tez.'+config_file, delete=False)
+    temp_config_file = tempfh.name
+    tempfh.close()
+    with open(temp_config_file, 'w') as tempfile:
+        config.write(tempfile)
+
+    return temp_config_file
 
 def zip_files(outfile, manifest, verbose=True):
     root = os.path.commonpath(map(os.path.abspath, manifest))
     files = [(f, os.path.relpath(f, root)) for f in manifest]
+
+    # relativize the config
+    tempfile = create_relative_config_file(files[0][0], manifest)
+    files[0] = (tempfile, files[0][1])
 
     with ZipFile(outfile, 'w') as output:
         print("Constructing archive {}".format(outfile))
@@ -33,6 +64,7 @@ def zip_files(outfile, manifest, verbose=True):
                 print("Exporting {}".format(arcpath))
             output.write(path, arcpath)
 
+    os.remove(tempfile)
 
 def populate_parser(parser):
     parser.add_argument('config', type=lambda x: is_valid_configfile(parser, x),
