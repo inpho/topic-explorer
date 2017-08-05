@@ -32,6 +32,18 @@ def absolutize_config_file(config_file, output_dir):
         cluster_path = os.path.join(output_dir, cluster_path)
         cluster_path = os.path.abspath(cluster_path)
         config.set('main', 'cluster', cluster_path)
+    
+    path = config.get('main', 'path')
+    if path is not None and path != 'None':
+        path = os.path.join(output_dir, path)
+        path = os.path.abspath(path)
+        config.set('main', 'path', path)
+    
+    raw_corpus = config.get('main', 'raw_corpus')
+    if raw_corpus is not None and raw_corpus != 'None':
+        raw_corpus = os.path.join(output_dir, raw_corpus)
+        raw_corpus = os.path.abspath(raw_corpus)
+        config.set('main', 'raw_corpus', raw_corpus)
 
     with open(config_file, 'w', encoding='utf8') as configfile:
         config.write(configfile)

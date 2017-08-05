@@ -33,11 +33,17 @@ def create_relative_config_file(config_file, manifest):
     corpus_file = config.get('main', 'corpus_file')
     model_pattern = config.get('main', 'model_pattern')
     cluster_path = config.get('main', 'cluster')
+    path = config.get('main', 'path')
+    raw_corpus = config.get('main', 'raw_corpus')
     
     config.set('main', 'corpus_file', corpus_file.replace(root, ''))
     config.set('main', 'model_pattern', model_pattern.replace(root, ''))
     if cluster_path is not None:
         config.set('main', 'cluster', cluster_path.replace(root, ''))
+    if path is not None:
+        config.set('main', 'path', path.replace(root, ''))
+    if raw_corpus is not None:
+        config.set('main', 'raw_corpus', raw_corpus.replace(root, ''))
 
     tempfh = NamedTemporaryFile(prefix='tez.'+config_file, delete=False)
     temp_config_file = tempfh.name
