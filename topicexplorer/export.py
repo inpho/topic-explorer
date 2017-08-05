@@ -5,6 +5,7 @@ from builtins import input
 from builtins import range
 
 from configparser import RawConfigParser as ConfigParser
+import os
 import os.path
 from tempfile import NamedTemporaryFile
 from zipfile import ZipFile
@@ -12,7 +13,7 @@ from zipfile import ZipFile
 from topicexplorer.lib.util import is_valid_configfile
 
 def build_manifest(config_file, corpus_file, model_pattern, topic_range,
-                   cluster_path=None):
+                   cluster_path=None, raw_corpus=None):
     files = [config_file, corpus_file]
 
     for k in topic_range:
@@ -20,9 +21,15 @@ def build_manifest(config_file, corpus_file, model_pattern, topic_range,
 
     if cluster_path:
         files.append(cluster_path)
+
+    if raw_corpus:
+        for root, dirs, corpus_files in os.walk(raw_corpus):
+            for f in corpus_files:
+                files.append(os.path.join(root, f))
+
     return files
 
-def create_relative_config_file(config_file, manifest):
+def create_relative_config_file(config_file, manifest, include_corpus=False):
     root = os.path.commonpath(map(os.path.abspath, manifest)) + '/'
     
     config = ConfigParser({'cluster': None }) 
@@ -42,8 +49,10 @@ def create_relative_config_file(config_file, manifest):
         config.set('main', 'cluster', cluster_path.replace(root, ''))
     if path is not None:
         config.set('main', 'path', path.replace(root, ''))
-    if raw_corpus is not None:
+    if raw_corpus is not None and include_corpus:
         config.set('main', 'raw_corpus', raw_corpus.replace(root, ''))
+    else:
+        config.set('main', 'raw_corpus', None)
 
     tempfh = NamedTemporaryFile(prefix='tez.'+config_file, delete=False)
     temp_config_file = tempfh.name
@@ -53,12 +62,13 @@ def create_relative_config_file(config_file, manifest):
 
     return temp_config_file
 
-def zip_files(outfile, manifest, verbose=True):
+def zip_files(outfile, manifest, include_corpus=False, verbose=True):
     root = os.path.commonpath(map(os.path.abspath, manifest))
     files = [(f, os.path.relpath(f, root)) for f in manifest]
 
     # relativize the config
-    tempfile = create_relative_config_file(files[0][0], manifest)
+    tempfile = create_relative_config_file(
+        files[0][0], manifest, include_corpus)
     files[0] = (tempfile, files[0][1])
 
     with ZipFile(outfile, 'w') as output:
@@ -75,6 +85,8 @@ def populate_parser(parser):
                         help="Configuration file path")
     parser.add_argument('-o', '--output', help="Output path for arcive (.tez)",
                         required=False, default=None)
+    parser.add_argument('--include-corpus', help="Include raw corpus files",
+                        action='store_true', dest='include_corpus')
     return parser
 
 
@@ -118,12 +130,17 @@ def main(args=None):
     # topic variables
     if config.get('main', 'topics'):
         topic_range = eval(config.get('main', 'topics'))
+    if args.include_corpus:
+        raw_corpus = config.get('main', 'raw_corpus')
+    else:
+        raw_corpus = None
 
     # get manifest for zip file
     filenames = build_manifest(
-        args.config, corpus_file, model_pattern, topic_range, cluster_path)
+        args.config, corpus_file, model_pattern, topic_range, cluster_path,
+        raw_corpus=raw_corpus)
 
-    zip_files(args.output, filenames)
+    zip_files(args.output, filenames, args.include_corpus)
 
 
 if __name__ == '__main__':
