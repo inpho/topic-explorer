@@ -201,7 +201,7 @@ class Application(Bottle):
             except:
                 pass
 
-            doc_id = unquote(doc_id)
+            doc_id = doc_id.decode('utf-8')
 
             response.content_type = 'application/json; charset=UTF8'
 
@@ -475,14 +475,14 @@ class Application(Bottle):
         @self.route('/fulltext/<doc_id:path>')
         @_set_acao_headers
         def get_doc(doc_id):
-            doc_id = unquote(doc_id).decode('utf-8')
+            doc_id = doc_id.decode('utf-8')
             pdf_path = os.path.join(corpus_path, re.sub('txt$', 'pdf', doc_id))
             if os.path.exists(pdf_path.encode('utf-8')):
                 doc_id = re.sub('txt$', 'pdf', doc_id)
             # here we deal with case where corpus_path and doc_id overlap
             (fdirs, lastdir) = os.path.split(corpus_path)
             pattern = lastdir.decode('utf-8')
-            doc_id = doc_id.encode('utf-8')
+            fdirs = fdirs.decode('utf-8')
             if re.match('^' + pattern, doc_id):
                 return static_file(doc_id, root=fdirs)
             else:
@@ -520,7 +520,8 @@ def get_host_port(args):
     Returns the hostname and port number
     """
     config = ConfigParser({'port': '8000', 'host': '0.0.0.0'})
-    config.read(args.config)
+    with open(args.config, encoding='utf8') as configfile:
+        config.read_file(configfile)
 
     # automatic port assignment
     def test_port(port):
@@ -565,7 +566,7 @@ def get_host_port(args):
 
             # read deep copy
             new_config = ConfigParser()
-            new_config.readfp(config_string)
+            config.read_file(config_string)
 
             # write deep copy without DEFAULT section
             # this preserves DEFAULT for rest of program
@@ -620,7 +621,9 @@ def create_app(args):
         'corpus_desc' : None,
         'home_link' : '/',
         'lang': None})
-    config.read(args.config)
+
+    with open(args.config, encoding='utf8') as configfile:
+        config.read_file(configfile)
 
     # path variables
     context_type = config.get('main', 'context_type')
