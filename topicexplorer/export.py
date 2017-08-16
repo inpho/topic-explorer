@@ -15,7 +15,7 @@ from zipfile import ZipFile
 from topicexplorer.lib.util import is_valid_configfile
 
 def build_manifest(config_file, corpus_file, model_pattern, topic_range,
-                   cluster_path=None, raw_corpus=None):
+                   cluster_path=None, raw_corpus=None, corpus_desc=None):
     files = [config_file, corpus_file]
 
     for k in topic_range:
@@ -23,6 +23,8 @@ def build_manifest(config_file, corpus_file, model_pattern, topic_range,
 
     if cluster_path:
         files.append(cluster_path)
+    if corpus_desc:
+        files.append(corpus_desc)
 
     if raw_corpus:
         for root, dirs, corpus_files in os.walk(raw_corpus):
@@ -36,7 +38,6 @@ def create_relative_config_file(config_file, manifest, include_corpus=False):
         root = os.path.commonpath(map(os.path.abspath, manifest)) + '/'
     else:
         root = os.path.commonprefix(map(os.path.abspath, manifest))
-        print(root)
     
     config = ConfigParser({'cluster': None }) 
     with open(config_file, encoding='utf8') as configfile:
@@ -48,6 +49,7 @@ def create_relative_config_file(config_file, manifest, include_corpus=False):
     cluster_path = config.get('main', 'cluster')
     path = config.get('main', 'path')
     raw_corpus = config.get('main', 'raw_corpus')
+    corpus_desc = config.get('main', 'corpus_desc')
     
     config.set('main', 'corpus_file', corpus_file.replace(root, ''))
     config.set('main', 'model_pattern', model_pattern.replace(root, ''))
@@ -59,6 +61,8 @@ def create_relative_config_file(config_file, manifest, include_corpus=False):
         config.set('main', 'raw_corpus', raw_corpus.replace(root, ''))
     else:
         config.set('main', 'raw_corpus', None)
+    if corpus_desc is not None:
+        config.set('main', 'corpus_desc', corpus_desc.replace(root, ''))
 
     tempfh = NamedTemporaryFile(prefix='tez.'+config_file, delete=False)
     temp_config_file = tempfh.name
@@ -73,7 +77,6 @@ def zip_files(outfile, manifest, include_corpus=False, verbose=True):
         root = os.path.commonpath(map(os.path.abspath, manifest))
     else:
         root = os.path.commonprefix(map(os.path.abspath, manifest))
-        print(root)
 
     files = [(f, os.path.relpath(f, root)) for f in manifest]
 
@@ -137,6 +140,7 @@ def main(args=None):
     corpus_file = config.get('main', 'corpus_file')
     model_pattern = config.get('main', 'model_pattern')
     cluster_path = config.get('main', 'cluster')
+    corpus_desc = config.get('main', 'corpus_desc')
     
     # topic variables
     if config.get('main', 'topics'):
@@ -149,7 +153,7 @@ def main(args=None):
     # get manifest for zip file
     filenames = build_manifest(
         args.config, corpus_file, model_pattern, topic_range, cluster_path,
-        raw_corpus=raw_corpus)
+        raw_corpus=raw_corpus, corpus_desc=corpus_desc)
 
     zip_files(args.output, filenames, args.include_corpus)
 

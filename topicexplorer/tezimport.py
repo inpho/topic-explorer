@@ -45,6 +45,12 @@ def absolutize_config_file(config_file, output_dir):
         raw_corpus = os.path.join(output_dir, raw_corpus)
         raw_corpus = os.path.abspath(raw_corpus)
         config.set('main', 'raw_corpus', raw_corpus)
+    
+    corpus_desc = config.get('main', 'corpus_desc')
+    if corpus_desc is not None and corpus_desc != 'None':
+        corpus_desc = os.path.join(output_dir, corpus_desc)
+        corpus_desc = os.path.abspath(corpus_desc)
+        config.set('main', 'corpus_desc', corpus_desc)
 
     with open(config_file, 'w', encoding='utf8') as configfile:
         config.write(configfile)
