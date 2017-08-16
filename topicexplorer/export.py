@@ -21,16 +21,17 @@ def build_manifest(config_file, corpus_file, model_pattern, topic_range,
     for k in topic_range:
         files.append(model_pattern.format(k))
 
-    if cluster_path:
+    if cluster_path and cluster_path != 'None':
         files.append(cluster_path)
-    if corpus_desc:
+    if corpus_desc and corpus_desc != 'None':
         files.append(corpus_desc)
 
-    if raw_corpus:
+    if raw_corpus and raw_corpus != 'None':
         for root, dirs, corpus_files in os.walk(raw_corpus):
             for f in corpus_files:
                 files.append(os.path.join(root, f))
 
+    print(files)
     return files
 
 def create_relative_config_file(config_file, manifest, include_corpus=False):
