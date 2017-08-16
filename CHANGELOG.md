@@ -10,6 +10,7 @@ This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangel
 ## Unreleased
 - Added:
   - Added support for the [htrc-feature-reader](https://github.com/htrc/htrc-feature-reader).
+  - Added `topicexplorer export` and `topicexplorer import` commands.
 
 ## [1.0b159] - 2017-04-26
 - Added:
