@@ -5,8 +5,10 @@ from builtins import input
 from builtins import range
 
 from configparser import RawConfigParser as ConfigParser
+from codecs import open
 import os
 import os.path
+import sys
 from tempfile import NamedTemporaryFile
 from zipfile import ZipFile
 
@@ -30,7 +32,11 @@ def build_manifest(config_file, corpus_file, model_pattern, topic_range,
     return files
 
 def create_relative_config_file(config_file, manifest, include_corpus=False):
-    root = os.path.commonpath(map(os.path.abspath, manifest)) + '/'
+    if sys.version_info[0] == 3:
+        root = os.path.commonpath(map(os.path.abspath, manifest)) + '/'
+    else:
+        root = os.path.commonprefix(map(os.path.abspath, manifest))
+        print(root)
     
     config = ConfigParser({'cluster': None }) 
     with open(config_file, encoding='utf8') as configfile:
@@ -63,7 +69,12 @@ def create_relative_config_file(config_file, manifest, include_corpus=False):
     return temp_config_file
 
 def zip_files(outfile, manifest, include_corpus=False, verbose=True):
-    root = os.path.commonpath(map(os.path.abspath, manifest))
+    if sys.version_info[0] == 3:
+        root = os.path.commonpath(map(os.path.abspath, manifest))
+    else:
+        root = os.path.commonprefix(map(os.path.abspath, manifest))
+        print(root)
+
     files = [(f, os.path.relpath(f, root)) for f in manifest]
 
     # relativize the config

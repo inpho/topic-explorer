@@ -5,6 +5,7 @@ from builtins import input
 from builtins import range
 
 from configparser import RawConfigParser as ConfigParser
+from codecs import open
 import os
 import os.path
 from zipfile import ZipFile
