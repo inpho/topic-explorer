@@ -29,7 +29,7 @@ import os.path
 import warnings
 
 from topicexplorer import (init, prep, train, server, notebook,
-    demo, update, metadata)
+    demo, update, metadata, export, tezimport)
 
 from topicexplorer.lib.util import is_valid_filepath
 
@@ -140,6 +140,16 @@ def main():
         help="Add spaces before unicode chars")
     metadata.populate_parser(parser_metadata)
     parser_metadata.set_defaults(func="metadata")
+    
+    # Export Parser
+    parser_export = parsers.add_parser('export', help="Export a tez archive")
+    export.populate_parser(parser_export)
+    parser_export.set_defaults(func="export")
+    
+    # Export Parser
+    parser_import = parsers.add_parser('import', help="Import the tez archive")
+    tezimport.populate_parser(parser_import)
+    parser_import.set_defaults(func="import")
 
     # fancy arg validation for manually injecting tempfile to profile arg 
     try:
@@ -244,6 +254,12 @@ def main():
 
     elif args.func == 'metadata':
         benchmark(metadata.main)(args)
+    
+    elif args.func == 'export':
+        benchmark(export.main)(args)
+    
+    elif args.func == 'import':
+        benchmark(tezimport.main)(args)
 
     if args.profile:
         try:
