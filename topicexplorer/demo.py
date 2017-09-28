@@ -68,7 +68,7 @@ def download_and_extract():
             outfile.write(text)
 
 
-def main(args=None):
+def main(args=None, launch=True):
     download_and_extract()
         
     pwd = os.getcwd()
@@ -100,10 +100,12 @@ def main(args=None):
     with open("ap.ini", "w") as configfh:
         config.write(configfh)
 
-    launch_parser = ArgumentParser()
-    server.populate_parser(launch_parser)
-    args = launch_parser.parse_args(['ap.ini'])
-    server.main(args)
+    if launch:
+        launch_parser = ArgumentParser()
+        server.populate_parser(launch_parser)
+        args = launch_parser.parse_args(['ap.ini'])
+        server.main(args)
 
 if __name__ == '__main__':
-    main()
+    launch = '--no-launch' not in sys.argv
+    main(launch=launch)
