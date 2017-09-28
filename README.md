@@ -12,9 +12,9 @@ The color bands within each article's row show the topic distribution within tha
 Display options include topic normalization, alphabetical sort and topic sort. By normalizing topics, the combined width of each bar expands so that topic weights per document can be compared. By clicking a topic, the documents will reorder acoording to that topic's weight and topic bars will reorder according to the topic weights in the highest weighted document. When a topic is selected, clicking "Top Documents for [Topic]" will take you to a new page showing the most similar documents to that topic's word distribution. The original sort order can be restored with the "Reset Topic Sort" button.
 
 ## Installation
-There are two types of install: Default and Developer.  Before installing, Mac users should install [XCode from Apple](https://developer.apple.com/xcode/downloads/) and Windows users should install a Python compiler such as [Microsoft Visual C__ Compiler](https://www.microsoft.com/en-us/download/details.aspx?id=44266)
+There are two types of install: Default and Developer. Currently we are debugging the Windows Default installation. Before installing, Mac users should install [XCode from Apple](https://developer.apple.com/xcode/downloads/) and Windows users should install a Python compiler such as [Microsoft Visual C__ Compiler](https://www.microsoft.com/en-us/download/details.aspx?id=44266)
 
-### Default Install
+### Default Install (Windows users should use Developer Install until further notice)
 1.  Go to the [Anaconda website](http://continuum.io/downloads) and choose the Python 2.7 Distribution. (Windows users: during installation, during "Advanced Options" choose "Add Anaconda to my PATH environment variable" and don't worry about the warning.)
 2.  Open a Terminal (Mac and Linux) or PowerShell (Windows).
 3.  Run `pip install --pre topicexplorer -i https://inpho.cogs.indiana.edu/pypi/`.
