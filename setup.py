@@ -4,6 +4,8 @@ from distutils.command.install import install as _install
 from setuptools import setup, find_packages
 import os
 import platform
+import os.path
+
 try:
     # Python 3 or Python 2 w/backport
     from importlib import reload
@@ -13,7 +15,7 @@ except ImportError:
 
 # get version from package through manual read
 # see http://stackoverflow.com/a/17626524 
-__version__ = open("topicexplorer/version.py").readlines()[9].split()[-1].strip("\"'")
+__version__ = open(os.path.normpath("topicexplorer/version.py")).readlines()[9].split()[-1].strip("\"'")
 
 # building datafiles list
 datadir = 'www'
@@ -53,7 +55,6 @@ install_requires = [
         'vsm>=0.4.0rc1',
         'wget',
         'unidecode',
-        'pyenchant==1.6.6',
         'networkx>=1.9.1',
         'matplotlib>=1.5.0',
         'pip>=7.1.1',
@@ -107,8 +108,11 @@ setup(
     data_files=datafiles,
     setup_requires=setup_requires,
     install_requires=install_requires,
+    extras_require={
+        'spellcheck': ['pyenchant'],
+    },
     dependency_links=[
-        'https://github.com/inpho/vsm/archive/py3k.zip#egg=vsm-dev',
+        #'https://github.com/inpho/vsm/archive/py3k.zip#egg=vsm-dev',
         'https://inpho.cogs.indiana.edu/pypi/pymmseg/'
         ],
     include_package_data=True,

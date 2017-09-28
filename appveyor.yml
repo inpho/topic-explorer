@@ -1,0 +1,59 @@
+environment:
+  matrix:
+    # For Python versions available on Appveyor, see
+    # http://www.appveyor.com/docs/installed-software#python
+    - PYTHON: "C:\\Miniconda"
+    - PYTHON: "C:\\Miniconda-x64"
+
+  twineargs:
+    secure: Hj0/nwvDm2ghYAjXDELxtkKOroTwKq1hDRekkNCSEdG9lsIn/8ymmF6RuNN7scSa
+
+
+install:
+  - "%PYTHON%\\python.exe -m conda update -q --yes conda"
+  - "%PYTHON%\\python.exe -m conda install -q --yes pip numpy scipy nltk unidecode matplotlib cython pyyaml networkx decorator chardet pandas configparser"
+  - "%PYTHON%\\python.exe -c \"import nltk; nltk.download('stopwords'); nltk.download('punkt')\""
+  - "%PYTHON%\\python.exe -m pip install unittest2 nose wget"
+  - "%PYTHON%\\python.exe -m pip install vsm -i https://inpho.cogs.indiana.edu/pypi"
+
+build: off
+version: '1.0.{build}'
+
+test_script:
+  # Put your test command here.
+  # If you don't need to build C extensions on 64-bit Python 3.3 or 3.4,
+  # you can remove "build.cmd" from the front of the command, as it's
+  # only needed to support those cases.
+  # Note that you must use the environment variable %PYTHON% to refer to
+  # the interpreter you're using - Appveyor does not do anything special
+  # to put the Python evrsion you want to use on PATH.
+  - "%PYTHON%\\python.exe setup.py install"
+  - "%PYTHON%\\python.exe -m topicexplorer.version"
+  - "%PYTHON%\\python.exe -m topicexplorer.demo"
+  - "%PYTHON%\\python.exe -m topicexplorer.train ap.ini --rebuild -k 20 40 60 --iter 20 --context-type article"
+
+#after_test:
+#  # This step builds your wheels.
+#  # Again, you only need build.cmd if you're building C extensions for
+#  # 64-bit Python 3.3/3.4. And you need to use %PYTHON% to get the correct
+#  # interpreter
+#  - "%PYTHON%\\python.exe setup.py bdist_egg"
+#  - "%PYTHON%\\python.exe -m wheel convert dist\\*.egg"
+#
+#artifacts:
+#  # bdist_wheel puts your built wheel in the dist directory
+#  - path: dist\*
+
+#deploy_script:
+#  - ps: >- 
+#      if($env:appveyor_repo_tag -eq 'True') {
+#        if($env:appveyor_repo_branch -eq 'master') {
+#          & %PYTHON%\\python.exe -m pip install twine
+#          & %PYTHON%\\python.exe -m twine upload %twineargs% dist/*.whl
+#        }
+#      }
+
+#on_success:
+#  You can use this step to upload your artifacts to a public website.
+#  See Appveyor's documentation for more details. Or you can simply
+#  access your wheels from the Appveyor "artifacts" tab for your build.
