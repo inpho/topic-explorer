@@ -18,7 +18,7 @@ import xml.etree.ElementTree as ET
 
 import wget
 
-from topicexplorer import init, prep, train
+from topicexplorer import init, prep, train, server
 
 def download_and_extract():
     # parse the pseudo-xml document into a python-native dict
@@ -99,6 +99,11 @@ def main(args=None):
     shutil.copyfile(os.path.join(os.path.dirname(__file__), '../demo/ap.md'), 'ap.md')
     with open("ap.ini", "w") as configfh:
         config.write(configfh)
+
+    launch_parser = ArgumentParser()
+    server.populate_parser(launch_parser)
+    args = launch_parser.parse_args(['ap.ini'])
+    server.main(args)
 
 if __name__ == '__main__':
     main()
