@@ -28,5 +28,6 @@ install:
   - pip install https://github.com/inpho/vsm/archive/py3k.zip#egg=vsm-dev
   - pip install . --extra-index-url https://inpho.cogs.indiana.edu/pypi 
 # command to run tests
-script: bash coverage.sh
+script: 
+  - bash coverage.sh
 after_success: coveralls
