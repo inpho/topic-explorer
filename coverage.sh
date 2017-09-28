@@ -32,7 +32,7 @@ test_url http://localhost:8000/docs.json 200
 EXIT=$(($EXIT+$?))
 test_url http://localhost:8000/20/topics.json 200
 EXIT=$(($EXIT+$?))
-test_url http://localhost:8000/topics.json 200
+test_url http://localhost:8000/topics.json?q=bush 200
 EXIT=$(($EXIT+$?))
 test_url http://localhost:8000/cluster.csv 200
 EXIT=$(($EXIT+$?))
