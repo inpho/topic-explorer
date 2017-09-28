@@ -4,6 +4,8 @@ environment:
     # http://www.appveyor.com/docs/installed-software#python
     - PYTHON: "C:\\Miniconda"
     - PYTHON: "C:\\Miniconda-x64"
+    - PYTHON: "C:\\Miniconda36"
+    - PYTHON: "C:\\Miniconda36-x64"
 
   twineargs:
     secure: Hj0/nwvDm2ghYAjXDELxtkKOroTwKq1hDRekkNCSEdG9lsIn/8ymmF6RuNN7scSa
