@@ -233,7 +233,7 @@ Do you want to continue training your existing models? """, default=True))):
 
     if not args.dry_run:
         if config.has_option("main", "cluster"):
-            cluster_path = config.get("main", "cluster", None)
+            cluster_path = config.get("main", "cluster", fallback=None)
             config.remove_option("main", "cluster")
             try:
                 os.remove(cluster_path)

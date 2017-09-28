@@ -201,7 +201,7 @@ class Application(Bottle):
             except:
                 pass
 
-            doc_id = doc_id.decode('utf-8')
+            doc_id = unquote(doc_id)
 
             response.content_type = 'application/json; charset=UTF8'
 

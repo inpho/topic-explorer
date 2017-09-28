@@ -19,15 +19,26 @@ DEMO_PID=$!
 trap 'echo "trying to kill $DEMO_PID" && kill -2 $DEMO_PID && echo "killed $DEMO_PID" && wait $DEMO_PID && echo "waited for $DEMO_PID";' INT
 sleep 10
 
-[ $(curl -i http://localhost:8000/docs.json 2>/dev/null | head -n 1 | cut -d$' ' -f2) == "200" ]
+test_url () {
+    return $([ $(curl -i $1 2>/dev/null | head -n 1 | cut -d$' ' -f2) == $2 ])
+}
+test_url http://localhost:8000/ 200
 EXIT=$(($EXIT+$?))
-[ $(curl -i http://localhost:8000/20/topics.json 2>/dev/null | head -n 1 | cut -d$' ' -f2) == "200" ]
+test_url http://localhost:8000/20/ 200
 EXIT=$(($EXIT+$?))
-[ $(curl -i http://localhost:8000/ 2>/dev/null | head -n 1 | cut -d$' ' -f2) == "200" ]
+test_url http://localhost:8000/topics 200
 EXIT=$(($EXIT+$?))
-[ $(curl -i http://localhost:8000/20/ 2>/dev/null | head -n 1 | cut -d$' ' -f2) == "200" ]
+test_url http://localhost:8000/docs.json 200
 EXIT=$(($EXIT+$?))
-[ $(curl -i http://localhost:8000/topics 2>/dev/null | head -n 1 | cut -d$' ' -f2) == "200" ]
+test_url http://localhost:8000/20/topics.json 200
+EXIT=$(($EXIT+$?))
+test_url http://localhost:8000/topics.json 200
+EXIT=$(($EXIT+$?))
+test_url http://localhost:8000/cluster.csv 200
+EXIT=$(($EXIT+$?))
+test_url http://localhost:8000/20/word_docs.json?q=bush 200
+EXIT=$(($EXIT+$?))
+test_url http://localhost:8000/20/docs_topics/AP900817-0118.json 200
 EXIT=$(($EXIT+$?))
 
 kill -2 $$
