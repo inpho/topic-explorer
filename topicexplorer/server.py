@@ -350,9 +350,9 @@ class Application(Bottle):
             sorted_topics = merged_similarity[np.argsort(merged_similarity['value'])]
 
             # return data
-            data = [{'k' : t['k'],
-                     't' : t['i'],
-                     'distance' : t['value'] } for t in sorted_topics]
+            data = [{'k' : int(t['k']),
+                     't' : int(t['i']),
+                     'distance' : float(t['value']) } for t in sorted_topics]
             return json.dumps(data)
 
 
