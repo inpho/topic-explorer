@@ -176,10 +176,12 @@ d3.csv(base_url + "cluster.csv", function(error, data) {
   $('#chart #loading').remove();
   controls.attr('class', '')
 
+  /*
   svg.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
       .call(xAxis);
+      */
   /*
     .append("text")
       .attr("class", "label")
@@ -187,10 +189,11 @@ d3.csv(base_url + "cluster.csv", function(error, data) {
       .attr("y", -6)
       .style("text-anchor", "end")
       .text("Sepal Width (cm)");*/
-
+/*
   svg.append("g")
       .attr("class", "y axis")
       .call(yAxis);
+      */
   /*
     .append("text")
       .attr("class", "label")

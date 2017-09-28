@@ -295,7 +295,7 @@ class Application(Bottle):
             for i, topic in enumerate(data):
                 js[str(i)] = {
                     "color": rgb2hex(self.colors[k][i]),
-                    'words': dict([(unicode(w), float(p))
+                    'words': dict([(str(w), float(p))
                                        for w, p in topic[:wordmax]])
                     }
 
