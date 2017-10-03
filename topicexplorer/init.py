@@ -257,7 +257,8 @@ def main(args):
             ids = listdir_nohidden(args.corpus_path)
 
             args.htrc_metapath = os.path.abspath(args.corpus_path + '/../')
-            args.htrc_metapath = os.path.dirname(args.htrc_metapath) + '.metadata.json'
+            args.htrc_metapath = os.path.join(args.htrc_metapath,
+                os.path.dirname(args.corpus_path) + '.metadata.json')
         else:
             import topicexplorer.extensions.htrc_features as htrc_features
             with open(args.corpus_path) as idfile:
@@ -272,6 +273,7 @@ def main(args):
                 os.path.basename(args.htrc_metapath) + '.metadata.json')
 
         import htrc.metadata
+        print("Downloading metadata to ", args.htrc_metapath)
         htrc.metadata.get_metadata(ids, output_file=args.htrc_metapath)
 
     if args.rebuild and (not args.htrc or os.path.isdir(args.corpus_path)):
