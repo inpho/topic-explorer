@@ -10,6 +10,7 @@ import csv
 from datetime import datetime, timedelta
 from functools import partial
 from importlib import import_module
+from io import StringIO
 import json
 import itertools
 import math
@@ -17,9 +18,9 @@ import os.path
 from pkg_resources import resource_filename
 import re
 import socket
+import sys
 from urllib.parse import unquote
 import webbrowser
-from io import StringIO
 
 from bottle import request, response, route, run, static_file, Bottle
 from topicexplorer.lib.color import get_topic_colors, rgb2hex
