@@ -1,6 +1,7 @@
 *.pyc
 sandbox
 config.*
+.coverage
 
 *.ini
 
@@ -21,3 +22,5 @@ topicexplorer.egg-info
 .travis.key
 
 docs/_build
+
+ap*
