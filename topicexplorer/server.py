@@ -34,8 +34,19 @@ from vsm.viewer.wrappers import doc_label_name
 import random
 import pystache
 
-__all__ = ['populate_parser', 'main', '_set_acao_headers']
+__all__ = ['populate_parser', 'main', '_set_acao_headers', 'Application']
 
+def get_static_resource_path(path):
+    if os.path.exists(path):
+        return os.path.abspath(path)
+    elif os.path.exists(os.path.join(sys.prefix, path)):
+        return os.path.abspath(os.path.join(sys.prefix, path))
+    elif os.path.exists(
+            get_static_resource_path('www/master.mustache.html')):
+        return get_static_resource_path('www/master.mustache.html')
+    else:
+        raise OSError("File not found: {}".format(path))
+    
 
 def _set_acao_headers(f):
     """
@@ -359,7 +370,7 @@ class Application(Bottle):
         @self.route('/topics')
         @_set_acao_headers
         def view_clusters():
-            with open(resource_filename(__name__, '../www/master.mustache.html'),
+            with open(get_static_resource_path('www/master.mustache.html'),
                       encoding='utf-8') as tmpl_file:
                 template = tmpl_file.read()
 
@@ -401,7 +412,7 @@ class Application(Bottle):
 
         @self.route('/icons.js')
         def icons():
-            with open(resource_filename(__name__, '../www/icons.js')) as icons:
+            with open(get_static_resource_path('www/icons.js')) as icons:
                 text = '{0}\n var icons = {1};'\
                     .format(icons.read(), json.dumps(self.icons))
             return text
@@ -409,7 +420,7 @@ class Application(Bottle):
         def _render_template(page):
             response.set_header('Expires', _cache_date())
 
-            with open(resource_filename(__name__, '../www/' + page),
+            with open(get_static_resource_path('www/' + page),
                       encoding='utf-8') as tmpl_file:
                 template = tmpl_file.read()
 
@@ -424,7 +435,7 @@ class Application(Bottle):
 
         @self.route('/<k:int>/')
         def index(k):
-            with open(resource_filename(__name__, '../www/master.mustache.html'),
+            with open(get_static_resource_path('www/master.mustache.html'),
                       encoding='utf-8') as tmpl_file:
                 template = tmpl_file.read()
 
@@ -458,7 +469,7 @@ class Application(Bottle):
         @self.route('/')
         @_set_acao_headers
         def cluster():
-            with open(resource_filename(__name__, '../www/master.mustache.html'),
+            with open(get_static_resource_path('www/master.mustache.html'),
                       encoding='utf-8') as tmpl_file:
                 template = tmpl_file.read()
 
@@ -469,7 +480,7 @@ class Application(Bottle):
         @self.route('/<filename:path>')
         @_set_acao_headers
         def send_static(filename):
-            return static_file(filename, root=resource_filename(__name__, '../www/'))
+            return static_file(filename, root=get_static_resource_path('www/'))
 
     def _serve_fulltext(self, corpus_path):
         @self.route('/fulltext/<doc_id:path>')
