@@ -44,7 +44,7 @@ def get_static_resource_path(path):
         return os.path.abspath(os.path.join(sys.prefix, path))
     elif os.path.exists(
             resource_filename(__name__, '../www/master.mustache.html')):
-        return resource_filename(__name__, '../www/master.mustache.html')) 
+        return resource_filename(__name__, '../www/master.mustache.html')
     else:
         raise OSError("File not found: {}".format(path))
     
