@@ -44,6 +44,8 @@ def get_static_resource_path(path):
         return os.path.abspath(os.path.join(sys.prefix, path))
     elif os.path.exists(resource_filename(__name__, path)):
         return resource_filename(__name__, path)
+    elif os.path.exists(resource_filename(__name__, '../' + path)):
+        return resource_filename(__name__, '../' + path)
     else:
         raise OSError("File not found: {}".format(path))
     
@@ -516,8 +518,10 @@ class Application(Bottle):
             if query is None or query.lower() in self.label(doc).lower():
                 struct = {
                     'id': doc,
-                    'label': self.label(doc),
-                    'metadata': dict(zip(md.dtype.names, (str(m) for m in md)))}
+                    'label': self.label(doc)
+                }
+                # TODO: fix metadata login
+                    #'metadata': dict(zip(md.dtype.names, (str(m) for m in md)))}
                 if id_as_key:
                     js[doc] = struct
                 else:
