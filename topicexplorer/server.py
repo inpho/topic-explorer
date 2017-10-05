@@ -214,8 +214,6 @@ class Application(Bottle):
             except:
                 pass
 
-            doc_id = unquote(doc_id)
-
             response.content_type = 'application/json; charset=UTF8'
 
             if N > 0:
@@ -492,6 +490,8 @@ class Application(Bottle):
             pdf_path = os.path.join(corpus_path, re.sub('txt$', 'pdf', doc_id))
             if os.path.exists(pdf_path.encode('utf-8')):
                 doc_id = re.sub('txt$', 'pdf', doc_id)
+            if os.path.exists(os.path.join(corpus_path), doc_id + '.txt'):
+                doc_id = doc_id + '.txt'
             # here we deal with case where corpus_path and doc_id overlap
             (fdirs, lastdir) = os.path.split(corpus_path)
             pattern = lastdir.decode('utf-8')
