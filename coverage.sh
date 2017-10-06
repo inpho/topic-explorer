@@ -17,7 +17,7 @@ $CMD -m topicexplorer.server -p 8000 --no-browser ap.ini &
 DEMO_PID=$!
 
 trap 'echo "trying to kill $DEMO_PID" && kill -2 $DEMO_PID && echo "killed $DEMO_PID" && wait $DEMO_PID && echo "waited for $DEMO_PID";' INT
-sleep 10
+sleep 15
 
 test_url () {
     return $([ $(curl -i $1 2>/dev/null | head -n 1 | cut -d$' ' -f2) == $2 ])
@@ -36,7 +36,15 @@ test_url http://localhost:8000/docs.json?id=AP900817-0118 200
 EXIT=$(($EXIT+$?))
 test_url http://localhost:8000/20/topics.json 200
 EXIT=$(($EXIT+$?))
+test_url "http://localhost:8000/topics.json?q=bush|israel" 200
+EXIT=$(($EXIT+$?))
+test_url "http://localhost:8000/topics.json?q=foobar" 404
+EXIT=$(($EXIT+$?))
+test_url "http://localhost:8000/topics.json?q=a|the" 410
+EXIT=$(($EXIT+$?))
 test_url http://localhost:8000/20/topics/1.json 200
+EXIT=$(($EXIT+$?))
+test_url http://localhost:8000/20/topics/1.json?n=-20 200
 EXIT=$(($EXIT+$?))
 test_url http://localhost:8000/topics.json?q=bush 200
 EXIT=$(($EXIT+$?))
@@ -51,6 +59,10 @@ EXIT=$(($EXIT+$?))
 test_url http://localhost:8000/20/docs/AP900817-0118 200
 EXIT=$(($EXIT+$?))
 test_url http://localhost:8000/fulltext/AP900817-0118 200
+EXIT=$(($EXIT+$?))
+test_url http://localhost:8000/icons.js 200
+EXIT=$(($EXIT+$?))
+test_url http://localhost:8000/description.md 200
 EXIT=$(($EXIT+$?))
 
 kill -2 $$

@@ -46,7 +46,7 @@ def _set_acao_headers(f):
     """
     def set_header(*args, **kwargs):
         host = request.get_header('Origin')
-        if host and 'cogs.indiana.edu' in host:
+        if host and 'cogs.indiana.edu' in host: # pragma: no cover
             response.headers['Access-Control-Allow-Origin'] = host
         elif host and 'codepen.io' in host:
             response.headers['Access-Control-Allow-Origin'] = host
