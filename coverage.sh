@@ -30,6 +30,8 @@ test_url http://localhost:8000/topics 200
 EXIT=$(($EXIT+$?))
 test_url http://localhost:8000/docs.json 200
 EXIT=$(($EXIT+$?))
+test_url http://localhost:8000/docs.json?random=1 200
+EXIT=$(($EXIT+$?))
 test_url http://localhost:8000/docs.json?q=bush 200
 EXIT=$(($EXIT+$?))
 test_url http://localhost:8000/docs.json?id=AP900817-0118 200
