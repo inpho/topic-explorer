@@ -150,8 +150,6 @@ class Application(Bottle):
         def doc_topic_csv(k, doc_id):
             response.content_type = 'text/csv; charset=UTF8'
 
-            doc_id = unquote(doc_id).decode('utf-8')
-
             data = self.v[k].doc_topics(doc_id)
 
             output = StringIO()
@@ -165,8 +163,6 @@ class Application(Bottle):
         @_set_acao_headers
         def doc_csv(k, doc_id, threshold=0.2):
             response.content_type = 'text/csv; charset=UTF8'
-
-            doc_id = unquote(doc_id).decode('utf-8')
 
             data = self.v[k].dist_doc_doc(doc_id)
 
@@ -387,13 +383,13 @@ class Application(Bottle):
 
             try:
                 if request.query.q:
-                    q = unquote(request.query.q).decode('utf-8')
+                    q = request.query.q
             except:
                 pass
 
             try:
                 if request.query.id:
-                    docs = [unquote(request.query.id).decode('utf-8')]
+                    docs = [request.query.id]
             except:
                 pass
 

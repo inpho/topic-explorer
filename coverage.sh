@@ -30,6 +30,10 @@ test_url http://localhost:8000/topics 200
 EXIT=$(($EXIT+$?))
 test_url http://localhost:8000/docs.json 200
 EXIT=$(($EXIT+$?))
+test_url http://localhost:8000/docs.json?q=bush 200
+EXIT=$(($EXIT+$?))
+test_url http://localhost:8000/docs.json?id=AP900817-0118 200
+EXIT=$(($EXIT+$?))
 test_url http://localhost:8000/20/topics.json 200
 EXIT=$(($EXIT+$?))
 test_url http://localhost:8000/20/topics/1.json 200
@@ -41,6 +45,10 @@ EXIT=$(($EXIT+$?))
 test_url http://localhost:8000/20/word_docs.json?q=bush 200
 EXIT=$(($EXIT+$?))
 test_url http://localhost:8000/20/docs_topics/AP900817-0118.json 200
+EXIT=$(($EXIT+$?))
+test_url http://localhost:8000/20/doc_topics/AP900817-0118 200
+EXIT=$(($EXIT+$?))
+test_url http://localhost:8000/20/docs/AP900817-0118 200
 EXIT=$(($EXIT+$?))
 test_url http://localhost:8000/fulltext/AP900817-0118 200
 EXIT=$(($EXIT+$?))
