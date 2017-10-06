@@ -10,7 +10,7 @@ import csv
 from datetime import datetime, timedelta
 from functools import partial
 from importlib import import_module
-from io import StringIO
+from io import BytesIO,StringIO
 import json
 import itertools
 import math
@@ -152,10 +152,14 @@ class Application(Bottle):
 
             data = self.v[k].doc_topics(doc_id)
 
-            output = StringIO()
+            if sys.version_info[0] == 3:
+                output = StringIO()
+            else:
+                output = BytesIO()
+
             writer = csv.writer(output)
-            writer.writerow([u'topic', u'prob'])
-            writer.writerows([(t, u"%6f" % p) for t, p in data])
+            writer.writerow(['topic', 'prob'])
+            writer.writerows([(t, "%6f" % p) for t, p in data])
 
             return output.getvalue()
 
@@ -166,10 +170,14 @@ class Application(Bottle):
 
             data = self.v[k].dist_doc_doc(doc_id)
 
-            output = StringIO()
+            if sys.version_info[0] == 3:
+                output = StringIO()
+            else:
+                output = BytesIO()
+
             writer = csv.writer(output)
-            writer.writerow([u'doc', u'prob'])
-            writer.writerows([(d, u"%6f" % p) for d, p in data if p > threshold])
+            writer.writerow(['doc', 'prob'])
+            writer.writerows([(d, "%6f" % p) for d, p in data if p > threshold])
 
             return output.getvalue()
 
