@@ -459,6 +459,7 @@ class Application(Bottle):
             if not filename:
                 response.status = 404
                 return "File not found"
+            filename = get_static_resource_path(filename)
             root, filename = os.path.split(filename)
             return static_file(filename, root=root)
         
