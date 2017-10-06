@@ -31,7 +31,6 @@ def build_manifest(config_file, corpus_file, model_pattern, topic_range,
             for f in corpus_files:
                 files.append(os.path.join(root, f))
 
-    print(files)
     return files
 
 def create_relative_config_file(config_file, manifest, include_corpus=False):
