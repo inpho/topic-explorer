@@ -391,10 +391,10 @@ class Application(Bottle):
                 pass
 
             try:
-                response.set_header('Expires', 0)
-                response.set_header('Pragma', 'no-cache')
-                response.set_header('Cache-Control', 'no-cache, no-store, must-revalidate')
                 if request.query.random:
+                    response.set_header('Expires', 0)
+                    response.set_header('Pragma', 'no-cache')
+                    response.set_header('Cache-Control', 'no-cache, no-store, must-revalidate')
                     docs = [random.choice(self.labels)]
             except:
                 pass
