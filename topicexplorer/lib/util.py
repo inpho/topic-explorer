@@ -13,6 +13,7 @@ from glob import glob
 import os
 import os.path
 import shutil
+import sys
 
 
 def safe_symlink(srcpath, linkpath):
@@ -178,3 +179,16 @@ def isint(x):
         return True
     except (ValueError, TypeError):
         return False
+
+def get_static_resource_path(path):
+    if os.path.exists(path):
+        return os.path.abspath(path)
+    elif os.path.exists(os.path.join(sys.prefix, path)):
+        return os.path.abspath(os.path.join(sys.prefix, path))
+    elif os.path.exists(resource_filename(__name__, path)):
+        return resource_filename(__name__, path)
+    elif os.path.exists(resource_filename(__name__, '../' + path)):
+        return resource_filename(__name__, '../' + path)
+    else:
+        raise OSError("File not found: {}".format(path))
+

@@ -19,6 +19,7 @@ import xml.etree.ElementTree as ET
 import wget
 
 from topicexplorer import init, prep, train, server
+from topicexplorer.lib.util import get_static_resource_path
 
 def download_and_extract():
     # parse the pseudo-xml document into a python-native dict
@@ -96,7 +97,7 @@ def main(args=None, launch=True):
     config.set("main", "corpus_desc", "ap.md")
     config.set("www", "icons", "ap,link")
     config.set("www", "fulltext", "True")
-    shutil.copyfile(os.path.join(os.path.dirname(__file__), '../demo/ap.md'), 'ap.md')
+    shutil.copyfile(get_static_resource_path('demo/ap.md'), 'ap.md')
     with open("ap.ini", "w") as configfh:
         config.write(configfh)
 

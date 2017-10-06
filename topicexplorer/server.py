@@ -25,7 +25,8 @@ import webbrowser
 from bottle import request, response, route, run, static_file, Bottle
 from topicexplorer.lib.color import get_topic_colors, rgb2hex
 from topicexplorer.lib.ssl import SSLWSGIRefServer
-from topicexplorer.lib.util import int_prompt, bool_prompt, is_valid_filepath, is_valid_configfile
+from topicexplorer.lib.util import (int_prompt, bool_prompt, is_valid_filepath,
+    is_valid_configfile, get_static_resource_path)
 
 from vsm.corpus import Corpus
 from vsm.model.lda import LDA
@@ -36,18 +37,6 @@ import random
 import pystache
 
 __all__ = ['populate_parser', 'main', '_set_acao_headers', 'Application']
-
-def get_static_resource_path(path):
-    if os.path.exists(path):
-        return os.path.abspath(path)
-    elif os.path.exists(os.path.join(sys.prefix, path)):
-        return os.path.abspath(os.path.join(sys.prefix, path))
-    elif os.path.exists(resource_filename(__name__, path)):
-        return resource_filename(__name__, path)
-    elif os.path.exists(resource_filename(__name__, '../' + path)):
-        return resource_filename(__name__, '../' + path)
-    else:
-        raise OSError("File not found: {}".format(path))
     
 
 def _set_acao_headers(f):
