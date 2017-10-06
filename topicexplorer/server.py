@@ -154,8 +154,8 @@ class Application(Bottle):
 
             output = StringIO()
             writer = csv.writer(output)
-            writer.writerow(['topic', 'prob'])
-            writer.writerows([(t, "%6f" % p) for t, p in data])
+            writer.writerow([u'topic', u'prob'])
+            writer.writerows([(t, u"%6f" % p) for t, p in data])
 
             return output.getvalue()
 
@@ -168,8 +168,8 @@ class Application(Bottle):
 
             output = StringIO()
             writer = csv.writer(output)
-            writer.writerow(['doc', 'prob'])
-            writer.writerows([(d, "%6f" % p) for d, p in data if p > threshold])
+            writer.writerow([u'doc', u'prob'])
+            writer.writerows([(d, u"%6f" % p) for d, p in data if p > threshold])
 
             return output.getvalue()
 
