@@ -4,7 +4,9 @@ from future import standard_library
 standard_library.install_aliases()
 from builtins import input
 from builtins import zip
+from builtins import str
 from past.utils import old_div
+
 from configparser import RawConfigParser as ConfigParser
 import json
 import os.path
@@ -193,8 +195,7 @@ def get_high_filter(args, c, words=None):
 
                 print("Filter will remove", counts[counts > input_filter].sum(), end=' ')
                 print("occurrences", "of these", len(counts[counts > input_filter]), "words:")
-                print(u' '.join(candidates).encode(
-                    sys.stdout.encoding, errors='replace'))
+                print(u' '.join(candidates))
 
                 print("\nFilter will remove", counts[counts > input_filter].sum(), end=' ')
                 print("occurrences", "of these", len(counts[counts > input_filter]), "words.", end=' ')
@@ -275,8 +276,7 @@ def get_low_filter(args, c, words=None):
 
                 print("Filter will remove", counts[counts <= input_filter].sum(), "tokens", end=' ')
                 print("of these", len(counts[counts <= input_filter]), "words:")
-                print(u' '.join(candidates).encode(
-                    sys.stdout.encoding, errors='replace'))
+                print(u' '.join(candidates))
 
                 print("\nFilter will remove", counts[counts <= input_filter].sum(), "tokens", end=' ')
                 print("of these", len(counts[counts <= input_filter]), "words.", end=' ')
