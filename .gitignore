@@ -16,6 +16,7 @@ demo-data/models/*
 notebooks/
 build/
 dist/
+benchmarks/
 topicexplorer.egg-info
 
 *~
