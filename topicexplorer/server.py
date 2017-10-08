@@ -374,13 +374,14 @@ class Application(Bottle):
 
         @self.route('/docs.json')
         @_set_acao_headers
-        def docs(docs=None, q=None):
+        def docs(docs=None, q=None, n=None):
             response.content_type = 'application/json; charset=UTF8'
             response.set_header('Expires', _cache_date())
 
             try:
                 if request.query.q:
                     q = request.query.q
+                    n = 10
             except:
                 pass
 
@@ -399,7 +400,7 @@ class Application(Bottle):
             except:
                 pass
 
-            js = self.get_docs(docs, query=q)
+            js = self.get_docs(docs, query=q, n=n)
 
             return json.dumps(js)
 
@@ -492,7 +493,7 @@ class Application(Bottle):
             else:
                 return static_file(doc_id, root=corpus_path)
 
-    def get_docs(self, docs=None, id_as_key=False, query=None):
+    def get_docs(self, docs=None, id_as_key=False, query=None, n=None):
         ctx_md = self.c.view_metadata(self.context_type)
 
         if docs:
@@ -517,6 +518,11 @@ class Application(Bottle):
                     js[doc] = struct
                 else:
                     js.append(struct)
+                if n is not None:
+                    n = n-1
+                    if n <= 0:
+                        break
+
 
         return js
 
