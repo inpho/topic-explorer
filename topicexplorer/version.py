@@ -1,4 +1,6 @@
 """Version information with Lazy Loading"""
+from builtins import str
+
 import types
 import sys
 
@@ -20,6 +22,7 @@ class _VersionModule(types.ModuleType):
             __pv__ = subprocess.check_output(
                 'git describe --long --tags --always --dirty',
                 cwd=dist.location, shell=True)
+            __pv__ = __pv__.decode('utf8')
             __pv__ = __pv__.strip()
         return __pv__ or self.__version__
 
