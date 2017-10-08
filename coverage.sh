@@ -52,6 +52,8 @@ test_url http://localhost:8000/topics.json?q=bush 200
 EXIT=$(($EXIT+$?))
 test_url http://localhost:8000/cluster.csv 200
 EXIT=$(($EXIT+$?))
+test_url http://localhost:8000/20/word_docs.json 400
+EXIT=$(($EXIT+$?))
 test_url http://localhost:8000/20/word_docs.json?q=bush 200
 EXIT=$(($EXIT+$?))
 test_url http://localhost:8000/20/docs_topics/AP900817-0118.json 200

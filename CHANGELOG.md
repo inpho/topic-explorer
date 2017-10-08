@@ -7,10 +7,31 @@ Not all beta releases are documented below. We give the summary of all changes b
 This project follows the [PEP 440](https://www.python.org/dev/peps/pep-0440/) versioning conventions. See [Semantic Versioning](http://semver.org/) for justification. The only difference between PEP 440 and SemVer.org is the pre-release format **1.0b20** vs. 1.0-beta.20.
 
 This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangelog.com/). Versions should group changes in the order: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, and `Security` (see section ["What makes a good change log?"](http://keepachangelog.com/)).
+
 ## Unreleased
+
+## [1.0b182] - 2017-10-08
 - Added:
+  - [#200](https://github.com/inpho/topic-explorer/issues/200) Python 3 Support
   - Added support for the [htrc-feature-reader](https://github.com/htrc/htrc-feature-reader).
   - Added `topicexplorer export` and `topicexplorer import` commands.
+- Changed:
+  - [#213](https://github.com/inpho/topic-explorer/issues/213) demo launches to browser
+  - [#210](https://github.com/inpho/topic-explorer/issues/210) isomap axis removed
+  - [#206](https://github.com/inpho/topic-explorer/issues/206) docs.json file very large, causes slow performance. Now defaults to 10 results
+- Fixed: 
+  - [#218](https://github.com/inpho/topic-explorer/issues/218) Python 3: raw hex in prep frequency lists
+  - [#217](https://github.com/inpho/topic-explorer/issues/217) Python 3: init frequency filter b'string'
+  - [#216](https://github.com/inpho/topic-explorer/issues/216) demo/fulltext not working / Python 3
+  - [#215](https://github.com/inpho/topic-explorer/issues/215) ap.md not updating on Windows
+  - [#211](https://github.com/inpho/topic-explorer/issues/211) Bad link to Blei 2003 in AP demo
+  - [#208](https://github.com/inpho/topic-explorer/issues/208) UnicodeEncodeError when click on fulltext icon
+  - [#207](https://github.com/inpho/topic-explorer/issues/207) Python 3 error in `topicexplorer update`
+  - [#205](https://github.com/inpho/topic-explorer/issues/205) Mac OS Update has broken launch to browser (and Jupyter)
+  - [#204](https://github.com/inpho/topic-explorer/issues/204) ignore .DS_Store files on Mac
+  - [#203](https://github.com/inpho/topic-explorer/issues/203) Python 3 install_data error
+  - [#202](https://github.com/inpho/topic-explorer/issues/202) Unicode errors on combined 2+3 codebase during prep stage.
+  - [#194](https://github.com/inpho/topic-explorer/issues/202) Demo issue running within conda env
 
 ## [1.0b159] - 2017-04-26
 - Added:
@@ -202,9 +223,11 @@ This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangel
 
 
 
-[Unreleased]: https://github.com/inpho/topic-explorer/compare/1.0b146...HEAD
-[1.0b146]: https://github.com/inpho/topic-explorer/compare/1.0b1134...1.0b146
-[1.0b134]: https://github.com/inpho/topic-explorer/compare/1.0b1121...1.0b134
+[Unreleased]: https://github.com/inpho/topic-explorer/compare/1.0b182...HEAD
+[1.0b182]: https://github.com/inpho/topic-explorer/compare/1.0b159...1.0b182
+[1.0b159]: https://github.com/inpho/topic-explorer/compare/1.0b146...1.0b159
+[1.0b146]: https://github.com/inpho/topic-explorer/compare/1.0b134...1.0b146
+[1.0b134]: https://github.com/inpho/topic-explorer/compare/1.0b121...1.0b134
 [1.0b121]: https://github.com/inpho/topic-explorer/compare/1.0b111...1.0b121
 [1.0b111]: https://github.com/inpho/topic-explorer/compare/1.0b107...1.0b111
 [1.0b107]: https://github.com/inpho/topic-explorer/compare/1.0b106...1.0b107
