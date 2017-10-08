@@ -20,7 +20,7 @@ def pypi_versions(package_name):
     url = "https://pypi.python.org/pypi/%s/json" % (package_name,)
     data = json.load(urllib.request.urlopen(urllib.request.Request(url)))
     versions = data["releases"].keys()
-    versions.sort(key=parse_version)
+    versions = sorted(versions, key=parse_version)
     return versions
 
 
