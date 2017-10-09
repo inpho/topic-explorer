@@ -143,7 +143,7 @@ def main(args):
     except NoOptionError:
         model_pattern = None
 
-    if (model_pattern is not None and not args.rebuild and (args.quiet or
+    if (model_pattern is not None and not args.rebuild and (args.quiet or args.cont or
             bool_prompt("""Existing topic models found. You can continue training or start a new model. 
 Do you want to continue training your existing models? """, default=True))):
 
@@ -262,6 +262,7 @@ def populate_parser(parser):
     parser.add_argument('--dry-run', dest='dry_run', action='store_true',
                         help="Run code without training models")
     parser.add_argument('--rebuild', action='store_true')
+    parser.add_argument('--continue', dest='cont', action='store_true')
     parser.add_argument('-q', '--quiet', action='store_true')
     parser.add_argument('--cluster', type=int,
                         help="Cluster an existing model")
