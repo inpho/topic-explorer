@@ -1,6 +1,6 @@
 #!/bin/bash
 #CMD='coverage run -a --source topicexplorer --omit="topicexplorer/extensions/*.py,topicexplorer/lib/hathitrust.py"'
-CMD="coverage run -i -a --source topicexplorer.init,topicexplorer.prep,topicexplorer.train,topicexplorer.server,topicexplorer.lib.pdf,topicexplorer.version,topicexplorer.demo,topicexplorer.update,topicexplorer.export"
+CMD="coverage run -a --source topicexplorer.init,topicexplorer.prep,topicexplorer.train,topicexplorer.server,topicexplorer.lib.pdf,topicexplorer.version,topicexplorer.demo,topicexplorer.update,topicexplorer.export,topicexplorer.tezimport"
 rm -rf .coverage ap
 coverage debug sys
 
@@ -79,6 +79,8 @@ EXIT=$(($EXIT+$?))
 $CMD -m topicexplorer.train ap.ini --rebuild -k 20 40 60 --iter 10 --context-type article -p 2 --seed 92189
 EXIT=$(($EXIT+$?))
 $CMD -m topicexplorer.export ap.ini -o ap.tez --include-corpus
+EXIT=$(($EXIT+$?))
+$CMD -m topicexplorer.tezimport ap.tez -o ap2
 EXIT=$(($EXIT+$?))
 $CMD -m topicexplorer update
 # TODO: enable once status code for invalid branch is implemented
