@@ -75,8 +75,6 @@ if platform.python_version_tuple()[0] == '2':
     install_requires.append("futures>=3.0.0")
     install_requires.append("configparser>=3.5.0")
     install_requires.append("importlib")
-elif platform.python_version_tuple()[0] == '3':
-    install_requires.append("pdfminer3k")
 
 setup(
     name='topicexplorer',
@@ -122,6 +120,8 @@ setup(
         'console_scripts' : ['vsm = topicexplorer.__main__:vsm',
                 'topicexplorer = topicexplorer.__main__:main',
                 'htutils = topicexplorer.lib.hathitrust:main']
-    }
+    },
+    test_suite="unittest2.collector",
+    tests_require=['unittest2']
 )
 

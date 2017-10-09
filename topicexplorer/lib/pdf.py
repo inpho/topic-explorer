@@ -51,7 +51,7 @@ def convert_miner(fname, pages=None):
     converter = TextConverter(manager, output, laparams=LAParams())
     interpreter = PDFPageInterpreter(manager, converter)
 
-    infile = file(fname, 'rb')
+    infile = open(fname, 'rb')
     for page in PDFPage.get_pages(infile, pagenums):
         try:
             interpreter.process_page(page)

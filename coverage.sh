@@ -1,6 +1,6 @@
 #!/bin/bash
 #CMD='coverage run -a --source topicexplorer --omit="topicexplorer/extensions/*.py,topicexplorer/lib/hathitrust.py"'
-CMD="coverage run -a --source topicexplorer.init,topicexplorer.prep,topicexplorer.train,topicexplorer.server"
+CMD="coverage run -a --source topicexplorer.init,topicexplorer.prep,topicexplorer.train,topicexplorer.server,topicexplorer.lib.pdf"
 rm -rf .coverage ap
 coverage debug sys
 
@@ -77,6 +77,8 @@ EXIT=$(($EXIT+$?))
 $CMD -m topicexplorer update
 # TODO: enable once status code for invalid branch is implemented
 # EXIT=$EXIT+$?
+
+$CMD setup.py test
 
 coverage report
 echo "Exiting with code ${EXIT}"
