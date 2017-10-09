@@ -72,6 +72,9 @@ EXIT=$(($EXIT+$?))
 kill -2 $$
 trap - INT
 
+#$CMD -m topicexplorer.init www/papers --name "Papers" -q
+#EXIT=$(($EXIT+$?))
+
 $CMD -m topicexplorer.train ap.ini --rebuild -k 20 40 60 --iter 5 --context-type article --seed 37
 EXIT=$(($EXIT+$?))
 $CMD -m topicexplorer.train ap.ini --continue --iter 15 --quiet

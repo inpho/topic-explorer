@@ -85,4 +85,9 @@ def main(args):
 
 
 if __name__ == '__main__':
-    main()
+    from argparse import ArgumentParser
+    parser = ArgumentParser()
+    populate_parser(parser)
+    args = parser.parse_args()
+
+    main(args)
