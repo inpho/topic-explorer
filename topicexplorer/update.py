@@ -69,7 +69,7 @@ def update(args=None):
 
     dist = get_dist('topicexplorer')
 
-    if dist_is_editable(dist):
+    if dist_is_editable(dist):  # pragma: no cover
         print("You have an editable install, so updates will be pulled from git.")
         print("Your install directory is: {}\n".format(dist.location))
         for attempt in range(2):

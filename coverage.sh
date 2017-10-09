@@ -91,10 +91,10 @@ $CMD -m topicexplorer.tezimport ap.tez -o ap2
 EXIT=$(($EXIT+$?))
 $CMD -m topicexplorer update
 pip install -e .
-pip install gitpython travispy
-$CMD -m topicexplorer update
 $CMD -m topicexplorer version
 EXIT=$(($EXIT+$?))
+#pip install gitpython travispy
+#$CMD -m topicexplorer update
 # TODO: enable once status code for invalid branch is implemented
 # EXIT=$EXIT+$?
 
