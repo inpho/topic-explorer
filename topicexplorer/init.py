@@ -142,7 +142,9 @@ def get_corpusbuilder_fn(corpus_path, sentences=False,
         else:
             from vsm.extensions.corpusbuilders import toy_corpus
         import functools
-        return functools.partial(toy_corpus, is_filename=True, autolabel=True)
+        toy_partial = functools.partial(toy_corpus, is_filename=True, autolabel=True)
+        toy_partial.__name__ = 'toy_corpus'
+        return toy_partial
     elif len(dirs) <= 1:
         if sentences:
             from vsm.extensions.ldasentences import dir_corpus
@@ -195,7 +197,6 @@ def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=0,
     print("Building corpus from", corpus_path, end=' ')
     corpusbuilder = get_corpusbuilder_fn(corpus_path, sentences, ignore=ignore)
     print("with {} function".format(corpusbuilder.__name__))
-
     c = corpusbuilder(corpus_path, nltk_stop=nltk_stop,
                       stop_freq=stop_freq, ignore=ignore, decode=decode,
                       simple=simple, tokenizer=tokenizer)
