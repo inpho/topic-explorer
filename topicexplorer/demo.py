@@ -50,7 +50,7 @@ def download_and_extract():
         corpus[docno] = text
 
     # check if directory already exists
-    if os.path.exists("ap"):
+    if os.path.exists("ap"):   # pragma: no cover
         print("Folder 'ap' already exists!")
         remove = None
         while remove is None or not (remove.startswith('y') or remove.startswith('n')):
