@@ -61,8 +61,8 @@ def process_pdfs(corpus_path, ignore=['.json', '.log', '.err', '.pickle', '.npz'
         contents = listdir_nohidden(corpus_path)
         contents = [os.path.join(corpus_path, obj) for obj in contents
                     if not any([obj.endswith(suffix) for suffix in ignore])]
-        count_dirs = len(filter(os.path.isdir, contents))
-        count_files = len(filter(os.path.isfile, contents))
+        count_dirs = len(list(filter(os.path.isdir, contents)))
+        count_files = len(list(filter(os.path.isfile, contents)))
 
         if count_files > 0 and count_dirs == 0:
             # process all files

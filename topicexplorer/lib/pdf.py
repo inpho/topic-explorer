@@ -28,14 +28,17 @@ import subprocess
 
 
 def convert(fname, pages=None):
-    cmd = "where" if platform.system() == "Windows" else "which"
     try:
-        cmd = subprocess.check_output([cmd, 'pdftotext'], stderr=os.devnull).strip()
-        return subprocess.check_output([cmd, fname, '-'])
-    except:
+        cmd = "where" if platform.system() == "Windows" else "which"
+        cmd = subprocess.check_output(cmd + ' pdftotext',
+                shell=True).decode('utf8').strip()
+        if not cmd:
+            raise EnvironmentError("pdftotext not found")
+        out = subprocess.check_output(cmd + ' ' + fname + ' -', shell=True)
+        return out
+    except EnvironmentError:
         # logging.warning("pdftotext not found, defaulting to pdfminer.")
         return convert_miner(fname, pages=pages)
-
 
 def convert_miner(fname, pages=None):
     if not pages:

@@ -62,7 +62,8 @@ install_requires = [
         'profilehooks',
         'pybtex>=0.20',
         'paste',
-        'htrc-feature-reader>=1.90'
+        'htrc-feature-reader>=1.90',
+        'pdfminer.six'
         ]
 
 if platform.system() == 'Windows':
@@ -73,7 +74,6 @@ if platform.system() == 'Windows':
 if platform.python_version_tuple()[0] == '2':
     install_requires.append("futures>=3.0.0")
     install_requires.append("configparser>=3.5.0")
-    install_requires.append("pdfminer")
     install_requires.append("importlib")
 elif platform.python_version_tuple()[0] == '3':
     install_requires.append("pdfminer3k")
