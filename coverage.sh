@@ -74,7 +74,9 @@ trap - INT
 
 $CMD -m topicexplorer.train ap.ini --rebuild -k 20 40 60 --iter 5 --context-type article
 EXIT=$(($EXIT+$?))
-$CMD -m topicexplorer.train ap.ini --continue -k 20 40 60 --iter 15 --context-type article
+$CMD -m topicexplorer.train ap.ini --continue --iter 15 --quiet
+EXIT=$(($EXIT+$?))
+$CMD -m topicexplorer.train ap.ini --rebuild -k 20 40 60 --iter 10 --context-type article -p 2
 EXIT=$(($EXIT+$?))
 $CMD -m topicexplorer update
 # TODO: enable once status code for invalid branch is implemented

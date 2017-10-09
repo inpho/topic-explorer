@@ -111,6 +111,8 @@ def main(args):
         try:
             if config.get("main", "topics"):
                 default = ' '.join(map(str, eval(config.get("main", "topics"))))
+                if args.quiet:
+                    args.k = [int(n) for n in default.split()]
             else:
                 raise NoOptionError
         except NoOptionError:
