@@ -38,7 +38,7 @@ def get_dist(dist_name):
     return working_set.find(req)
 
 
-def process_exists(processname):
+def process_exists(processname): # pragma: no cover
     # http://stackoverflow.com/a/29275361
 
     import subprocess
@@ -128,7 +128,7 @@ def update(args=None):
                 'origin/{BRANCH}..{BRANCH}'.format(BRANCH=branch.name)))
             if commits_behind:
                 print("Your branch is {} commits behind GitHub.".format(len(commits_behind)))
-                if platform.system() == 'Windows':
+                if platform.system() == 'Windows':  # pragma: no cover
                     import sys
                     if sys.argv[0] != __file__:
                         print("Use the `python -m topicexplorer.update` command to update.")
@@ -169,7 +169,7 @@ def update(args=None):
         update_available = pypi_version > installed_version
 
         if update_available:
-            if platform.system() == 'Windows':
+            if platform.system() == 'Windows':  # pragma: no cover
                 import sys
                 if sys.argv[0] != __file__:
                     print("Update available. Use the `python -m topicexplorer.update`", end=' ')
