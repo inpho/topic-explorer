@@ -79,6 +79,8 @@ $CMD -m topicexplorer.train ap.ini --rebuild -k 20 40 60 --iter 5 --context-type
 EXIT=$(($EXIT+$?))
 $CMD -m topicexplorer.train ap.ini --continue --iter 15 --quiet
 EXIT=$(($EXIT+$?))
+$CMD -m topicexplorer.train ap.ini --cluster 8
+EXIT=$(($EXIT+$?))
 $CMD -m topicexplorer.train ap.ini --rebuild -k 20 40 60 --iter 10 --context-type article -p 2 --seed 92189
 EXIT=$(($EXIT+$?))
 $CMD -m topicexplorer.export ap.ini -o ap.tez --include-corpus

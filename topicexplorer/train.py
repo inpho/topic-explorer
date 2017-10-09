@@ -154,13 +154,13 @@ Do you want to continue training your existing models? """, default=True))):
                      multiprocessing=args.processes > 1,
                      n_proc=args.processes)
 
-        if args.iter is None and not args.quiet:
+        if args.iter is None and not args.quiet:    # pragma: no cover
             args.iter = int_prompt("Total number of training iterations:",
                                    default=int(m.iteration * 1.5), min=m.iteration)
 
             print("\nTIP: number of training iterations can be specified with argument '--iter N':")
             print("         topicexplorer train --iter %d %s\n" % (args.iter, args.config_file))
-        elif args.iter is None and args.quiet:
+        elif args.iter is None and args.quiet:      # pragma: no cover
             args.iter = int(m.iteration * 1.5)
 
         del m
@@ -188,12 +188,12 @@ Do you want to continue training your existing models? """, default=True))):
                                               dry_run=args.dry_run)
     else:
         # build a new model
-        if args.iter is None and not args.quiet:
+        if args.iter is None and not args.quiet:    # pragma: no cover
             args.iter = int_prompt("Number of training iterations:", default=200)
 
             print("\nTIP: number of training iterations can be specified with argument '--iter N':")
             print("         topicexplorer train --iter %d %s\n" % (args.iter, args.config_file))
-        elif args.iter is None and args.quiet:
+        elif args.iter is None and args.quiet:      # pragma: no cover
             args.iter = 200
 
         # TODO: if only one context_type, make it just the one context type.
