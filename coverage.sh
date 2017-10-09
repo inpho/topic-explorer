@@ -1,6 +1,6 @@
 #!/bin/bash
 #CMD='coverage run -a --source topicexplorer --omit="topicexplorer/extensions/*.py,topicexplorer/lib/hathitrust.py"'
-CMD="coverage run -a --source topicexplorer.init,topicexplorer.prep,topicexplorer.train,topicexplorer.server,topicexplorer.lib.pdf"
+CMD="coverage run -a --source topicexplorer.init,topicexplorer.prep,topicexplorer.train,topicexplorer.server,topicexplorer.lib.pdf,topicexplorer.version,topicexplorer.demo"
 rm -rf .coverage ap
 coverage debug sys
 
