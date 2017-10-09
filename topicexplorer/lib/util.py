@@ -12,6 +12,7 @@ import fnmatch
 from glob import glob
 import os
 import os.path
+from pkg_resources import resource_filename
 import shutil
 import sys
 
