@@ -11,6 +11,8 @@ elif sys.version_info.major == 3:
     from unittest.mock import Mock, patch, PropertyMock
 
 
+import os
+import shutil
 from tempfile import NamedTemporaryFile, mkdtemp
 import topicexplorer.lib.pdf
 
@@ -25,6 +27,14 @@ class TestPdf(unittest.TestCase):
     def test_convert_pdftotext(self):
         out = topicexplorer.lib.pdf.convert("www/papers/aaai15-topic-explorer-demo.pdf")
         self.assertGreater(len(out), 0)
+
+    def test_main(self):
+        output_dir = mkdtemp()
+        topicexplorer.lib.pdf.main("www/papers/aaai15-topic-explorer-demo.pdf",
+            output_dir=output_dir)
+        self.assertEqual(1, len(os.listdir(output_dir)))
+        shutil.rmtree(output_dir)
+
 
 if __name__ == '__main__':
     #Define and run test suite

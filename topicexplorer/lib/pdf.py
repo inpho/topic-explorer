@@ -95,6 +95,7 @@ def main(path_or_paths, output_dir=None, verbose=1):
                     except (PDFException, PSException):
                         print("Skipping {0} due to PDF Exception".format(pdffile))
             else:
+                pdffile = p
                 futures.append(executor.submit(convert_and_write, pdffile, output_dir, True, True))
 
         if verbose == 1:
