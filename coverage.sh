@@ -83,12 +83,15 @@ $CMD -m topicexplorer.train ap.ini --cluster 8
 EXIT=$(($EXIT+$?))
 $CMD -m topicexplorer.train ap.ini --rebuild -k 20 40 60 --iter 10 --context-type article -p 2 --seed 92189
 EXIT=$(($EXIT+$?))
+$CMD -m topicexplorer.train ap.ini --continue --iter 10 -k 20 40 80
+EXIT=$(($EXIT+$?))
 $CMD -m topicexplorer.export ap.ini -o ap.tez --include-corpus
 EXIT=$(($EXIT+$?))
 $CMD -m topicexplorer.tezimport ap.tez -o ap2
 EXIT=$(($EXIT+$?))
 $CMD -m topicexplorer update
 pip install -e .
+pip install gitpython travispy
 $CMD -m topicexplorer update
 $CMD -m topicexplorer version
 EXIT=$(($EXIT+$?))
