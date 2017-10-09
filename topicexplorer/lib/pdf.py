@@ -108,7 +108,7 @@ def main(path_or_paths, output_dir=None, verbose=1):
             pbar.finish()
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     from argparse import ArgumentParser
     parser = ArgumentParser()
 

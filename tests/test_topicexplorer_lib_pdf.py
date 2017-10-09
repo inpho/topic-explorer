@@ -35,6 +35,13 @@ class TestPdf(unittest.TestCase):
         self.assertEqual(1, len(os.listdir(output_dir)))
         shutil.rmtree(output_dir)
 
+    def test_convert_and_write(self):
+        output_dir = mkdtemp()
+        topicexplorer.lib.pdf.convert_and_write("www/papers/aaai15-topic-explorer-demo.pdf",
+            output_dir=output_dir, overwrite=True, verbose=True)
+        self.assertEqual(1, len(os.listdir(output_dir)))
+        shutil.rmtree(output_dir)
+
 
 if __name__ == '__main__':
     #Define and run test suite
