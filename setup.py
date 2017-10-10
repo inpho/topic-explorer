@@ -15,7 +15,7 @@ except ImportError:
 
 # get version from package through manual read
 # see http://stackoverflow.com/a/17626524 
-__version__ = open(os.path.normpath("topicexplorer/version.py")).readlines()[9].split()[-1].strip("\"'")
+__version__ = open(os.path.normpath("topicexplorer/version.py")).readlines()[11].split()[-1].strip("\"'")
 
 # building datafiles list
 datadir = 'www'
