@@ -190,6 +190,8 @@ def get_static_resource_path(path):
         return resource_filename(__name__, path)
     elif os.path.exists(resource_filename(__name__, '../' + path)):
         return resource_filename(__name__, '../' + path)
+    elif os.path.exists(resource_filename(__name__, '../../' + path)):
+        return resource_filename(__name__, '../../' + path)
     else:
         raise OSError("File not found: {}".format(path))
 
