@@ -26,6 +26,7 @@
 
 .bar {
     fill: steelblue;
+    background-image: linear-gradient(white, black);
 }
 
 .bar:hover {
