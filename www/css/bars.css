@@ -22,7 +22,7 @@
 }
 
 .docLabel {
-  }
+ }
 
 .bar {
     fill: steelblue;
@@ -50,6 +50,7 @@
 
 rect {
   opacity: 0.6;
+  background-image: linear-gradient(white, black);  
   }
 
 rect.hover {
