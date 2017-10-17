@@ -26,7 +26,7 @@
 
 .bar {
     fill: steelblue;
-    background-image: linear-gradient(white, black);
+    background-color: linear-gradient(white, black);
 }
 
 .bar:hover {
@@ -49,8 +49,7 @@
 }
 
 rect {
-  #opacity: 0.6;
-  background-image: linear-gradient(white, black);  
+  opacity: 0.6;  
   }
 
 rect.hover {
