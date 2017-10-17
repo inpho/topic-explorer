@@ -49,7 +49,7 @@
 }
 
 rect {
-  opacity: 0.6;
+  #opacity: 0.6;
   background-image: linear-gradient(white, black);  
   }
 
