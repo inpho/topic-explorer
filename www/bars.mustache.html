@@ -527,8 +527,8 @@ d3.json(url, function(error, data) {
             $(".docLabel", parent).removeClass("hover");
             $(".top_" + d.name).removeClass('hover');
           })
-        .on("click", function(d) { topicSort(d.name); })
-        .style("fill", function(d) { return topics[d.name]['color']; });
+        .on("click", function(d) { topicSort(d.name); })	
+        .style("fill", function(d) { return barColors(topics[d.name]['color'], d.name); });
     
     doc.append("text")
           .text(function(d) { return d.label; })
@@ -674,7 +674,7 @@ d3.json(url, function(error, data) {
     svg.selectAll(".doc")
       .selectAll("rect")
       .data(function(d) { return d.topicMap; })
-      .style("fill", function(d) { return tops[d.name]['color']; })
+      .style("fill", function(d) { return barColors(tops[d.name]['color'], d.name); })
       /*.on("mouseover", function(d) {
           // SVG element z-index determined by render order, not style sheet
           // so element must be reappended to the end on hover so border 
@@ -794,7 +794,7 @@ d3.json(url, function(error, data) {
     svg.selectAll(".doc")
       .selectAll("rect")
       .data(function(d) { return d.topicMap; })
-      .style("fill", function(d) { return tops[d.name]['color']; })
+      .style("fill", function(d) { return barColors(tops[d.name]['color'], d.name); })
       /*
       .on("mouseover", function(d) {
           // SVG element z-index determined by render order, not style sheet
@@ -815,6 +815,34 @@ d3.json(url, function(error, data) {
       .attr("width", function(d) { return x(d.x1) - x(d.x0); })
       .attr("class", function(d) { return "top_" + d.name; });
 
+  }
+
+  function hexToRgbA(hex, a){
+    var c;
+    if(/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)){
+        c= hex.substring(1).split('');
+        if(c.length== 3){
+            c= [c[0], c[0], c[1], c[1], c[2], c[2]];
+        }
+        c= '0x'+c.join('');
+        return 'rgba('+[(c>>16)&255, (c>>8)&255, c&255].join(',')+',' + a + ')';
+    }
+    throw new Error('Bad Hex');
+  }
+
+  function barColors(myColor, myId) {
+   // var myColor = topics[d.name]['color'];
+    //var myId = d.name;
+    var mainGradient = svg.append('linearGradient')
+        .attr('id', myId);
+    mainGradient.append('stop')
+        .attr('stop-color', myColor)
+        .attr('offset', '0');
+    mainGradient.append('stop')
+        .attr('stop-color', hexToRgbA(myColor, .35))
+        .attr('stop-opacity', '60%')
+        .attr('offset', '1');
+    return "url(#" + myId + ")";
   }
 </script>
 
