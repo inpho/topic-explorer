@@ -52,7 +52,7 @@ def stop_language(c, language):
         print("\nExiting...")
         sys.exit(74)
     except IOError:
-        print("{} unsupported by default, use a custom stopwords file.")
+        print("{} unsupported by default, use a custom stopwords file.".format(language))
         return c.words
 
     if c.words.dtype.char == 'S':
