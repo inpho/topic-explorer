@@ -79,12 +79,14 @@ $CMD -m topicexplorer.train ap.ini --rebuild -k 20 40 60 --iter 5 --context-type
 EXIT=$(($EXIT+$?))
 $CMD -m topicexplorer.train ap.ini --continue --iter 15 --quiet
 EXIT=$(($EXIT+$?))
+# Testing triple continue function for singleprocessing, for issue #223
+$CMD -m topicexplorer.train ap -k 20 --iter 20 --continue --quiet
+EXIT=$(($EXIT+$?))
+
 $CMD -m topicexplorer.train ap.ini --cluster 8
 EXIT=$(($EXIT+$?))
 $CMD -m topicexplorer.train ap.ini --rebuild -k 20 40 60 --iter 10 --context-type article -p 2 --seed 92189
 EXIT=$(($EXIT+$?))
-#$CMD -m topicexplorer.train ap.ini --continue --iter 10 -k 20 40 80 --seed 92189 -p 2
-#EXIT=$(($EXIT+$?))
 $CMD -m topicexplorer.export ap.ini -o ap.tez --include-corpus
 EXIT=$(($EXIT+$?))
 $CMD -m topicexplorer.tezimport ap.tez -o ap2
@@ -98,13 +100,15 @@ EXIT=$(($EXIT+$?))
 # TODO: enable once status code for invalid branch is implemented
 # EXIT=$EXIT+$?
 
+
 # Testing the continue function for issues #222 and #223
-$CMD -m topicexplorer.train ap -k 20 40 60 --iter 10 -p 3 --rebuild
+$CMD -m topicexplorer.train ap -k 20 --iter 10 -p 3 --rebuild
 EXIT=$(($EXIT+$?))
-$CMD -m topicexplorer.train ap -k 20 40 60 --iter 15 --continue
+$CMD -m topicexplorer.train ap -k 20 --iter 15 --continue --quiet
 EXIT=$(($EXIT+$?))
-$CMD -m topicexplorer.train ap -k 20 40 60 --iter 20 --continue
+$CMD -m topicexplorer.train ap -k 20 --iter 20 --continue --quiet
 EXIT=$(($EXIT+$?))
+
 
 $CMD setup.py test
 
