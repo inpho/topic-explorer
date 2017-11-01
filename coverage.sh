@@ -98,6 +98,14 @@ EXIT=$(($EXIT+$?))
 # TODO: enable once status code for invalid branch is implemented
 # EXIT=$EXIT+$?
 
+# Testing the continue function for issues #222 and #223
+$CMD -m topicexplorer.train ap -k 20 40 60 --iter 10 -p 3 --rebuild
+EXIT=$(($EXIT+$?))
+$CMD -m topicexplorer.train ap -k 20 40 60 --iter 15 --continue
+EXIT=$(($EXIT+$?))
+$CMD -m topicexplorer.train ap -k 20 40 60 --iter 20 --continue
+EXIT=$(($EXIT+$?))
+
 $CMD setup.py test
 
 coverage report

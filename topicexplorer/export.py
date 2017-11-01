@@ -72,7 +72,7 @@ def create_relative_config_file(config_file, manifest, include_corpus=False):
 
     return temp_config_file
 
-def zip_files(outfile, manifest, include_corpus=False, verbose=True):
+def zip_files(outfile, manifest, include_corpus=False, verbose=False):
     if sys.version_info[0] == 3:
         root = os.path.commonpath(map(os.path.abspath, manifest))
     else:
