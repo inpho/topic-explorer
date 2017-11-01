@@ -102,7 +102,7 @@ EXIT=$(($EXIT+$?))
 
 
 # Testing the continue function for issues #222 and #223
-$CMD -m topicexplorer.train ap -k 20 --iter 10 -p 3 --rebuild
+$CMD -m topicexplorer.train ap -k 20 --iter 10 -p 2 --rebuild
 EXIT=$(($EXIT+$?))
 $CMD -m topicexplorer.train ap -k 20 --iter 15 --continue --quiet
 EXIT=$(($EXIT+$?))
