@@ -37,6 +37,7 @@ test_script:
   - ps: Start-Job -Name topicexplorer { &"$env:PYTHON\python.exe" -m topicexplorer.server -p 8000 --no-browser ap.ini }
   - ps: Start-Sleep -s 15
   - ps: Get-Job
+  - ps: Receive-Job -Id 1
   - ps: (Invoke-WebRequest http://localhost:8000/ | Select-Object -ExpandProperty StatusCode) -eq 200
   - ps: Stop-Job -Name topicexplorer
 
