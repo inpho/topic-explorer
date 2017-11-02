@@ -34,8 +34,9 @@ test_script:
   - "%PYTHON%\\python.exe -m topicexplorer.version"
   - "%PYTHON%\\python.exe -m topicexplorer.demo --no-launch"
   - "%PYTHON%\\python.exe -m topicexplorer.train ap.ini --rebuild -k 20 40 60 --iter 20 --context-type article"
-  - ps: Start-Job -Name topicexplorer { "%PYTHON%\\python.exe -m topicexplorer.server -p 8000 --no-browser ap.ini" }
+  - ps: Start-Job -Name topicexplorer { %PYTHON%\\python.exe -m topicexplorer.server -p 8000 --no-browser ap.ini }
   - ps: Start-Sleep -s 15
+  - ps: Get-Job
   - ps: (Invoke-WebRequest http://localhost:8000/ | Select-Object -ExpandProperty StatusCode) -eq 200
   - ps: Stop-Job -Name topicexplorer
 
