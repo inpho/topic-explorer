@@ -18,6 +18,7 @@ install:
   - "%PYTHON%\\python.exe -c \"import nltk; nltk.download('stopwords'); nltk.download('punkt')\""
   - "%PYTHON%\\python.exe -m pip install unittest2 nose wget"
   - "%PYTHON%\\python.exe -m pip install vsm"
+  - "%PYTHON%\\python.exe -m pip install . --extra-index-url https://inpho.cogs.indiana.edu/pypi"
 
 build: off
 version: '1.0.{build}'
@@ -30,10 +31,13 @@ test_script:
   # Note that you must use the environment variable %PYTHON% to refer to
   # the interpreter you're using - Appveyor does not do anything special
   # to put the Python evrsion you want to use on PATH.
-  - "%PYTHON%\\python.exe -m pip -r requirements.txt ."
   - "%PYTHON%\\python.exe -m topicexplorer.version"
-  - "%PYTHON%\\python.exe -m topicexplorer.demo"
+  - "%PYTHON%\\python.exe -m topicexplorer.demo --no-launch"
   - "%PYTHON%\\python.exe -m topicexplorer.train ap.ini --rebuild -k 20 40 60 --iter 20 --context-type article"
+  - ps: Start-Job -Name topicexplorer { "%PYTHON%\\python.exe -m topicexplorer.server -p 8000 --no-browser ap.ini" }
+  - ps: Start-Sleep -s 15
+  - ps: (Invoke-WebRequest http://localhost:8000/ | Select-Object -ExpandProperty StatusCode) -eq 200
+  - ps: Stop-Job -Name topicexplorer
 
 #after_test:
 #  # This step builds your wheels.
