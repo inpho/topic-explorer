@@ -840,8 +840,7 @@ d3.json(url, function(error, data) {
         .attr('stop-color', myColor)
         .attr('offset', '0');
     mainGradient.append('stop')
-        .attr('stop-color', hexToRgbA(myColor, .35))
-        .attr('stop-opacity', '60%')
+        .attr('stop-color', hexToRgbA(myColor, .7))
         .attr('offset', '1');
     return "url(#" + myId + ")";
   }
