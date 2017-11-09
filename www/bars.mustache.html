@@ -506,8 +506,9 @@ d3.json(url, function(error, data) {
     doc.selectAll("rect")
         .data(function(d) { return d.topicMap; })
       .enter().append("rect")
-        .attr("height", y.rangeBand())
+        .attr("height", y.rangeBand()/2.75)
         .attr("x", function(d) { return x(d.x0); })
+	.attr("y", 10)
         .attr("width", function(d) { return x(d.x1) - x(d.x0); })
         .attr("class", function(d) { return "top_" + d.name; })
         .on("mouseover", function(d) {
@@ -534,7 +535,7 @@ d3.json(url, function(error, data) {
           .text(function(d) { return d.label; })
           .attr("class","docLabel")
           .attr("dx", "3")
-          .attr("dy", "20") 
+          .attr("dy", "8")
         .filter(function(d) { return q && (d.label.indexOf(q) >= 0);})
         .each(function(d) {
             if (q) {
