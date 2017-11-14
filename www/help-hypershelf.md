@@ -1,0 +1,30 @@
+This is the **“Hypershelf”**.  It allows you to explore documents in the corpus using pre-trained topic models.  If you are unfamiliar with topic modeling, you can read [Blei 2012](http://www.cs.columbia.edu/~blei/papers/Blei2012.pdf) or watch the video at [Inphodata.cogs.indiana.edu](http://inphodata.cogs.indiana.edu).
+
+## Document Similarity
+
+The **Hypershelf** shows up to 40 **documents** that are **most similar to** the **focal document**.  Each document is represented bar whose colors show the **mixture and proportions of topics** assigned to each document by the training process. The **relative lengths** of the bar **indicate** the **degree of similarity** to the focal document according to the topic mixtures.
+
+## Topics 
+
+**Rolling over** a colored segment shows the **highest probability words** associated with that topic. The **key** on the right shows all the topics identified by the model. If you **click on a topic** in the bar or the key, the display will **resort** the **current documents** using only that **topic to rank similarity**. In this mode a new **Top Documents** button appears at the top that lets you retrieve the top documents for that topic from the full corpus.
+
+## Focal Document 
+
+To select or change a new **focal document** you can do any of these things:
+1. **Start typing a few letters** in the focal document entry area;
+2. **Click the crossed arrows button** to the right of the focal document entry area for a **random** document;
+3. **Refocus** on one of the already-displayed documents by rolling the cursor just to the **left of the topic bar** and **clicking** on the **arrow** that appears.
+
+You may use the button to the right of the random document button to visualize the focal document and you may use the dropdown menu attached to the button to switch to a model with a different number of topics.
+
+## Other Options
+
+Below the key are some additional display options that let you **sort** the displayed documents **alphabetically**, or to **normalize** the length of the **bars** so that you can see the relative proportions more clearly.
+
+Other icons to the left of each topic bar allow you to **view the document contents**, or see a **“fingerprint”** of the **topic mixtures** for that document in all the available models with different numbers of topics.  The fingerprint can also be used to navigate directly to the corresponding model focused on the document.
+
+The numbers in the menu on the left can be used to **navigate directly to a model** with that number of topics, but no focal document. 
+
+Above the numbers on the left, the topic cluster button will take you to a different interface that lets you **explore topic similarity across the models**. 
+
+The home button at the top left will take you to a **general information page** about the corpus and models.
