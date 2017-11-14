@@ -49,7 +49,7 @@ var icon_fns = {"link" : function(ticks, i) {
           }
         });
   },
- "ap" : function(ticks, i) {
+ "ap" : function(ticks, i, docs) {
       base_fn(ticks,i)
         .attr("data-doc-id", function (d) {return d})
         .attr("data-doc-label", function (d) {
