@@ -52,6 +52,14 @@ var icon_fns = {"link" : function(ticks, i) {
  "ap" : function(ticks, i) {
       base_fn(ticks,i)
         .attr("data-doc-id", function (d) {return d})
+        .attr("data-doc-label", function (d) {
+          data = docs.filter(function(doc, i) { return doc.id == d})[0];
+            try {
+              return data.label;
+            } catch (e) {
+              return d;  
+            }; 
+          })
         .attr("xlink:href","/img/ap.jpg")
         .attr("class", "apIcon icon")
         .attr("onclick", function(d) { return (d) ? "fulltext.popover(this)" : ""; });
