@@ -30,15 +30,16 @@ except ImportError:
 
 def convert(fname, pages=None):
     try:
+        # attempt to find a pdftotext binary
         cmd = "where" if platform.system() == "Windows" else "which"
-        cmd = subprocess.check_output(cmd + ' pdftotext',
-                shell=True).decode('utf8').strip()
-        if not cmd:
+        try:
+            cmd = subprocess.check_output(cmd + ' pdftotext',
+                    shell=True).decode('utf8').strip()
+        except subprocess.CalledProcessError:
             raise EnvironmentError("pdftotext not found")
-        out = subprocess.check_output(' '.join([cmd, cmd_quote(fname), '-']), shell=True)
-        return out
+        return subprocess.check_output(' '.join([cmd, cmd_quote(fname), '-']), shell=True)
     except EnvironmentError:
-        # logging.warning("pdftotext not found, defaulting to pdfminer.")
+        logging.warning("pdftotext not found, defaulting to pdfminer.")
         return convert_miner(fname, pages=pages)
 
 def convert_miner(fname, pages=None):
