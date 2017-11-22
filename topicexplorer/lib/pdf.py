@@ -34,7 +34,8 @@ def convert(fname, pages=None):
         cmd = "where" if platform.system() == "Windows" else "which"
         cmd = subprocess.check_output(cmd + ' pdftotext', shell=True)
         cmd = cmd.decode('utf8').strip()
-        raise EnvironmentError("pdftotext not found")
+        if not cmd:
+            raise EnvironmentError("pdftotext not found")
         
         return subprocess.check_output(' '.join([cmd, cmd_quote(fname), '-']), shell=True)
     except (EnvironmentError, subprocess.CalledProcessError):
