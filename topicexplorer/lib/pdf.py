@@ -3,29 +3,30 @@ from __future__ import print_function
 from future import standard_library
 standard_library.install_aliases()
 from past.builtins import basestring
+
+from codecs import open
+import concurrent.futures
+from glob import glob
 from io import StringIO
+import os
+import os.path
+import platform
+import subprocess
+
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
 from pdfminer.pdfpage import PDFPage
 from pdfminer.pdftypes import PDFException
 from pdfminer.psparser import PSException
-
-import concurrent.futures
-
-import os
-import os.path
-from glob import glob
-from codecs import open
+from progressbar import ProgressBar, Percentage, Bar
 
 from topicexplorer.lib import util
 
-from progressbar import ProgressBar, Percentage, Bar
-
-import os
-import platform
-import subprocess
-
+try:
+    from shlex import quote as cmd_quote
+except ImportError:
+    from pipes import quote as cmd_quote
 
 def convert(fname, pages=None):
     try:
@@ -34,7 +35,7 @@ def convert(fname, pages=None):
                 shell=True).decode('utf8').strip()
         if not cmd:
             raise EnvironmentError("pdftotext not found")
-        out = subprocess.check_output(cmd + ' ' + fname + ' -', shell=True)
+        out = subprocess.check_output(' '.join([cmd, cmd_quote(fname), '-']), shell=True)
         return out
     except EnvironmentError:
         # logging.warning("pdftotext not found, defaulting to pdfminer.")
