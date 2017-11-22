@@ -7,7 +7,7 @@ from past.builtins import basestring
 from codecs import open
 import concurrent.futures
 from glob import glob
-from io import StringIO
+from io import BytesIO
 import os
 import os.path
 import platform
@@ -32,14 +32,13 @@ def convert(fname, pages=None):
     try:
         # attempt to find a pdftotext binary
         cmd = "where" if platform.system() == "Windows" else "which"
-        try:
-            cmd = subprocess.check_output(cmd + ' pdftotext',
-                    shell=True).decode('utf8').strip()
-        except subprocess.CalledProcessError:
-            raise EnvironmentError("pdftotext not found")
+        cmd = subprocess.check_output(cmd + ' pdftotext', shell=True)
+        cmd = cmd.decode('utf8').strip()
+        raise EnvironmentError("pdftotext not found")
+        
         return subprocess.check_output(' '.join([cmd, cmd_quote(fname), '-']), shell=True)
-    except EnvironmentError:
-        logging.warning("pdftotext not found, defaulting to pdfminer.")
+    except (EnvironmentError, subprocess.CalledProcessError):
+        #logging.warning("pdftotext not found, defaulting to pdfminer.")
         return convert_miner(fname, pages=pages)
 
 def convert_miner(fname, pages=None):
@@ -48,22 +47,19 @@ def convert_miner(fname, pages=None):
     else:
         pagenums = set(pages)
 
-    output = StringIO()
+    output = BytesIO()
     manager = PDFResourceManager()
-    converter = TextConverter(manager, output, laparams=LAParams())
+    converter = TextConverter(manager, output, codec='utf-8', laparams=LAParams())
     interpreter = PDFPageInterpreter(manager, converter)
 
     infile = open(fname, 'rb')
     for page in PDFPage.get_pages(infile, pagenums):
-        try:
-            interpreter.process_page(page)
-        except:
-            pass
+        interpreter.process_page(page)
+    text = output.getvalue()
     infile.close()
     converter.close()
-    text = output.getvalue()
     output.close()
-    text += '\n'
+    text += '\n'.encode('utf-8')
     return text
 
 
@@ -79,7 +75,7 @@ def convert_and_write(fname, output_dir=None, overwrite=False, verbose=False):
         with open(output, 'wb') as outfile:
             outfile.write(convert(fname))
             if verbose:
-                print("converted", fname, "->", output)
+            	print("converted", fname, "->", output)
 
 
 def main(path_or_paths, output_dir=None, verbose=1):
@@ -108,6 +104,28 @@ def main(path_or_paths, output_dir=None, verbose=1):
                 pbar.update(file_n)
 
             pbar.finish()
+
+"""
+# This drop in replacement is for testing of the pdf converters in serial
+def main(path_or_paths, output_dir=None, verbose=1):
+    if isinstance(path_or_paths, basestring):
+        path_or_paths = [path_or_paths]
+
+    pbar = ProgressBar(widgets=[Percentage(), Bar()]).start()
+    for p in pbar(path_or_paths):
+        if os.path.isdir(p):
+            for file_n, pdffile in enumerate(util.find_files(p, '*.pdf')):
+                try:
+                    convert_and_write(pdffile, output_dir, True)
+                except (PDFException, PSException):
+                    print("Skipping {0} due to PDF Exception".format(pdffile))
+        else:
+            pdffile = p
+            convert_and_write(pdffile, output_dir, True, True)
+
+
+    pbar.finish()
+"""
 
 
 if __name__ == '__main__':  # pragma: no cover
