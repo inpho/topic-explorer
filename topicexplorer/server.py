@@ -22,7 +22,7 @@ import sys
 from urllib.parse import unquote
 import webbrowser
 
-from bottle import request, response, route, run, static_file, Bottle
+from bottle import request, response, route, run, static_file, Bottle, ServerAdapter
 from topicexplorer.lib.color import get_topic_colors, rgb2hex
 from topicexplorer.lib.ssl import SSLWSGIRefServer
 from topicexplorer.lib.util import (int_prompt, bool_prompt, is_valid_filepath,
@@ -589,6 +589,13 @@ def get_host_port(args):
     host = args.host or config.get('www', 'host')
     return host, port
 
+class WaitressLoggingServer(ServerAdapter):
+    def run(self, handler): # pragma: no cover
+        from waitress import serve
+        if not self.quiet:
+            from paste.translogger import TransLogger
+            handler = TransLogger(handler)
+        serve(handler, host=self.host, port=self.port, **self.options)
 
 def main(args, app=None):
     if app is None:
@@ -608,7 +615,7 @@ def main(args, app=None):
         print("TIP: Browser launch can be disabled with the '--no-browser' argument:")
         print("topicexplorer serve --no-browser", args.config, "\n")
 
-    app.run(server='paste', host=host, port=port)
+    app.run(server=WaitressLoggingServer, host=host, port=port)
 
 
 def create_app(args):
