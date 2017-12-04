@@ -19,6 +19,7 @@ from pkg_resources import resource_filename
 import re
 import socket
 import sys
+import threading
 from urllib.parse import unquote
 import webbrowser
 
@@ -604,13 +605,15 @@ def main(args, app=None):
     host, port = get_host_port(args)
 
     if args.browser:
+
         if host == '0.0.0.0':
             link_host = "localhost"
         else:
             link_host = host
         url = "http://{host}:{port}/"
         url = url.format(host=link_host, port=port, k=min(app.topic_range))
-        webbrowser.open(url)
+        browser_thread = threading.Thread(target=webbrowser.open, args=[url])
+        browser_thread.start()
 
         print("TIP: Browser launch can be disabled with the '--no-browser' argument:")
         print("topicexplorer serve --no-browser", args.config, "\n")
