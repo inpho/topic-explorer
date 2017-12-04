@@ -587,7 +587,6 @@ def get_host_port(args):
 
     # hostname assignment
     host = args.host or config.get('www', 'host')
-
     return host, port
 
 
@@ -599,7 +598,7 @@ def main(args, app=None):
 
     if args.browser:
         if host == '0.0.0.0':
-            link_host = socket.gethostname()
+            link_host = "localhost"
         else:
             link_host = host
         url = "http://{host}:{port}/"
