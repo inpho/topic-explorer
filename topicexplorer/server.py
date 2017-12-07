@@ -654,7 +654,10 @@ def create_app(args):
     config_icons = config.get('www', 'icons').split(",")
     if args.fulltext or config.getboolean('www', 'fulltext'):
         if not any('fulltext' in icon for icon in config_icons) and 'ap' not in config_icons:
-            config_icons.insert(0, 'fulltext-inline')
+            if (config.getboolean('www', 'pdf')):
+                config_icons.insert(0, 'fulltext-pdf')
+            else:
+                config_icons.insert(0, 'fulltext-inline')
 
     # Create application object
     corpus_name = config.get('www', 'corpus_name')
