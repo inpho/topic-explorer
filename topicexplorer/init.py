@@ -348,12 +348,13 @@ def write_config(args, config_file=None):
         config.set("main", "label_module", "topicexplorer.extensions.bibtex")
         config.add_section("bibtex")
         config.set("bibtex", "path", args.bibtex)
-
+    
     config.add_section("www")
     config.set("www", "corpus_name", args.corpus_print_name)
     config.set("www", "icons", "fingerprint,link")
     config.set("www", "fulltext", "false")
-
+    if args.corpus_path[-4:] == '.pdf' or contains_pattern(args.corpus_path, '*.pdf'):
+        config.set("www", "pdf", "true")
 
     config.add_section("logging")
     config.set("logging", "path", "logs/%s/{0}.log" % args.corpus_name)
