@@ -126,6 +126,8 @@ function computeHeight(data, numLegendRows) {
     .orient("left");
 }
 
+//The calculateTopicMap function was changed to work with one document
+//and multiple documents instead of having two functions for both.
 function calculateTopicMap(data, scale, sortFn){
       data.forEach(function(d) {
         var sizeFactor = (scale) ? d.prob : 1.0
