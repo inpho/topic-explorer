@@ -654,6 +654,8 @@ def create_app(args):
     config_icons = config.get('www', 'icons').split(",")
     if args.fulltext or config.getboolean('www', 'fulltext'):
         if not any('fulltext' in icon for icon in config_icons) and 'ap' not in config_icons:
+            # determines what fulltext function to use depending on the pdf tag that
+            # was added in the init.py file
             if (config.getboolean('www', 'pdf')):
                 config_icons.insert(0, 'fulltext-pdf')
             else:
