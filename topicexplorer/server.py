@@ -284,19 +284,29 @@ class Application(Bottle):
         @_set_acao_headers
         def topics(k):
             from topicexplorer.lib.color import rgb2hex
+            import numpy as np
 
             response.content_type = 'application/json; charset=UTF8'
             response.set_header('Expires', _cache_date())
             response.set_header('Cache-Control', 'max-age=86400')
             
-            # populate word values
-            data = self.v[k].topics()
-
-            js = {}
+            # set a parameter for number of words to return
             wordmax = 10  # for alphabetic languages
             if kwargs.get('lang', None) == 'cn':
                 wordmax = 25  # for ideographic languages
 
+            # populate word values
+            phi = self.v[k].phi.T
+            idxs = phi.argsort(axis=1)[:,::-1][:,:wordmax]
+            # https://github.com/numpy/numpy/issues/4724
+            idx_hack = np.arange(np.shape(phi)[0])[:,np.newaxis]
+
+            dt = [('Word',self.c.words.dtype),('Prob',phi.dtype)]
+            data = np.zeros(shape=(phi.shape[0], wordmax), dtype=dt)
+            data['Word'] = self.c.words[idxs]
+            data['Prob'] = phi[idx_hack, idxs]
+
+            js = {}
             for i, topic in enumerate(data):
                 js[str(i)] = {
                     "color": rgb2hex(self.colors[k][i]),
