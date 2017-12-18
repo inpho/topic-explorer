@@ -1,13 +1,20 @@
 from future import standard_library
 standard_library.install_aliases()
+
+from configparser import ConfigParser
 from html.parser import HTMLParser
+import os.path
 import re
+
 
 def get_titles():
     """
     Returns a dictionary of { sep_dir : title } pairs.
     """
-    entries = '/var/inphosemantics/SEPMirror/usr/encyclopedia/databases/entries.txt'
+    config = ConfigParser()
+    config.read('/var/inpho/inpho.ini')
+
+    entries = os.path.join(config.get('corpus', 'db_path'), 'entries.txt')
     
     titles = {}
     with open(entries) as f:
