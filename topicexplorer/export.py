@@ -39,7 +39,13 @@ def create_relative_config_file(config_file, manifest, include_corpus=False):
     else:
         root = os.path.commonprefix(map(os.path.abspath, manifest))
     
-    config = ConfigParser({'cluster': None }) 
+    config = ConfigParser({
+        'cluster': None, 
+        'corpus_desc' : None,
+        'raw_corpus': None,
+        'cluster_path' : None,
+        'path' : None
+        }) 
     with open(config_file, encoding='utf8') as configfile:
         config.read_file(configfile)
 
