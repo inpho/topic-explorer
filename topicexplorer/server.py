@@ -278,24 +278,35 @@ class Application(Bottle):
         @self.route('/<k:int>/topics.json')
         @_set_acao_headers
         def topics(k):
+            import numpy as np
             from topicexplorer.lib.color import rgb2hex
 
             response.content_type = 'application/json; charset=UTF8'
             response.set_header('Expires', _cache_date())
             response.set_header('Cache-Control', 'max-age=86400')
             
-            # populate word values
-            data = self.v[k].topics()
-
-            js = {}
             wordmax = 10  # for alphabetic languages
             if kwargs.get('lang', None) == 'cn':
                 wordmax = 25  # for ideographic languages
 
+            # populate word values
+            # TODO: integrate workaround with main vsm package.
+            phi = self.v[k].phi.T
+            idxs = phi.argsort(axis=1)[:,::-1][:,:wordmax]
+            # https://github.com/numpy/numpy/issues/4724
+            idx_hack = np.arange(np.shape(phi)[0])[:,np.newaxis]
+
+            dt = [('Word',self.c.words.dtype),('Prob',phi.dtype)]
+            data = np.zeros(shape=(phi.shape[0], wordmax), dtype=dt)
+            data['Word'] = self.c.words[idxs]
+            data['Prob'] = phi[idx_hack, idxs]
+
+            # populate JSON Response
+            js = {}
             for i, topic in enumerate(data):
                 js[str(i)] = {
                     "color": rgb2hex(self.colors[k][i]),
-                    'words': dict([(unicode(w), float(p))
+                    'words': dict([(str(w), float(p))
                                        for w, p in topic[:wordmax]])
                     }
 
@@ -475,14 +486,14 @@ class Application(Bottle):
         @self.route('/fulltext/<doc_id:path>')
         @_set_acao_headers
         def get_doc(doc_id):
-            doc_id = doc_id.decode('utf-8')
+            doc_id = doc_id #.decode('utf-8')
             pdf_path = os.path.join(corpus_path, re.sub('txt$', 'pdf', doc_id))
             if os.path.exists(pdf_path.encode('utf-8')):
                 doc_id = re.sub('txt$', 'pdf', doc_id)
             # here we deal with case where corpus_path and doc_id overlap
             (fdirs, lastdir) = os.path.split(corpus_path)
-            pattern = lastdir.decode('utf-8')
-            fdirs = fdirs.decode('utf-8')
+            pattern = lastdir #.decode('utf-8')
+            fdirs = fdirs #.decode('utf-8')
             if re.match('^' + pattern, doc_id):
                 return static_file(doc_id, root=fdirs)
             else:
