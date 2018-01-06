@@ -4,6 +4,7 @@ standard_library.install_aliases()
 from builtins import input
 from builtins import range
 
+from codecs import open
 from configparser import RawConfigParser as ConfigParser
 import os
 import os.path
@@ -30,7 +31,7 @@ def build_manifest(config_file, corpus_file, model_pattern, topic_range,
     return files
 
 def create_relative_config_file(config_file, manifest, include_corpus=False):
-    root = os.path.commonpath(map(os.path.abspath, manifest)) + '/'
+    root = os.path.commonprefix(map(os.path.abspath, manifest)) + '/'
     
     config = ConfigParser({'cluster': None }) 
     with open(config_file, encoding='utf8') as configfile:
@@ -63,7 +64,7 @@ def create_relative_config_file(config_file, manifest, include_corpus=False):
     return temp_config_file
 
 def zip_files(outfile, manifest, include_corpus=False, verbose=True):
-    root = os.path.commonpath(map(os.path.abspath, manifest))
+    root = os.path.commonprefix(map(os.path.abspath, manifest))
     files = [(f, os.path.relpath(f, root)) for f in manifest]
 
     # relativize the config

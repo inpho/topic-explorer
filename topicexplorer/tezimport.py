@@ -4,6 +4,7 @@ standard_library.install_aliases()
 from builtins import input
 from builtins import range
 
+from codecs import open
 from configparser import RawConfigParser as ConfigParser
 import os
 import os.path
@@ -74,6 +75,7 @@ def main(args):
         elif not config_candidates:
             raise IOError("No config file in tez archive")
         else:
+            print(config_candidates)
             absolutize_config_file(config_candidates[0], args.output)
 
 
