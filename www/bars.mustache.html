@@ -453,8 +453,9 @@ d3.json(url, function(error, data) {
     doc.selectAll("rect")
         .data(function(d) { return d.topicMap; })
       .enter().append("rect")
-        .attr("height", y.rangeBand())
+        .attr("height", y.rangeBand()/2.75)
         .attr("x", function(d) { return x(d.x0); })
+	.attr("y", 10)
         .attr("width", function(d) { return x(d.x1) - x(d.x0); })
         .attr("class", function(d) { return "top_" + d.name; })
         .on("mouseover", function(d) {
@@ -474,14 +475,14 @@ d3.json(url, function(error, data) {
             $(".docLabel", parent).removeClass("hover");
             $(".top_" + d.name).removeClass('hover');
           })
-        .on("click", function(d) { topicSort(d.name); })
-        .style("fill", function(d) { return topics[d.name]['color']; });
+        .on("click", function(d) { topicSort(d.name); })	
+        .style("fill", function(d) { return barColors(topics[d.name]['color'], d.name); });
     
     doc.append("text")
           .text(function(d) { return d.label; })
           .attr("class","docLabel")
           .attr("dx", "3")
-          .attr("dy", "20") 
+          .attr("dy", "8")
         .filter(function(d) { return q && (d.label.indexOf(q) >= 0);})
         .each(function(d) {
             if (q) {
@@ -609,7 +610,7 @@ d3.json(url, function(error, data) {
     svg.selectAll(".doc")
       .selectAll("rect")
       .data(function(d) { return d.topicMap; })
-      .style("fill", function(d) { return tops[d.name]['color']; })
+      .style("fill", function(d) { return barColors(tops[d.name]['color'], d.name); })
       /*.on("mouseover", function(d) {
           // SVG element z-index determined by render order, not style sheet
           // so element must be reappended to the end on hover so border 

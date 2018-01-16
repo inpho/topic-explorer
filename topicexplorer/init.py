@@ -353,6 +353,8 @@ def write_config(args, config_file=None):
     config.set("www", "corpus_name", args.corpus_print_name)
     config.set("www", "icons", "fingerprint,link")
     config.set("www", "fulltext", "false")
+    # adds a pdf element to the config file and set it to true if
+    # pdf documents were being used in the corpus
     if args.corpus_path[-4:] == '.pdf' or contains_pattern(args.corpus_path, '*.pdf'):
         config.set("www", "pdf", "true")
 

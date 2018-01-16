@@ -62,6 +62,7 @@ install_requires = [
         'profilehooks',
         'pybtex>=0.20',
         'paste',
+        'waitress',
         'htrc-feature-reader>=1.90',
         'pdfminer.six'
         ]
