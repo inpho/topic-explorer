@@ -95,7 +95,7 @@ def main(args=None, launch=True):
     config.read('ap.ini')
     config.set("main", "label_module", "topicexplorer.extensions.ap")
     config.set("main", "corpus_desc", "ap.md")
-    config.set("www", "icons", "ap,link")
+    config.set("www", "icons", "ap,fingerprint,link")
     config.set("www", "fulltext", "True")
     shutil.copyfile(get_static_resource_path('demo/ap.md'), 'ap.md')
     with open("ap.ini", "w") as configfh:

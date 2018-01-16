@@ -52,12 +52,16 @@ def continue_training(model_pattern, krange, total_iterations=200, n_proc=1,
     from vsm.model.lda import LDA
     for k in krange:
         m = LDA.load(model_pattern.format(k), multiprocessing=(n_proc > 1))
+        try:
+            n_proc = m.n_proc
+        except AttributeError:
+            n_proc = 1
 
         # for some reason, the value of m.iteration is a reference, not
         # explicit. Filed error in vsm: https://github.com/inpho/vsm/issues/144
         orig_iterations = int(m.iteration)
-        print("Continue training {0}-topic model ({1} => {2} iterations)".format(
-            k, orig_iterations, total_iterations))
+        print("Continue training {0}-topic model ({1} => {2} iterations, {3} processes)".format(
+            k, orig_iterations, total_iterations, n_proc))
 
         basefilename = model_pattern.replace(
             "-{orig}.npz".format(orig=orig_iterations),

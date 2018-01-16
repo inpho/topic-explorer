@@ -19,10 +19,11 @@ from pkg_resources import resource_filename
 import re
 import socket
 import sys
+import threading
 from urllib.parse import unquote
 import webbrowser
 
-from bottle import request, response, route, run, static_file, Bottle
+from bottle import request, response, route, run, static_file, Bottle, ServerAdapter
 from topicexplorer.lib.color import get_topic_colors, rgb2hex
 from topicexplorer.lib.ssl import SSLWSGIRefServer
 from topicexplorer.lib.util import (int_prompt, bool_prompt, is_valid_filepath,
@@ -283,19 +284,29 @@ class Application(Bottle):
         @_set_acao_headers
         def topics(k):
             from topicexplorer.lib.color import rgb2hex
+            import numpy as np
 
             response.content_type = 'application/json; charset=UTF8'
             response.set_header('Expires', _cache_date())
             response.set_header('Cache-Control', 'max-age=86400')
             
-            # populate word values
-            data = self.v[k].topics()
-
-            js = {}
+            # set a parameter for number of words to return
             wordmax = 10  # for alphabetic languages
             if kwargs.get('lang', None) == 'cn':
                 wordmax = 25  # for ideographic languages
 
+            # populate word values
+            phi = self.v[k].phi.T
+            idxs = phi.argsort(axis=1)[:,::-1][:,:wordmax]
+            # https://github.com/numpy/numpy/issues/4724
+            idx_hack = np.arange(np.shape(phi)[0])[:,np.newaxis]
+
+            dt = [('Word',self.c.words.dtype),('Prob',phi.dtype)]
+            data = np.zeros(shape=(phi.shape[0], wordmax), dtype=dt)
+            data['Word'] = self.c.words[idxs]
+            data['Prob'] = phi[idx_hack, idxs]
+
+            js = {}
             for i, topic in enumerate(data):
                 js[str(i)] = {
                     "color": rgb2hex(self.colors[k][i]),
@@ -589,6 +600,13 @@ def get_host_port(args):
     host = args.host or config.get('www', 'host')
     return host, port
 
+class WaitressLoggingServer(ServerAdapter):
+    def run(self, handler): # pragma: no cover
+        from waitress import serve
+        if not self.quiet:
+            from paste.translogger import TransLogger
+            handler = TransLogger(handler)
+        serve(handler, host=self.host, port=self.port, **self.options)
 
 def main(args, app=None):
     if app is None:
@@ -597,18 +615,20 @@ def main(args, app=None):
     host, port = get_host_port(args)
 
     if args.browser:
+
         if host == '0.0.0.0':
             link_host = "localhost"
         else:
             link_host = host
         url = "http://{host}:{port}/"
         url = url.format(host=link_host, port=port, k=min(app.topic_range))
-        webbrowser.open(url)
+        browser_thread = threading.Thread(target=webbrowser.open, args=[url])
+        browser_thread.start()
 
         print("TIP: Browser launch can be disabled with the '--no-browser' argument:")
         print("topicexplorer serve --no-browser", args.config, "\n")
 
-    app.run(server='paste', host=host, port=port)
+    app.run(server=WaitressLoggingServer, host=host, port=port)
 
 
 def create_app(args):
@@ -652,8 +672,13 @@ def create_app(args):
     # get icons_list
     config_icons = config.get('www', 'icons').split(",")
     if args.fulltext or config.getboolean('www', 'fulltext'):
-        if not any('fulltext' in icon for icon in config_icons):
-            config_icons.insert(0, 'fulltext-inline')
+        if not any('fulltext' in icon for icon in config_icons) and 'ap' not in config_icons:
+            # determines what fulltext function to use depending on the pdf tag that
+            # was added in the init.py file
+            if (config.getboolean('www', 'pdf')):
+                config_icons.insert(0, 'fulltext-pdf')
+            else:
+                config_icons.insert(0, 'fulltext-inline')
 
     # Create application object
     corpus_name = config.get('www', 'corpus_name')

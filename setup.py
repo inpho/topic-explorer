@@ -52,7 +52,7 @@ install_requires = [
         'bottle>=0.12', 
         'brewer2mpl>=1.4',
         'pystache>=0.5.4',
-        'vsm>=0.4.0rc1',
+        'vsm>=0.4.1',
         'wget',
         'unidecode',
         'networkx>=1.9.1',
@@ -62,6 +62,7 @@ install_requires = [
         'profilehooks',
         'pybtex>=0.20',
         'paste',
+        'waitress',
         'htrc-feature-reader>=1.90',
         'pdfminer.six'
         ]
