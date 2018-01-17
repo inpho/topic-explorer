@@ -521,10 +521,11 @@ class Application(Bottle):
             if query is None or query.lower() in self.label(doc).lower():
                 struct = {
                     'id': doc,
-                    'label': self.label(doc)
+                    'label': self.label(doc),
+                    # TODO: Figure out why metadata field might have issue.
+                    'metadata': dict(zip(md.dtype.names, (str(m) for m in md)))}
                 }
-                # TODO: fix metadata login
-                    #'metadata': dict(zip(md.dtype.names, (str(m) for m in md)))}
+
                 if id_as_key:
                     js[doc] = struct
                 else:
