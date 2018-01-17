@@ -523,7 +523,7 @@ class Application(Bottle):
                     'id': doc,
                     'label': self.label(doc),
                     # TODO: Figure out why metadata field might have issue.
-                    'metadata': dict(zip(md.dtype.names, (str(m) for m in md)))}
+                    'metadata': dict(zip(md.dtype.names, (str(m) for m in md)))
                 }
 
                 if id_as_key:
