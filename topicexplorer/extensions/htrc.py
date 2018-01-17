@@ -55,7 +55,7 @@ def label(doc):
     if app.context_type == 'book':
         try:
             md = metadata[doc]
-            return md['titles'][0]
+            return md['title'][0]
         except:
             return doc
     elif app.context_type == 'page':
