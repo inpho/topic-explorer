@@ -448,7 +448,7 @@ d3.json(url, function(error, data) {
         .call(yAxis)
         .selectAll("text")
         .attr("class", function(d) { return (q == null && d == docid && roottopic == null) ? "primary" : "" })
-        .on("click", function(d) { window.location.href = window.location.origin + window.location.pathname + "?doc=" + d;})
+        .on("click", function(d) { window.location.href = window.location.origin + window.location.pathname + "?doc=" + encodeURIComponent(d);})
   
     svg.select(".y.axis").selectAll("g")
         .insert("rect", ":first-child")
