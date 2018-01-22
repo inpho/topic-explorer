@@ -508,7 +508,7 @@ d3.json(url, function(error, data) {
       .enter().append("rect")
         .attr("height", y.rangeBand()/2.75)
         .attr("x", function(d) { return x(d.x0); })
-	.attr("y", 10)
+       .attr("y", 10)
         .attr("width", function(d) { return x(d.x1) - x(d.x0); })
         .attr("class", function(d) { return "top_" + d.name; })
         .on("mouseover", function(d) {
