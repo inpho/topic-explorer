@@ -477,13 +477,15 @@ d3.json(url, function(error, data) {
     for (var i = 0; i < icons.length; i++) {
       icon_fns[icons[i]](ticks,i, data);
     }
-  
+    
+    var counter = -1;
+
     // draw total bar
     var doc = svg.selectAll("doc")
         .data(data)
       .enter().append("g")
         .attr("class", function(d) { return (q == null && d.doc == docid && roottopic == null) ? "doc primary" : "doc"})
-        .attr("transform", function(d) { return "translate(10," + y(d.id) + ")"; })
+        .attr("transform", function(d) { console.log(counter); counter++; return "translate(10," + (y(d.id) + (5 * counter)) + ")";  })
         .on("mouseover", function(d) {
             var tick = $("text:contains(" + d.id +")")
               .filter(function() { return $(this).text().trim() == d.id })
@@ -499,7 +501,8 @@ d3.json(url, function(error, data) {
             icons.reduce(function(prev, cur) {
               return prev.next(".{0}Icon".format(cur)).css('opacity', '');
             }, tick);
-          });
+          })
+        ;
 
   
     // Draw topic bars
@@ -543,7 +546,7 @@ d3.json(url, function(error, data) {
               var new_html = d.label;
               for (var i = 0; i < splits.length; i++) {
                 var myRe = new RegExp(splits[i], 'gi');
-                new_html = new_html.replace(myRe, '<tspan style="font-weight: bold">$&</tspan>');
+                new_html = new_html.replace(myRe, '<tspan style="font-weight: bold;>$&</tspan>');
                 $("text:contains("+d.label+")").html(new_html);
               }
             }
