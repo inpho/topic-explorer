@@ -331,8 +331,9 @@ function computeWidth(numCols) {
     .ticks(10, "%");
 }
 
+// Changed the height variable to better pair the topic bars with their documents
 function computeHeight(data, numLegendRows) { 
-  height = (data.length * 30);// - margin.top - margin.bottom;
+  height = (data.length * 35);// - margin.top - margin.bottom;
   y = d3.scale.ordinal()
    .rangeRoundBands([0, height], .1, 0);
   y.domain(data.map(function(d) { return d.id; }));
@@ -478,14 +479,12 @@ d3.json(url, function(error, data) {
       icon_fns[icons[i]](ticks,i, data);
     }
     
-    var counter = -1;
-
     // draw total bar
     var doc = svg.selectAll("doc")
         .data(data)
       .enter().append("g")
         .attr("class", function(d) { return (q == null && d.doc == docid && roottopic == null) ? "doc primary" : "doc"})
-        .attr("transform", function(d) { console.log(counter); counter++; return "translate(10," + (y(d.id) + (5 * counter)) + ")";  })
+        .attr("transform", function(d) { return "translate(10," + y(d.id) + ")";  })
         .on("mouseover", function(d) {
             var tick = $("text:contains(" + d.id +")")
               .filter(function() { return $(this).text().trim() == d.id })
