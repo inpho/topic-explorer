@@ -233,7 +233,7 @@ def main(args):
 
     if not args.corpus_print_name and not args.quiet:
         args.corpus_print_name = prompt("Corpus Name", default=args.corpus_name)
-    
+
     # configure model-path
     if args.model_path is None:
         if os.path.isdir(args.corpus_path):
@@ -246,7 +246,7 @@ def main(args):
     args.corpus_filename = get_corpus_filename(
         args.corpus_path, args.model_path, stop_freq=args.stop_freq)
     if not args.rebuild and os.path.exists(args.corpus_filename):
-        args.rebuild = bool_prompt("\nCorpus file found. Rebuild? ", 
+        args.rebuild = bool_prompt("\nCorpus file found. Rebuild? ",
             default=False)
     else:
         args.rebuild = True
@@ -279,10 +279,10 @@ def main(args):
 
     if args.rebuild and (not args.htrc or os.path.isdir(args.corpus_path)):
         try:
-            args.corpus_filename = build_corpus(args.corpus_path, args.model_path,
-                                                stop_freq=args.stop_freq, decode=args.decode,
-                                                sentences=args.sentences,
-                                                simple=args.simple, tokenizer=args.tokenizer)
+            args.corpus_filename = build_corpus(
+                args.corpus_path, args.model_path, stop_freq=args.stop_freq,
+                decode=args.decode, nltk_stop=args.nltk, simple=args.simple,
+                sentences=args.sentences, tokenizer=args.tokenizer)
         except IOError:
             print("ERROR: invalid path, please specify either:")
             print("  * a single plain-text or PDF file,")
@@ -326,7 +326,7 @@ def main(args):
 to add a custom corpus description, either:
 - Modify the contents of the file `{}`
 - Change the main:corpus_desc path in `{}` to an existing Markdown file.
-""".format(os.path.abspath(args.corpus_desc), 
+""".format(os.path.abspath(args.corpus_desc),
            os.path.abspath(args.config_file)))
 
     return args.config_file
@@ -427,6 +427,8 @@ def populate_parser(parser):
 
     parser.add_argument("--simple", action="store_true", default=True,
                         help="Skip sentence tokenizations [default].")
+    parser.add_argument("--no-nltk-stoplist", action="store_false", dest="nltk",
+                        help="disable the NLTK stoplist")
     parser.add_argument("--sentences", action="store_true", help="Parse at the sentence level")
     parser.add_argument("--freq", dest="stop_freq", default=5, type=int,
                         help="Filter words occurring less than freq times [Default: 5])")
