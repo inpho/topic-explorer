@@ -157,7 +157,7 @@ var fingerprint = {
         }
     
         var k = d3.keys(topics).length;
-        var full_explorer_url = host+"/?doc="+docid;
+        var full_explorer_url = host+"/?doc="+encodeURIComponent(docid);
       
         calculateTopicMap(data, true, function(a,b) {return data[0].topics[b] - data[0].topics[a];});
       

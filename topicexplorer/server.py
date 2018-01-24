@@ -521,10 +521,11 @@ class Application(Bottle):
             if query is None or query.lower() in self.label(doc).lower():
                 struct = {
                     'id': doc,
-                    'label': self.label(doc)
+                    'label': self.label(doc),
+                    # TODO: Figure out why metadata field might have issue.
+                    'metadata': dict(zip(md.dtype.names, (str(m) for m in md)))
                 }
-                # TODO: fix metadata login
-                    #'metadata': dict(zip(md.dtype.names, (str(m) for m in md)))}
+
                 if id_as_key:
                     js[doc] = struct
                 else:
@@ -673,7 +674,12 @@ def create_app(args):
     config_icons = config.get('www', 'icons').split(",")
     if args.fulltext or config.getboolean('www', 'fulltext'):
         if not any('fulltext' in icon for icon in config_icons) and 'ap' not in config_icons:
-            config_icons.insert(0, 'fulltext-inline')
+            # determines what fulltext function to use depending on the pdf tag that
+            # was added in the init.py file
+            if (config.getboolean('www', 'pdf')):
+                config_icons.insert(0, 'fulltext-pdf')
+            else:
+                config_icons.insert(0, 'fulltext-inline')
 
     # Create application object
     corpus_name = config.get('www', 'corpus_name')
