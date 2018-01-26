@@ -132,7 +132,7 @@ function calculateTopicMap(data, scale, sortFn){
       data.forEach(function(d) {
         var sizeFactor = (scale) ? d.prob : 1.0
         var x0 = 0;
-        var dTopics = undefined(original_root) ? d.topics : original_root.topics;
+        var dTopics = undefined === original_root ? d.topics : original_root.topics; //fixed syntax for undefined usage
         if (sortFn) d.topicMap = d3.keys(dTopics)
           .sort(sortFn)
           .map(function(name) { return {name: name, x0: x0, x1: x0 += +(dTopics[name]*sizeFactor) }; });
