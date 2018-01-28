@@ -117,7 +117,7 @@ function computeWidth(numCols) {
 }
 
 function computeHeight(data, numLegendRows) { 
-  height = (data.length * 30);// - margin.top - margin.bottom;
+  height = (data.length * 35);// - margin.top - margin.bottom;
   y = d3.scale.ordinal()
    .rangeRoundBands([0, height], .1, 0);
   y.domain(data.map(function(d) { return d.id; }));
@@ -411,7 +411,7 @@ var fingerprint = {
         }
     
         var k = d3.keys(topics).length;
-        var full_explorer_url = host+"/?doc="+docid;
+        var full_explorer_url = host+"/?doc="+encodeURIComponent(docid);
       
         calculateTopicMap(data, true, function(a,b) {return data[0].topics[b] - data[0].topics[a];});
       

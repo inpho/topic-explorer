@@ -395,7 +395,7 @@ d3.json(url, function(error, data) {
         .call(yAxis)
         .selectAll("text")
         .attr("class", function(d) { return (q == null && d == docid && roottopic == null) ? "primary" : "" })
-        .on("click", function(d) { window.location.href = window.location.origin + window.location.pathname + "?doc=" + d;})
+        .on("click", function(d) { window.location.href = window.location.origin + window.location.pathname + "?doc=" + encodeURIComponent(d);})
   
     svg.select(".y.axis").selectAll("g")
         .insert("rect", ":first-child")
@@ -424,13 +424,13 @@ d3.json(url, function(error, data) {
     for (var i = 0; i < icons.length; i++) {
       icon_fns[icons[i]](ticks,i, data);
     }
-  
+    
     // draw total bar
     var doc = svg.selectAll("doc")
         .data(data)
       .enter().append("g")
         .attr("class", function(d) { return (q == null && d.doc == docid && roottopic == null) ? "doc primary" : "doc"})
-        .attr("transform", function(d) { return "translate(10," + y(d.id) + ")"; })
+        .attr("transform", function(d) { return "translate(10," + y(d.id) + ")";  })
         .on("mouseover", function(d) {
             var tick = $("text:contains(" + d.id +")")
               .filter(function() { return $(this).text().trim() == d.id })
@@ -446,7 +446,8 @@ d3.json(url, function(error, data) {
             icons.reduce(function(prev, cur) {
               return prev.next(".{0}Icon".format(cur)).css('opacity', '');
             }, tick);
-          });
+          })
+        ;
 
   
     // Draw topic bars
@@ -455,6 +456,7 @@ d3.json(url, function(error, data) {
       .enter().append("rect")
         .attr("height", y.rangeBand())
         .attr("x", function(d) { return x(d.x0); })
+       .attr("y", 10)
         .attr("width", function(d) { return x(d.x1) - x(d.x0); })
         .attr("class", function(d) { return "top_" + d.name; })
         .on("mouseover", function(d) {
@@ -489,7 +491,7 @@ d3.json(url, function(error, data) {
               var new_html = d.label;
               for (var i = 0; i < splits.length; i++) {
                 var myRe = new RegExp(splits[i], 'gi');
-                new_html = new_html.replace(myRe, '<tspan style="font-weight: bold">$&</tspan>');
+                new_html = new_html.replace(myRe, '<tspan style="font-weight: bold;>$&</tspan>');
                 $("text:contains("+d.label+")").html(new_html);
               }
             }
