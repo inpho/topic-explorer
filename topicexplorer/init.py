@@ -246,8 +246,12 @@ def main(args):
     args.corpus_filename = get_corpus_filename(
         args.corpus_path, args.model_path, stop_freq=args.stop_freq)
     if not args.rebuild and os.path.exists(args.corpus_filename):
-        args.rebuild = bool_prompt("\nCorpus file found. Rebuild? ",
-            default=False)
+        if args.quiet:
+            print("Path exits: {}".format(args.corpus_filename))
+            sys.exit(1)
+        else:
+            args.rebuild = bool_prompt("\nCorpus file found. Rebuild? ",
+                default=False)
     else:
         args.rebuild = True
 
