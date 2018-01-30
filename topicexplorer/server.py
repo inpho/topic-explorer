@@ -648,6 +648,7 @@ def create_app(args):
         'raw_corpus': None,
         'label_module': None,
         'fulltext': 'false',
+        'pdf' : 'false',
         'topics': None,
         'cluster': None,
         'corpus_desc' : None,
