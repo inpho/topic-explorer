@@ -102,7 +102,7 @@
                strikethrough: true,
                tables: true
               });
-            $.get("../help-home.md").
+            $.get("/help-home.md").
               done(function(data) { 
                     var html = converter.makeHtml(data);
                     $('#homeHelpText').html(html);
@@ -132,7 +132,7 @@
                strikethrough: true,
                tables: true
               });
-        		$.get("../help-hypershelf.md").
+            $.get("/help-hypershelf.md").
         		  done(function(data) { 
                     var html = converter.makeHtml(data);
                     $('#hypershelfHelpText').html(html);
@@ -162,7 +162,7 @@
                strikethrough: true,
                tables: true
               });
-            $.get("../help-topics.md").
+            $.get("/help-topics.md").
               done(function(data) { 
                     var html = converter.makeHtml(data);
                     $('#topicsHelpText').html(html);
