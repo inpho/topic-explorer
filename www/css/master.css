@@ -57,3 +57,10 @@ h2 {
     overflow-x: hidden;
 }
 
+@font-face {
+    font-family: 'CC Icons';
+    src: local('CC Icons'), url('/fonts/cc-icons.ttf') format('truetype');
+}
+.cc-font {
+    font-family: 'CC Icons';
+}

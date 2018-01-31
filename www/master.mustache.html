@@ -25,6 +25,7 @@
   <!-- <link rel="stylesheet" type="text/css" href="/lib/bootstrap-2.3.2/css/bootstrap.min.css" /> -->
   <link rel='stylesheet prefetch' href='/css/simple-sidebar.css'>
   <link rel='stylesheet prefetch' href='/css/master.css'>
+  <link rel='stylesheet prefetch' href='/css/inpho-font.css'>
 </head>
 
 <body>
@@ -40,7 +41,7 @@
       </div>
       <div class="sidebar-helper" style="vertical-align: middle;">
         <ul id="sidebar-topics" class="sidebar-nav">
-          <li><a class="selected" id="cluster-link" title="Topic cluster view" data-placement="right" href="topics"><span class="glyphicon glyphicon-stats"></span></a></li>
+          <li><a class="selected" id="cluster-link" title="Topic cluster view" data-placement="right" href="topics"><span class="icon-scatter"></span></a></li>
           {{#topic_range}}
           <li><a class="topic-link" href="{{.}}/" title="Launch {{.}}-topic model" data-placement="right">{{.}}</a></li>
           {{/topic_range}}
@@ -49,7 +50,7 @@
       <div class="sidebar-helper" style="bottom: 0;">
         <ul class="sidebar-nav">
           <li><a id="helper" href="#" class="selected" data-placement="right" title="Help" data-toggle="modal" data-target="#helpModal"><strong>?</strong></a></li>
-          <li><a href="#" class="selected" data-placement="right" title="Usage" data-toggle="modal" data-target="#rightsModal"><strong>&copy;</strong></a></li>
+          <li><a href="#" class="selected" data-placement="right" title="Usage" data-toggle="modal" data-target="#rightsModal"><strong class="cc-font">cb</strong></a></li>
         </ul>
       </div>
     </div>
