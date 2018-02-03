@@ -72,10 +72,10 @@
       } else {
         $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic);
       }
-      topDoc.style.visibility = 'hidden';
+      topDoc.style.display = 'none';
     }
     else {
-      topDoc.style.visibility = 'visible';
+      topDoc.style.display = 'block';
       if (roottopic == null) {
         if (mainDoc.value.length > 16) {
           $("#focalDoc").text("Top 40 documents most similar to " + mainDoc.value.slice(0, 17) + "...");
@@ -568,10 +568,10 @@ d3.json(url, function(error, data) {
               $("#focalDoc").text("Top 40 documents most similar to " + mainDoc.value.slice(0, 17) + " sorted by proportion of topic " + d.name);
             }
           } else if (roottopic == d.name) {
-            topDoc.style.visibility = 'hidden';
+            topDoc.style.display = 'none';
             $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic);
           } else {
-            topDoc.style.visibility = 'visible';
+            topDoc.style.display = 'block';
             $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic + " sorted by proportion of topic " + d.name);
           }
           topicSort(d.name); })
@@ -628,10 +628,10 @@ d3.json(url, function(error, data) {
               $("#focalDoc").text("Top 40 documents most similar to " + mainDoc.value.slice(0, 17) + " sorted by proportion of topic " + d);
             }
           } else if (roottopic == d) {
-            topDoc.style.visibility = 'hidden';
+            topDoc.style.display = 'none';
             $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic);
           } else {
-            topDoc.style.visibility = 'visible';
+            topDoc.style.display = 'block';
             $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic + " sorted by proportion of topic " + d);
           }
           topicSort(d); })
