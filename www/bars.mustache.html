@@ -42,12 +42,12 @@
         </div>
       </div>
     </div>
-    <div class="container" style="text-align:center">
+    <div class="form-group" style="text-align:center">
       <p id="focalDoc" style="font-weight:bold"></p>
     </div>
     <div class="form-group">
       <div class="col-lg-offset-4 col-lg-4 col-md-offset-2 col-md-8">
-        <button class="btn btn-default form-control topdoc" disabled id="topicBtn" type="button">Click a segment below to focus on relation to that topic.</button>
+        <button class="btn btn-default form-control topdoc" disabled id="topicBtn" type="button">Click a bar below to focus on relation to that topic.</button>
       </div>
     </div>
     <!--
@@ -60,31 +60,21 @@
 
   <script>
 
-
-  var count = 1;
+  //Handles cases where the "click a segment below to focus on relation to that topic" should appear or not.
+  //Also updates a newly added descriptor that indicates what sort of focus the application is in at the time,
+  //either topic focused or document focused.
   var topDoc = document.getElementById("topicBtn");
-  //if (count == 1) {
-  //  topDoc.value = "hi";
-  //  count = 0;
-  //  console.log("hi");
-  //}
   var clickRight = document.getElementById("doc");
-//  console.log(clickRight.value);
   $(document).ready(function () {
     if (clickRight.value == "") {
-      // topDoc.disable;
-//      console.log("hello");
-      //topDoc.style.visibility = 'hidden';
       if (roottopic == null) {
         $("#focalDoc").text("");
-        topDoc.style.visibility = 'hidden';
       } else {
         $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic);
-        topDoc.style.visibility = 'visible';
       }
+      topDoc.style.visibility = 'hidden';
     }
     else {
-//      console.log("change");
       topDoc.style.visibility = 'visible';
       if (roottopic == null) {
         $("#focalDoc").text("Top 40 documents most similar to " + clickRight.value);
@@ -93,12 +83,6 @@
       }
     }
   });
-//  var submit = document.getElementById("submit");
-//  console.log(topDoc.style.visibility);
-//  submit.onclick = function () { console.log("clicked"); };
-
-
-
 
   $(document).ready(function () {
     $('#cite').hide();
@@ -571,10 +555,15 @@ d3.json(url, function(error, data) {
             $(".top_" + d.name).removeClass('hover');
           })
         .on("click", function(d) {
+          //Handles when to update the descriptor based off which mode it is in and what topic bar was clicked on.
+          //Indicates whether the model is sorted by proportion of a specific topic or not.
           if (roottopic == null) {
             $("#focalDoc").text("Top 40 documents most similar to " + clickRight.value + " sorted by proportion of topic " + d.name);
-          }
-          else {
+          } else if (roottopic == d.name) {
+            topDoc.style.visibility = 'hidden';
+            $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic);
+          } else {
+            topDoc.style.visibility = 'visible';
             $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic + " sorted by proportion of topic " + d.name);
           }
           topicSort(d.name); })
@@ -622,11 +611,16 @@ d3.json(url, function(error, data) {
                 return 0;
             }).join(", ") + ", ..."; })
         .on("click", function(d) {
+          //Handles when to update the descriptor based off which mode it is in and what topic bar was clicked on.
+          //Indicates whether the model is sorted by proportion of a specific topic or not.
           if (roottopic == null) {
-            $("#focalDoc").text("Top 40 documents most similar to " + clickRight.value + " sorted by proportion of topic " + d.name);
-          }
-          else {
-            $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic + " sorted by proportion of topic " + d.name);
+            $("#focalDoc").text("Top 40 documents most similar to " + clickRight.value + " sorted by proportion of topic " + d);
+          } else if (roottopic == d) {
+            topDoc.style.visibility = 'hidden';
+            $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic);
+          } else {
+            topDoc.style.visibility = 'visible';
+            $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic + " sorted by proportion of topic " + d);
           }
           topicSort(d); })
         .on("mouseover", function(d) {
