@@ -149,7 +149,7 @@ def get_topic_colors(v):
 
 def get_topic_colors(v):
     ncolors = 8
-    bmap = brewer.get_map('Set1', 'Qualitative', ncolors)
+    bmap = brewer.get_map('Dark2', 'Qualitative', ncolors)
 
     topic_colors = [(n, bmap.mpl_colormap((n % ncolors) / (ncolors - 1)))
                     for n in range(v.model.K)]
