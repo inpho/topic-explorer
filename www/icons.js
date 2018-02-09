@@ -156,7 +156,7 @@ var icon_fns = {"link" : function(ticks, i) {
   },
  "htrcbook" : function(ticks, i, docs) {
       base_fn(ticks,i)
-        .attr("xlink:href","/img/icon-book.png")
+        .attr("xlink:href","/img/htrc.png")
         .attr("class", "htrcbookIcon icon")
         .on("click", function(d) { 
           data = docs.filter(function(doc, i) { return doc.id == d})[0]

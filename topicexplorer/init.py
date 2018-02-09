@@ -371,7 +371,7 @@ def write_config(args, config_file=None):
             config.set("www", "corpus_name", "HTRC Data Capsule")
         config.set("www", "doc_title_format", '<a href="{1}">{0}</a>')
         config.set("www", "doc_url_format", 'http://hdl.handle.net/2027/{0}')
-        config.set("www", "icons", "htrc,htrcbook,link")
+        config.set("www", "icons", "htrcbook,link")
         config.set("main", "htrc", True)
         # TODO: Fix HTRC Metadata download
         config.set("www", "htrc_metadata", args.htrc_metapath)
