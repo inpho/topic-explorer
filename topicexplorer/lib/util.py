@@ -53,6 +53,8 @@ def is_valid_configfile(parser, arg):
     if not arg.endswith('.ini'):
         if os.path.isdir(arg):
             print("{0} is a directory, using the config file {0}.ini".format(arg))
+            if arg.endswith('/'):
+                arg = arg[:-1]
         else:
             print("{0} is missing the '.ini' extension, using the config file {0}.ini".format(arg))
         arg = arg + '.ini'
