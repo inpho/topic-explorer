@@ -263,7 +263,7 @@ def main(args):
 
             args.htrc_metapath = os.path.abspath(args.corpus_path + '/../')
             args.htrc_metapath = os.path.join(args.htrc_metapath,
-                os.path.dirname(args.corpus_path) + '.metadata.json')
+                os.path.basename(args.corpus_path) + '.metadata.json')
         else:
             import topicexplorer.extensions.htrc_features as htrc_features
             with open(args.corpus_path) as idfile:
