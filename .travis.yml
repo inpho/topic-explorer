@@ -26,7 +26,7 @@ install:
   - pip install coveralls
   - conda install -q --yes cython # for vsm compilation from source
   # install topic explorer
-  - pip install -r requirements.test.txt . #--extra-index-url https://inpho.cogs.indiana.edu/pypi 
+  - pip install -r requirements.txt . #--extra-index-url https://inpho.cogs.indiana.edu/pypi 
 # command to run tests
 script: 
   - bash coverage.sh
