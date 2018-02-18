@@ -6,13 +6,6 @@ import os
 import platform
 import os.path
 
-try:
-    # Python 3 or Python 2 w/backport
-    from importlib import reload
-except ImportError:
-    # Python 2 without backports, use default reload
-    pass
-
 # get version from package through manual read
 # see http://stackoverflow.com/a/17626524
 __version__ = open(os.path.normpath("topicexplorer/version.py")).readlines()[11].split()[-1].strip("\"'")
@@ -30,23 +23,16 @@ class PostInstallData(_install):
         return runcmd
 
 # PyPandoc
-import os
 if os.path.exists('README.txt'):
     long_description = open('README.txt').read()
 else:
     long_description = ''
-
-#else:
-#    install_requires.append('mmseg==1.3.0')
 
 setup(
     pbr=True,
     setup_requires=['pbr', 'nltk'],
     version=__version__,
     long_description = long_description,
-    dependency_links=[
-        'https://inpho.cogs.indiana.edu/pypi/pymmseg/'
-        ],
     cmdclass={'install' : PostInstallData},
     test_suite="unittest2.collector",
     tests_require=['unittest2', 'mock']
