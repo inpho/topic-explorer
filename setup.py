@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from distutils.command.install import install as _install
+from distutils.command.install_data import install_data as _install_data
 from setuptools import setup, find_packages
 import os
 import platform
@@ -12,7 +12,7 @@ __version__ = open(os.path.normpath("topicexplorer/version.py")).readlines()[11]
 
 # Specializations of some distutils command classes
 # first install data files to actual library directory
-class PostInstallData(_install):
+class PostInstallData(_install_data):
     """need to change self.install_dir to the actual library dir"""
     def run(self):
         import nltk
@@ -33,7 +33,7 @@ setup(
     setup_requires=['pbr', 'nltk'],
     version=__version__,
     long_description = long_description,
-    cmdclass={'install' : PostInstallData},
+    cmdclass={'install_data' : PostInstallData},
     test_suite="unittest2.collector",
     tests_require=['unittest2', 'mock']
 )
