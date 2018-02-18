@@ -37,53 +37,18 @@ if os.path.exists('README.txt'):
 else:
     long_description = ''
 
-install_requires = [
-        'bottle',
-        'brewer2mpl',
-        'decorator',
-        'future',
-        'htrc-feature-reader',
-        'langdetect',
-        'matplotlib',
-        'networkx',
-        'nltk',
-        'numpy',
-        'Paste',
-        'pdfminer.six',
-        'profilehooks',
-        'pybtex',
-        'pystache',
-        'requests',
-        'scikit-learn',
-        'scipy',
-        'sortedcontainers',
-        'ujson',
-        'Unidecode',
-        'waitress',
-        'wget',
-        'vsm',
-        ]
-
-if platform.system() == 'Windows':
-    install_requires.append('pywin32')
 #else:
 #    install_requires.append('mmseg==1.3.0')
-
-if platform.python_version_tuple()[0] == '2':
-    install_requires.append("configparser>=3.5.0")
-    install_requires.append("futures>=3.0.0")
-    install_requires.append("importlib")
 
 setup(
     pbr=True,
     setup_requires=['pbr'],
     version=__version__,
     long_description = long_description,
-    data_files=datafiles,
     dependency_links=[
         'https://inpho.cogs.indiana.edu/pypi/pymmseg/'
         ],
     test_suite="unittest2.collector",
-    tests_require=['unittest2']
+    tests_require=['unittest2', 'mock']
 )
 
