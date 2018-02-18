@@ -110,7 +110,8 @@ $CMD -m topicexplorer.train ap -k 20 --iter 20 --continue --quiet
 EXIT=$(($EXIT+$?))
 
 
-$CMD setup.py test
+$CMD -m unittest2
+EXIT=$(($EXIT+$?))
 
 coverage report
 echo "Exiting with code ${EXIT}"
