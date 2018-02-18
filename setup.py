@@ -49,22 +49,30 @@ else:
 setup_requires = [ 'nltk' ]
 
 install_requires = [
-        'bottle>=0.12', 
-        'brewer2mpl>=1.4',
-        'pystache>=0.5.4',
-        'vsm>=0.4.1',
-        'wget',
-        'unidecode',
-        'networkx>=1.9.1',
-        'matplotlib>=1.5.0',
-        'pip>=7.1.1',
+        'bottle',
+        'brewer2mpl',
+        'chardet',
+        'Cython',
+        'decorator',
+        'htrc-feature-reader',
         'langdetect',
+        'matplotlib',
+        'networkx',
+        'nltk',
+        'numpy',
+        'Paste',
+        'pdfminer.six',
         'profilehooks',
-        'pybtex>=0.20',
-        'paste',
+        'pybtex',
+        'PyYAML',
+        'pystache',
+        'scikit-learn',
+        'scipy',
+        'ujson',
+        'Unidecode',
         'waitress',
-        'htrc-feature-reader>=1.90',
-        'pdfminer.six'
+        'wget',
+        'vsm',
         ]
 
 if platform.system() == 'Windows':
