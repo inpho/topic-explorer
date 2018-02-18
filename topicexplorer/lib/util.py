@@ -188,6 +188,10 @@ def get_static_resource_path(path):
         return os.path.abspath(path)
     elif os.path.exists(os.path.join(sys.prefix, path)):
         return os.path.abspath(os.path.join(sys.prefix, path))
+    elif os.path.exists(os.path.join(
+             os.path.join(sys.prefix, 'opt/topicexplorer'), path)):
+        return os.path.abspath(os.path.join(
+            os.path.join(sys.prefix, 'opt/topicexplorer'), path))
     elif os.path.exists(resource_filename(__name__, path)):
         return resource_filename(__name__, path)
     elif os.path.exists(resource_filename(__name__, '../' + path)):
