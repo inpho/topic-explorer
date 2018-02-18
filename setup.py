@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-from distutils.command.install_data import install_data as _install_data
 from distutils.command.install import install as _install
 from setuptools import setup, find_packages
 import os
@@ -20,11 +19,11 @@ __version__ = open(os.path.normpath("topicexplorer/version.py")).readlines()[11]
 
 # Specializations of some distutils command classes
 # first install data files to actual library directory
-class PostInstallData(_install_data):
+class PostInstallData(_install):
     """need to change self.install_dir to the actual library dir"""
     def run(self):
         import nltk
-        runcmd = _install_data.run(self)
+        runcmd = _install.run(self)
         nltk.download('punkt')
         nltk.download('stopwords')
         nltk.download('wordnet')
@@ -42,12 +41,13 @@ else:
 
 setup(
     pbr=True,
-    setup_requires=['pbr'],
+    setup_requires=['pbr', 'nltk'],
     version=__version__,
     long_description = long_description,
     dependency_links=[
         'https://inpho.cogs.indiana.edu/pypi/pymmseg/'
         ],
+    cmdclass={'install' : PostInstallData},
     test_suite="unittest2.collector",
     tests_require=['unittest2', 'mock']
 )
