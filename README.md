@@ -82,7 +82,7 @@ The InPhO Topic Explorer is **only** compatible with Python 2.7. However, Anacon
 
 ### Non-Anaconda Install
  - **Miniconda**
-   1.  If using Miniconda (a small version of Anaconda), the necessary packages are: `conda install numpy scipy nltk matplotplib ipython networkx`
+   1.  If using Miniconda (a small version of Anaconda), the necessary packages are: `conda install numpy scipy scikit-learn nltk matplotplib ipython networkx unidecode wget decorator chardet ujson requests notebook`
 
  - **Debian/Ubuntu**
    1.  `sudo apt-get-install build-essential python-dev python-pip python-numpy python-matplotlib python-scipy python-ipython`
