@@ -15,10 +15,10 @@ else:
 
 setup(
     pbr=True,
-    setup_requires=['pbr', 'nltk'],
+    setup_requires=['pbr'],
     version=__version__,
     long_description = long_description,
     test_suite="unittest2.collector",
-    tests_require=['unittest2', 'mock']
+    tests_require=['unittest2']
 )
 
