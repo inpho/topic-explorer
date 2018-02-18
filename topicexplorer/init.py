@@ -163,11 +163,30 @@ def get_corpusbuilder_fn(corpus_path, sentences=False,
         return walk_corpus
 
 
+def ensure_nltk_data_downloaded():
+    import nltk
+    try:
+        nltk.data.find('tokenizers/punkt')
+    except LookupError:
+        nltk.download('punkt')
+    try:
+        nltk.data.find('corpora/stopwords')
+    except LookupError:
+        nltk.download('stopwords')
+    try:
+        nltk.data.find('corpora/wordnet')
+    except LookupError:
+        nltk.download('wordnet')
+
+
 def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=0,
                  context_type='document', ignore=['.json', '.log', '.err', '.pickle', '.npz'],
                  decode=True, sentences=False, simple=True, tokenizer='default'):
 
     from vsm.corpus import Corpus
+
+    # ensure that nltk packages are downloaded
+    ensure_nltk_data_downloaded()
 
     # import appropriate tokenizer
     if tokenizer == 'default':
