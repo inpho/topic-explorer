@@ -51,12 +51,9 @@ setup_requires = [ 'nltk' ]
 install_requires = [
         'bottle',
         'brewer2mpl',
-        'chardet',
-        'Cython',
         'decorator',
         'htrc-feature-reader',
         'langdetect',
-        'matplotlib',
         'networkx',
         'nltk',
         'numpy',
@@ -64,7 +61,6 @@ install_requires = [
         'pdfminer.six',
         'profilehooks',
         'pybtex',
-        'PyYAML',
         'pystache',
         'scikit-learn',
         'scipy',
@@ -81,10 +77,9 @@ if platform.system() == 'Windows':
 #    install_requires.append('mmseg==1.3.0')
 
 if platform.python_version_tuple()[0] == '2':
-    install_requires.append("futures>=3.0.0")
     install_requires.append("configparser>=3.5.0")
+    install_requires.append("futures>=3.0.0")
     install_requires.append("importlib")
-    install_requires.append("mock")
 
 setup(
     name='topicexplorer',
