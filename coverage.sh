@@ -91,8 +91,8 @@ $CMD -m topicexplorer.export ap.ini -o ap.tez --include-corpus
 EXIT=$(($EXIT+$?))
 $CMD -m topicexplorer.tezimport ap.tez -o ap2
 EXIT=$(($EXIT+$?))
-$CMD -m topicexplorer update
-pip install -e .
+#$CMD -m topicexplorer update
+#pip install -e .
 $CMD -m topicexplorer version
 EXIT=$(($EXIT+$?))
 #pip install gitpython travispy
