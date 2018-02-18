@@ -18,7 +18,7 @@ install:
   - export PATH="$HOME/miniconda/bin:$PATH"
   - hash -r
   - conda config --set always_yes yes --set changeps1 no
-  - conda create -n py -q --yes pip numpy scipy scikit-learn nltk unidecode networkx wget decorator chardet ujson requests "python=$TRAVIS_PYTHON_VERSION"
+  - conda create -n py -q --yes pip numpy matplotlib scipy scikit-learn nltk unidecode networkx wget decorator chardet ujson requests "python=$TRAVIS_PYTHON_VERSION"
   - source activate py
   - python --version
   - pip --version

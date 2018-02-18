@@ -4,6 +4,7 @@ decorator==4.0.11
 future==0.16.0
 htrc-feature-reader==1.92
 langdetect==1.0.7
+matplotlib==2.0.2
 networkx==1.11
 nltk==3.2.3
 numpy==1.12.1

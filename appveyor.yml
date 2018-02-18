@@ -13,7 +13,7 @@ environment:
 
 install:
   - "%PYTHON%\\python.exe -m conda update -q --yes conda"
-  - "%PYTHON%\\python.exe -m conda install -q --yes pip numpy scipy nltk unidecode networkx decorator chardet ujson configparser requests"
+  - "%PYTHON%\\python.exe -m conda install -q --yes pip numpy scipy nltk unidecode networkx decorator chardet ujson configparser requests matplotlib"
   - "%PYTHON%\\python.exe -m conda install -q --yes cython" # for vsm 
   - "%PYTHON%\\python.exe -c \"import nltk; nltk.download('stopwords'); nltk.download('punkt')\""
   - "%PYTHON%\\python.exe -m pip install unittest2 nose wget"

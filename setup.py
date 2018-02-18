@@ -55,6 +55,7 @@ install_requires = [
         'future',
         'htrc-feature-reader',
         'langdetect',
+        'matplotlib',
         'networkx',
         'nltk',
         'numpy',
