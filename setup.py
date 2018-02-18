@@ -67,6 +67,7 @@ install_requires = [
         'requests',
         'scikit-learn',
         'scipy',
+        'sortedcontainers',
         'ujson',
         'Unidecode',
         'waitress',
