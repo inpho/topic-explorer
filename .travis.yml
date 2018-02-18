@@ -24,6 +24,7 @@ install:
   - pip --version
   - export PATH=$HOME/py/bin:$PATH
   - pip install coveralls
+  - conda install -q --yescython # for vsm compilation from source
   # install topic explorer
   - pip install . #--extra-index-url https://inpho.cogs.indiana.edu/pypi 
 # command to run tests
