@@ -1,9 +1,36 @@
-bottle>=0.12
-brewer2mpl>=1.4
-pystache>=0.5.4
-https://github.com/inpho/vsm/archive/master.zip#egg=vsm
-wget>=2.1
-unidecode
-pdfminer
-pyenchant
+bottle>=0.12.0
+brewer2mpl>=1.4.0,<1.5.0
+decorator>=4.0.5
+future>=0.16.0
+htrc-feature-reader>=1.92
+langdetect>=1.0.0
+matplotlib>=2.0.0
+mock>=2.0.0
+networkx==1.11
+nltk>=3.0.0,<4.0.0
+notebook>=4.0.0
+numpy>=1.11.3,<2.0.0
+Paste==2.0.3
+pdfminer.six==20170720
+profilehooks>=1.8.0
+progressbar2>=3.18.0
+pybtex==0.21
+pystache==0.5.4
+requests>=2.14.2
+scikit_learn>=0.18.1
+scipy>=0.19.0
+snakeviz>=0.4.0
+sortedcontainers==1.5.7
+SQLAlchemy>=1.1.0
+ujson==1.35
+Unidecode
+vsm==0.4.1
+waitress>=1.0.0
+wget>=3.2
 
+configparser==3.5.0; python_version=='2.7'
+futures==3.0.5; python_version=='2.7'
+importlib==1.0.4; python_version=='2.7'
+pywin32>=220; sys_platform=='win32'
+
+--extra-index-url https://inpho.cogs.indiana.edu/pypi/ pymmseg==1.3.0

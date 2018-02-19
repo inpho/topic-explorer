@@ -47,7 +47,7 @@
     </div>
     <div class="form-group">
       <div class="col-lg-offset-4 col-lg-4 col-md-offset-2 col-md-8">
-        <button class="btn btn-default form-control topdoc" disabled id="topicBtn" type="button">Mouse on bar segment to sort results by that topic.</button>
+        <button class="btn btn-default form-control topdoc" disabled id="topicBtn" type="button">Click on bar segment to sort results by that topic.</button>
       </div>
     </div>
     <!--
@@ -362,8 +362,9 @@ function computeWidth(numCols) {
     .ticks(10, "%");
 }
 
+// Changed the height variable to better pair the topic bars with their documents
 function computeHeight(data, numLegendRows) { 
-  height = (data.length * 30);// - margin.top - margin.bottom;
+  height = (data.length * 35);// - margin.top - margin.bottom;
   y = d3.scale.ordinal()
    .rangeRoundBands([0, height], .1, 0);
   y.domain(data.map(function(d) { return d.id; }));
@@ -479,7 +480,7 @@ d3.json(url, function(error, data) {
         .call(yAxis)
         .selectAll("text")
         .attr("class", function(d) { return (q == null && d == docid && roottopic == null) ? "primary" : "" })
-        .on("click", function(d) { window.location.href = window.location.origin + window.location.pathname + "?doc=" + d;})
+        .on("click", function(d) { window.location.href = window.location.origin + window.location.pathname + "?doc=" + encodeURIComponent(d);})
   
     svg.select(".y.axis").selectAll("g")
         .insert("rect", ":first-child")
@@ -508,13 +509,13 @@ d3.json(url, function(error, data) {
     for (var i = 0; i < icons.length; i++) {
       icon_fns[icons[i]](ticks,i, data);
     }
-  
+    
     // draw total bar
     var doc = svg.selectAll("doc")
         .data(data)
       .enter().append("g")
         .attr("class", function(d) { return (q == null && d.doc == docid && roottopic == null) ? "doc primary" : "doc"})
-        .attr("transform", function(d) { return "translate(10," + y(d.id) + ")"; })
+        .attr("transform", function(d) { return "translate(10," + y(d.id) + ")";  })
         .on("mouseover", function(d) {
             var tick = $("text:contains(" + d.id +")")
               .filter(function() { return $(this).text().trim() == d.id })
@@ -530,15 +531,17 @@ d3.json(url, function(error, data) {
             icons.reduce(function(prev, cur) {
               return prev.next(".{0}Icon".format(cur)).css('opacity', '');
             }, tick);
-          });
+          })
+        ;
 
   
     // Draw topic bars
     doc.selectAll("rect")
         .data(function(d) { return d.topicMap; })
       .enter().append("rect")
-        .attr("height", y.rangeBand())
+        .attr("height", y.rangeBand()/2.75)
         .attr("x", function(d) { return x(d.x0); })
+       .attr("y", 10)
         .attr("width", function(d) { return x(d.x1) - x(d.x0); })
         .attr("class", function(d) { return "top_" + d.name; })
         .on("mouseover", function(d) {
@@ -576,12 +579,12 @@ d3.json(url, function(error, data) {
           }
           topicSort(d.name); })
         .style("fill", function(d) { return topics[d.name]['color']; });
-    
+
     doc.append("text")
           .text(function(d) { return d.label; })
           .attr("class","docLabel")
           .attr("dx", "3")
-          .attr("dy", "20") 
+          .attr("dy", "8")
         .filter(function(d) { return q && (d.label.indexOf(q) >= 0);})
         .each(function(d) {
             if (q) {
@@ -589,7 +592,7 @@ d3.json(url, function(error, data) {
               var new_html = d.label;
               for (var i = 0; i < splits.length; i++) {
                 var myRe = new RegExp(splits[i], 'gi');
-                new_html = new_html.replace(myRe, '<tspan style="font-weight: bold">$&</tspan>');
+                new_html = new_html.replace(myRe, '<tspan style="font-weight: bold;>$&</tspan>');
                 $("text:contains("+d.label+")").html(new_html);
               }
             }
@@ -737,7 +740,7 @@ d3.json(url, function(error, data) {
     svg.selectAll(".doc")
       .selectAll("rect")
       .data(function(d) { return d.topicMap; })
-      .style("fill", function(d) { return tops[d.name]['color']; })
+      .style("fill", function(d) { return barColors(tops[d.name]['color'], d.name); })
       /*.on("mouseover", function(d) {
           // SVG element z-index determined by render order, not style sheet
           // so element must be reappended to the end on hover so border 
@@ -857,7 +860,7 @@ d3.json(url, function(error, data) {
     svg.selectAll(".doc")
       .selectAll("rect")
       .data(function(d) { return d.topicMap; })
-      .style("fill", function(d) { return tops[d.name]['color']; })
+      .style("fill", function(d) { return barColors(tops[d.name]['color'], d.name); })
       /*
       .on("mouseover", function(d) {
           // SVG element z-index determined by render order, not style sheet
@@ -878,6 +881,34 @@ d3.json(url, function(error, data) {
       .attr("width", function(d) { return x(d.x1) - x(d.x0); })
       .attr("class", function(d) { return "top_" + d.name; });
 
+  }
+
+  // From StackOverflow: https://stackoverflow.com/a/21648508
+  function hexToRgbA(hex, a){
+    var c;
+    if(/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)){
+        c= hex.substring(1).split('');
+        if(c.length== 3){
+            c= [c[0], c[0], c[1], c[1], c[2], c[2]];
+        }
+        c= '0x'+c.join('');
+        return 'rgba('+[(c>>16)&255, (c>>8)&255, c&255].join(',')+',' + a + ')';
+    }
+    throw new Error('Bad Hex');
+  }
+
+  function barColors(myColor, myId) {
+   // var myColor = topics[d.name]['color'];
+    //var myId = d.name;
+    var mainGradient = svg.append('linearGradient')
+        .attr('id', myId);
+    mainGradient.append('stop')
+        .attr('stop-color', myColor)
+        .attr('offset', '0');
+    mainGradient.append('stop')
+        .attr('stop-color', hexToRgbA(myColor, .7))
+        .attr('offset', '1');
+    return "url(#" + myId + ")";
   }
 </script>
 

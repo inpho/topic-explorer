@@ -163,11 +163,30 @@ def get_corpusbuilder_fn(corpus_path, sentences=False,
         return walk_corpus
 
 
+def ensure_nltk_data_downloaded():
+    import nltk
+    try:
+        nltk.data.find('tokenizers/punkt')
+    except LookupError:
+        nltk.download('punkt')
+    try:
+        nltk.data.find('corpora/stopwords')
+    except LookupError:
+        nltk.download('stopwords')
+    try:
+        nltk.data.find('corpora/wordnet')
+    except LookupError:
+        nltk.download('wordnet')
+
+
 def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=0,
                  context_type='document', ignore=['.json', '.log', '.err', '.pickle', '.npz'],
                  decode=True, sentences=False, simple=True, tokenizer='default'):
 
     from vsm.corpus import Corpus
+
+    # ensure that nltk packages are downloaded
+    ensure_nltk_data_downloaded()
 
     # import appropriate tokenizer
     if tokenizer == 'default':
@@ -233,7 +252,7 @@ def main(args):
 
     if not args.corpus_print_name and not args.quiet:
         args.corpus_print_name = prompt("Corpus Name", default=args.corpus_name)
-    
+
     # configure model-path
     if args.model_path is None:
         if os.path.isdir(args.corpus_path):
@@ -246,8 +265,12 @@ def main(args):
     args.corpus_filename = get_corpus_filename(
         args.corpus_path, args.model_path, stop_freq=args.stop_freq)
     if not args.rebuild and os.path.exists(args.corpus_filename):
-        args.rebuild = bool_prompt("\nCorpus file found. Rebuild? ", 
-            default=False)
+        if args.quiet:
+            print("Path exits: {}".format(args.corpus_filename))
+            sys.exit(1)
+        else:
+            args.rebuild = bool_prompt("\nCorpus file found. Rebuild? ",
+                default=False)
     else:
         args.rebuild = True
 
@@ -259,7 +282,7 @@ def main(args):
 
             args.htrc_metapath = os.path.abspath(args.corpus_path + '/../')
             args.htrc_metapath = os.path.join(args.htrc_metapath,
-                os.path.dirname(args.corpus_path) + '.metadata.json')
+                os.path.basename(args.corpus_path) + '.metadata.json')
         else:
             import topicexplorer.extensions.htrc_features as htrc_features
             with open(args.corpus_path) as idfile:
@@ -279,10 +302,10 @@ def main(args):
 
     if args.rebuild and (not args.htrc or os.path.isdir(args.corpus_path)):
         try:
-            args.corpus_filename = build_corpus(args.corpus_path, args.model_path,
-                                                stop_freq=args.stop_freq, decode=args.decode,
-                                                sentences=args.sentences,
-                                                simple=args.simple, tokenizer=args.tokenizer)
+            args.corpus_filename = build_corpus(
+                args.corpus_path, args.model_path, stop_freq=args.stop_freq,
+                decode=args.decode, nltk_stop=args.nltk, simple=args.simple,
+                sentences=args.sentences, tokenizer=args.tokenizer)
         except IOError:
             print("ERROR: invalid path, please specify either:")
             print("  * a single plain-text or PDF file,")
@@ -326,7 +349,7 @@ def main(args):
 to add a custom corpus description, either:
 - Modify the contents of the file `{}`
 - Change the main:corpus_desc path in `{}` to an existing Markdown file.
-""".format(os.path.abspath(args.corpus_desc), 
+""".format(os.path.abspath(args.corpus_desc),
            os.path.abspath(args.config_file)))
 
     return args.config_file
@@ -348,12 +371,15 @@ def write_config(args, config_file=None):
         config.set("main", "label_module", "topicexplorer.extensions.bibtex")
         config.add_section("bibtex")
         config.set("bibtex", "path", args.bibtex)
-
+    
     config.add_section("www")
     config.set("www", "corpus_name", args.corpus_print_name)
     config.set("www", "icons", "fingerprint,link")
     config.set("www", "fulltext", "false")
-
+    # adds a pdf element to the config file and set it to true if
+    # pdf documents were being used in the corpus
+    if args.corpus_path[-4:] == '.pdf' or contains_pattern(args.corpus_path, '*.pdf'):
+        config.set("www", "pdf", "true")
 
     config.add_section("logging")
     config.set("logging", "path", "logs/%s/{0}.log" % args.corpus_name)
@@ -364,7 +390,7 @@ def write_config(args, config_file=None):
             config.set("www", "corpus_name", "HTRC Data Capsule")
         config.set("www", "doc_title_format", '<a href="{1}">{0}</a>')
         config.set("www", "doc_url_format", 'http://hdl.handle.net/2027/{0}')
-        config.set("www", "icons", "htrc,htrcbook,link")
+        config.set("www", "icons", "htrcbook,link")
         config.set("main", "htrc", True)
         # TODO: Fix HTRC Metadata download
         config.set("www", "htrc_metadata", args.htrc_metapath)
@@ -427,6 +453,8 @@ def populate_parser(parser):
 
     parser.add_argument("--simple", action="store_true", default=True,
                         help="Skip sentence tokenizations [default].")
+    parser.add_argument("--no-nltk-stoplist", action="store_false", dest="nltk",
+                        help="disable the NLTK stoplist")
     parser.add_argument("--sentences", action="store_true", help="Parse at the sentence level")
     parser.add_argument("--freq", dest="stop_freq", default=5, type=int,
                         help="Filter words occurring less than freq times [Default: 5])")

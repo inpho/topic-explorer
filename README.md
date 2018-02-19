@@ -82,7 +82,7 @@ The InPhO Topic Explorer is **only** compatible with Python 2.7. However, Anacon
 
 ### Non-Anaconda Install
  - **Miniconda**
-   1.  If using Miniconda (a small version of Anaconda), the necessary packages are: `conda install numpy scipy nltk matplotplib ipython networkx`
+   1.  If using Miniconda (a small version of Anaconda), the necessary packages are: `conda install numpy scipy scikit-learn nltk matplotplib ipython networkx unidecode wget decorator chardet ujson requests notebook`
 
  - **Debian/Ubuntu**
    1.  `sudo apt-get-install build-essential python-dev python-pip python-numpy python-matplotlib python-scipy python-ipython`
@@ -110,26 +110,26 @@ If you have deployed InPhO-TE using another infrastructure, please submit a pull
 1.  Install apache2 with mod_wsgi: `apt-get install apache2 libapache2-mod-wsgi`
 2.  Create `/etc/apache2/sites-available/topicexplorer.conf`:
     ```
-<VirtualHost *:80>
-	ServerName localhost
-	ServerAdmin admin@localhost
-	
-	ErrorLog /var/www/topicexplorer/log/error.log
-	CustomLog /var/www/topicexplorer/log/access.log combined
-
-	WSGIDaemonProcess topicexplorer user=www-data group=www-data \
-	  python-path=/home/jaimie/anaconda2/lib/python2.7/site-packages/
-	WSGIScriptAlias /ap /var/www/topicexplorer/app.wsgi
-	
-	<Directory /var/www/topicexplorer>
-		WSGIProcessGroup topicexplorer
-		WSGIApplicationGroup %{GLOBAL}
-		Options All
-		AllowOverride All
-		Require all granted
-	</Directory>
-</VirtualHost>
-```
+    <VirtualHost *:80>
+    	ServerName localhost
+    	ServerAdmin admin@localhost
+    	
+    	ErrorLog /var/www/topicexplorer/log/error.log
+    	CustomLog /var/www/topicexplorer/log/access.log combined
+    
+    	WSGIDaemonProcess topicexplorer user=www-data group=www-data \
+    	  python-path=/home/jaimie/anaconda2/lib/python2.7/site-packages/
+    	WSGIScriptAlias /ap /var/www/topicexplorer/app.wsgi
+    	
+    	<Directory /var/www/topicexplorer>
+    		WSGIProcessGroup topicexplorer
+    		WSGIApplicationGroup %{GLOBAL}
+    		Options All
+    		AllowOverride All
+    		Require all granted
+    	</Directory>
+    </VirtualHost>
+    ```
 3.  Create the application directory: `sudo mkdir -p /var/www/topicexplorer/`
 4.  Create the log directory: `sudo mkdir -p /var/www/topicexplorer/log`
 5.  Create the www directory: `sudo mkdir -p /var/www/topicexplorer/www`

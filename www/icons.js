@@ -102,6 +102,16 @@ var icon_fns = {"link" : function(ticks, i) {
         .attr("class", "fulltextIcon icon")
         .attr("onclick", function(d) { return (d) ? "fulltext.popover(this)" : ""; });
   },
+  //This function handles opening pdfs documents in a new window (is based off the oldbailey function)
+  "fulltext-pdf" : function(ticks, i,docs) {
+    base_fn(ticks,i)
+        .attr("data-doc-id", function (d) {return d})
+        .attr("xlink:href","/img/pdf.png")
+        .attr("class", "fulltext-pdfIcon icon")
+        .on("click", function(d) {
+          window.open("/../fulltext/"+d);
+        });
+  },
  "fulltext" : function(ticks, i,docs) {
       base_fn(ticks,i)
         .attr("data-doc-id", function (d) {return d})
@@ -146,7 +156,7 @@ var icon_fns = {"link" : function(ticks, i) {
   },
  "htrcbook" : function(ticks, i, docs) {
       base_fn(ticks,i)
-        .attr("xlink:href","/img/icon-book.png")
+        .attr("xlink:href","/img/htrc.png")
         .attr("class", "htrcbookIcon icon")
         .on("click", function(d) { 
           data = docs.filter(function(doc, i) { return doc.id == d})[0]
@@ -195,10 +205,12 @@ String.prototype.format = String.prototype.f = function() {
     return s;
 };
 
+//Added a new tooltip for the pdf icon when fulltext is enabled
 var icon_tooltips = {
     "link" : 'Click to refocus the Topic Explorer on this document.',
     "fingerprint" : 'Click to see the Topic Fingerprint of this document.',
     "ap" : 'Click for the full-text.',
+    "fulltext-pdf" : 'Click for the full-text.',
     "fulltext" : 'Click for the full-text.',
     "oldbailey" : 'Click to open Old Bailey Online Record.',
     "htrc" : 'Click for the HathiTrust Details.',

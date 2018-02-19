@@ -2,7 +2,7 @@ from __future__ import print_function
 from future import standard_library
 standard_library.install_aliases()
 from builtins import zip
-from builtins import str
+from builtins import str as text
 
 from codecs import open
 from configparser import RawConfigParser as ConfigParser, NoOptionError
@@ -19,10 +19,11 @@ from pkg_resources import resource_filename
 import re
 import socket
 import sys
+import threading
 from urllib.parse import unquote
 import webbrowser
 
-from bottle import request, response, route, run, static_file, Bottle
+from bottle import request, response, route, run, static_file, Bottle, ServerAdapter
 from topicexplorer.lib.color import get_topic_colors, rgb2hex
 from topicexplorer.lib.ssl import SSLWSGIRefServer
 from topicexplorer.lib.util import (int_prompt, bool_prompt, is_valid_filepath,
@@ -194,7 +195,7 @@ class Application(Bottle):
                 doc, prob = doc_prob
                 struct = docs[doc]
                 struct.update({'prob': float(1 - prob),
-                               'topics': dict([(str(t), float(p)) for t, p in topics])})
+                               'topics': dict([(text(t), float(p)) for t, p in topics])})
                 js.append(struct)
 
             return json.dumps(js)
@@ -224,7 +225,7 @@ class Application(Bottle):
                 doc, prob = doc_prob
                 struct = docs[doc]
                 struct.update({'prob': float(1 - prob),
-                               'topics': dict([(str(t), float(p)) for t, p in topics])})
+                               'topics': dict([(text(t), float(p)) for t, p in topics])})
                 js.append(struct)
 
             return json.dumps(js)
@@ -274,7 +275,7 @@ class Application(Bottle):
                 doc, prob = doc_prob
                 struct = docs[doc]
                 struct.update({'prob': float(1 - prob),
-                               'topics': dict([(str(t), float(p)) for t, p in topics])})
+                               'topics': dict([(text(t), float(p)) for t, p in topics])})
                 js.append(struct)
 
             return json.dumps(js)
@@ -283,23 +284,33 @@ class Application(Bottle):
         @_set_acao_headers
         def topics(k):
             from topicexplorer.lib.color import rgb2hex
+            import numpy as np
 
             response.content_type = 'application/json; charset=UTF8'
             response.set_header('Expires', _cache_date())
             response.set_header('Cache-Control', 'max-age=86400')
             
-            # populate word values
-            data = self.v[k].topics()
-
-            js = {}
+            # set a parameter for number of words to return
             wordmax = 10  # for alphabetic languages
             if kwargs.get('lang', None) == 'cn':
                 wordmax = 25  # for ideographic languages
 
+            # populate word values
+            phi = self.v[k].phi.T
+            idxs = phi.argsort(axis=1)[:,::-1][:,:wordmax]
+            # https://github.com/numpy/numpy/issues/4724
+            idx_hack = np.arange(np.shape(phi)[0])[:,np.newaxis]
+
+            dt = [('Word',self.c.words.dtype),('Prob',phi.dtype)]
+            data = np.zeros(shape=(phi.shape[0], wordmax), dtype=dt)
+            data['Word'] = self.c.words[idxs]
+            data['Prob'] = phi[idx_hack, idxs]
+
+            js = {}
             for i, topic in enumerate(data):
-                js[str(i)] = {
+                js[text(i)] = {
                     "color": rgb2hex(self.colors[k][i]),
-                    'words': dict([(str(w), float(p))
+                    'words': dict([(text(w), float(p))
                                        for w, p in topic[:wordmax]])
                     }
 
@@ -510,10 +521,11 @@ class Application(Bottle):
             if query is None or query.lower() in self.label(doc).lower():
                 struct = {
                     'id': doc,
-                    'label': self.label(doc)
+                    'label': self.label(doc),
+                    # TODO: Figure out why metadata field might have issue.
+                    'metadata': dict(zip(md.dtype.names, (text(m) for m in md)))
                 }
-                # TODO: fix metadata login
-                    #'metadata': dict(zip(md.dtype.names, (str(m) for m in md)))}
+
                 if id_as_key:
                     js[doc] = struct
                 else:
@@ -564,7 +576,7 @@ def get_host_port(args):
     if (int(config.get("www", "port").format(0))) != port:
         if not args.quiet and bool_prompt(
             "Change default baseport to {0}?".format(port), default=True):
-            config.set("www", "port", str(port))
+            config.set("www", "port", text(port))
 
             # create deep copy of configuration
             # see http://stackoverflow.com/a/24343297
@@ -587,9 +599,15 @@ def get_host_port(args):
 
     # hostname assignment
     host = args.host or config.get('www', 'host')
-
     return host, port
 
+class WaitressLoggingServer(ServerAdapter):
+    def run(self, handler): # pragma: no cover
+        from waitress import serve
+        if not self.quiet:
+            from paste.translogger import TransLogger
+            handler = TransLogger(handler)
+        serve(handler, host=self.host, port=self.port, **self.options)
 
 def main(args, app=None):
     if app is None:
@@ -598,18 +616,20 @@ def main(args, app=None):
     host, port = get_host_port(args)
 
     if args.browser:
+
         if host == '0.0.0.0':
-            link_host = socket.gethostname()
+            link_host = "localhost"
         else:
             link_host = host
         url = "http://{host}:{port}/"
         url = url.format(host=link_host, port=port, k=min(app.topic_range))
-        webbrowser.open(url)
+        browser_thread = threading.Thread(target=webbrowser.open, args=[url])
+        browser_thread.start()
 
         print("TIP: Browser launch can be disabled with the '--no-browser' argument:")
         print("topicexplorer serve --no-browser", args.config, "\n")
 
-    app.run(server='paste', host=host, port=port)
+    app.run(server=WaitressLoggingServer, host=host, port=port)
 
 
 def create_app(args):
@@ -628,6 +648,7 @@ def create_app(args):
         'raw_corpus': None,
         'label_module': None,
         'fulltext': 'false',
+        'pdf' : 'false',
         'topics': None,
         'cluster': None,
         'corpus_desc' : None,
@@ -654,7 +675,12 @@ def create_app(args):
     config_icons = config.get('www', 'icons').split(",")
     if args.fulltext or config.getboolean('www', 'fulltext'):
         if not any('fulltext' in icon for icon in config_icons) and 'ap' not in config_icons:
-            config_icons.insert(0, 'fulltext-inline')
+            # determines what fulltext function to use depending on the pdf tag that
+            # was added in the init.py file
+            if (config.getboolean('www', 'pdf')):
+                config_icons.insert(0, 'fulltext-pdf')
+            else:
+                config_icons.insert(0, 'fulltext-inline')
 
     # Create application object
     corpus_name = config.get('www', 'corpus_name')

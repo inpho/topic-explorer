@@ -6,7 +6,6 @@ python:
 addons:
   apt:
     packages:
-    - libenchant-dev
     - poppler-utils
 install:
   # Install conda
@@ -19,16 +18,16 @@ install:
   - export PATH="$HOME/miniconda/bin:$PATH"
   - hash -r
   - conda config --set always_yes yes --set changeps1 no
-  - conda create -n py -q --yes pip numpy scipy scikit-learn nltk unidecode matplotlib cython pyyaml networkx wget decorator chardet pandas "python=$TRAVIS_PYTHON_VERSION"
+  - conda create -n py -q --yes pip numpy matplotlib scipy scikit-learn nltk unidecode networkx wget decorator chardet ujson requests "python=$TRAVIS_PYTHON_VERSION"
   - source activate py
   - python --version
   - pip --version
   - export PATH=$HOME/py/bin:$PATH
-  - pip install coveralls
+  - pip install coveralls unittest2
+  - conda install -q --yes cython # for vsm compilation from source
   # install topic explorer
-  - pip install https://github.com/inpho/vsm/archive/py3k.zip#egg=vsm-dev
-  - pip install . --extra-index-url https://inpho.cogs.indiana.edu/pypi 
+  - pip install -r requirements.txt . #--extra-index-url https://inpho.cogs.indiana.edu/pypi 
 # command to run tests
-script: 
+script:
   - bash coverage.sh
 after_success: coveralls

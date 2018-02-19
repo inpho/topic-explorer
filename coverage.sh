@@ -91,8 +91,8 @@ $CMD -m topicexplorer.export ap.ini -o ap.tez --include-corpus
 EXIT=$(($EXIT+$?))
 $CMD -m topicexplorer.tezimport ap.tez -o ap2
 EXIT=$(($EXIT+$?))
-$CMD -m topicexplorer update
-pip install -e .
+#$CMD -m topicexplorer update
+#pip install -e .
 $CMD -m topicexplorer version
 EXIT=$(($EXIT+$?))
 #pip install gitpython travispy
@@ -110,7 +110,8 @@ $CMD -m topicexplorer.train ap -k 20 --iter 20 --continue --quiet
 EXIT=$(($EXIT+$?))
 
 
-$CMD setup.py test
+$CMD -m unittest2
+EXIT=$(($EXIT+$?))
 
 coverage report
 echo "Exiting with code ${EXIT}"
