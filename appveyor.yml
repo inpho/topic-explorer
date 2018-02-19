@@ -34,12 +34,11 @@ test_script:
   - "%PYTHON%\\python.exe -m topicexplorer.version"
   - "%PYTHON%\\python.exe -m topicexplorer.demo --no-launch"
   - "%PYTHON%\\python.exe -m topicexplorer.train ap.ini --rebuild -k 20 40 60 --iter 20 --context-type article"
-  - ps: Start-Job -Name topicexplorer { &"$env:PYTHON\python.exe" -m topicexplorer.server -p 8000 --no-browser ap.ini }
+  - ps: $MyProcess = Start-Process -Name topicexplorer { &"$env:PYTHON\python.exe" -m topicexplorer.server -p 8000 --no-browser ap.ini }
   - ps: Start-Sleep -s 15
-  - ps: Get-Job
-  - ps: Receive-Job -Id 1
   - ps: (Invoke-WebRequest http://localhost:8000/ | Select-Object -ExpandProperty StatusCode) -eq 200
-  - ps: Stop-Job -Name topicexplorer
+on_finish:
+  - ps: Stop-Process -Id $MyProcess.Id
 
 #after_test:
 #  # This step builds your wheels.
