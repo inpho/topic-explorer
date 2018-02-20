@@ -33,6 +33,11 @@ test_script:
   - "%PYTHON%\\python.exe -m topicexplorer.version"
   - "%PYTHON%\\python.exe -m topicexplorer.demo --no-launch"
   - "%PYTHON%\\python.exe -m topicexplorer.train ap.ini --rebuild -k 20 40 60 --iter 20 --context-type article"
+  - ps: $MyProcess = Start-Process "$env:PYTHON\python.exe" -argument "-m topicexplorer.server -p 8000 --no-browser ap.ini" -PassThru
+  - ps: Start-Sleep -s 15
+  - ps: ./coverage.ps1
+on_finish:
+  - ps: Stop-Process -Id $MyProcess.Id
 
 #after_test:
 #  # This step builds your wheels.
