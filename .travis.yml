@@ -1,20 +1,33 @@
 language: python
 python:
   - "2.7"
+  - "3.6"
 # command to install dependencies
+addons:
+  apt:
+    packages:
+    - poppler-utils
 install:
   # Install conda
-  - sudo pip install conda
-  # install deps
-  - sudo conda init
-  # sudo conda update conda --yes
-  - conda create -p $HOME/py --yes pip numpy scipy "python=$TRAVIS_PYTHON_VERSION"
+  - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
+      wget  https://repo.continuum.io/miniconda/Miniconda2-4.3.21-Linux-x86_64.sh -O miniconda.sh;
+    else
+      wget  https://repo.continuum.io/miniconda/Miniconda3-4.3.21-Linux-x86_64.sh -O miniconda.sh;
+    fi
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda create -n py -q --yes pip numpy matplotlib scipy scikit-learn nltk unidecode networkx wget decorator chardet ujson requests "python=$TRAVIS_PYTHON_VERSION"
+  - source activate py
+  - python --version
+  - pip --version
   - export PATH=$HOME/py/bin:$PATH
-  # command to install dependencies
-  - pip install unidecode nltk
-  - pip install -r requirements.txt
-  - pip install .
+  - pip install coveralls unittest2
+  - conda install -q --yes cython # for vsm compilation from source
+  # install topic explorer
+  - pip install -r requirements.txt . #--extra-index-url https://inpho.cogs.indiana.edu/pypi 
 # command to run tests
-script: 
-  - cd demo-data
-  - ./get-data.sh
+script:
+  - bash coverage.sh
+after_success: coveralls

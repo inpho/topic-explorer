@@ -1,0 +1,66 @@
+.logo-word {
+  background-image: url('/img/inpho_logo.png');
+  background-size: 172px 92px;
+  width: 172px;
+  height: 84px;
+  padding-top: 6px;
+  margin-top: 14px;
+  margin-bottom: 15px;
+  margin-left: -6px;
+  display: inline-block;
+  text-indent: -3000px;
+}
+h1 {
+text-align: center;
+margin-bottom: 0;
+font-size: 59px;
+line-height: 1;
+color: inherit;
+letter-spacing: -1px;
+}
+h1 a, h1 a:hover {
+  color: #000;
+  text-decoration: none;
+}
+h2 {
+  text-align: center;
+  margin-top: -25px;    
+  margin-bottom: 50px;
+}
+
+.glyphicon.spinning {
+        animation: spin 1s infinite linear;
+            -webkit-animation: spin2 1s infinite linear;
+}
+
+@keyframes spin {
+        from { transform: scale(1) rotate(0deg); }
+            to { transform: scale(1) rotate(360deg); }
+}
+
+@-webkit-keyframes spin2 {
+        from { -webkit-transform: rotate(0deg); }
+            to { -webkit-transform: rotate(360deg); }
+}
+
+#sidebar-wrapper  .tooltip {
+    width: 240px;
+    font-size:16px;
+  }
+
+.modal {
+    max-height: 100%;
+}
+.modal-body {
+    max-height: 60vh;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+@font-face {
+    font-family: 'CC Icons';
+    src: local('CC Icons'), url('/fonts/cc-icons.ttf') format('truetype');
+}
+.cc-font {
+    font-family: 'CC Icons';
+}

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>InPhO Topic Explorer</title>
+  <script>
+  // redirect for error introduced by CAS
+  if (window.location.href.includes('%3d'))
+    window.location.href = window.location.href.replace('%3d','=');
+  </script>
+
+  <script src="/lib/jquery-2.2.4.min.js"></script>
+  <!--<script src="https://code.jquery.com/jquery-1.12.4.js"></script>-->
+  <script src="/lib/jquery.superdom.min.js"></script>
+  <script src="/lib/jquery.cookie.min.js"></script>
+  <script src="/lib/bootstrap-2.3.2/js/bootstrap.min.js"></script>
+  <script src="/lib/d3.v3.min.js"></script>
+  <script src="/lib/mustache.js"></script>
+  <script src="/lib/showdown.min.js"></script>
+  <script src="/lib/inpho/util.js"></script>
+  <script src="/fulltext.js"></script>
+  <script src="/htrc.js"></script>
+  <script src="../icons.js"></script>
+  <link rel="stylesheet" type="text/css" href="/lib/bootstrap-3.3.6/css/bootstrap.min.css" />
+  <!-- <link rel="stylesheet" type="text/css" href="/lib/bootstrap-2.3.2/css/bootstrap.min.css" /> -->
+  <link rel='stylesheet prefetch' href='/css/simple-sidebar.css'>
+  <link rel='stylesheet prefetch' href='/css/master.css'>
+  <link rel='stylesheet prefetch' href='/css/inpho-font.css'>
+</head>
+
+<body>
+  <div id="wrapper">
+    <div id="sidebar-wrapper">
+      <div class="sidebar-helper">
+        <ul class="sidebar-nav">
+          <li><a id="home-link" class="selected" data-placement="right" title="Home" href="/"><span class="glyphicon glyphicon-home"></span></a></li>
+          <li>
+            <!--<a class="selected" href="javascript:toggleSearch()"><span class="glyphicon glyphicon-search"></span></a>-->
+          </li>
+        </ul>
+      </div>
+      <div class="sidebar-helper" style="vertical-align: middle;">
+        <ul id="sidebar-topics" class="sidebar-nav">
+          <li><a class="selected" id="cluster-link" title="Topic cluster view" data-placement="right" href="topics"><span class="icon-scatter"></span></a></li>
+          {{#topic_range}}
+          <li><a class="topic-link" href="{{.}}/" title="Launch {{.}}-topic model" data-placement="right">{{.}}</a></li>
+          {{/topic_range}}
+        </ul>
+      </div>
+      <div class="sidebar-helper" style="bottom: 0;">
+        <ul class="sidebar-nav">
+          <li><a id="helper" href="#" class="selected" data-placement="right" title="Help" data-toggle="modal" data-target="#helpModal"><strong>?</strong></a></li>
+          <li><a href="#" class="selected" data-placement="right" title="Usage" data-toggle="modal" data-target="#rightsModal"><strong class="cc-font">cb</strong></a></li>
+        </ul>
+      </div>
+    </div>
+  
+    <script>
+    var ks = [{{#topic_range}}{{.}}, {{/topic_range}}];
+    $('#sidebar-wrapper li a').tooltip();
+    </script>
+    
+    <div id="page-content-wrapper">
+      {{body}}
+    </div>
+  </div>
+  
+  <div class="modal fade" tabindex="-1" role="dialog" id="rightsModal">
+    <div class="modal-dialog" role="document copyright">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h3 class="modal-title">Usage and Copyright</h3>
+        </div>
+        <div class="modal-body">
+          <p>The InPhO Topic Explorer (InPhO-TE) software is &copy; 2014-16 Trustees of Indiana University and the Indiana Philosophy Ontology (InPhO) Project.</p>
+          <p>While copyright is reserved, the software itself is released via the permissive <a href="https://github.com/inpho/topic-explorer/blob/master/LICENSE.txt" target="_blank">MIT License</a>, with open-source code available via <a href="https://github.com/inpho/topic-explorer/">GitHub</a>.</p>
+          <p>Explicit rights are granted for reuse of all visualizations and other derivatives of this software via the <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a> (CC-BY).</p>
+          <p>To satisfy the license in electronic works, please link to the primary project page at <a href="http://inphodata.cogs.indiana.edu/">http://inphodata.cogs.indiana.edu/</a>. If you use InPhO-TE in a published work, the authors request that you cite InPhO-TE as:
+              <blockquote style="font-size: inherit;">Jaimie Murdock and Colin Allen. (2015) "Visualization Techniques for Topic Model Checking" in Proceedings of the 29th AAAI Conference on Artificial Intelligence (AAAI-15). Austin, Texas, USA, January 25-29, 2015. http://inphodata.cogs.indiana.edu/</blockquote></p>
+          <p>Content for each corpus is copyright by their respective creators. Topic models performed using this content fall under fair use provisions as non-consumptive research.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal #rightsModal -->
+
+  <div class="modal fade" tabindex="-1" role="dialog" id="homeHelp">
+    <div class="modal-dialog" role="document copyright">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h3 class="modal-title">Help</h3>
+        </div>
+        <div class="modal-body" id="homeHelpText">
+          <script>
+            var converter = new showdown.Converter({
+               simplifiedAutoLink: true,
+               headerLevelStart : 3,
+               literalMidWordUnderscores: true,
+               strikethrough: true,
+               tables: true
+              });
+            $.get("/help-home.md").
+              done(function(data) { 
+                    var html = converter.makeHtml(data);
+                    $('#homeHelpText').html(html);
+                  }).fail(function(data) { $('#homeHelpText').html('No help found for this page.'); });
+          </script>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal #rightsModal -->
+
+  <div class="modal fade" tabindex="-1" role="dialog" id="hypershelfHelp">
+    <div class="modal-dialog" role="document copyright">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h3 class="modal-title">Hypershelf Help</h3>
+        </div>
+        <div class="modal-body" id="hypershelfHelpText">
+        	<script>
+            var converter = new showdown.Converter({
+               simplifiedAutoLink: true,
+               headerLevelStart : 3,
+               literalMidWordUnderscores: true,
+               strikethrough: true,
+               tables: true
+              });
+            $.get("/help-hypershelf.md").
+        		  done(function(data) { 
+                    var html = converter.makeHtml(data);
+                    $('#hypershelfHelpText').html(html);
+                  }).fail(function(data) { $('#hypershelfHelpText').html('No help found for this page.'); });
+        	</script>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal #rightsModal -->
+
+  <div class="modal fade" tabindex="-1" role="dialog" id="topicsHelp">
+    <div class="modal-dialog" role="document copyright">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h3 class="modal-title">Help</h3>
+        </div>
+        <div class="modal-body" id="topicsHelpText">
+          <script>
+            var converter = new showdown.Converter({
+               simplifiedAutoLink: true,
+               headerLevelStart : 3,
+               literalMidWordUnderscores: true,
+               strikethrough: true,
+               tables: true
+              });
+            $.get("/help-topics.md").
+              done(function(data) { 
+                    var html = converter.makeHtml(data);
+                    $('#topicsHelpText').html(html);
+                  }).fail(function(data) { $('#topicsHelpText').html('No help found for this page.'); });
+          </script>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal #rightsModal -->
+  
+  <script>
+    var path = window.location.pathname;
+    console.log(path);
+    if (path == "/") {
+      $("#helper").removeAttr("data-target");
+      $("#helper").attr("data-target", "#homeHelp");
+    }
+    console.log(path.match(/\/\d+\//));
+    if (path.match(/\/\d+\//)) {
+      console.log("hello");
+      $("#helper").removeAttr("data-target");
+      $("#helper").attr("data-target", "#hypershelfHelp");
+    }
+    if (path == "/topics") {
+      $("#helper").removeAttr("data-target");
+      $("#helper").attr("data-target", "#topicsHelp");
+    }
+  </script>
+</body>
+</html>

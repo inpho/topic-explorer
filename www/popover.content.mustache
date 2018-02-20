@@ -6,7 +6,12 @@
 
 <dl>
 <dt>External Resources</dt>
+{{#page}}
+<dd><a href="http://babel.hathitrust.org/cgi/pt?id={{id}};seq={{page}}" target="_blank">HathiTrust</a></dd>
+{{/page}}
+{{^page}}
 <dd><a href="http://hdl.handle.net/2027/{{id}}" target="_blank">HathiTrust</a></dd>
+{{/page}}
 {{#lccn.0}}
 <dd><a href="http://lccn.loc.gov/{{.}}" target="_blank">Library of Congress</a></dd>
 {{/lccn.0}}

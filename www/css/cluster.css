@@ -1,0 +1,28 @@
+#chart {
+  font: 10px sans-serif;
+}
+#chart .axis path,
+#chart .axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+#chart .dot {
+  stroke: #000;
+  stroke-opacity: .7;
+  fill-opacity: .7;
+}
+
+#controls {
+  font-size: 14px;
+  position: relative;
+  top: 10px;
+  left: 80px;
+}
+
+#chart input {
+  margin: 4px 4px 0;
+}
+
+

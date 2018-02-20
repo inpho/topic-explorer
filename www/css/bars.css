@@ -1,0 +1,175 @@
+
+.y.axis text {
+  visibility: hidden;
+}
+.y.axis g .icon {
+  opacity: 0;
+  }
+.y.axis g:hover .icon {
+  opacity: 1.0;
+  }
+
+.y.axis text, .y.axis image {
+  cursor: pointer;
+  }
+.y.axis rect:hover {
+  stroke: #fff;  
+  stroke-width: 0;
+  opacity: 0 !important;
+}
+.y.axis rect:hover .icon {
+  opacity: 1 !important;
+}
+
+.docLabel {
+ }
+
+.bar {
+    fill: steelblue;
+    background-color: linear-gradient(white, black);
+}
+
+.bar:hover {
+    fill: brown;
+}
+
+.axis {
+    font: 11px sans-serif;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+.docLabel{
+  font:11px sans-serif;  
+  pointer-events: none;
+}
+
+rect {
+  opacity: 0.6;
+  background-color: linear-gradient(white, black);
+  }
+
+rect.hover {
+  stroke: #000;
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+  cursor: crosshair;
+}
+
+rect.hover, .legend rect {
+  opacity: 0.8;
+}
+.doc:hover rect, .doc.hover rect {
+  opacity: 1.0;
+  }
+rect:hover {
+  opacity: 1.0 !important;
+}
+rect:hover, .legend.hover rect, .legend.selected rect {
+  stroke: #000;
+  stroke-width: 2;
+  shape-rendering: crispEdges;
+  }
+.selected text, .hover text {
+  font-weight: bold;
+}
+.doc text {
+  font-size: 18px;
+  }
+#legend, #controls {
+  position: absolute;
+  overflow: visible;
+}
+.primary {
+  text-transform: uppercase;
+}
+text.hover, .title{ 
+  font-weight: bold;
+  }
+/*
+.primary.doc:hover, .primary.doc {
+  stroke: #000;
+  stroke-width: 1px;
+  stroke-opacity: 1.0;
+  shape-rendering: crispEdges;
+}*/
+.logo-word {
+  background-image: url('/img/inpho_logo.png');
+  background-size: 172px 92px;
+  width: 172px;
+  height: 84px;
+  padding-top: 6px;
+  margin-top: 14px;
+  margin-bottom: 15px;
+  margin-left: -6px;
+  display: inline-block;
+  text-indent: -3000px;
+}
+h1 {
+text-align: center;
+margin-bottom: 0;
+font-size: 59px;
+line-height: 1;
+color: inherit;
+letter-spacing: -1px;
+}
+
+h1 a, h1 a:hover {
+  color: #000;
+  text-decoration: none;
+}
+/*
+.btn {
+  vertical-align: middle;
+  margin-top: 2px;
+}*/
+#twitter-widget-0 {
+  margin-left: 5px;
+  margin-top: 3px;
+  margin-bottom: -8px;
+}
+.null, .non-null {
+  display: none;
+  }
+.formula {
+  font-variant: small-caps;
+  }
+.formula em {
+  font-variant: normal;  
+}
+
+.popover-content {
+  max-height: 250px;
+  overflow-y: scroll;
+}
+.typeahead {
+  z-index: 1040;
+  }
+.popover {
+  z-index: 1100;
+}
+h2 {
+    margin-top: -25px;    
+}
+
+.bar-container {
+  height:25px;  
+}
+
+dt {
+    margin-left: -80px;    
+}
+@media(min-width:768px) {
+    dd {
+        margin-left: 100px !important;
+    }
+}
+
+.btn-group {
+    display: inline-flex;
+    white-space: nowrap;
+}

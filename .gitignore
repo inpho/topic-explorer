@@ -1,12 +1,31 @@
 *.pyc
 sandbox
+config.*
+.coverage
+
+*.ini
 
 start-servers.sh
 logs/*
 
 demo-data/*.npz
+demo-data/*.tgz
 demo-data/ap/*
 demo-data/models/*
 
+notebooks/
 build/
+dist/
+benchmarks/
 topicexplorer.egg-info
+
+.eggs/
+AUTHORS
+ChangeLog
+
+*~
+.travis.key
+
+docs/_build
+
+ap*
