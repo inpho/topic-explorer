@@ -2,7 +2,6 @@ bottle>=0.12.0
 brewer2mpl>=1.4.0,<1.5.0
 decorator>=4.0.5
 future>=0.16.0
-htrc-feature-reader>=1.92
 langdetect>=1.0.0
 matplotlib>=2.0.0
 mock>=2.0.0
@@ -21,7 +20,6 @@ scikit_learn>=0.18.1
 scipy>=0.19.0
 snakeviz>=0.4.0
 sortedcontainers>=1.5.7
-SQLAlchemy>=1.1.0
 ujson==1.35
 Unidecode
 vsm==0.4.1
