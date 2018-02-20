@@ -26,12 +26,16 @@ import argparse
 from argparse import ArgumentParser
 from configparser import RawConfigParser as ConfigParser
 import os.path
+import platform
 import warnings
 
 from topicexplorer import (init, prep, train, server, notebook,
     demo, update, metadata, export, tezimport)
 
 from topicexplorer.lib.util import is_valid_filepath
+
+if platform.system() == 'Windows':
+    import win_unicode_console
 
 
 class ArgumentParserError(Exception):
@@ -71,6 +75,9 @@ def main():
     """
     The primary CLI function for the Topic Explorer.
     """
+    if platform.system() == 'Windows':
+        win_unicode_console.enable()
+
     # Create the master argparse object.
     parser = ThrowingArgumentParser()
 
@@ -269,6 +276,9 @@ def main():
         except ImportError:
             print("""\nSnakeviz is not installed. Install with `pip install snakeviz`,
             then run `snakeviz {}`.""".format(args.profile))
+    
+    if platform.system() == 'Windows':
+        win_unicode_console.disable()
 
 
 # Allow `__main__` to be called as a script.

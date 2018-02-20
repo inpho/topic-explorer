@@ -42,9 +42,12 @@
         </div>
       </div>
     </div>
+    <div style="text-align:center">
+      <p id="focalDoc" style="font-weight:bold"></p>
+    </div>
     <div class="form-group">
       <div class="col-lg-offset-4 col-lg-4 col-md-offset-2 col-md-8">
-        <button class="btn btn-default form-control topdoc" disabled id="topicBtn" type="button">Click a segment below to focus on relation to that topic.</button>
+        <button class="btn btn-default form-control topdoc" disabled id="topicBtn" type="button">Click on bar segment to sort results by that topic.</button>
       </div>
     </div>
     <!--
@@ -56,6 +59,34 @@
   </form>
 
   <script>
+
+  //Handles cases where the "click a segment below to focus on relation to that topic" should appear or not.
+  //Also updates a newly added descriptor that indicates what sort of focus the application is in at the time,
+  //either topic focused or document focused.
+  var topDoc = document.getElementById("topicBtn");
+  var mainDoc = document.getElementById("doc");
+  $(document).ready(function () {
+    if (mainDoc.value == "") {
+      if (roottopic == null) {
+        $("#focalDoc").text("");
+      } else {
+        $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic);
+      }
+      topDoc.style.display = 'none';
+    }
+    else {
+      topDoc.style.display = 'block';
+      if (roottopic == null) {
+        if (mainDoc.value.length > 16) {
+          $("#focalDoc").text("Top 40 documents most similar to " + mainDoc.value.slice(0, 17) + "...");
+        } else {
+          $("#focalDoc").text("Top 40 documents most similar to " + mainDoc.value.slice(0, 17));
+          }
+      } else {
+        $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic);
+      }
+    }
+  });
 
   $(document).ready(function () {
     $('#cite').hide();
@@ -530,9 +561,25 @@ d3.json(url, function(error, data) {
             $(".docLabel", parent).removeClass("hover");
             $(".top_" + d.name).removeClass('hover');
           })
-        .on("click", function(d) { topicSort(d.name); })	
-        .style("fill", function(d) { return barColors(topics[d.name]['color'], d.name); });
-    
+        .on("click", function(d) {
+          //Handles when to update the descriptor based off which mode it is in and what topic bar was clicked on.
+          //Indicates whether the model is sorted by proportion of a specific topic or not.
+          if (roottopic == null) {
+            if (mainDoc.value.length > 16) {
+              $("#focalDoc").text("Top 40 documents most similar to " + mainDoc.value.slice(0, 17) + "... sorted by proportion of topic " + d.name);
+            } else {
+              $("#focalDoc").text("Top 40 documents most similar to " + mainDoc.value.slice(0, 17) + " sorted by proportion of topic " + d.name);
+            }
+          } else if (roottopic == d.name) {
+            topDoc.style.display = 'none';
+            $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic);
+          } else {
+            topDoc.style.display = 'block';
+            $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic + " sorted by proportion of topic " + d.name);
+          }
+          topicSort(d.name); })
+        .style("fill", function(d) { return topics[d.name]['color']; });
+
     doc.append("text")
           .text(function(d) { return d.label; })
           .attr("class","docLabel")
@@ -574,7 +621,23 @@ d3.json(url, function(error, data) {
               else
                 return 0;
             }).join(", ") + ", ..."; })
-        .on("click", function(d) { topicSort(d); })
+        .on("click", function(d) {
+          //Handles when to update the descriptor based off which mode it is in and what topic bar was clicked on.
+          //Indicates whether the model is sorted by proportion of a specific topic or not.
+          if (roottopic == null) {
+             if (mainDoc.value.length > 16) {
+              $("#focalDoc").text("Top 40 documents most similar to " + mainDoc.value.slice(0, 17) + "... sorted by proportion of topic " + d);
+            } else {
+              $("#focalDoc").text("Top 40 documents most similar to " + mainDoc.value.slice(0, 17) + " sorted by proportion of topic " + d);
+            }
+          } else if (roottopic == d) {
+            topDoc.style.display = 'none';
+            $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic);
+          } else {
+            topDoc.style.display = 'block';
+            $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic + " sorted by proportion of topic " + d);
+          }
+          topicSort(d); })
         .on("mouseover", function(d) {
             $(".top_" + d).addClass('hover').tooltip('show');
           })
@@ -765,7 +828,7 @@ d3.json(url, function(error, data) {
         $('.topdoc').addClass('btn-primary');
       }
       $('.topdoc').removeAttr('disabled');
-      $('.topdoc').text('Top Documents for Topic ' + topic);
+      $('.topdoc').text('Retrieve Documents for Topic ' + topic);
       $('.topdoc').click(function() { location.href = location.origin + location.pathname + '?topic=' + topic;});
       $('.topdoc').mouseenter(function() {
           $('.legend rect').not('.top_' + topic).tooltip('hide');

@@ -15,7 +15,7 @@ def get_titles():
     config.read('/var/inpho/inpho.ini')
 
     entries = os.path.join(config.get('corpus', 'db_path'), 'entries.txt')
-    
+
     titles = {}
     with open(entries) as f:
         for line in f:
@@ -36,4 +36,23 @@ def init(app, config_file):
 
 def label(doc):
     global labels
-    return labels.get(doc, doc)
+
+    # support for SEP Archive corpora
+    if re.findall('\d{4}-', doc):
+        sem_year, doc = doc.split('-',1)
+        sem = sem_year[:-4]
+        year = sem_year[-4:]
+
+        # expand archive name
+        if(sem == 'spr'):
+	    sem = "Spring"
+        elif(sem == 'win'):
+            sem = "Winter"
+        elif(sem == 'sum'):
+            sem = "Summer"
+        elif(sem == 'fall'):
+            sem = "Fall"
+
+        return "{} [{} {}]".format(labels.get(doc, doc), sem, year)
+    else:
+        return labels.get(doc, doc)

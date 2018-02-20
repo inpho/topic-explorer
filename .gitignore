@@ -19,6 +19,10 @@ dist/
 benchmarks/
 topicexplorer.egg-info
 
+.eggs/
+AUTHORS
+ChangeLog
+
 *~
 .travis.key
 

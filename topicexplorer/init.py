@@ -11,17 +11,6 @@ import os
 import os.path
 import shutil
 
-try:
-    # Python 3 or Python 2 w/backport
-    from importlib import reload
-except ImportError:
-    # Python 2 without backports, use default reload
-    pass
-
-import sys
-if sys.version_info.major == 2:
-    reload(sys)
-    sys.setdefaultencoding("utf-8")
 
 from topicexplorer.lib.util import (prompt, is_valid_filepath, bool_prompt,
                                     listdir_nohidden, contains_pattern)

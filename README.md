@@ -2,6 +2,7 @@
 
 [![Join the chat at https://gitter.im/inpho/topic-explorer](https://badges.gitter.im/inpho/topic-explorer.svg)](https://gitter.im/inpho/topic-explorer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Travis](https://img.shields.io/travis/inpho/topic-explorer.svg)](https://travis-ci.org/inpho/topic-explorer)
+[![AppVeyor Windows build](https://ci.appveyor.com/api/projects/status/ynfvy3y832cquixq/branch/master?svg=true)](https://ci.appveyor.com/project/JaimieMurdock/topic-explorer/branch/master)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/inpho/topic-explorer/blob/master/LICENSE.txt)
 [![PyPI](https://img.shields.io/pypi/v/topicexplorer.svg)](https://pypi.python.org/pypi/topicexplorer)
 
