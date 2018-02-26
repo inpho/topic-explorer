@@ -15,6 +15,8 @@ Display options include topic normalization, alphabetical sort and topic sort. B
 ## Installation
 There are two types of install: Default and Developer. Currently we are debugging the Windows Default installation. Before installing, Mac users should install [XCode from Apple](https://developer.apple.com/xcode/downloads/) and Windows users should install a Python compiler such as [Microsoft Visual C__ Compiler](https://www.microsoft.com/en-us/download/details.aspx?id=44266)
 
+**Note:** If you attempt to install this while connected to the Internet by way of a restricted network (such as eduroam) you may experience difficulty.  Our pypi server requires port 8080 to be accessible, and this is sometimes blocked on public networks.
+
 ### Default Install (Windows users should use Developer Install until further notice)
 1.  Go to the [Anaconda website](http://continuum.io/downloads) and choose the Python 2.7 Distribution. (Windows users: during installation, during "Advanced Options" choose "Add Anaconda to my PATH environment variable" and don't worry about the warning.)
 2.  Open a Terminal (Mac and Linux) or PowerShell (Windows).
