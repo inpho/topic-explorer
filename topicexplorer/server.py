@@ -517,13 +517,19 @@ class Application(Bottle):
 
         js = dict() if id_as_key else list()
 
+        def safe_text(s):
+            try:
+                return text(s)
+            except:
+                return ''
+
         for doc, md in zip(docs, ctx_md):
             if query is None or query.lower() in self.label(doc).lower():
                 struct = {
                     'id': doc,
                     'label': self.label(doc),
                     # TODO: Figure out why metadata field might have issue.
-                    'metadata': dict(zip(md.dtype.names, (text(m) for m in md)))
+                    'metadata': dict(zip(md.dtype.names, (safe_text(m) for m in md)))
                 }
 
                 if id_as_key:
