@@ -152,14 +152,24 @@ def get_high_filter(args, c, words=None):
     print("    The histogram below shows how many words will be removed")
     print("    by selecting each maximum frequency threshold.\n")
     items, counts = get_items_counts(c.corpus)
-    items = items[get_mask(c, words)]
-    counts = counts[get_mask(c, words)]
+    #items = items[get_mask(c, words)]
+    #counts = counts[get_mask(c, words)]
     high_filter = False
     bins = np.array([0., 0.025, 0.05, 0.075, 0.1, 0.15, 0.20, 0.25, 0.3, 0.35, 0.4, 0.5, 1.0])
+    bins = np.arange(0, 1.01, 0.025)
     bins = 1. - bins
 
-    thresh = np.cumsum(counts[counts.argsort()]) / float(counts.sum())
-    bins = [counts[counts.argsort()][np.searchsorted(thresh, bin)] for bin in bins]
+    thresh = old_div(np.cumsum(counts[counts.argsort()]), float(c.original_length))
+    bins = [counts[counts.argsort()][min(np.searchsorted(thresh, bin), len(counts)-1)] for bin in bins]
+    """
+    bins = np.array([0., 0.025, 0.05, 0.075, 0.1, 0.15, 0.20, 0.25, 0.3, 0.35, 0.4, 0.5, 1.0])
+    bins = 1. - bins
+    thresh = old_div(np.cumsum(counts[counts.argsort()]), counts.sum())
+    print("Thresholds:", thresh)
+    bins = [counts[counts.argsort()][min(np.searchsorted(thresh, bin), len(counts)-1)] for bin in bins]
+    print([(np.searchsorted(thresh, bin), bin) for bin in bins])
+    """
+
     bins = sorted(set(bins))
     bins.append(max(counts))
 
@@ -168,12 +178,13 @@ def get_high_filter(args, c, words=None):
         print("{0:>8s} {1:>8s} {2:<36s} {3:>14s} {4:>8s}".format("Rate", 'Top', '% of corpus',
                                                                  "# words", "Rate"))
         for bin, count in zip(bins[-2::-1], np.cumsum(bin_counts[::-1])):
-            if count:
-                percentage = 1. - (old_div(counts[counts < bin].sum(), float(counts.sum())))
+            filtered_counts = counts[get_mask(c, words)]
+            if (filtered_counts >= bin).sum():
+                percentage = 1. - (old_div(counts[counts < bin].sum(), float(c.original_length)))
                 print("{0:>5.0f}x".format(bin - 1).rjust(8), end=' ')
                 print('{0:2.1f}%'.format(percentage * 100).rjust(8), end=' ')
                 print((u'\u2588' * int(percentage * 36)).ljust(36), end=' ')
-                print("  {0:0.0f} words".format(count).rjust(14), end=' ')
+                print("  {0:0.0f} words".format((filtered_counts >= bin).sum()).rjust(14), end=' ')
                 print("> {0:>5.0f}x".format(bin - 1).ljust(8))
 
         print(' ' * 17, "{} total occurrences".format(counts.sum()).ljust(36), end=' ')
@@ -192,13 +203,14 @@ def get_high_filter(args, c, words=None):
                 places = np.in1d(c.words[get_mask(c, words)], candidates)
                 places = dict(zip(candidates, np.where(places)[0]))
                 candidates = sorted(candidates, key=lambda x: counts[places[x]], reverse=True)
+                filtered_counts = counts[get_mask(c, words)]
 
-                print("Filter will remove", counts[counts > input_filter].sum(), end=' ')
-                print("occurrences", "of these", len(counts[counts > input_filter]), "words:")
+                print("Filter will remove", filtered_counts[filtered_counts > input_filter].sum(), end=' ')
+                print("occurrences", "of these", len(filtered_counts[filtered_counts > input_filter]), "words:")
                 print(u' '.join(candidates))
 
-                print("\nFilter will remove", counts[counts > input_filter].sum(), end=' ')
-                print("occurrences", "of these", len(counts[counts > input_filter]), "words.", end=' ')
+                print("\nFilter will remove", filtered_counts[filtered_counts > input_filter].sum(), end=' ')
+                print("occurrences", "of these", len(filtered_counts[filtered_counts > input_filter]), "words.", end=' ')
                 if len(candidates) == len(c.words):
                     print("\n\nChoice of", input_filter, "will remove ALL words from the corpus.")
                     print("Please choose a different filter.")
@@ -231,15 +243,16 @@ def get_low_filter(args, c, words=None):
     print("    The histogram below shows how many words will be removed")
     print("    by selecting each minimum frequency threshold.\n")
     items, counts = get_items_counts(c.corpus)
-    items = items[get_mask(c, words)]
-    counts = counts[get_mask(c, words)]
+    #items = items[get_mask(c, words)]
+    #counts = counts[get_mask(c, words)]
 
-    bins = np.linspace(0, 1.0, 11)
-    bins = 1. - np.array([0., 0.025, 0.05, 0.075, 0.1, 0.15, 0.20, 0.25, 0.3, 0.35, 0.4, 0.5, 1.0])
+    bins = np.arange(0, 1.01, 0.025)
+    bins = 1. - bins
 
-    thresh = old_div(np.cumsum(counts[counts.argsort()[::-1]]), float(counts.sum()))
-    bins = [counts[counts.argsort()[::-1]][np.searchsorted(thresh, bin)] for bin in bins]
+    thresh = old_div(np.cumsum(counts[counts.argsort()[::-1]]), float(c.original_length))
+    bins = [counts[counts.argsort()[::-1]][min(np.searchsorted(thresh, bin), len(counts)-1)] for bin in bins]
     bins = sorted(set(bins))
+    print(bins, thresh)
 
     low_filter = False
     while low_filter is False:
@@ -248,13 +261,16 @@ def get_low_filter(args, c, words=None):
         print("{0:>8s} {1:>8s} {2:<36s} {3:>14s} {4:>8s}".format("Rate", 'Bottom', '% of corpus',
                                                                  "# words", "Rate"))
         for bin, count in zip(bins[1:], np.cumsum(bin_counts)):
-            if count:
-                percentage = (old_div(counts[counts <= bin].sum(), float(counts.sum())))
+            filtered_counts = counts[get_mask(c, words)]
+            if (filtered_counts < bin).sum() <= len(filtered_counts):
+                percentage = (old_div(counts[counts <= bin].sum(), float(c.original_length)))
                 print("{0:>5.0f}x".format(bin - 1).rjust(8), end=' ')
                 print('{0:2.1f}%'.format(percentage * 100).rjust(8), end=' ')
                 print((u'\u2588' * int(percentage * 36)).ljust(36), end=' ')
-                print("  {0:0.0f} words".format(count).rjust(14), end=' ')
+                print("  {0:0.0f} words".format((filtered_counts < bin).sum()).rjust(14), end=' ')
                 print("<= {0:>5.0f}x".format(bin - 1).ljust(8))
+                if (filtered_counts < bin).sum() == len(filtered_counts):
+                    break
 
         print(' ' * 17, "{} total occurrences".format(counts.sum()).ljust(36), end=' ')
         print('{} words total'.format(get_mask(c, words).sum()).rjust(20))
@@ -273,13 +289,14 @@ def get_low_filter(args, c, words=None):
                 places = np.in1d(c.words[get_mask(c, words)], candidates)
                 places = dict(zip(candidates, np.where(places)[0]))
                 candidates = sorted(candidates, key=lambda x: counts[places[x]])
+                filtered_counts = counts[get_mask(c, words)]
 
-                print("Filter will remove", counts[counts <= input_filter].sum(), "tokens", end=' ')
-                print("of these", len(counts[counts <= input_filter]), "words:")
+                print("Filter will remove", filtered_counts[filtered_counts <= input_filter].sum(), "tokens", end=' ')
+                print("of these", len(filtered_counts[filtered_counts <= input_filter]), "words:")
                 print(u' '.join(candidates))
 
-                print("\nFilter will remove", counts[counts <= input_filter].sum(), "tokens", end=' ')
-                print("of these", len(counts[counts <= input_filter]), "words.", end=' ')
+                print("\nFilter will remove", filtered_counts[filtered_counts <= input_filter].sum(), "tokens", end=' ')
+                print("of these", len(filtered_counts[filtered_counts <= input_filter]), "words.", end=' ')
 
                 if len(candidates) == len(c.words):
                     print("\n\nChoice of", input_filter, "will remove ALL words from the corpus.")
@@ -324,7 +341,7 @@ def main(args):
     if args.htrc or config.get("main", "htrc"):
         htrc_langs = get_htrc_langs(args)
         if htrc_langs:
-            args.lang.extend(new_langs)
+            args.lang.extend(htrc_langs)
 
     # auto-guess a language
     """
