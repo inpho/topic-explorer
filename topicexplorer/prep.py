@@ -244,17 +244,11 @@ def get_low_filter(args, c, words=None):
     print("    This will remove all words occurring less than N times.")
     print("    The histogram below shows how many words will be removed")
     print("    by selecting each minimum frequency threshold.\n")
+
+    # Get frequency bins
     items, counts = get_items_counts(c.corpus)
-    #items = items[get_mask(c, words)]
-    #counts = counts[get_mask(c, words)]
-
-    bins = np.arange(0, 1.01, 0.025)
-    bins = 1. - bins
-
-    thresh = old_div(np.cumsum(counts[counts.argsort()[::-1]]), float(c.original_length))
-    bins = [counts[counts.argsort()[::-1]][min(np.searchsorted(thresh, bin), len(counts)-1)] for bin in bins]
+    bins = [get_closest_bin(c, thresh, reverse=True, counts=counts) for thresh in np.arange(1.0, -0.01, -0.025)]
     bins = sorted(set(bins))
-    print(bins, thresh)
 
     low_filter = False
     while low_filter is False:
@@ -262,9 +256,11 @@ def get_low_filter(args, c, words=None):
         # print "{0:>10s} {1:>10s}".format("# Tokens", "# Words")
         print("{0:>8s} {1:>8s} {2:<36s} {3:>14s} {4:>8s}".format("Rate", 'Bottom', '% of corpus',
                                                                  "# words", "Rate"))
+
+        last_row = 0
         for bin, count in zip(bins[1:], np.cumsum(bin_counts)):
             filtered_counts = counts[get_mask(c, words)]
-            if (filtered_counts < bin).sum() <= len(filtered_counts):
+            if last_row < (filtered_counts < bin).sum() <= len(filtered_counts):
                 percentage = (old_div(counts[counts <= bin].sum(), float(c.original_length)))
                 print("{0:>5.0f}x".format(bin - 1).rjust(8), end=' ')
                 print('{0:2.1f}%'.format(percentage * 100).rjust(8), end=' ')
@@ -273,6 +269,8 @@ def get_low_filter(args, c, words=None):
                 print("<= {0:>5.0f}x".format(bin - 1).ljust(8))
                 if (filtered_counts < bin).sum() == len(filtered_counts):
                     break
+            last_row = (filtered_counts >= bin).sum()
+
 
         print(' ' * 17, "{} total occurrences".format(counts.sum()).ljust(36), end=' ')
         print('{} words total'.format(get_mask(c, words).sum()).rjust(20))
