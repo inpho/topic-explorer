@@ -442,11 +442,11 @@ def populate_parser(parser):
 
     parser.add_argument("--simple", action="store_true", default=True,
                         help="Skip sentence tokenizations [default].")
-    parser.add_argument("--no-nltk-stoplist", action="store_false", dest="nltk",
-                        help="disable the NLTK stoplist")
+    parser.add_argument("--nltk-stoplist", action="store_true", dest="nltk",
+                        help="use the English NLTK stoplist")
     parser.add_argument("--sentences", action="store_true", help="Parse at the sentence level")
-    parser.add_argument("--freq", dest="stop_freq", default=5, type=int,
-                        help="Filter words occurring less than freq times [Default: 5])")
+    parser.add_argument("--freq", dest="stop_freq", default=0, type=int,
+                        help="Filter words occurring less than freq times [Default: 0])")
 
 
 if __name__ == '__main__':

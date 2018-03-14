@@ -337,6 +337,13 @@ def main(args):
     args.corpus_path = config.get("main", "corpus_file")
     c = Corpus.load(args.corpus_path)
 
+    if c.original_length != len(c.corpus):
+        print("Corpus has already been prepared. Proceed to training or")
+        print("re-init the corpus to apply a different set of stopwords.")
+        print("\nTIP: Train the LDA models with:")
+        print("         topicexplorer train", args.config_file)
+        sys.exit(1)
+
     # check for htrc metadata
     if args.htrc or config.get("main", "htrc"):
         htrc_langs = get_htrc_langs(args)
