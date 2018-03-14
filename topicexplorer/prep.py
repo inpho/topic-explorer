@@ -142,6 +142,19 @@ def get_small_words(c, min_len):
 def get_special_chars(c):
     return [word for word in c.words if re.findall('[^A-Za-z\-\']', word)]
 
+def get_closest_bin(c, thresh, reverse=False, counts=None):
+    import numpy as np
+    if counts is None:
+        _, counts = get_items_counts(c.corpus)
+    counts = counts[counts.argsort()]
+    if reverse:
+        counts = counts[::-1]
+
+    cumsum = old_div(np.cumsum(counts), float(c.original_length))
+    bin = counts[min(np.searchsorted(cumsum, thresh), len(counts)-1)]
+    percentile = 1. - (old_div(counts[counts < bin].sum(), float(c.original_length)))
+    return bin
+
 
 def get_high_filter(args, c, words=None):
     import numpy as np
@@ -151,41 +164,30 @@ def get_high_filter(args, c, words=None):
     print("    This will remove all words occurring more than N times.")
     print("    The histogram below shows how many words will be removed")
     print("    by selecting each maximum frequency threshold.\n")
+
+    # Get frequency bins
     items, counts = get_items_counts(c.corpus)
-    #items = items[get_mask(c, words)]
-    #counts = counts[get_mask(c, words)]
-    high_filter = False
-    bins = np.array([0., 0.025, 0.05, 0.075, 0.1, 0.15, 0.20, 0.25, 0.3, 0.35, 0.4, 0.5, 1.0])
-    bins = np.arange(0, 1.01, 0.025)
-    bins = 1. - bins
-
-    thresh = old_div(np.cumsum(counts[counts.argsort()]), float(c.original_length))
-    bins = [counts[counts.argsort()][min(np.searchsorted(thresh, bin), len(counts)-1)] for bin in bins]
-    """
-    bins = np.array([0., 0.025, 0.05, 0.075, 0.1, 0.15, 0.20, 0.25, 0.3, 0.35, 0.4, 0.5, 1.0])
-    bins = 1. - bins
-    thresh = old_div(np.cumsum(counts[counts.argsort()]), counts.sum())
-    print("Thresholds:", thresh)
-    bins = [counts[counts.argsort()][min(np.searchsorted(thresh, bin), len(counts)-1)] for bin in bins]
-    print([(np.searchsorted(thresh, bin), bin) for bin in bins])
-    """
-
+    bins = [get_closest_bin(c, thresh, counts=counts) for thresh in np.arange(1.0, -0.01, -0.025)]
     bins = sorted(set(bins))
     bins.append(max(counts))
 
+    high_filter = False
     while not high_filter:
         bin_counts, bins = np.histogram(counts, bins=bins)
         print("{0:>8s} {1:>8s} {2:<36s} {3:>14s} {4:>8s}".format("Rate", 'Top', '% of corpus',
                                                                  "# words", "Rate"))
+        last_row = 0
         for bin, count in zip(bins[-2::-1], np.cumsum(bin_counts[::-1])):
             filtered_counts = counts[get_mask(c, words)]
-            if (filtered_counts >= bin).sum():
+            if (filtered_counts >= bin).sum() > last_row:
                 percentage = 1. - (old_div(counts[counts < bin].sum(), float(c.original_length)))
-                print("{0:>5.0f}x".format(bin - 1).rjust(8), end=' ')
+                print("{0:>5.0f}x".format(bin).rjust(8), end=' ')
                 print('{0:2.1f}%'.format(percentage * 100).rjust(8), end=' ')
                 print((u'\u2588' * int(percentage * 36)).ljust(36), end=' ')
                 print("  {0:0.0f} words".format((filtered_counts >= bin).sum()).rjust(14), end=' ')
-                print("> {0:>5.0f}x".format(bin - 1).ljust(8))
+                print(">= {0:>5.0f}x".format(bin).ljust(8))
+
+            last_row = (filtered_counts >= bin).sum()
 
         print(' ' * 17, "{} total occurrences".format(counts.sum()).ljust(36), end=' ')
         print('{} words total'.format(get_mask(c, words).sum()).rjust(20))
