@@ -404,34 +404,53 @@ def main(args):
                 len(candidates), 's' if len(candidates) > 1 else ''))
             stoplist.update(candidates)
 
-    if args.high_filter is None and not args.quiet:
+    if args.high_filter is None and args.high_percent is None and not args.quiet:
         args.high_filter, candidates = get_high_filter(args, c, words=stoplist)
         if len(candidates):
             print("Filtering {} high frequency word{}.".format(len(candidates),
                                                                's' if len(candidates) > 1 else ''))
             stoplist.update(candidates)
-    elif args.high_filter is None and args.quiet:
+    elif args.high_filter is None and args.high_percent is None and args.quiet:
         pass
-    elif args.high_filter > 0:
+    elif args.high_filter:
+        candidates = get_candidate_words(c, args.high_filter, sort=False)
+        if len(candidates):
+            print("Filtering {} high frequency word{}.".format(len(candidates),
+                                                               's' if len(candidates) > 1 else ''))
+            stoplist.update(candidates)
+    elif args.high_percent:
+        args.high_filter = get_closest_bin(c, args.high_percent / 100.)
+        print(args.high_filter)
         candidates = get_candidate_words(c, args.high_filter, sort=False)
         if len(candidates):
             print("Filtering {} high frequency word{}.".format(len(candidates),
                                                                's' if len(candidates) > 1 else ''))
             stoplist.update(candidates)
 
-    if args.low_filter is None and not args.quiet:
+    if args.low_filter is None and args.low_percent is None and not args.quiet:
         args.low_filter, candidates = get_low_filter(args, c, words=stoplist)
         if len(candidates):
             print("Filtering {} low frequency word{}.".format(len(candidates),
                                                               's' if len(candidates) > 1 else ''))
             stoplist.update(candidates)
-    elif args.low_filter is None and args.quiet:
+    elif args.low_filter is None and args.low_percent is None and args.quiet:
         pass
-    elif args.low_filter > 0:
+    elif args.low_filter:
         candidates = get_candidate_words(c, -1 * args.low_filter, sort=False)
         if len(candidates):
             print("Filtering {} low frequency words.".format(len(candidates)))
             stoplist.update(candidates)
+
+    elif args.low_percent:
+        args.low_filter = get_closest_bin(c, 1 - (args.low_percent / 100.), reverse=True) - 1
+        print(args.low_filter)
+        candidates = get_candidate_words(c, -1 * args.low_filter, sort=False)
+        if len(candidates):
+            print("Filtering {} low frequency word{}.".format(len(candidates),
+                                                               's' if len(candidates) > 1 else ''))
+            stoplist.update(candidates)
+
+
 
     if not stoplist:
         print("No stopwords applied.\n\n")
@@ -487,10 +506,19 @@ def populate_parser(parser):
     parser.add_argument("--htrc", action="store_true")
     parser.add_argument("--stopword-file", dest="stopword_file",
                         help="File with custom stopwords")
-    parser.add_argument("--high", type=int, dest="high_filter",
+
+    group = parser.add_mutually_exclusive_group(required=False)
+    group.add_argument("--high", type=int, dest="high_filter",
                         help="High frequency word filter", default=None)
-    parser.add_argument("--low", type=int, dest="low_filter",
+    group.add_argument("--high-percent", type=float, dest="high_percent",
+                        help="High frequency word filter", default=None)
+    
+    group = parser.add_mutually_exclusive_group(required=False)
+    group.add_argument("--low", type=int, dest="low_filter",
                         default=None, help="Low frequency word filter")
+    group.add_argument("--low-percent", type=float, dest="low_percent",
+                        default=None, help="Low frequency word filter")
+
     parser.add_argument("--min-word-len", type=int, dest="min_word_len",
                         default=0, help="Filter short words [Default: 0]")
     parser.add_argument("--exclude-special-chars", action="store_false",
