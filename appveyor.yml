@@ -17,7 +17,7 @@ install:
   - "%PYTHON%\\python.exe -m conda install -q --yes cython scikit-learn pandas" # for vsm 
   - "%PYTHON%\\python.exe -c \"import nltk; nltk.download('stopwords'); nltk.download('punkt')\""
   - "%PYTHON%\\python.exe -m pip install unittest2 nose wget"
-  - "%PYTHON%\\python.exe -m pip install . --extra-index-url https://inpho.cogs.indiana.edu/pypi"
+  - "%PYTHON%\\python.exe -m pip install ."
 
 build: off
 version: '1.0.{build}'
