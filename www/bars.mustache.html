@@ -957,6 +957,7 @@ fingerprint.host = '../';
 $('#home-link').attr('href', '../');
 $('#cluster-link').attr('href', '../topics');
 $('.topic-link').each(function(i,elt) {
-    $(this).attr('href', '../' + $(elt).attr('href'));
+    $(this).attr('href', 'javascript:visualize(' + $(elt).attr('href').substring(0,2)+')'); // 
+    console.log($(elt).attr('href'));
   }); 
 </script>
