@@ -673,9 +673,11 @@ d3.json(url, function(error, data) {
         .attr("class", "axis_label")
         .attr("dy", "-.45em")
         .attr("dx", "5em")
-        .attr("font-size", "10px")
+        .attr("font-size", "9.5px")
         .style("text-anchor", "start")
-        .text("ordered by P( T | " + docid + " )");
+        .style("overflow-wrap", "normal")
+        .text("ordered by proportion of T in " + (docid ? "focal document" : "corpus"));
+        //.text("ordered by P( T | " + docid + " )");
 
     d3.select(window).on('resize', resize);
   
