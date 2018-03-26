@@ -814,18 +814,15 @@ d3.json(url, function(error, data) {
     // Copy-on-write since tweens are evaluated after a delay.
     $('.sort').removeAttr('checked');
     if (topic) {
-      console.log("nipple1");
       sortDataset(function(a, b) { return b.topics[topic] - a.topics[topic]; });
       $('.selected').removeClass('selected');
       $(".top_" + topic).addClass('selected');
       $('.reset').removeAttr('disabled');
       if (topic == roottopic) {
-        console.log("nipple2");
         $('.topdoc').css('font-weight', 'bold');
         $('.topdoc').removeClass('btn-primary');
         $('.topdoc').addClass('btn-default');
       } else {
-        console.log("nipple3");
         $('.topdoc').css('font-weight', 'normal');
         $('.topdoc').removeClass('btn-default');
         $('.topdoc').addClass('btn-primary');
