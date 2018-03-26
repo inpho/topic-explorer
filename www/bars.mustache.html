@@ -1,3 +1,4 @@
+<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.18.1/build/cssreset/cssreset-min.css">
 <link rel="stylesheet" type="text/css" href="/css/bars.css" />
 <div id="main" class="container">
   <div class="row">
@@ -20,7 +21,6 @@
         $('#autocompleteDoc').tooltip({title: 'Toggle Word/Document Search', placement: 'bottom'});
       </script>
     <div class="form-group">
-
       <label for="doc" class="col-sm-2 control-label" id="search-label">Focal document</label>
       <div class="col-sm-8">
         <div class="input-group">
@@ -45,11 +45,11 @@
     <div style="text-align:center">
       <p id="focalDoc" style="font-weight:bold"></p>
     </div>
-    <div class="form-group">
+   <div class="form-group">
       <div class="col-lg-offset-4 col-lg-4 col-md-offset-2 col-md-8">
         <button class="btn btn-default form-control topdoc" disabled id="topicBtn" type="button">Click on bar segment to sort results by that topic.</button>
       </div>
-    </div>
+  </div> 
     <!--
     <div class="pull-right">
       <a href="https://twitter.com/share" class="twitter-share-button pull-right" data-text="InPhO Topic Explorer" data-via="JaimieMurdock" data-size="large" data-hashtags="dighum" data-counturl="inphodata.cogs.indiana.edu">Tweet</a>
@@ -65,8 +65,8 @@
   //either topic focused or document focused.
   var topDoc = document.getElementById("topicBtn");
   var mainDoc = document.getElementById("doc");
-  $(document).ready(function () {
-    if (mainDoc.value == "") {
+  $(window).load(function () {
+    if (mainDoc.value ==  "") {
       if (roottopic == null) {
         $("#focalDoc").text("");
       } else {
@@ -634,7 +634,7 @@ d3.json(url, function(error, data) {
             topDoc.style.display = 'none';
             $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic);
           } else {
-            topDoc.style.display = 'block';
+            topdoc.style.display = 'block';
             $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic + " sorted by proportion of topic " + d);
           }
           topicSort(d); })
@@ -814,15 +814,18 @@ d3.json(url, function(error, data) {
     // Copy-on-write since tweens are evaluated after a delay.
     $('.sort').removeAttr('checked');
     if (topic) {
+      console.log("nipple1");
       sortDataset(function(a, b) { return b.topics[topic] - a.topics[topic]; });
       $('.selected').removeClass('selected');
       $(".top_" + topic).addClass('selected');
       $('.reset').removeAttr('disabled');
       if (topic == roottopic) {
+        console.log("nipple2");
         $('.topdoc').css('font-weight', 'bold');
         $('.topdoc').removeClass('btn-primary');
         $('.topdoc').addClass('btn-default');
       } else {
+        console.log("nipple3");
         $('.topdoc').css('font-weight', 'normal');
         $('.topdoc').removeClass('btn-default');
         $('.topdoc').addClass('btn-primary');
@@ -958,6 +961,6 @@ $('#home-link').attr('href', '../');
 $('#cluster-link').attr('href', '../topics');
 $('.topic-link').each(function(i,elt) {
     $(this).attr('href', 'javascript:visualize(' + $(elt).attr('href').substring(0,2)+')'); // 
-    console.log($(elt).attr('href'));
+    
   }); 
 </script>
