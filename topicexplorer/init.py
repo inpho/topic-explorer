@@ -11,17 +11,6 @@ import os
 import os.path
 import shutil
 
-try:
-    # Python 3 or Python 2 w/backport
-    from importlib import reload
-except ImportError:
-    # Python 2 without backports, use default reload
-    pass
-
-import sys
-if sys.version_info.major == 2:
-    reload(sys)
-    sys.setdefaultencoding("utf-8")
 
 from topicexplorer.lib.util import (prompt, is_valid_filepath, bool_prompt,
                                     listdir_nohidden, contains_pattern)
@@ -163,11 +152,30 @@ def get_corpusbuilder_fn(corpus_path, sentences=False,
         return walk_corpus
 
 
+def ensure_nltk_data_downloaded():
+    import nltk
+    try:
+        nltk.data.find('tokenizers/punkt')
+    except LookupError:
+        nltk.download('punkt')
+    try:
+        nltk.data.find('corpora/stopwords')
+    except LookupError:
+        nltk.download('stopwords')
+    try:
+        nltk.data.find('corpora/wordnet')
+    except LookupError:
+        nltk.download('wordnet')
+
+
 def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=0,
                  context_type='document', ignore=['.json', '.log', '.err', '.pickle', '.npz'],
                  decode=True, sentences=False, simple=True, tokenizer='default'):
 
     from vsm.corpus import Corpus
+
+    # ensure that nltk packages are downloaded
+    ensure_nltk_data_downloaded()
 
     # import appropriate tokenizer
     if tokenizer == 'default':
@@ -246,8 +254,12 @@ def main(args):
     args.corpus_filename = get_corpus_filename(
         args.corpus_path, args.model_path, stop_freq=args.stop_freq)
     if not args.rebuild and os.path.exists(args.corpus_filename):
-        args.rebuild = bool_prompt("\nCorpus file found. Rebuild? ", 
-            default=False)
+        if args.quiet:
+            print("Path exits: {}".format(args.corpus_filename))
+            sys.exit(1)
+        else:
+            args.rebuild = bool_prompt("\nCorpus file found. Rebuild? ",
+                default=False)
     else:
         args.rebuild = True
 
@@ -259,7 +271,7 @@ def main(args):
 
             args.htrc_metapath = os.path.abspath(args.corpus_path + '/../')
             args.htrc_metapath = os.path.join(args.htrc_metapath,
-                os.path.dirname(args.corpus_path) + '.metadata.json')
+                os.path.basename(args.corpus_path) + '.metadata.json')
         else:
             import topicexplorer.extensions.htrc_features as htrc_features
             with open(args.corpus_path) as idfile:
@@ -367,7 +379,7 @@ def write_config(args, config_file=None):
             config.set("www", "corpus_name", "HTRC Data Capsule")
         config.set("www", "doc_title_format", '<a href="{1}">{0}</a>')
         config.set("www", "doc_url_format", 'http://hdl.handle.net/2027/{0}')
-        config.set("www", "icons", "htrc,htrcbook,link")
+        config.set("www", "icons", "htrcbook,link")
         config.set("main", "htrc", True)
         # TODO: Fix HTRC Metadata download
         config.set("www", "htrc_metadata", args.htrc_metapath)
@@ -430,9 +442,12 @@ def populate_parser(parser):
 
     parser.add_argument("--simple", action="store_true", default=True,
                         help="Skip sentence tokenizations [default].")
+
+    parser.add_argument("--nltk-stoplist", action="store_true", dest="nltk",
+                        help="use the English NLTK stoplist")
     parser.add_argument("--sentences", action="store_true", help="Parse at the sentence level")
-    parser.add_argument("--freq", dest="stop_freq", default=5, type=int,
-                        help="Filter words occurring less than freq times [Default: 5])")
+    parser.add_argument("--freq", dest="stop_freq", default=0, type=int,
+                        help="Filter words occurring less than freq times [Default: 0])")
 
 
 if __name__ == '__main__':

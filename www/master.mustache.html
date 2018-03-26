@@ -26,6 +26,7 @@
   <!-- <link rel="stylesheet" type="text/css" href="/lib/bootstrap-2.3.2/css/bootstrap.min.css" /> -->
   <link rel='stylesheet prefetch' href='/css/simple-sidebar.css'>
   <link rel='stylesheet prefetch' href='/css/master.css'>
+  <link rel='stylesheet prefetch' href='/css/inpho-font.css'>
 </head>
 
 <body>
@@ -41,7 +42,7 @@
       </div>
       <div class="sidebar-helper" style="vertical-align: middle;">
         <ul id="sidebar-topics" class="sidebar-nav">
-          <li><a class="selected" id="cluster-link" title="Topic cluster view" data-placement="right" href="topics"><span class="glyphicon glyphicon-stats"></span></a></li>
+          <li><a class="selected" id="cluster-link" title="Topic cluster view" data-placement="right" href="topics"><span class="icon-scatter"></span></a></li>
           {{#topic_range}}
           <li><a class="topic-link" href="{{.}}/" title="Launch {{.}}-topic model" data-placement="right">{{.}}</a></li>
           {{/topic_range}}
@@ -49,8 +50,8 @@
       </div>
       <div class="sidebar-helper" style="position: absolute; bottom: 0;">
         <ul class="sidebar-nav">
-          <li><a class="selected" data-placement="right" title="Help" href="javascript:toggleSearch()"><strong>?</strong></a></li>
-          <li><a href="#" class="selected" data-placement="right" title="Usage" data-toggle="modal" data-target="#rightsModal"><strong>&copy;</strong></a></li>
+          <li><a id="helper" href="#" class="selected" data-placement="right" title="Help" data-toggle="modal" data-target="#helpModal"><strong>?</strong></a></li>
+          <li><a href="#" class="selected" data-placement="right" title="Usage" data-toggle="modal" data-target="#rightsModal"><strong class="cc-font">cb</strong></a></li>
         </ul>
       </div>
     </div>
@@ -87,6 +88,113 @@
     </div><!-- /.modal-dialog -->
   </div><!-- /.modal #rightsModal -->
 
+  <div class="modal fade" tabindex="-1" role="dialog" id="homeHelp">
+    <div class="modal-dialog" role="document copyright">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h3 class="modal-title">Help</h3>
+        </div>
+        <div class="modal-body" id="homeHelpText">
+          <script>
+            var converter = new showdown.Converter({
+               simplifiedAutoLink: true,
+               headerLevelStart : 3,
+               literalMidWordUnderscores: true,
+               strikethrough: true,
+               tables: true
+              });
+            $.get("/help-home.md").
+              done(function(data) { 
+                    var html = converter.makeHtml(data);
+                    $('#homeHelpText').html(html);
+                  }).fail(function(data) { $('#homeHelpText').html('No help found for this page.'); });
+          </script>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal #rightsModal -->
 
+  <div class="modal fade" tabindex="-1" role="dialog" id="hypershelfHelp">
+    <div class="modal-dialog" role="document copyright">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h3 class="modal-title">Hypershelf Help</h3>
+        </div>
+        <div class="modal-body" id="hypershelfHelpText">
+        	<script>
+            var converter = new showdown.Converter({
+               simplifiedAutoLink: true,
+               headerLevelStart : 3,
+               literalMidWordUnderscores: true,
+               strikethrough: true,
+               tables: true
+              });
+            $.get("/help-hypershelf.md").
+        		  done(function(data) { 
+                    var html = converter.makeHtml(data);
+                    $('#hypershelfHelpText').html(html);
+                  }).fail(function(data) { $('#hypershelfHelpText').html('No help found for this page.'); });
+        	</script>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal #rightsModal -->
+
+  <div class="modal fade" tabindex="-1" role="dialog" id="topicsHelp">
+    <div class="modal-dialog" role="document copyright">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h3 class="modal-title">Help</h3>
+        </div>
+        <div class="modal-body" id="topicsHelpText">
+          <script>
+            var converter = new showdown.Converter({
+               simplifiedAutoLink: true,
+               headerLevelStart : 3,
+               literalMidWordUnderscores: true,
+               strikethrough: true,
+               tables: true
+              });
+            $.get("/help-topics.md").
+              done(function(data) { 
+                    var html = converter.makeHtml(data);
+                    $('#topicsHelpText').html(html);
+                  }).fail(function(data) { $('#topicsHelpText').html('No help found for this page.'); });
+          </script>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal #rightsModal -->
+  
+  <script>
+    var path = window.location.pathname;
+    console.log(path);
+    if (path == "/") {
+      $("#helper").removeAttr("data-target");
+      $("#helper").attr("data-target", "#homeHelp");
+    }
+    console.log(path.match(/\/\d+\//));
+    if (path.match(/\/\d+\//)) {
+      console.log("hello");
+      $("#helper").removeAttr("data-target");
+      $("#helper").attr("data-target", "#hypershelfHelp");
+    }
+    if (path == "/topics") {
+      $("#helper").removeAttr("data-target");
+      $("#helper").attr("data-target", "#topicsHelp");
+    }
+  </script>
 </body>
 </html>

@@ -53,6 +53,8 @@ def is_valid_configfile(parser, arg):
     if not arg.endswith('.ini'):
         if os.path.isdir(arg):
             print("{0} is a directory, using the config file {0}.ini".format(arg))
+            if arg.endswith('/'):
+                arg = arg[:-1]
         else:
             print("{0} is missing the '.ini' extension, using the config file {0}.ini".format(arg))
         arg = arg + '.ini'
@@ -186,6 +188,10 @@ def get_static_resource_path(path):
         return os.path.abspath(path)
     elif os.path.exists(os.path.join(sys.prefix, path)):
         return os.path.abspath(os.path.join(sys.prefix, path))
+    elif os.path.exists(os.path.join(
+             os.path.join(sys.prefix, 'opt/topicexplorer'), path)):
+        return os.path.abspath(os.path.join(
+            os.path.join(sys.prefix, 'opt/topicexplorer'), path))
     elif os.path.exists(resource_filename(__name__, path)):
         return resource_filename(__name__, path)
     elif os.path.exists(resource_filename(__name__, '../' + path)):

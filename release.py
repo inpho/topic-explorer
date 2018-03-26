@@ -98,7 +98,7 @@ if sys.argv[-1] != '--no-travis':
     else:
         print("Travis build not complete. Aborting release.\n")
         sys.exit(1)
-    
+
     if branch.finished and branch.passed:
         print("Travis build of release {} passed!\n".format(__version__)) 
     else:
@@ -113,12 +113,12 @@ try:
     else:
         print("Registering package with PyPI.")
         check_output("python setup.py register", shell=True)
-        
+
         print("Uploading source to PyPI.")
         check_output("python setup.py sdist upload", shell=True)
 
-        print("Uploading egg to PyPI.")
-        check_output("python setup.py bdist_egg upload", shell=True)
+        print("Uploading wheel to PyPI.")
+        check_output("python setup.py bdist_wheel upload", shell=True)
 
 except CalledProcessError as e:
     print("\nFailed to register and upload the package to PyPI.\n")

@@ -120,7 +120,7 @@ class Application(Bottle):
             print("using default id function")
 
     def _load_corpus(self, corpus_file):
-        self.c = Corpus.load(corpus_file)
+        self.c = Corpus.load(corpus_file, load_corpus=False)
         self.labels = self.c.view_metadata(self.context_type)[self.label_name]
 
     def _load_viewers(self, model_pattern):
@@ -517,11 +517,19 @@ class Application(Bottle):
 
         js = dict() if id_as_key else list()
 
+        def safe_text(s):
+            try:
+                return text(s)
+            except:
+                return ''
+
         for doc, md in zip(docs, ctx_md):
             if query is None or query.lower() in self.label(doc).lower():
                 struct = {
                     'id': doc,
-                    'label': self.label(doc)
+                    'label': self.label(doc),
+                    # TODO: Figure out why metadata field might have issue.
+                    'metadata': dict(zip(md.dtype.names, (safe_text(m) for m in md)))
                 }
                 # TODO: fix metadata login
                     #'metadata': dict(zip(md.dtype.names, (str(m) for m in md)))}

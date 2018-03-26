@@ -2,6 +2,7 @@
 
 [![Join the chat at https://gitter.im/inpho/topic-explorer](https://badges.gitter.im/inpho/topic-explorer.svg)](https://gitter.im/inpho/topic-explorer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Travis](https://img.shields.io/travis/inpho/topic-explorer.svg)](https://travis-ci.org/inpho/topic-explorer)
+[![AppVeyor Windows build](https://ci.appveyor.com/api/projects/status/ynfvy3y832cquixq/branch/master?svg=true)](https://ci.appveyor.com/project/JaimieMurdock/topic-explorer/branch/master)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/inpho/topic-explorer/blob/master/LICENSE.txt)
 [![PyPI](https://img.shields.io/pypi/v/topicexplorer.svg)](https://pypi.python.org/pypi/topicexplorer)
 
@@ -13,6 +14,8 @@ Display options include topic normalization, alphabetical sort and topic sort. B
 
 ## Installation
 There are two types of install: Default and Developer. Currently we are debugging the Windows Default installation. Before installing, Mac users should install [XCode from Apple](https://developer.apple.com/xcode/downloads/) and Windows users should install a Python compiler such as [Microsoft Visual C__ Compiler](https://www.microsoft.com/en-us/download/details.aspx?id=44266)
+
+**Note:** If you attempt to install this while connected to the Internet by way of a restricted network (such as eduroam) you may experience difficulty.  Our pypi server requires port 8080 to be accessible, and this is sometimes blocked on public networks.
 
 ### Default Install (Windows users should use Developer Install until further notice)
 1.  Go to the [Anaconda website](http://continuum.io/downloads) and choose the Python 2.7 Distribution. (Windows users: during installation, during "Advanced Options" choose "Add Anaconda to my PATH environment variable" and don't worry about the warning.)
@@ -82,7 +85,7 @@ The InPhO Topic Explorer is **only** compatible with Python 2.7. However, Anacon
 
 ### Non-Anaconda Install
  - **Miniconda**
-   1.  If using Miniconda (a small version of Anaconda), the necessary packages are: `conda install numpy scipy nltk matplotplib ipython networkx`
+   1.  If using Miniconda (a small version of Anaconda), the necessary packages are: `conda install numpy scipy scikit-learn nltk matplotplib ipython networkx unidecode wget decorator chardet ujson requests notebook`
 
  - **Debian/Ubuntu**
    1.  `sudo apt-get-install build-essential python-dev python-pip python-numpy python-matplotlib python-scipy python-ipython`
@@ -110,26 +113,26 @@ If you have deployed InPhO-TE using another infrastructure, please submit a pull
 1.  Install apache2 with mod_wsgi: `apt-get install apache2 libapache2-mod-wsgi`
 2.  Create `/etc/apache2/sites-available/topicexplorer.conf`:
     ```
-<VirtualHost *:80>
-	ServerName localhost
-	ServerAdmin admin@localhost
-	
-	ErrorLog /var/www/topicexplorer/log/error.log
-	CustomLog /var/www/topicexplorer/log/access.log combined
-
-	WSGIDaemonProcess topicexplorer user=www-data group=www-data \
-	  python-path=/home/jaimie/anaconda2/lib/python2.7/site-packages/
-	WSGIScriptAlias /ap /var/www/topicexplorer/app.wsgi
-	
-	<Directory /var/www/topicexplorer>
-		WSGIProcessGroup topicexplorer
-		WSGIApplicationGroup %{GLOBAL}
-		Options All
-		AllowOverride All
-		Require all granted
-	</Directory>
-</VirtualHost>
-```
+    <VirtualHost *:80>
+    	ServerName localhost
+    	ServerAdmin admin@localhost
+    	
+    	ErrorLog /var/www/topicexplorer/log/error.log
+    	CustomLog /var/www/topicexplorer/log/access.log combined
+    
+    	WSGIDaemonProcess topicexplorer user=www-data group=www-data \
+    	  python-path=/home/jaimie/anaconda2/lib/python2.7/site-packages/
+    	WSGIScriptAlias /ap /var/www/topicexplorer/app.wsgi
+    	
+    	<Directory /var/www/topicexplorer>
+    		WSGIProcessGroup topicexplorer
+    		WSGIApplicationGroup %{GLOBAL}
+    		Options All
+    		AllowOverride All
+    		Require all granted
+    	</Directory>
+    </VirtualHost>
+    ```
 3.  Create the application directory: `sudo mkdir -p /var/www/topicexplorer/`
 4.  Create the log directory: `sudo mkdir -p /var/www/topicexplorer/log`
 5.  Create the www directory: `sudo mkdir -p /var/www/topicexplorer/www`

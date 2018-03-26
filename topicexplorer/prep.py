@@ -142,6 +142,19 @@ def get_small_words(c, min_len):
 def get_special_chars(c):
     return [word for word in c.words if re.findall('[^A-Za-z\-\']', word)]
 
+def get_closest_bin(c, thresh, reverse=False, counts=None):
+    import numpy as np
+    if counts is None:
+        _, counts = get_items_counts(c.corpus)
+    counts = counts[counts.argsort()]
+    if reverse:
+        counts = counts[::-1]
+
+    cumsum = old_div(np.cumsum(counts), float(c.original_length))
+    bin = counts[min(np.searchsorted(cumsum, thresh), len(counts)-1)]
+    percentile = 1. - (old_div(counts[counts < bin].sum(), float(c.original_length)))
+    return bin
+
 
 def get_high_filter(args, c, words=None):
     import numpy as np
@@ -151,30 +164,30 @@ def get_high_filter(args, c, words=None):
     print("    This will remove all words occurring more than N times.")
     print("    The histogram below shows how many words will be removed")
     print("    by selecting each maximum frequency threshold.\n")
-    items, counts = get_items_counts(c.corpus)
-    items = items[get_mask(c, words)]
-    counts = counts[get_mask(c, words)]
-    high_filter = False
-    bins = np.array([0., 0.025, 0.05, 0.075, 0.1, 0.15, 0.20, 0.25, 0.3, 0.35, 0.4, 0.5, 1.0])
-    bins = 1. - bins
 
-    thresh = np.cumsum(counts[counts.argsort()]) / float(counts.sum())
-    bins = [counts[counts.argsort()][np.searchsorted(thresh, bin)] for bin in bins]
+    # Get frequency bins
+    items, counts = get_items_counts(c.corpus)
+    bins = [get_closest_bin(c, thresh, counts=counts) for thresh in np.arange(1.0, -0.01, -0.025)]
     bins = sorted(set(bins))
     bins.append(max(counts))
 
+    high_filter = False
     while not high_filter:
         bin_counts, bins = np.histogram(counts, bins=bins)
         print("{0:>8s} {1:>8s} {2:<36s} {3:>14s} {4:>8s}".format("Rate", 'Top', '% of corpus',
                                                                  "# words", "Rate"))
+        last_row = 0
         for bin, count in zip(bins[-2::-1], np.cumsum(bin_counts[::-1])):
-            if count:
-                percentage = 1. - (old_div(counts[counts < bin].sum(), float(counts.sum())))
-                print("{0:>5.0f}x".format(bin - 1).rjust(8), end=' ')
+            filtered_counts = counts[get_mask(c, words)]
+            if (filtered_counts >= bin).sum() > last_row:
+                percentage = 1. - (old_div(counts[counts < bin].sum(), float(c.original_length)))
+                print("{0:>5.0f}x".format(bin).rjust(8), end=' ')
                 print('{0:2.1f}%'.format(percentage * 100).rjust(8), end=' ')
                 print((u'\u2588' * int(percentage * 36)).ljust(36), end=' ')
-                print("  {0:0.0f} words".format(count).rjust(14), end=' ')
-                print("> {0:>5.0f}x".format(bin - 1).ljust(8))
+                print("  {0:0.0f} words".format((filtered_counts >= bin).sum()).rjust(14), end=' ')
+                print(">= {0:>5.0f}x".format(bin).ljust(8))
+
+            last_row = (filtered_counts >= bin).sum()
 
         print(' ' * 17, "{} total occurrences".format(counts.sum()).ljust(36), end=' ')
         print('{} words total'.format(get_mask(c, words).sum()).rjust(20))
@@ -192,13 +205,14 @@ def get_high_filter(args, c, words=None):
                 places = np.in1d(c.words[get_mask(c, words)], candidates)
                 places = dict(zip(candidates, np.where(places)[0]))
                 candidates = sorted(candidates, key=lambda x: counts[places[x]], reverse=True)
+                filtered_counts = counts[get_mask(c, words)]
 
-                print("Filter will remove", counts[counts > input_filter].sum(), end=' ')
-                print("occurrences", "of these", len(counts[counts > input_filter]), "words:")
+                print("Filter will remove", filtered_counts[filtered_counts > input_filter].sum(), end=' ')
+                print("occurrences", "of these", len(filtered_counts[filtered_counts > input_filter]), "words:")
                 print(u' '.join(candidates))
 
-                print("\nFilter will remove", counts[counts > input_filter].sum(), end=' ')
-                print("occurrences", "of these", len(counts[counts > input_filter]), "words.", end=' ')
+                print("\nFilter will remove", filtered_counts[filtered_counts > input_filter].sum(), end=' ')
+                print("occurrences", "of these", len(filtered_counts[filtered_counts > input_filter]), "words.", end=' ')
                 if len(candidates) == len(c.words):
                     print("\n\nChoice of", input_filter, "will remove ALL words from the corpus.")
                     print("Please choose a different filter.")
@@ -230,15 +244,10 @@ def get_low_filter(args, c, words=None):
     print("    This will remove all words occurring less than N times.")
     print("    The histogram below shows how many words will be removed")
     print("    by selecting each minimum frequency threshold.\n")
+
+    # Get frequency bins
     items, counts = get_items_counts(c.corpus)
-    items = items[get_mask(c, words)]
-    counts = counts[get_mask(c, words)]
-
-    bins = np.linspace(0, 1.0, 11)
-    bins = 1. - np.array([0., 0.025, 0.05, 0.075, 0.1, 0.15, 0.20, 0.25, 0.3, 0.35, 0.4, 0.5, 1.0])
-
-    thresh = old_div(np.cumsum(counts[counts.argsort()[::-1]]), float(counts.sum()))
-    bins = [counts[counts.argsort()[::-1]][np.searchsorted(thresh, bin)] for bin in bins]
+    bins = [get_closest_bin(c, thresh, reverse=True, counts=counts) for thresh in np.arange(1.0, -0.01, -0.025)]
     bins = sorted(set(bins))
 
     low_filter = False
@@ -247,14 +256,21 @@ def get_low_filter(args, c, words=None):
         # print "{0:>10s} {1:>10s}".format("# Tokens", "# Words")
         print("{0:>8s} {1:>8s} {2:<36s} {3:>14s} {4:>8s}".format("Rate", 'Bottom', '% of corpus',
                                                                  "# words", "Rate"))
+
+        last_row = 0
         for bin, count in zip(bins[1:], np.cumsum(bin_counts)):
-            if count:
-                percentage = (old_div(counts[counts <= bin].sum(), float(counts.sum())))
+            filtered_counts = counts[get_mask(c, words)]
+            if last_row < (filtered_counts < bin).sum() <= len(filtered_counts):
+                percentage = (old_div(counts[counts <= bin].sum(), float(c.original_length)))
                 print("{0:>5.0f}x".format(bin - 1).rjust(8), end=' ')
                 print('{0:2.1f}%'.format(percentage * 100).rjust(8), end=' ')
                 print((u'\u2588' * int(percentage * 36)).ljust(36), end=' ')
-                print("  {0:0.0f} words".format(count).rjust(14), end=' ')
+                print("  {0:0.0f} words".format((filtered_counts < bin).sum()).rjust(14), end=' ')
                 print("<= {0:>5.0f}x".format(bin - 1).ljust(8))
+                if (filtered_counts < bin).sum() == len(filtered_counts):
+                    break
+            last_row = (filtered_counts >= bin).sum()
+
 
         print(' ' * 17, "{} total occurrences".format(counts.sum()).ljust(36), end=' ')
         print('{} words total'.format(get_mask(c, words).sum()).rjust(20))
@@ -273,13 +289,14 @@ def get_low_filter(args, c, words=None):
                 places = np.in1d(c.words[get_mask(c, words)], candidates)
                 places = dict(zip(candidates, np.where(places)[0]))
                 candidates = sorted(candidates, key=lambda x: counts[places[x]])
+                filtered_counts = counts[get_mask(c, words)]
 
-                print("Filter will remove", counts[counts <= input_filter].sum(), "tokens", end=' ')
-                print("of these", len(counts[counts <= input_filter]), "words:")
+                print("Filter will remove", filtered_counts[filtered_counts <= input_filter].sum(), "tokens", end=' ')
+                print("of these", len(filtered_counts[filtered_counts <= input_filter]), "words:")
                 print(u' '.join(candidates))
 
-                print("\nFilter will remove", counts[counts <= input_filter].sum(), "tokens", end=' ')
-                print("of these", len(counts[counts <= input_filter]), "words.", end=' ')
+                print("\nFilter will remove", filtered_counts[filtered_counts <= input_filter].sum(), "tokens", end=' ')
+                print("of these", len(filtered_counts[filtered_counts <= input_filter]), "words.", end=' ')
 
                 if len(candidates) == len(c.words):
                     print("\n\nChoice of", input_filter, "will remove ALL words from the corpus.")
@@ -321,11 +338,18 @@ def main(args):
     args.corpus_path = config.get("main", "corpus_file")
     c = Corpus.load(args.corpus_path)
 
+    if c.original_length != len(c.corpus):
+        print("Corpus has already been prepared. Proceed to training or")
+        print("re-init the corpus to apply a different set of stopwords.")
+        print("\nTIP: Train the LDA models with:")
+        print("         topicexplorer train", args.config_file)
+        sys.exit(1)
+
     # check for htrc metadata
     if args.htrc or config.get("main", "htrc"):
         htrc_langs = get_htrc_langs(args)
         if htrc_langs:
-            args.lang.extend(new_langs)
+            args.lang.extend(htrc_langs)
 
     # auto-guess a language
     """
@@ -381,30 +405,54 @@ def main(args):
                 len(candidates), 's' if len(candidates) > 1 else ''))
             stoplist.update(candidates)
 
-    if args.high_filter is None and not args.quiet:
+    if args.high_filter is None and args.high_percent is None and not args.quiet:
         args.high_filter, candidates = get_high_filter(args, c, words=stoplist)
         if len(candidates):
             print("Filtering {} high frequency word{}.".format(len(candidates),
                                                                's' if len(candidates) > 1 else ''))
             stoplist.update(candidates)
-    elif args.high_filter > 0:
+    elif args.high_filter is None and args.high_percent is None and args.quiet:
+        pass
+    elif args.high_filter:
+        candidates = get_candidate_words(c, args.high_filter, sort=False)
+        if len(candidates):
+            print("Filtering {} high frequency word{}.".format(len(candidates),
+                                                               's' if len(candidates) > 1 else ''))
+            stoplist.update(candidates)
+    elif args.high_percent:
+        args.high_filter = get_closest_bin(c, args.high_percent / 100.)
+        print(args.high_filter)
         candidates = get_candidate_words(c, args.high_filter, sort=False)
         if len(candidates):
             print("Filtering {} high frequency word{}.".format(len(candidates),
                                                                's' if len(candidates) > 1 else ''))
             stoplist.update(candidates)
 
-    if args.low_filter is None and not args.quiet:
+    if args.low_filter is None and args.low_percent is None and not args.quiet:
         args.low_filter, candidates = get_low_filter(args, c, words=stoplist)
         if len(candidates):
             print("Filtering {} low frequency word{}.".format(len(candidates),
                                                               's' if len(candidates) > 1 else ''))
             stoplist.update(candidates)
-    elif args.low_filter > 0:
+
+    elif args.low_filter is None and args.low_percent is None and args.quiet:
+        pass
+    elif args.low_filter:
         candidates = get_candidate_words(c, -1 * args.low_filter, sort=False)
         if len(candidates):
             print("Filtering {} low frequency words.".format(len(candidates)))
             stoplist.update(candidates)
+
+    elif args.low_percent:
+        args.low_filter = get_closest_bin(c, 1 - (args.low_percent / 100.), reverse=True) - 1
+        print(args.low_filter)
+        candidates = get_candidate_words(c, -1 * args.low_filter, sort=False)
+        if len(candidates):
+            print("Filtering {} low frequency word{}.".format(len(candidates),
+                                                               's' if len(candidates) > 1 else ''))
+            stoplist.update(candidates)
+
+
 
     if not stoplist:
         print("No stopwords applied.\n\n")
@@ -460,10 +508,19 @@ def populate_parser(parser):
     parser.add_argument("--htrc", action="store_true")
     parser.add_argument("--stopword-file", dest="stopword_file",
                         help="File with custom stopwords")
-    parser.add_argument("--high", type=int, dest="high_filter",
+
+    group = parser.add_mutually_exclusive_group(required=False)
+    group.add_argument("--high", type=int, dest="high_filter",
                         help="High frequency word filter", default=None)
-    parser.add_argument("--low", type=int, dest="low_filter",
+    group.add_argument("--high-percent", type=float, dest="high_percent",
+                        help="High frequency word filter", default=None)
+    
+    group = parser.add_mutually_exclusive_group(required=False)
+    group.add_argument("--low", type=int, dest="low_filter",
                         default=None, help="Low frequency word filter")
+    group.add_argument("--low-percent", type=float, dest="low_percent",
+                        default=None, help="Low frequency word filter")
+
     parser.add_argument("--min-word-len", type=int, dest="min_word_len",
                         default=0, help="Filter short words [Default: 0]")
     parser.add_argument("--exclude-special-chars", action="store_false",
