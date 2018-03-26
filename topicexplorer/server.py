@@ -120,7 +120,7 @@ class Application(Bottle):
             print("using default id function")
 
     def _load_corpus(self, corpus_file):
-        self.c = Corpus.load(corpus_file)
+        self.c = Corpus.load(corpus_file, load_corpus=False)
         self.labels = self.c.view_metadata(self.context_type)[self.label_name]
 
     def _load_viewers(self, model_pattern):
