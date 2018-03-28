@@ -1,6 +1,7 @@
 from __future__ import absolute_import, print_function
 
 import os.path
+import subprocess
 import tempfile
 
 from progressbar import ProgressBar, Percentage, Bar
@@ -17,10 +18,19 @@ def download_vols(ids, output_dir=None):
         output_dir = tempfile.mkdtemp()
 
     # Download extracted features
-    download_file(htids=ids, outdir=output_dir)
+    paths = {id: '{}/{}.json.bz2'.format(output_dir, id) for id in ids}
+    try:
+        download_file(htids=ids, outdir=output_dir)
+    except subprocess.CalledProcessError as e:
+        missing = [id for id, p in paths.items() if not os.path.exists(p)]
+        with open('error_missing.log', 'w') as outfile:
+            outfile.write('\n'.join(missing))
+        
+        print("{} volume{} failed to download. "
+              "See `error_missing.log`.".format(len(missing), 's' if len(missing) > 1 else ''))
+        print("Continuing with volumes that succesfully downloaded...")
     
-    paths = map(lambda x: '{}/{}.json.bz2'.format(output_dir, x), ids)
-    paths = [p for p in paths if os.path.exists(p)]
+    paths = [p for id, p in paths.items() if os.path.exists(p)]
     return paths
 
 def process_pages(vol):
