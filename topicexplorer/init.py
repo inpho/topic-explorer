@@ -278,7 +278,7 @@ def main(args):
             with open(args.corpus_path) as idfile:
                 ids = [row.strip() for row in idfile]
 
-            c = htrc_features.create_corpus(ids)
+            c = htrc_features.create_corpus(ids, nltk_stop=args.nltk,freq=args.stop_freq)
             c.save(args.corpus_filename)
 
             args.htrc_metapath = os.path.abspath(args.corpus_path)
@@ -286,9 +286,11 @@ def main(args):
                 os.path.dirname(args.htrc_metapath),
                 os.path.basename(args.htrc_metapath) + '.metadata.json')
 
+        """
         import htrc.metadata
         print("Downloading metadata to ", args.htrc_metapath)
         htrc.metadata.get_metadata(ids, output_file=args.htrc_metapath)
+        """
 
     if args.rebuild and (not args.htrc or os.path.isdir(args.corpus_path)):
         try:

@@ -34,7 +34,7 @@ def process_pages(vol):
     return corpus
 
 
-def create_corpus(ids, verbose=1):
+def create_corpus(ids, nltk_stop=False, freq=0, verbose=1):
     paths = download_vols(ids)
     filtered_ids = [os.path.basename(p).replace('.json.bz2','') for p in paths]
 
@@ -59,7 +59,7 @@ def create_corpus(ids, verbose=1):
     corpus = list(corpus)
     
     c = corpus_fromlist(corpus, context_type='book')
-    c = apply_stoplist(c, nltk_stop=True, freq=5)
+    c = apply_stoplist(c, nltk_stop=nltk_stop, freq=freq)
     c.context_data[0]['book_label'] = filtered_ids
 
     return c
