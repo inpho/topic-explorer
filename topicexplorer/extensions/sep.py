@@ -13,17 +13,20 @@ def get_titles():
     """
     config = ConfigParser()
     config.read('/var/inpho/inpho.ini')
+    try:
+        entries = os.path.join(config.get('corpus', 'db_path'), 'entries.txt')
+    
+        titles = {}
+        with open(entries) as f:
+            for line in f:
+                sep_dir, title, rest = line.split('::', 2)
+                title = title.replace(r"\'", "'")
+                titles[sep_dir] = title
 
-    entries = os.path.join(config.get('corpus', 'db_path'), 'entries.txt')
-
-    titles = {}
-    with open(entries) as f:
-        for line in f:
-            sep_dir, title, rest = line.split('::', 2)
-            title = title.replace(r"\'", "'")
-            titles[sep_dir] = title
-
-    return titles
+        return titles
+    except:
+        print("Failed to load SEP entires database.")
+        return dict() # handled properly via default value in dict.get()
 
 
 def init(app, config_file):
@@ -45,7 +48,7 @@ def label(doc):
 
         # expand archive name
         if(sem == 'spr'):
-	    sem = "Spring"
+            sem = "Spring"
         elif(sem == 'win'):
             sem = "Winter"
         elif(sem == 'sum'):

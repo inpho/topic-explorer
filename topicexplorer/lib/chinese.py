@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from builtins import chr
 import os
 
 import platform
@@ -70,7 +71,7 @@ for a in string.lowercase[:],string.uppercase[:],range(0,10):
 
 # escape ASCII in the chinese range
 for n in range(32,91):
-    chinese_punctuation.append(chr(n+65280).decode('utf-8'))
+    chinese_punctuation.append(chr(n+65280))
 
 if platform.system() == 'Windows':
     raise NotImplementedError("mmseg Chinese language parser not implemented for Windows systems.")
