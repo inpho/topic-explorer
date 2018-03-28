@@ -577,7 +577,7 @@ d3.json(url, function(error, data) {
             $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic + " sorted by proportion of topic " + d.name);
           }
           topicSort(d.name); })
-        .style("fill", function(d) { return topics[d.name]['color']; });
+        .style("fill", function(d) { return barColors(topics[d.name]['color'], d.name); });
 
     doc.append("text")
           .text(function(d) { return d.label; })
