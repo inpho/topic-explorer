@@ -10,6 +10,7 @@ from collections import defaultdict
 import os
 import os.path
 import shutil
+import sys
 
 
 from topicexplorer.lib.util import (prompt, is_valid_filepath, bool_prompt,
