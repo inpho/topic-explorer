@@ -77,11 +77,7 @@
     else {
       topDoc.style.display = 'block';
       if (roottopic == null) {
-        if (mainDoc.value.length > 16) {
-          $("#focalDoc").text("Top 40 documents most similar to " + mainDoc.value.slice(0, 17) + "...");
-        } else {
-          $("#focalDoc").text("Top 40 documents most similar to " + mainDoc.value.slice(0, 17));
-          }
+          $("#focalDoc").text("Top 40 documents most similar to the focal document");
       } else {
         $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic);
       }
@@ -565,11 +561,7 @@ d3.json(url, function(error, data) {
           //Handles when to update the descriptor based off which mode it is in and what topic bar was clicked on.
           //Indicates whether the model is sorted by proportion of a specific topic or not.
           if (roottopic == null) {
-            if (mainDoc.value.length > 16) {
-              $("#focalDoc").text("Top 40 documents most similar to " + mainDoc.value.slice(0, 17) + "... sorted by proportion of topic " + d.name);
-            } else {
-              $("#focalDoc").text("Top 40 documents most similar to " + mainDoc.value.slice(0, 17) + " sorted by proportion of topic " + d.name);
-            }
+            $("#focalDoc").text("Top 40 documents most similar to the focal document sorted by proportion of topic " + d.name);
           } else if (roottopic == d.name) {
             topDoc.style.display = 'none';
             $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic);
@@ -625,11 +617,7 @@ d3.json(url, function(error, data) {
           //Handles when to update the descriptor based off which mode it is in and what topic bar was clicked on.
           //Indicates whether the model is sorted by proportion of a specific topic or not.
           if (roottopic == null) {
-             if (mainDoc.value.length > 16) {
-              $("#focalDoc").text("Top 40 documents most similar to " + mainDoc.value.slice(0, 17) + "... sorted by proportion of topic " + d);
-            } else {
-              $("#focalDoc").text("Top 40 documents most similar to " + mainDoc.value.slice(0, 17) + " sorted by proportion of topic " + d);
-            }
+            $("#focalDoc").text("Top 40 documents most similar to the focal document sorted by proportion of topic " + d);
           } else if (roottopic == d) {
             topDoc.style.display = 'none';
             $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic);
@@ -673,9 +661,10 @@ d3.json(url, function(error, data) {
         .attr("class", "axis_label")
         .attr("dy", "-.45em")
         .attr("dx", "5em")
-        .attr("font-size", "10px")
+        .attr("font-size", "9.5px")
         .style("text-anchor", "start")
-        .text("ordered by P( T | " + docid + " )");
+        .style("overflow-wrap", "normal")
+        .text("ordered by proportion of T in " + (docid ? "focal document" : "corpus"));
 
     d3.select(window).on('resize', resize);
   
