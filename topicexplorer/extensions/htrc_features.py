@@ -1,8 +1,10 @@
 from __future__ import absolute_import, print_function
 
+from itertools import chain, repeat
 import os.path
 import subprocess
 import tempfile
+import warnings
 
 from progressbar import ProgressBar, Percentage, Bar
 import concurrent.futures
@@ -36,8 +38,8 @@ def download_vols(ids, output_dir=None):
 def process_pages(vol):
     corpus = []
     for _, page in vol.tokenlist(section='body', case=False, pos=False).iteritems():
-        tokens = [process_word(token[-1]) for token, count in page.iteritems() for i in range(count)]
-        tokens = [t for t in tokens if t]
+        # TODO: insert process_word call
+        tokens = chain.from_iterable(repeat(token[-1], count) for token, count in page.iteritems())
         if tokens:
             corpus.extend(tokens)
 
@@ -52,21 +54,45 @@ def create_corpus(ids, nltk_stop=False, freq=0, verbose=1):
         pbar = ProgressBar(widgets=[Percentage(), Bar()], maxval=len(ids))
         pbar = pbar.start()
         n = 0
+    with warnings.catch_warnings():
+        warnings.simplefilter('ignore')
+
+        fr = FeatureReader(paths)
+        corpus = []
+        with concurrent.futures.ProcessPoolExecutor() as executor:
+            vols = [executor.submit(process_pages, vol) 
+                        for id_n, vol in enumerate(fr.volumes())]
+            
+            if verbose:
+                for f in concurrent.futures.as_completed(vols):
+                    n += 1
+                    pbar.update(n)
+
+            corpus = [concurrent.futures.Future.result(vol) for vol in vols]
+            pbar.finish()
+    
+    c = corpus_fromlist(corpus, context_type='book')
+    c = apply_stoplist(c, nltk_stop=nltk_stop, freq=freq)
+    c.context_data[0]['book_label'] = filtered_ids
+
+    return c
+
+def _create_corpus(ids, nltk_stop=False, freq=0, verbose=1):
+    paths = download_vols(ids)
+    filtered_ids = [os.path.basename(p).replace('.json.bz2','') for p in paths]
+
+    if verbose:
+        pbar = ProgressBar(widgets=[Percentage(), Bar()], maxval=len(ids))
+        pbar = pbar.start()
+        n = 0
 
     fr = FeatureReader(paths)
     corpus = []
-    with concurrent.futures.ProcessPoolExecutor() as executor:
-        vols = [executor.submit(process_pages, vol) 
-                    for id_n, vol in enumerate(fr.volumes())]
-        
-        if verbose:
-            for f in concurrent.futures.as_completed(vols):
-                n += 1
-                pbar.update(n)
-
-        corpus = map(concurrent.futures.Future.result, vols)
-        pbar.finish()
-    corpus = list(corpus)
+    for vol in fr.volumes():
+        corpus.append(process_pages(vol))
+        n += 1
+        pbar.update(n)
+    pbar.finish()
     
     c = corpus_fromlist(corpus, context_type='book')
     c = apply_stoplist(c, nltk_stop=nltk_stop, freq=freq)
