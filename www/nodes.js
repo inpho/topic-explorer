@@ -1,52 +1,3 @@
-<link rel='stylesheet' href='/css/cluster.css'>
-<script>
-$('#home-link').attr('href', '../');
-$('#cluster-link').attr('href', '#');
-</script>
-<div id="main" class="container">
-  <div class="row">
-    <div class="col-xs-12">
-    <h1><a href="{{home_link}}"><span class="logo-word">InPhO</span> Topic Explorer</a></h1>
-    <!--<h2 class="title non-null"></h2>-->
-    <h2>
-    {{#corpus_link}}<a href="{{corpus_link}}">{{corpus_name}}</a>{{/corpus_link}} 
-    {{^corpus_link}}{{corpus_name}}{{/corpus_link}}
-    </h2>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-xs-12">
-      <form method="GET" class="form-horizontal" id="searchForm">
-        <div class="form-group">
-          <label for="words" class="col-sm-2 control-label">Words</label>
-          <div class="col-sm-8">
-              <input type="text" id="words" name="q" class="form-control" placeholder="Enter search terms to highlight relevant topics ..." autocomplete="off">
-          </div>
-          <div class="col-sm-2">
-            <button type="submit" id="submit" class="btn btn-primary">View Topic Clusters</button>
-          </div>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-<div class="container-fluid">
-  <div id="chart">
-    <div id="loading" class="text-center">
-      <button class="btn btn-lg btn-info">
-        <span class="glyphicon glyphicon-refresh spinning"></span> Loading...    
-      </button>
-    </div>
-  </div>
-</div>
-    
-<script src="/lib/jquery-2.2.4.min.js"></script>
-<script src="/lib/bootstrap-3.3.6/js/bootstrap.min.js"></script>
-<script src="/lib/inpho/util.js"></script>
-<script src="nodes.js"></script>
-
-<!-- <script>
-
 var q = inpho.util.getValueForURLParam('q') || null;
 if (q) {
   q = decodeURIComponent(q);
@@ -66,66 +17,64 @@ if (window.location.pathname.endsWith('topics')) {
 }
 
 var combineWords = function(words) {
-   return d3.keys(words).sort(function(a,b) {
-              if (words[a] > words[b])
-                return -1;
-              else if (words[a] < words[b])
-                return 1;
-              else
-                return 0;
-            }).join(", ") + ", ..."; 
+  return d3.keys(words).sort(function(a,b) {
+    if (words[a] > words[b])
+      return -1;
+    else if (words[a] < words[b])
+      return 1;
+    else
+      return 0;
+  }).join(", ") + ", ..."; 
 }
 
 
 
 var margin = {top: 20, right: 80, bottom: 80, left: 40},
-    width = $('#chart').parent().width() - margin.left - margin.right,
-    height = $(document).height() - Math.min($('#main').height(), 400) - margin.top - margin.bottom,
-    padding = 1, // separation between nodes
-    radius = 30;
+  width = $('#chart').parent().width() - margin.left - margin.right,
+  height = $(document).height() - Math.min($('#main').height(), 400) - margin.top - margin.bottom,
+  padding = 1, // separation between nodes
+  radius = 30;
 
 var x = d3.scale.linear()
-    .range([0, width]);
+  .range([0, width]);
 
 var y = d3.scale.linear()
-    .range([height, 0]);
+  .range([height, 0]);
 
 var color = d3.scale.category20();
 
 var opacity = d3.scale.linear()
-    .range([1.0, 0.0]);
+  .range([1.0, 0.0]);
 
 
 var xAxis = d3.svg.axis()
-    .scale(x)
-    .orient("bottom");
+  .scale(x)
+  .orient("bottom");
 
 var yAxis = d3.svg.axis()
-    .scale(y)
-    .orient("left");
+  .scale(y)
+  .orient("left");
 
 var controls = d3.select("#chart").append("label")
-    .attr("id", "controls")
-    .attr("class", "hide");
+  .attr("id", "controls")
+  .attr("class", "hide");
 var checkbox = controls.append("input")
-    .attr("id", "collisiondetection")
-    .attr("type", "checkbox");
+  .attr("id", "collisiondetection")
+  .attr("type", "checkbox");
 controls.append("span")
-    .text("Collision detection");
+  .text("Collision detection");
 
 var svg = d3.select("#chart").append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
+  .attr("width", width + margin.left + margin.right)
+  .attr("height", height + margin.top + margin.bottom)
   .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 $(document).ready(function() {
-    $.ajaxSetup({ cache: true });
+  $.ajaxSetup({ cache: true });
 });
 
 var ext_data;
-
-
 
 d3.csv(base_url + "cluster.csv", function(error, data) {
   var topics = {}; var node;
@@ -357,5 +306,3 @@ var toggleDisplay = function(k) {
         .removeClass('bg-info');
   }
 }
-      //# sourceURL=pen.js
-    </script>-->
