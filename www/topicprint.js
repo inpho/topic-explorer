@@ -86,6 +86,273 @@ function showFingerprint(id, label) {
       resetBars()
     });
 }
+
+function visualize(k) {
+  var url = "{0}{1}".format(window.location.origin, window.location.pathname);
+  if (k && tops)
+    url = url.replace('/' + Object.keys(tops).length + '/',
+                      '/' + k + '/');
+
+  if ($("#autocompleteDoc").hasClass('active') && !($("#autocompleteDoc").attr("disabled") == 'disabled')) {
+    url += "?doc=" + encodeURIComponent($("#hidden_id").val() || docid) ;
+  } else {
+    url += "?q=" + encodeURIComponent($("#doc").val()).replace(/%20/g, '|');
+  }
+
+  window.location = url;
+}
+
+function computeWidth(numCols) { 
+  $('#legend').attr("width", margin.right + (numCols*55) + 20 + margin.right);
+  $('#chart #main').attr("width", Math.max($(window).width() - $('#legend').width() - 200 + margin.right, 750));
+  $('#controls').css("left", Math.max($(window).width() - $('#legend').width() - 200 + margin.right, 750) + 40);
+  width = Math.max($(window).width() - $('#legend').width() - 200 + margin.right, 750) - margin.left - margin.right;
+  x = d3.scale.linear()
+    .range([0, width]);
+  x.domain([0,1]);
+  xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("top")
+    .ticks(10, "%");
+}
+
+function computeHeight(data, numLegendRows) { 
+  height = (data.length * 35);// - margin.top - margin.bottom;
+  y = d3.scale.ordinal()
+   .rangeRoundBands([0, height], .1, 0);
+  y.domain(data.map(function(d) { return d.id; }));
+  yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left");
+}
+
+//The calculateTopicMap function was changed to work with one document
+//and multiple documents instead of having two functions for both.
+function calculateTopicMap(data, scale, sortFn){
+      data.forEach(function(d) {
+        var sizeFactor = (scale) ? d.prob : 1.0
+        var x0 = 0;
+        var dTopics = undefined === original_root ? d.topics : original_root.topics; //fixed syntax for undefined usage
+        if (sortFn) d.topicMap = d3.keys(dTopics)
+          .sort(sortFn)
+          .map(function(name) { return {name: name, x0: x0, x1: x0 += +(dTopics[name]*sizeFactor) }; });
+        else d.topicMap = d3.keys(dTopics)
+          .map(function(name) { return {name: name, x0: x0, x1: x0 += +(dTopics[name]*sizeFactor) }; });
+      });
+      
+    }
+
+function resize() {
+  computeWidth(legendCols);
+
+  /* Update the axis with the new scale */
+  svg.select('.x.axis')
+    .call(xAxis);
+  
+  doc.selectAll('rect')
+    .attr("x", function(d) { return x(d.x0); })
+    .attr("width", function(d) { return x(d.x1) - x(d.x0); });
+}
+
+function scaleTopics() {
+  var numTopics = dataset[0].topics.length;
+  var delay = function(d, i) { return i * (500/numTopics); },
+      negdelay = function(d, i) { return (numTopics-i) * (500/numTopics); };
+
+  calculateTopicMap(dataset, !this.checked);
+
+  $(".doc").each(function(i,elt) {
+      $(elt).children()
+        .sort(function(a,b) { return $(a).attr('x') - $(b).attr('x'); })
+        .each(function(j,child) {
+          $(child).detach().appendTo($(elt));
+      })
+    });
+
+  svg.selectAll(".doc")
+    .selectAll("rect")
+    .data(function(d) { return d.topicMap; })
+    .style("fill", function(d) { return tops[d.name]['color']; })
+    /*.on("mouseover", function(d) {
+        // SVG element z-index determined by render order, not style sheet
+        // so element must be reappended to the end on hover so border 
+        // is not occluded
+        var parent = $(this).parent();
+        $(this).detach().appendTo(parent);
+        $(".docLabel", parent).detach().appendTo(parent);
+        $('.legend rect').not('.top_' + d.name).tooltip('hide');
+        $(".top_" + d.name).addClass('hover');
+        $('.legend rect.top_' + d.name).tooltip('show');
+      })
+    .on("mouseout", function(d) {
+        $(".top_" + d.name).removeClass('hover');
+      })*/
+    .transition().duration(500).ease("linear").delay(this.checked ? delay : negdelay)
+    .attr("x", function(d) { return x(d.x0); })
+    .attr("width", function(d) { return x(d.x1) - x(d.x0); })
+    .attr("class", function(d) { return "top_" + d.name; });
+
+  svg.selectAll(".x.axis text.axis_label").text(this.checked ? 
+    "Proportion of document assigned to topic" : 
+    ("Similarity to " + $('.title').first().text()));
+}
+
+function sortDataset(sortFn) {
+  dataset = dataset.sort(sortFn);
+
+  var y0 = y.domain(dataset
+      .map(function(d) { return d.id; }))
+      .copy();
+
+  var transition = svg.transition().duration(500),
+      delay = function(d, i) { return i * 25; };
+
+  transition.selectAll(".doc")
+      .delay(delay)
+      .attr("transform", function(d) { return "translate(10," + y(d.id) + ")"; });
+      //.attr("y", function(d) { return y(d.id); });
+
+  transition.select(".y.axis")
+      .call(yAxis)
+    .selectAll("g")
+      .selectAll("text")
+      .delay(delay);
+}
+
+function alphabetSort() {
+  // Copy-on-write since tweens are evaluated after a delay.
+  if (this.checked)
+    sortDataset(function(a, b) { return d3.ascending(a.label, b.label); });
+  else
+    sortDataset(function(a, b) { return b.prob - a.prob; });
+}
+
+function resetTopicSort() {
+  $('.reset').attr('disabled',true);
+  $('.topicsort').attr('disabled',true);
+  $('.selected').removeClass('selected');
+  $('.topdoc').text('Click a topic segment below to find related documents.');
+  $('.topdoc').removeClass('btn-primary');
+  $('.topdoc').addClass('btn-default');
+  $('.topdoc').attr('disabled', 'disabled');
+  if (!($('.sort')[0].checked))
+    sortDataset(function(a,b) { return b.prob - a.prob; });
+  
+  redrawBars(function(a,b) { return original_root.topics[b] - original_root.topics[a]; });
+}
+
+function topicSort(topic) {
+  // Copy-on-write since tweens are evaluated after a delay.
+  $('.sort').removeAttr('checked');
+  if (topic) {
+    sortDataset(function(a, b) { return b.topics[topic] - a.topics[topic]; });
+    $('.selected').removeClass('selected');
+    $(".top_" + topic).addClass('selected');
+    $('.reset').removeAttr('disabled');
+    if (topic == roottopic) {
+      $('.topdoc').css('font-weight', 'bold');
+      $('.topdoc').removeClass('btn-primary');
+      $('.topdoc').addClass('btn-default');
+    } else {
+      $('.topdoc').css('font-weight', 'normal');
+      $('.topdoc').removeClass('btn-default');
+      $('.topdoc').addClass('btn-primary');
+    }
+    $('.topdoc').removeAttr('disabled');
+    $('.topdoc').text('Top Documents for Topic ' + topic);
+    $('.topdoc').click(function() { location.href = location.origin + location.pathname + '?topic=' + topic;});
+    $('.topdoc').mouseenter(function() {
+        $('.legend rect').not('.top_' + topic).tooltip('hide');
+        $(".legend rect.top_" + topic).tooltip('show'); });
+    $('.topdoc').mouseleave(function() { $(".top_" + topic).tooltip('hide'); });
+
+  } else {
+    $('.selected').removeClass('selected');
+    sortDataset(function(a, b) { return b.prob - a.prob; });
+  }
+
+
+  var sortFn = function(a,b) {
+    if (a == topic) return -1;
+    else if (b == topic) return 1;
+    else return dataset[0].topics[b] - dataset[0].topics[a];
+    //else return original_root.topics[b] - original_root.topics[a];
+  } 
+  redrawBars(sortFn);
+}
+
+function redrawBars(sortFn) { 
+  $("#legend .hover").removeClass("hover");
+  var numTopics = dataset[0].topics.length;
+  var delay = function(d, i) { return i * (1000/numTopics); },
+      negdelay = function(d, i) { return (numTopics-i) * (1000/numTopics); };
+  calculateTopicMap(dataset, !($('.scale')[0].checked), sortFn);
+    
+  svg.selectAll(".doc")
+    .selectAll("rect")
+    .data(function(d) { return d.topicMap; })
+    .style("fill", function(d) { return tops[d.name]['color']; })
+    /*
+    .on("mouseover", function(d) {
+        // SVG element z-index determined by render order, not style sheet
+        // so element must be reappended to the end on hover so border 
+        // is not occluded
+        var parent = $(this).parent();
+        $(this).detach().appendTo(parent);
+        $(".docLabel", parent).detach().appendTo(parent);
+        $('.legend rect').not('.top_' + d.name).tooltip('hide');
+        $(".top_" + d.name).addClass('hover');
+        $('.legend rect.top_' + d.name).tooltip('show');
+      })
+    .on("mouseout", function(d) {
+        $(".top_" + d.name).removeClass('hover');
+      })*/
+    .transition().duration(1000).ease("linear").delay(this.checked ? delay : negdelay)
+    .attr("x", function(d) { return x(d.x0); })
+    .attr("width", function(d) { return x(d.x1) - x(d.x0); })
+    .attr("class", function(d) { return "top_" + d.name; });
+
+}
+
+function gettopics(words) {
+  var query = words.join('|');
+  $('#wordsDl').html('')
+  $.getJSON('topics.json?q=' + query)
+    .error(function(error) {
+      console.log(error);
+      if (error.status == 404) {
+        $('#words').parents('.form-group').addClass('has-error');
+        $('#words').attr('placeholder', 'Terms not in corpus: "' + words + '". Try another query...');
+        $('#words').val('');
+      } else if (error.status == 410) { 
+        $('#words').parents('.form-group').addClass('has-warning');
+        $('#words').attr('placeholder', 'Terms removed by stoplisting: "' + words + '". Try another query...');
+        $('#words').val('');
+      }
+    }).success(function(data) {
+      $('#words').parents('.form-group').removeClass('has-error');
+      $('#words').parents('.form-group').removeClass('has-warning');
+      $('#words').parents('.form-group').addClass('has-success');
+      Promise.resolve(topics).then(function(val) {  
+        for (var i = 0; i < 10; i++) {
+          var k = data[i]['k'];
+          var t = data[i]['t'];
+
+        /*$('#wordsDl').append('<dt><a href="' + k + '/?topic=' + t + '">' +
+          'Topic ' + t + 
+          ' <small>(k = ' + k + ')</small></a></dt>');
+        $('#wordsDl').append('<dd>' + 
+          val[k][t] + '</dd>'); }*/
+        $('#wordsDl').append('<div class="col-xs-4"><h4><a href="' + k + '/?topic=' + t + '">' +
+          'Topic ' + t +
+          ' <small>(k = ' + k + ')</small></a></h4><p>' +
+          val[k][t] + '</p></div>');
+        }
+        $('#wordsDl').append('<div class="clear">&nbsp;</div>');
+      });
+  });
+}
+
 var fingerprint = {
   'host' : '',
   'visualize' : function(k) {
@@ -111,19 +378,6 @@ var fingerprint = {
         .attr("id","main")
         .attr("class", "main");
     $('#bar'+k).hide();
-    
-    function calculateTopicMap(data, scale, sortFn){
-      data.forEach(function(d) {
-        var sizeFactor = (scale) ? d.prob : 1.0
-        var x0 = 0;
-        if (sortFn) d.topicMap =  d3.keys(d.topics)
-          .sort(sortFn)
-          .map(function(name) { return {name: name, x0: x0, x1: x0 += +(d.topics[name]*sizeFactor) }; });
-        else d.topicMap = d3.keys(d.topics)
-          .map(function(name) { return {name: name, x0: x0, x1: x0 += +(d.topics[name]*sizeFactor) }; });
-      });
-      
-    }
     
     var url = "/docs_topics/" + $('#fingerprintModal #hidden_id').val() + '.json?n=1'
     var host = fingerprint.host + k;

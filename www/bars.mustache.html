@@ -199,21 +199,6 @@ $('#searchForm').submit(function(event) {
   event.preventDefault();
 });
 
-function visualize(k) {
-  var url = "{0}{1}".format(window.location.origin, window.location.pathname);
-  if (k && tops)
-    url = url.replace('/' + Object.keys(tops).length + '/',
-                      '/' + k + '/');
-
-  if ($("#autocompleteDoc").hasClass('active') && !($("#autocompleteDoc").attr("disabled") == 'disabled')) {
-    url += "?doc=" + encodeURIComponent($("#hidden_id").val() || docid) ;
-  } else {
-    url += "?q=" + encodeURIComponent($("#doc").val()).replace(/%20/g, '|');
-  }
-
-  window.location = url;
-}
-
 var taTimeout;
 $(".typeahead").typeahead({items: 12,
   source: function(query, process) {
@@ -344,31 +329,6 @@ var yAxis = d3.svg.axis()
     .scale(y)
     .orient("left");
 
-function computeWidth(numCols) { 
-  $('#legend').attr("width", margin.right + (numCols*55) + 20 + margin.right);
-  $('#chart #main').attr("width", Math.max($(window).width() - $('#legend').width() - 200 + margin.right, 750));
-  $('#controls').css("left", Math.max($(window).width() - $('#legend').width() - 200 + margin.right, 750) + 40);
-  width = Math.max($(window).width() - $('#legend').width() - 200 + margin.right, 750) - margin.left - margin.right;
-  x = d3.scale.linear()
-    .range([0, width]);
-  x.domain([0,1]);
-  xAxis = d3.svg.axis()
-    .scale(x)
-    .orient("top")
-    .ticks(10, "%");
-}
-
-// Changed the height variable to better pair the topic bars with their documents
-function computeHeight(data, numLegendRows) { 
-  height = (data.length * 35);// - margin.top - margin.bottom;
-  y = d3.scale.ordinal()
-   .rangeRoundBands([0, height], .1, 0);
-  y.domain(data.map(function(d) { return d.id; }));
-  yAxis = d3.svg.axis()
-    .scale(y)
-    .orient("left");
-}
-
 var dataset;
 var original_root;
 
@@ -389,20 +349,6 @@ var legend = d3.select("#chart").append("svg")
     .attr("class", "main")
   .append("g")
     .attr("transform","translate("+margin.right+","+ margin.top + ")");
-
-function calculateTopicMap(data, scale, sortFn){
-  data.forEach(function(d) {
-    var sizeFactor = (scale) ? d.prob : 1.0
-    var x0 = 0;
-    if (sortFn) d.topicMap = d3.keys(original_root.topics)
-      .sort(sortFn)
-      .map(function(name) { return {name: name, x0: x0, x1: x0 += +(d.topics[name]*sizeFactor) }; });
-    else // maintain sort order
-      d.topicMap = d.topicMap.map(function (topic) { return topic.name; })
-        .map(function(name) { return {name: name, x0: x0, x1: x0 += +(d.topics[name]*sizeFactor) }; });
-  });
-  
-}
 
 var url;
 if (roottopic) url = "topics/" + roottopic + '.json';
@@ -535,7 +481,7 @@ d3.json(url, function(error, data) {
     doc.selectAll("rect")
         .data(function(d) { return d.topicMap; })
       .enter().append("rect")
-        .attr("height", y.rangeBand()/2.75)
+        .attr("height", y.rangeBand())
         .attr("x", function(d) { return x(d.x0); })
        .attr("y", 10)
         .attr("width", function(d) { return x(d.x1) - x(d.x0); })
@@ -576,7 +522,7 @@ d3.json(url, function(error, data) {
           .text(function(d) { return d.label; })
           .attr("class","docLabel")
           .attr("dx", "3")
-          .attr("dy", "8")
+          .attr("dy", "20") 
         .filter(function(d) { return q && (d.label.indexOf(q) >= 0);})
         .each(function(d) {
             if (q) {
@@ -668,18 +614,6 @@ d3.json(url, function(error, data) {
 
     d3.select(window).on('resize', resize);
   
-    function resize() {
-      computeWidth(legendCols);
-  
-      /* Update the axis with the new scale */
-      svg.select('.x.axis')
-        .call(xAxis);
-  
-      doc.selectAll('rect')
-        .attr("x", function(d) { return x(d.x0); })
-        .attr("width", function(d) { return x(d.x1) - x(d.x0); });
-    }
-  
       d3.select(".sort").on("change", alphabetSort);
       
       $('#status .bar').addClass('bar-success').css('width', '100%').text("Complete!");
@@ -729,7 +663,7 @@ d3.json(url, function(error, data) {
     svg.selectAll(".doc")
       .selectAll("rect")
       .data(function(d) { return d.topicMap; })
-      .style("fill", function(d) { return barColors(tops[d.name]['color'], d.name); })
+      .style("fill", function(d) { return tops[d.name]['color']; })
       /*.on("mouseover", function(d) {
           // SVG element z-index determined by render order, not style sheet
           // so element must be reappended to the end on hover so border 

@@ -56,7 +56,7 @@ def label(doc):
         try:
             md = metadata[doc]
             return md['titles'][0]
-        except (TypeError, KeyError):
+        except:
             return doc
     elif app.context_type == 'page':
         context_md = ctx_md['page']
@@ -72,12 +72,12 @@ def label(doc):
             xml = parse_marc(md['fullrecord'].encode('utf8'))
             vol = get_volume_from_marc(xml[0])
             if vol:
-                return "p%s of %s of %s" % (page_no, vol, md['titles'][0])
+                return "p%s of %s of %s" % (page_no, vol, md['title'][0])
             else:
                 raise ValueError("No Volume")
         except:
             pass
         try:
-            return "p%s of %s" % (page_no, md['titles'][0])
+            return "p%s of %s" % (page_no, md['title'][0])
         except:
             return doc

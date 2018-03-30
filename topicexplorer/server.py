@@ -2,7 +2,7 @@ from __future__ import print_function
 from future import standard_library
 standard_library.install_aliases()
 from builtins import zip
-from builtins import str as text
+from builtins import str
 
 from codecs import open
 from configparser import RawConfigParser as ConfigParser, NoOptionError
@@ -195,7 +195,7 @@ class Application(Bottle):
                 doc, prob = doc_prob
                 struct = docs[doc]
                 struct.update({'prob': float(1 - prob),
-                               'topics': dict([(text(t), float(p)) for t, p in topics])})
+                               'topics': dict([(str(t), float(p)) for t, p in topics])})
                 js.append(struct)
 
             return json.dumps(js)
@@ -225,7 +225,7 @@ class Application(Bottle):
                 doc, prob = doc_prob
                 struct = docs[doc]
                 struct.update({'prob': float(1 - prob),
-                               'topics': dict([(text(t), float(p)) for t, p in topics])})
+                               'topics': dict([(str(t), float(p)) for t, p in topics])})
                 js.append(struct)
 
             return json.dumps(js)
@@ -275,7 +275,7 @@ class Application(Bottle):
                 doc, prob = doc_prob
                 struct = docs[doc]
                 struct.update({'prob': float(1 - prob),
-                               'topics': dict([(text(t), float(p)) for t, p in topics])})
+                               'topics': dict([(str(t), float(p)) for t, p in topics])})
                 js.append(struct)
 
             return json.dumps(js)
@@ -308,9 +308,9 @@ class Application(Bottle):
 
             js = {}
             for i, topic in enumerate(data):
-                js[text(i)] = {
+                js[str(i)] = {
                     "color": rgb2hex(self.colors[k][i]),
-                    'words': dict([(text(w), float(p))
+                    'words': dict([(str(w), float(p))
                                        for w, p in topic[:wordmax]])
                     }
 
@@ -531,7 +531,8 @@ class Application(Bottle):
                     # TODO: Figure out why metadata field might have issue.
                     'metadata': dict(zip(md.dtype.names, (safe_text(m) for m in md)))
                 }
-
+                # TODO: fix metadata login
+                    #'metadata': dict(zip(md.dtype.names, (str(m) for m in md)))}
                 if id_as_key:
                     js[doc] = struct
                 else:
@@ -582,7 +583,7 @@ def get_host_port(args):
     if (int(config.get("www", "port").format(0))) != port:
         if not args.quiet and bool_prompt(
             "Change default baseport to {0}?".format(port), default=True):
-            config.set("www", "port", text(port))
+            config.set("www", "port", str(port))
 
             # create deep copy of configuration
             # see http://stackoverflow.com/a/24343297

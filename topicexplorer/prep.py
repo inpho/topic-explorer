@@ -75,7 +75,7 @@ def get_htrc_langs(args):
 
         md_langs = set([lang for d in data.values() for lang in d.get('language', list())
             if lang.lower() in langs.values()])
-
+    
     return md_langs
 
 
@@ -321,6 +321,7 @@ def get_low_filter(args, c, words=None):
 
     return (low_filter, candidates)
 
+
 def main(args):
     config = ConfigParser({"htrc": False,
                            "sentences": "False"})
@@ -433,6 +434,7 @@ def main(args):
             print("Filtering {} low frequency word{}.".format(len(candidates),
                                                               's' if len(candidates) > 1 else ''))
             stoplist.update(candidates)
+
     elif args.low_filter is None and args.low_percent is None and args.quiet:
         pass
     elif args.low_filter:
@@ -469,12 +471,12 @@ def main(args):
         if args.lang:
             corpus_name.append('nltk')
             corpus_name.append(''.join(args.lang))
-        if lowfreq is not None and lowfreq > 0:
+        if lowfreq > 0:
             corpus_name.append('freq%s' % lowfreq)
         else:
             corpus_name.append('freq%s' % min(counts))
 
-        if highfreq is not None and highfreq > 0:
+        if highfreq > 0:
             corpus_name.append('N%s' % highfreq)
         else:
             corpus_name.append('freq%s' % max(counts))

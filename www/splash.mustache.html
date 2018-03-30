@@ -167,44 +167,6 @@ var topics = Promise.all(k_urls.map($.getJSON)).then(function (data) {
     return t;
 });
 
-function gettopics(words) {
-  var query = words.join('|');
-  $('#wordsDl').html('')
-  $.getJSON('topics.json?q=' + query)
-    .error(function(error) {
-      console.log(error);
-      if (error.status == 404) {
-        $('#words').parents('.form-group').addClass('has-error');
-        $('#words').attr('placeholder', 'Terms not in corpus: "' + words + '". Try another query...');
-        $('#words').val('');
-      } else if (error.status == 410) { 
-        $('#words').parents('.form-group').addClass('has-warning');
-        $('#words').attr('placeholder', 'Terms removed by stoplisting: "' + words + '". Try another query...');
-        $('#words').val('');
-      }
-    }).success(function(data) {
-      $('#words').parents('.form-group').removeClass('has-error');
-      $('#words').parents('.form-group').removeClass('has-warning');
-      $('#words').parents('.form-group').addClass('has-success');
-      Promise.resolve(topics).then(function(val) {  
-        for (var i = 0; i < 10; i++) {
-          var k = data[i]['k'];
-          var t = data[i]['t'];
-
-        /*$('#wordsDl').append('<dt><a href="' + k + '/?topic=' + t + '">' +
-          'Topic ' + t + 
-          ' <small>(k = ' + k + ')</small></a></dt>');
-        $('#wordsDl').append('<dd>' + 
-          val[k][t] + '</dd>'); }*/
-        $('#wordsDl').append('<div class="col-xs-4"><h4><a href="' + k + '/?topic=' + t + '">' +
-          'Topic ' + t +
-          ' <small>(k = ' + k + ')</small></a></h4><p>' +
-          val[k][t] + '</p></div>');
-        }
-        $('#wordsDl').append('<div class="clear">&nbsp;</div>');
-      });
-  });
-}
 </script>
  
 
