@@ -58,7 +58,7 @@
     -->
   </form>
 
-  <script>
+  <!-- <script>
 
   //Handles cases where the "click a segment below to focus on relation to that topic" should appear or not.
   //Also updates a newly added descriptor that indicates what sort of focus the application is in at the time,
@@ -125,7 +125,7 @@
       }
       scrollLegend();
     });
-  </script>
+  </script> -->
   </div>
   </div>
   <div class="non-null" id="status" style="width:100%">
@@ -137,7 +137,7 @@
   </div>
 </div>
   
-<script>
+<!-- <script>
 var q = inpho.util.getValueForURLParam('q') || null;
 if (q) {
   q = decodeURIComponent(q);
@@ -306,7 +306,7 @@ $('#randomDoc', '#searchForm').click(function() {
 });
 $('#randomDoc', '#searchForm').tooltip({title: "Random Document", placement: 'bottom'});
 
-</script>
+</script> -->
 
 
 <div id="chart"> </div>
@@ -318,7 +318,7 @@ $('#randomDoc', '#searchForm').tooltip({title: "Random Document", placement: 'bo
 </div>
 
 <!--<script src="topics.js"></script>-->
-<script>
+<!-- <script>
 $('.scale')[0].checked = (roottopic != null); 
 
 var ico;
@@ -899,7 +899,7 @@ d3.json(url, function(error, data) {
         .attr('offset', '1');
     return "url(#" + myId + ")";
   }
-</script>
+</script> -->
 
 <div class="modal fade" tabindex="-1" role="dialog" id="fingerprintModal">
   <div class="modal-dialog" role="document">
@@ -940,7 +940,7 @@ d3.json(url, function(error, data) {
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 <script src="/topicprint.js"></script>
-<script>
+<!-- <script>
 fingerprint.host = '../';
 
 $('#home-link').attr('href', '../');
@@ -948,4 +948,4 @@ $('#cluster-link').attr('href', '../topics');
 $('.topic-link').each(function(i,elt) {
     $(this).attr('href', '../' + $(elt).attr('href'));
   }); 
-</script>
+</script> -->
