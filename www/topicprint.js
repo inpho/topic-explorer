@@ -223,11 +223,14 @@ var converter = new showdown.Converter({
 	strikethrough: true,
 	tables: true
 });
-$.get('description.md').
-  done(function(data) { 
-    var html = converter.makeHtml(data);
-    $('#aboutText').html(html);
-  }).fail(function(data) { $('#aboutText').html('To add a description of this corpus, create a Markdown file and edit the main:corpus_desc option in config.ini.');
+
+$(window).ready(function() {
+	$.get('description.md').
+	  done(function(data) { 
+	    var html = converter.makeHtml(data);
+	    $('#aboutText').html(html);
+	  }).fail(function(data) { $('#aboutText').html('To add a description of this corpus, create a Markdown file and edit the main:corpus_desc option in config.ini.');
+	});
 });
 
 var combineWords = function(words) {
