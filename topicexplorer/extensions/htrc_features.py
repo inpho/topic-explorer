@@ -9,7 +9,6 @@ import warnings
 
 from progressbar import ProgressBar, Percentage, Bar
 import concurrent.futures
-import numpy as np
 
 from htrc_features.utils import download_file
 from htrc_features import FeatureReader
