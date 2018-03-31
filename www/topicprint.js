@@ -213,8 +213,6 @@ var fingerprint = {
 
 
 
-
-
 //splash.mustache.html
 var converter = new showdown.Converter({
 	simplifiedAutoLink: true,
@@ -224,13 +222,11 @@ var converter = new showdown.Converter({
 	tables: true
 });
 
-$(window).ready(function() {
-	$.get('description.md').
-	  done(function(data) { 
-	    var html = converter.makeHtml(data);
-	    $('#aboutText').html(html);
-	  }).fail(function(data) { $('#aboutText').html('To add a description of this corpus, create a Markdown file and edit the main:corpus_desc option in config.ini.');
-	});
+$.get('../description.md').
+  done(function(data) { 
+    var html = converter.makeHtml(data);
+    $('#aboutText').html(html);
+  }).fail(function(data) { $('#aboutText').html('To add a description of this corpus, create a Markdown file and edit the main:corpus_desc option in config.ini.');
 });
 
 var combineWords = function(words) {
@@ -255,7 +251,7 @@ $('#words').on('input', function() {
   }, 500);
 });
 
-var k_urls = ks.map(function(k) { return '' + k + "/topics.json" });
+var k_urls = ks.map(function(k) { return '../' + k + "/topics.json" });
 var topics = Promise.all(k_urls.map($.getJSON)).then(function (data) {
 	var t = {}; 
 	data.forEach(function(d,i) {
@@ -338,7 +334,6 @@ $(document).ready(function () {
   $('#cite').hide();
   $('#citeBtn').tooltip({title: "Show citation info", placement: 'bottom'});
 
-  // var visited = $.cookie('visited')
   var visited = document.cookie.replace(/(?:(?:^|.*;\s*)visited\s*\=\s*([^;]*).*$)|^.*$/, "$1");
   if (visited != null) {
     $('.help').hide();
@@ -348,13 +343,7 @@ $(document).ready(function () {
     $('#helpBtn').tooltip({title: "Hide help", placement: 'bottom'});
     $('#helpBtn').addClass('active');
   }
-  console.log(visited);
-  document.cookie = "visited=true; expires=date.setDate(date.getDate() + 1);"
-  console.log(visited);
-  // $.cookie('visited', 'yes_visited', {
-  //     expires: 1,
-  //     path: '/'
-  // });
+  document.cookie = "visited=true; expires=date.setDate(date.getDate() + 1);";
 });
 var scrollLegend;
 $('#helpBtn').click(function() {
