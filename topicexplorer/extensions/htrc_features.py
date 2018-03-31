@@ -2,12 +2,14 @@ from __future__ import absolute_import, print_function
 
 from itertools import chain, repeat
 import os.path
+import pickle
 import subprocess
 import tempfile
 import warnings
 
 from progressbar import ProgressBar, Percentage, Bar
 import concurrent.futures
+import numpy as np
 
 from htrc_features.utils import download_file
 from htrc_features import FeatureReader
@@ -38,12 +40,16 @@ def download_vols(ids, output_dir=None):
 def process_pages(vol):
     corpus = []
     for _, page in vol.tokenlist(section='body', case=False, pos=False).iteritems():
-        # TODO: insert process_word call
-        tokens = chain.from_iterable(repeat(token[-1], count) for token, count in page.iteritems())
+        tokens = chain.from_iterable(repeat(process_word(token[-1]), count) for token, count in page.iteritems())
         if tokens:
             corpus.extend(tokens)
+    corpus = list(corpus)
+    with tempfile.NamedTemporaryFile(delete=False) as fp:
+        pickle.dump(corpus, fp)
+        filename = fp.name
+    del corpus
 
-    return corpus
+    return filename
 
 
 def create_corpus(ids, nltk_stop=False, freq=0, verbose=1):
@@ -68,8 +74,10 @@ def create_corpus(ids, nltk_stop=False, freq=0, verbose=1):
                     n += 1
                     pbar.update(n)
 
-            corpus = [concurrent.futures.Future.result(vol) for vol in vols]
             pbar.finish()
+            corpus_files = [vol.result() for vol in vols]
+
+        corpus = [PickledWords(filename) for filename in corpus_files]
     
     c = corpus_fromlist(corpus, context_type='book')
     c = apply_stoplist(c, nltk_stop=nltk_stop, freq=freq)
@@ -77,25 +85,34 @@ def create_corpus(ids, nltk_stop=False, freq=0, verbose=1):
 
     return c
 
-def _create_corpus(ids, nltk_stop=False, freq=0, verbose=1):
-    paths = download_vols(ids)
-    filtered_ids = [os.path.basename(p).replace('.json.bz2','') for p in paths]
+class PickledWords:
+    def __init__(self, filename, delete=True):
+        self.file = filename
+        self.delete = delete
 
-    if verbose:
-        pbar = ProgressBar(widgets=[Percentage(), Bar()], maxval=len(ids))
-        pbar = pbar.start()
-        n = 0
-
-    fr = FeatureReader(paths)
-    corpus = []
-    for vol in fr.volumes():
-        corpus.append(process_pages(vol))
-        n += 1
-        pbar.update(n)
-    pbar.finish()
+        with open(self.file, 'rb') as fp:
+            self.list = pickle.load(fp)
+            self.len = len(self.list)
+            del self.list
     
-    c = corpus_fromlist(corpus, context_type='book')
-    c = apply_stoplist(c, nltk_stop=nltk_stop, freq=freq)
-    c.context_data[0]['book_label'] = filtered_ids
+    def __iter__(self):
+        with open(self.file, 'rb') as fp:
+            self.list = pickle.load(fp)
+    
+        for i in range(len(self.list)):
+            yield self.list[i]
 
-    return c
+
+        del self.list
+
+        if self.delete:
+            print("deleting", self.file)
+            os.remove(self.file)
+
+        raise StopIteration()
+
+    def __len__(self):
+        return self.len
+
+    def __copy__(self):
+        return PickledWords(self.file, delete=False)
