@@ -138,9 +138,10 @@ def get_corpusbuilder_fn(corpus_path, sentences=False,
     elif len(dirs) <= 1:
         if sentences:
             from vsm.extensions.ldasentences import dir_corpus
+            return dir_corpus
         else:
-            from vsm.extensions.corpusbuilders import dir_corpus
-        return dir_corpus
+            from vsm.extensions.corpusbuilders.corpusstreamers import corpus_from_files
+            return corpus_from_files
     elif sentences:
         raise NotImplementedError("""Collection corpuses are too large for
         sentence parsing. Reduce your corpus to a single folder or
@@ -296,13 +297,14 @@ def main(args):
                 args.corpus_path, args.model_path, stop_freq=args.stop_freq,
                 decode=args.decode, nltk_stop=args.nltk, simple=args.simple,
                 sentences=args.sentences, tokenizer=args.tokenizer)
-        except IOError:
+        except IOError as e:
             print("ERROR: invalid path, please specify either:")
             print("  * a single plain-text or PDF file,")
             print("  * a single bibtex (.bib) file with 'file' fields,")
             print("  * a folder of plain-text or PDF files, or")
             print("  * a folder of folders of plain-text or PDF files.")
             print("\nExiting...")
+            raise e
             sys.exit(74)
         """
         except LookupError as e:
