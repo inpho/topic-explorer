@@ -110,48 +110,14 @@ def process_bibtex(corpus_path):
 
 def get_corpusbuilder_fn(corpus_path, sentences=False,
                          ignore=['.json', '.log', '.err', '.pickle', '.npz']):
-    relpaths = [os.path.relpath(path, start=corpus_path)
-                for path in listdir_nohidden(corpus_path, recursive=True)
-                if os.path.isfile(path)
-                and not any([path.endswith(i) for i in ignore])]
 
-    dir_counts = defaultdict(int)
-    for path in relpaths:
-        dir_counts[os.path.dirname(path)] += 1
-
-    dirs = dir_counts.keys()
-    populated_levels = [1 + dir.count(os.path.sep)
-                        for dir, key in dir_counts.items()]
-
-    levels = max(populated_levels) - min(populated_levels)
-    print("{} files, {} dirs, {} levels".format(len(relpaths), len(dirs), levels))
-
-    if len(relpaths) == 1:
-        if sentences:
-            from vsm.extensions.ldasentences import toy_corpus
-        else:
-            from vsm.extensions.corpusbuilders import toy_corpus
-        import functools
-        toy_partial = functools.partial(toy_corpus, is_filename=True, autolabel=True)
-        toy_partial.__name__ = 'toy_corpus'
-        return toy_partial
-    elif len(dirs) <= 1:
-        if sentences:
-            from vsm.extensions.ldasentences import dir_corpus
-            return dir_corpus
-        else:
-            from vsm.extensions.corpusbuilders.corpusstreamers import corpus_from_files
-            return corpus_from_files
-    elif sentences:
+    if sentences:
         raise NotImplementedError("""Collection corpuses are too large for
         sentence parsing. Reduce your corpus to a single folder or
         file.""")
-    elif levels == 0 and max(populated_levels) == 1:
-        from vsm.extensions.corpusbuilders import coll_corpus
-        return coll_corpus
     else:
-        from vsm.extensions.corpusbuilders import walk_corpus
-        return walk_corpus
+        from vsm.extensions.corpusbuilders.corpusstreamers import corpus_from_files
+        return corpus_from_files
 
 
 def ensure_nltk_data_downloaded():
