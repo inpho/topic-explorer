@@ -110,6 +110,10 @@ def process_bibtex(corpus_path):
 
 def get_corpusbuilder_fn(corpus_path, sentences=False,
                          ignore=['.json', '.log', '.err', '.pickle', '.npz']):
+    relpaths = [os.path.relpath(path, start=corpus_path)
+                for path in listdir_nohidden(corpus_path, recursive=True)
+                if os.path.isfile(path)
+                and not any([path.endswith(i) for i in ignore])]
 
     if sentences:
         raise NotImplementedError("""Collection corpuses are too large for
