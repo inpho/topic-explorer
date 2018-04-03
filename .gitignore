@@ -18,6 +18,7 @@ notebooks/
 build/
 dist/
 benchmarks/
+htmlcov/
 topicexplorer.egg-info
 
 .eggs/
