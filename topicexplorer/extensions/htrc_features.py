@@ -24,7 +24,7 @@ def download_vols(ids, output_dir=None):
     paths = {id: '{}/{}.json.bz2'.format(output_dir, id) for id in ids}
     try:
         download_file(htids=ids, outdir=output_dir)
-    except subprocess.CalledProcessError as e:
+    except subprocess.CalledProcessError:
         missing = [id for id, p in paths.items() if not os.path.exists(p)]
         with open('error_missing.log', 'w') as outfile:
             outfile.write('\n'.join(missing))
