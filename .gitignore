@@ -2,6 +2,7 @@
 sandbox
 config.*
 .coverage
+mprofile_*
 
 *.ini
 
