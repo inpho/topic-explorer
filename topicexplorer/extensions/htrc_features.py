@@ -69,7 +69,7 @@ def create_corpus(ids, nltk_stop=False, freq=0, verbose=1):
                         for id_n, vol in enumerate(fr.volumes())]
             
             if verbose:
-                for f in concurrent.futures.as_completed(vols):
+                for _ in concurrent.futures.as_completed(vols):
                     n += 1
                     pbar.update(n)
 
