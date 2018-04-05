@@ -1,4 +1,7 @@
 from __future__ import absolute_import, print_function
+import sys
+if sys.version_info[0] == 2:
+    import backports.tempfile
 
 from itertools import chain, repeat
 import os.path
@@ -14,6 +17,7 @@ from htrc_features.utils import download_file
 from htrc_features import FeatureReader
 from vsm.extensions.corpusbuilders import corpus_fromlist
 from vsm.extensions.corpusbuilders.util import process_word, apply_stoplist 
+from vsm.extensions.corpusbuilders.corpusstreamers import PickledWords
 
 def download_vols(ids, output_dir=None):
     # If no explicit output directory is specified, just create a temporary one
@@ -36,14 +40,14 @@ def download_vols(ids, output_dir=None):
     paths = [p for id, p in paths.items() if os.path.exists(p)]
     return paths
 
-def process_pages(vol):
+def process_pages(vol, pickle_dir=None):
     corpus = []
     for _, page in vol.tokenlist(section='body', case=False, pos=False).iteritems():
         tokens = chain.from_iterable(repeat(process_word(token[-1]), count) for token, count in page.iteritems())
         if tokens:
             corpus.extend(tokens)
     corpus = list(corpus)
-    with tempfile.NamedTemporaryFile(delete=False) as fp:
+    with tempfile.NamedTemporaryFile(delete=False, dir=pickle_dir) as fp:
         pickle.dump(corpus, fp)
         filename = fp.name
     del corpus
@@ -59,59 +63,33 @@ def create_corpus(ids, nltk_stop=False, freq=0, verbose=1):
         pbar = ProgressBar(widgets=[Percentage(), Bar()], maxval=len(ids))
         pbar = pbar.start()
         n = 0
-    with warnings.catch_warnings():
-        warnings.simplefilter('ignore')
 
-        fr = FeatureReader(paths)
-        corpus = []
-        with concurrent.futures.ProcessPoolExecutor() as executor:
-            vols = [executor.submit(process_pages, vol) 
-                        for id_n, vol in enumerate(fr.volumes())]
-            
-            if verbose:
-                for _ in concurrent.futures.as_completed(vols):
-                    n += 1
-                    pbar.update(n)
+    if sys.version_info[0] == 2:
+        TD = backports.tempfile.TemporaryDirectory 
+    else:
+        TD = tempfile.TemporaryDirectory
+    with TD(prefix='vsm-') as pickle_dir:
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore')
 
-            pbar.finish()
-            corpus_files = [vol.result() for vol in vols]
+            fr = FeatureReader(paths)
+            corpus = []
+            with concurrent.futures.ProcessPoolExecutor() as executor:
+                vols = [executor.submit(process_pages, vol, pickle_dir) 
+                            for id_n, vol in enumerate(fr.volumes())]
+                
+                if verbose:
+                    for _ in concurrent.futures.as_completed(vols):
+                        n += 1
+                        pbar.update(n)
 
-        corpus = [PickledWords(filename) for filename in corpus_files]
+                pbar.finish()
+                corpus_files = [vol.result() for vol in vols]
+
+            corpus = [PickledWords(filename) for filename in corpus_files]
     
-    c = corpus_fromlist(corpus, context_type='book')
-    c = apply_stoplist(c, nltk_stop=nltk_stop, freq=freq)
-    c.context_data[0]['book_label'] = filtered_ids
+        c = corpus_fromlist(corpus, context_type='book')
+        c = apply_stoplist(c, nltk_stop=nltk_stop, freq=freq)
+        c.context_data[0]['book_label'] = filtered_ids
 
     return c
-
-class PickledWords:
-    def __init__(self, filename, delete=True):
-        self.file = filename
-        self.delete = delete
-
-        with open(self.file, 'rb') as fp:
-            self.list = pickle.load(fp)
-            self.len = len(self.list)
-            del self.list
-    
-    def __iter__(self):
-        with open(self.file, 'rb') as fp:
-            self.list = pickle.load(fp)
-    
-        for i in range(len(self.list)):
-            yield self.list[i]
-
-
-        del self.list
-
-        if self.delete:
-            print("deleting", self.file)
-            os.remove(self.file)
-
-        raise StopIteration()
-
-    def __len__(self):
-        return self.len
-
-    def __copy__(self):
-        return PickledWords(self.file, delete=False)
