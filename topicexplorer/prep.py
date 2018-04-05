@@ -26,7 +26,7 @@ langs = dict(da='danish', nl='dutch', en='english', fi='finnish', fr='french',
 langs_rev = dict((v, k) for k, v in langs.items())
 
 
-def get_items_counts(x):
+def get_item_counts(x):
     from scipy.stats import itemfreq
     import numpy as np
     try:
@@ -37,6 +37,17 @@ def get_items_counts(x):
         ifreq = itemfreq(x)
         items = ifreq[:, 0]
         counts = ifreq[:, 1]
+    return items, counts
+
+def get_corpus_counts(c):
+    import numpy as np
+    print(len(c), len(c.words), len(c.context_data[0]))
+    items = np.arange(len(c.words)) 
+    counts = np.zeros(c.words.shape, dtype=np.int32)
+    for context in c.view_contexts(c.context_types[0], as_slices=True):
+        i, N = np.unique(c.corpus[context], return_counts=True)
+        counts[i] += N
+
     return items, counts
 
 
@@ -106,7 +117,7 @@ def get_candidate_words(c, n_filter, sort=True, words=None,
     If n_filter < 0, filter words occuring less than n_filter times.
     """
     if items is None or counts is None:
-        items, counts = get_items_counts(c.corpus)
+        items, counts = get_corpus_counts(c)
     if n_filter >= 0:
         filter = items[counts > n_filter]
         if sort:
@@ -147,7 +158,7 @@ def get_special_chars(c):
 def get_closest_bin(c, thresh, reverse=False, counts=None):
     import numpy as np
     if counts is None:
-        _, counts = get_items_counts(c.corpus)
+        _, counts = get_corpus_counts(c)
     counts = counts[counts.argsort()]
     if reverse:
         counts = counts[::-1]
@@ -169,7 +180,7 @@ def get_high_filter(args, c, words=None, items=None, counts=None):
 
     # Get frequency bins
     if items is None or counts is None:
-        items, counts = get_items_counts(c.corpus)
+        items, counts = get_corpus_counts(c)
     bins = [get_closest_bin(c, thresh, counts=counts) for thresh in np.arange(1.0, -0.01, -0.025)]
     bins = sorted(set(bins))
     bins.append(max(counts))
@@ -250,7 +261,7 @@ def get_low_filter(args, c, words=None, items=None, counts=None):
 
     # Get frequency bins
     if items is None or counts is None:
-        items, counts = get_items_counts(c.corpus)
+        items, counts = get_corpus_counts(c)
     bins = [get_closest_bin(c, thresh, reverse=True, counts=counts) for thresh in np.arange(1.0, -0.01, -0.025)]
     bins = sorted(set(bins))
 
@@ -325,8 +336,6 @@ def get_low_filter(args, c, words=None, items=None, counts=None):
 
     return (low_filter, candidates)
 
-from memory_profiler import profile
-@profile
 def main(args):
     config = ConfigParser({"htrc": False,
                            "sentences": "False"})
@@ -411,7 +420,7 @@ def main(args):
             stoplist.update(candidates)
 
     # cache item counts
-    items, counts = get_items_counts(c.corpus)
+    items, counts = get_corpus_counts(c)
     if args.high_filter is None and args.high_percent is None and not args.quiet:
         args.high_filter, candidates = get_high_filter(args, c, words=stoplist, items=items, counts=counts)
         if len(candidates):
