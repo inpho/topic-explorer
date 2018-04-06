@@ -238,8 +238,8 @@ def main(args):
     if args.htrc:
         import vsm.extensions.htrc as htrc
         if os.path.isdir(args.corpus_path):
-            htrc.proc_htrc_coll(args.corpus_path)
-            ids = listdir_nohidden(args.corpus_path)
+            #htrc.proc_htrc_coll(args.corpus_path)
+            ids = [id.replace('.txt','') for id in listdir_nohidden(args.corpus_path)]
 
             args.htrc_metapath = os.path.abspath(args.corpus_path + '/../')
             args.htrc_metapath = os.path.join(args.htrc_metapath,
