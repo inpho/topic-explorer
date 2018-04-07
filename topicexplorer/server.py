@@ -582,7 +582,7 @@ def get_host_port(args):
     """
     Returns the hostname and port number
     """
-    config = ConfigParser({'port': '8000', 'host': '0.0.0.0'})
+    config = ConfigParser({'port': '8000', 'host': '127.0.0.1'})
     with open(args.config, encoding='utf8') as configfile:
         config.read_file(configfile)
 
@@ -679,7 +679,7 @@ def create_app(args):
         'ca_certs': None,
         'ssl': False,
         'port': '8000',
-        'host': '0.0.0.0',
+        'host': '127.0.0.1',
         'icons': 'link',
         'corpus_link': None,
         'doc_title_format': '{0}',
@@ -764,7 +764,7 @@ def populate_parser(parser):
                         help="Number of Topics")
     parser.add_argument('-p', dest='port', type=int,
                         help="Port Number", default=None)
-    parser.add_argument('--host', default=None, help='Hostname')
+    parser.add_argument('--host', default='127.0.0.1', help='Hostname')
     parser.add_argument('--no-browser', dest='browser', action='store_false')
     parser.add_argument("-q", "--quiet", action="store_true")
     parser.add_argument('--fulltext', action='store_true',
