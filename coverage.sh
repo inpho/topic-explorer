@@ -26,6 +26,8 @@ test_url http://localhost:8000/ 200
 EXIT=$(($EXIT+$?))
 test_url http://localhost:8000/20/ 200
 EXIT=$(($EXIT+$?))
+test_url http://localhost:8000/50/ 400
+EXIT=$(($EXIT+$?))
 test_url http://localhost:8000/topics 200
 EXIT=$(($EXIT+$?))
 test_url http://localhost:8000/docs.json 200
