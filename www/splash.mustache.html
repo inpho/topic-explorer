@@ -34,20 +34,6 @@
           <div id="aboutText">
           
           </div>
-          <script>
-            var converter = new showdown.Converter({
-               simplifiedAutoLink: true,
-               headerLevelStart : 3,
-               literalMidWordUnderscores: true,
-               strikethrough: true,
-               tables: true
-              });
-            $.get('description.md').
-              done(function(data) { 
-                var html = converter.makeHtml(data);
-                $('#aboutText').html(html);
-              }).fail(function(data) { $('#aboutText').html('To add a description of this corpus, create a Markdown file and edit the main:corpus_desc option in config.ini.'); });
-          </script>
           <h2 class="back"><a href="#top"><small>Back to top <span class="glyphicon glyphicon-arrow-up"> </span></small></a></h2>
         </div>
       </div>
@@ -134,78 +120,6 @@
 
 
 <script src="/topicprint.js"></script>
-
-<script>
-var combineWords = function(words) {
-   return d3.keys(words).sort(function(a,b) {
-              if (words[a] > words[b])
-                return -1;
-              else if (words[a] < words[b])
-                return 1;
-              else
-                return 0;
-            }).join(", ") + ", ..."; 
-}
-
-var wordTimeout;
-$('#words').on('input', function() {
-  if (wordTimeout) clearTimeout(wordTimeout);
-  var words = $(this).val().split(' ');
-  wordTimeout = setTimeout(function() { 
-    gettopics(words); 
-    $('#wordsBtn').attr('href', 'topics?q=' + words.join('+'));
-    $('#wordsBtn2').attr('href', 'topics?q=' + words.join('+'));
-  }, 500);
-});
-
-var k_urls = ks.map(function(k) { return '' + k + "/topics.json" });
-var topics = Promise.all(k_urls.map($.getJSON)).then(function (data) {
-    var t = {}; 
-    data.forEach(function(d,i) {
-      t[ks[i]] = $.each(d, function(key, val) { d[key] = combineWords(val.words) });
-  });
-    return t;
-});
-
-function gettopics(words) {
-  var query = words.join('|');
-  $('#wordsDl').html('')
-  $.getJSON('topics.json?q=' + query)
-    .error(function(error) {
-      console.log(error);
-      if (error.status == 404) {
-        $('#words').parents('.form-group').addClass('has-error');
-        $('#words').attr('placeholder', 'Terms not in corpus: "' + words + '". Try another query...');
-        $('#words').val('');
-      } else if (error.status == 410) { 
-        $('#words').parents('.form-group').addClass('has-warning');
-        $('#words').attr('placeholder', 'Terms removed by stoplisting: "' + words + '". Try another query...');
-        $('#words').val('');
-      }
-    }).success(function(data) {
-      $('#words').parents('.form-group').removeClass('has-error');
-      $('#words').parents('.form-group').removeClass('has-warning');
-      $('#words').parents('.form-group').addClass('has-success');
-      Promise.resolve(topics).then(function(val) {  
-        for (var i = 0; i < 10; i++) {
-          var k = data[i]['k'];
-          var t = data[i]['t'];
-
-        /*$('#wordsDl').append('<dt><a href="' + k + '/?topic=' + t + '">' +
-          'Topic ' + t + 
-          ' <small>(k = ' + k + ')</small></a></dt>');
-        $('#wordsDl').append('<dd>' + 
-          val[k][t] + '</dd>'); }*/
-        $('#wordsDl').append('<div class="col-xs-4"><h4><a href="' + k + '/?topic=' + t + '">' +
-          'Topic ' + t +
-          ' <small>(k = ' + k + ')</small></a></h4><p>' +
-          val[k][t] + '</p></div>');
-        }
-        $('#wordsDl').append('<div class="clear">&nbsp;</div>');
-      });
-  });
-}
-</script>
  
 
 
