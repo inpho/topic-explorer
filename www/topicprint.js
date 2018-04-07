@@ -343,7 +343,7 @@ $(document).ready(function () {
     $('#helpBtn').tooltip({title: "Hide help", placement: 'bottom'});
     $('#helpBtn').addClass('active');
   }
-  document.cookie = "visited=true; expires=date.setDate(date.getDate() + 1);";
+  document.cookie = "visited=true; max-age=31536000;";
 });
 var scrollLegend;
 $('#helpBtn').click(function() {
