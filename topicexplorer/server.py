@@ -23,7 +23,8 @@ import threading
 from urllib.parse import unquote
 import webbrowser
 
-from bottle import request, response, route, run, static_file, Bottle, ServerAdapter
+from bottle import (redirect, request, response, route, run, static_file,
+                    Bottle, ServerAdapter)
 from topicexplorer.lib.color import get_topic_colors, rgb2hex
 from topicexplorer.lib.ssl import SSLWSGIRefServer
 from topicexplorer.lib.util import (int_prompt, bool_prompt, is_valid_filepath,
@@ -437,6 +438,10 @@ class Application(Bottle):
                            'doc_url_format': kwargs.get('doc_url_format', ''),
                            'home_link': kwargs.get('home_link', '/')}
             return self.renderer.render(template, tmpl_params)
+
+        @self.route('/<k:int>')
+        def index_redirect(k):
+            redirect('/{}/'.format(k))
 
         @self.route('/<k:int>/')
         def index(k):
