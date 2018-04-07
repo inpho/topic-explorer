@@ -309,7 +309,7 @@ function gettopics(words) {
 //either topic focused or document focused.
 var topDoc = document.getElementById("topicBtn");
 var mainDoc = document.getElementById("doc");
-$(document).ready(function () {
+$(window).load(function () {
 	//Breaks out of function when there are no topic bars, like on the landing page
 	if (topDoc == null) return;
   if (mainDoc.value == "") {
@@ -1131,6 +1131,8 @@ fingerprint.host = '../';
 $('#home-link').attr('href', '../');
 $('#cluster-link').attr('href', '../topics');
 $('.topic-link').each(function(i,elt) {
-    $(this).attr('href', '../' + $(elt).attr('href'));
+    var url = '../' + $(elt).attr('href');
+    if(docid) url += '?doc=' + docid;
+    $(this).attr('href', url);
   }); 
 
