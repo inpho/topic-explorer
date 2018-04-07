@@ -193,7 +193,7 @@ def main():
 
         # Use the default error mechanism for the master parser.
         # If the code gets here, it means the error was not in a subparser
-        ArgumentParser.error(parser, e.message)
+        ArgumentParser.error(parser, e)
 
     if args.profile:
         if args.profile == '-':

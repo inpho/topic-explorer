@@ -115,42 +115,13 @@ def get_corpusbuilder_fn(corpus_path, sentences=False,
                 if os.path.isfile(path)
                 and not any([path.endswith(i) for i in ignore])]
 
-    dir_counts = defaultdict(int)
-    for path in relpaths:
-        dir_counts[os.path.dirname(path)] += 1
-
-    dirs = dir_counts.keys()
-    populated_levels = [1 + dir.count(os.path.sep)
-                        for dir, key in dir_counts.items()]
-
-    levels = max(populated_levels) - min(populated_levels)
-    print("{} files, {} dirs, {} levels".format(len(relpaths), len(dirs), levels))
-
-    if len(relpaths) == 1:
-        if sentences:
-            from vsm.extensions.ldasentences import toy_corpus
-        else:
-            from vsm.extensions.corpusbuilders import toy_corpus
-        import functools
-        toy_partial = functools.partial(toy_corpus, is_filename=True, autolabel=True)
-        toy_partial.__name__ = 'toy_corpus'
-        return toy_partial
-    elif len(dirs) <= 1:
-        if sentences:
-            from vsm.extensions.ldasentences import dir_corpus
-        else:
-            from vsm.extensions.corpusbuilders import dir_corpus
-        return dir_corpus
-    elif sentences:
+    if sentences:
         raise NotImplementedError("""Collection corpuses are too large for
         sentence parsing. Reduce your corpus to a single folder or
         file.""")
-    elif levels == 0 and max(populated_levels) == 1:
-        from vsm.extensions.corpusbuilders import coll_corpus
-        return coll_corpus
     else:
-        from vsm.extensions.corpusbuilders import walk_corpus
-        return walk_corpus
+        from vsm.extensions.corpusbuilders.corpusstreamers import corpus_from_files
+        return corpus_from_files
 
 
 def ensure_nltk_data_downloaded():
@@ -267,8 +238,8 @@ def main(args):
     if args.htrc:
         import vsm.extensions.htrc as htrc
         if os.path.isdir(args.corpus_path):
-            htrc.proc_htrc_coll(args.corpus_path)
-            ids = listdir_nohidden(args.corpus_path)
+            #htrc.proc_htrc_coll(args.corpus_path)
+            ids = [id.replace('.txt','') for id in listdir_nohidden(args.corpus_path)]
 
             args.htrc_metapath = os.path.abspath(args.corpus_path + '/../')
             args.htrc_metapath = os.path.join(args.htrc_metapath,
@@ -278,14 +249,14 @@ def main(args):
             with open(args.corpus_path) as idfile:
                 ids = [row.strip() for row in idfile]
 
-            c = htrc_features.create_corpus(ids)
+            c = htrc_features.create_corpus(ids, nltk_stop=args.nltk,freq=args.stop_freq)
             c.save(args.corpus_filename)
 
             args.htrc_metapath = os.path.abspath(args.corpus_path)
             args.htrc_metapath = os.path.join(
                 os.path.dirname(args.htrc_metapath),
                 os.path.basename(args.htrc_metapath) + '.metadata.json')
-
+        
         import htrc.metadata
         print("Downloading metadata to ", args.htrc_metapath)
         htrc.metadata.get_metadata(ids, output_file=args.htrc_metapath)
@@ -296,13 +267,14 @@ def main(args):
                 args.corpus_path, args.model_path, stop_freq=args.stop_freq,
                 decode=args.decode, nltk_stop=args.nltk, simple=args.simple,
                 sentences=args.sentences, tokenizer=args.tokenizer)
-        except IOError:
+        except IOError as e:
             print("ERROR: invalid path, please specify either:")
             print("  * a single plain-text or PDF file,")
             print("  * a single bibtex (.bib) file with 'file' fields,")
             print("  * a folder of plain-text or PDF files, or")
             print("  * a folder of folders of plain-text or PDF files.")
             print("\nExiting...")
+            raise e
             sys.exit(74)
         """
         except LookupError as e:

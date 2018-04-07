@@ -26,7 +26,7 @@ langs = dict(da='danish', nl='dutch', en='english', fi='finnish', fr='french',
 langs_rev = dict((v, k) for k, v in langs.items())
 
 
-def get_items_counts(x):
+def get_item_counts(x):
     from scipy.stats import itemfreq
     import numpy as np
     try:
@@ -37,6 +37,17 @@ def get_items_counts(x):
         ifreq = itemfreq(x)
         items = ifreq[:, 0]
         counts = ifreq[:, 1]
+    return items, counts
+
+def get_corpus_counts(c):
+    import numpy as np
+    print(len(c), len(c.words), len(c.context_data[0]))
+    items = np.arange(len(c.words)) 
+    counts = np.zeros(c.words.shape, dtype=np.int32)
+    for context in c.view_contexts(c.context_types[0], as_slices=True):
+        i, N = np.unique(c.corpus[context], return_counts=True)
+        counts[i] += N
+
     return items, counts
 
 
@@ -99,12 +110,14 @@ def lang_prompt(languages):
     return out_langs
 
 
-def get_candidate_words(c, n_filter, sort=True, words=None):
+def get_candidate_words(c, n_filter, sort=True, words=None,
+                        items=None, counts=None):
     """ Takes a corpus and a filter and reutrns the candidate words.
     If n_filter > 0, filter words occuring at least n_filter times.
     If n_filter < 0, filter words occuring less than n_filter times.
     """
-    items, counts = get_items_counts(c.corpus)
+    if items is None or counts is None:
+        items, counts = get_corpus_counts(c)
     if n_filter >= 0:
         filter = items[counts > n_filter]
         if sort:
@@ -145,7 +158,7 @@ def get_special_chars(c):
 def get_closest_bin(c, thresh, reverse=False, counts=None):
     import numpy as np
     if counts is None:
-        _, counts = get_items_counts(c.corpus)
+        _, counts = get_corpus_counts(c)
     counts = counts[counts.argsort()]
     if reverse:
         counts = counts[::-1]
@@ -156,7 +169,7 @@ def get_closest_bin(c, thresh, reverse=False, counts=None):
     return bin
 
 
-def get_high_filter(args, c, words=None):
+def get_high_filter(args, c, words=None, items=None, counts=None):
     import numpy as np
     header = "FILTER HIGH FREQUENCY WORDS"
     stars = old_div((80 - len(header) - 2), 2)
@@ -166,7 +179,8 @@ def get_high_filter(args, c, words=None):
     print("    by selecting each maximum frequency threshold.\n")
 
     # Get frequency bins
-    items, counts = get_items_counts(c.corpus)
+    if items is None or counts is None:
+        items, counts = get_corpus_counts(c)
     bins = [get_closest_bin(c, thresh, counts=counts) for thresh in np.arange(1.0, -0.01, -0.025)]
     bins = sorted(set(bins))
     bins.append(max(counts))
@@ -201,7 +215,7 @@ def get_high_filter(args, c, words=None):
                     input_filter = high_filter
                 else:
                     input_filter = int(input("Enter the maximum rate: ").replace('x', ''))
-                candidates = get_candidate_words(c, input_filter, words=words)
+                candidates = get_candidate_words(c, input_filter, words=words, items=items, counts=counts)
                 places = np.in1d(c.words[get_mask(c, words)], candidates)
                 places = dict(zip(candidates, np.where(places)[0]))
                 candidates = sorted(candidates, key=lambda x: counts[places[x]], reverse=True)
@@ -236,7 +250,7 @@ def get_high_filter(args, c, words=None):
     return (high_filter, candidates)
 
 
-def get_low_filter(args, c, words=None):
+def get_low_filter(args, c, words=None, items=None, counts=None):
     import numpy as np
     header = "FILTER LOW FREQUENCY WORDS"
     stars = old_div((80 - len(header) - 2), 2)
@@ -246,7 +260,8 @@ def get_low_filter(args, c, words=None):
     print("    by selecting each minimum frequency threshold.\n")
 
     # Get frequency bins
-    items, counts = get_items_counts(c.corpus)
+    if items is None or counts is None:
+        items, counts = get_corpus_counts(c)
     bins = [get_closest_bin(c, thresh, reverse=True, counts=counts) for thresh in np.arange(1.0, -0.01, -0.025)]
     bins = sorted(set(bins))
 
@@ -285,7 +300,7 @@ def get_low_filter(args, c, words=None):
                 else:
                     input_filter = int(input("Enter the minimum rate: ").replace('x', ''))
 
-                candidates = get_candidate_words(c, -input_filter, words=words)
+                candidates = get_candidate_words(c, -input_filter, words=words, items=items, counts=counts)
                 places = np.in1d(c.words[get_mask(c, words)], candidates)
                 places = dict(zip(candidates, np.where(places)[0]))
                 candidates = sorted(candidates, key=lambda x: counts[places[x]])
@@ -389,7 +404,7 @@ def main(args):
                 print("Applying custom stopword file to remove {} word{}.".format(
                     len(candidates), 's' if len(candidates) > 1 else ''))
                 stoplist.update(candidates)
-
+    
     if args.min_word_len:
         candidates = get_small_words(c, args.min_word_len)
         if len(candidates):
@@ -404,8 +419,10 @@ def main(args):
                 len(candidates), 's' if len(candidates) > 1 else ''))
             stoplist.update(candidates)
 
+    # cache item counts
+    items, counts = get_corpus_counts(c)
     if args.high_filter is None and args.high_percent is None and not args.quiet:
-        args.high_filter, candidates = get_high_filter(args, c, words=stoplist)
+        args.high_filter, candidates = get_high_filter(args, c, words=stoplist, items=items, counts=counts)
         if len(candidates):
             print("Filtering {} high frequency word{}.".format(len(candidates),
                                                                's' if len(candidates) > 1 else ''))
@@ -413,22 +430,22 @@ def main(args):
     elif args.high_filter is None and args.high_percent is None and args.quiet:
         pass
     elif args.high_filter:
-        candidates = get_candidate_words(c, args.high_filter, sort=False)
+        candidates = get_candidate_words(c, args.high_filter, sort=False, items=items, counts=counts)
         if len(candidates):
             print("Filtering {} high frequency word{}.".format(len(candidates),
                                                                's' if len(candidates) > 1 else ''))
             stoplist.update(candidates)
     elif args.high_percent:
-        args.high_filter = get_closest_bin(c, args.high_percent / 100.)
+        args.high_filter = get_closest_bin(c, args.high_percent / 100., counts=counts)
         print(args.high_filter)
-        candidates = get_candidate_words(c, args.high_filter, sort=False)
+        candidates = get_candidate_words(c, args.high_filter, sort=False, items=items, counts=counts)
         if len(candidates):
             print("Filtering {} high frequency word{}.".format(len(candidates),
                                                                's' if len(candidates) > 1 else ''))
             stoplist.update(candidates)
 
     if args.low_filter is None and args.low_percent is None and not args.quiet:
-        args.low_filter, candidates = get_low_filter(args, c, words=stoplist)
+        args.low_filter, candidates = get_low_filter(args, c, words=stoplist, items=items, counts=counts)
         if len(candidates):
             print("Filtering {} low frequency word{}.".format(len(candidates),
                                                               's' if len(candidates) > 1 else ''))
@@ -436,15 +453,15 @@ def main(args):
     elif args.low_filter is None and args.low_percent is None and args.quiet:
         pass
     elif args.low_filter:
-        candidates = get_candidate_words(c, -1 * args.low_filter, sort=False)
+        candidates = get_candidate_words(c, -1 * args.low_filter, sort=False, items=items, counts=counts)
         if len(candidates):
             print("Filtering {} low frequency words.".format(len(candidates)))
             stoplist.update(candidates)
 
     elif args.low_percent:
-        args.low_filter = get_closest_bin(c, 1 - (args.low_percent / 100.), reverse=True) - 1
+        args.low_filter = get_closest_bin(c, 1 - (args.low_percent / 100.), reverse=True, counts=counts) - 1
         print(args.low_filter)
-        candidates = get_candidate_words(c, -1 * args.low_filter, sort=False)
+        candidates = get_candidate_words(c, -1 * args.low_filter, sort=False, items=items, counts=counts)
         if len(candidates):
             print("Filtering {} low frequency word{}.".format(len(candidates),
                                                                's' if len(candidates) > 1 else ''))
@@ -463,21 +480,16 @@ def main(args):
         print("\n")
 
     def name_corpus(dirname, languages, lowfreq=None, highfreq=None):
-        items, counts = get_items_counts(c.corpus)
-
         corpus_name = [dirname]
+
         if args.lang:
             corpus_name.append('nltk')
             corpus_name.append(''.join(args.lang))
+
         if lowfreq is not None and lowfreq > 0:
             corpus_name.append('freq%s' % lowfreq)
-        else:
-            corpus_name.append('freq%s' % min(counts))
-
         if highfreq is not None and highfreq > 0:
             corpus_name.append('N%s' % highfreq)
-        else:
-            corpus_name.append('freq%s' % max(counts))
 
         corpus_name = '-'.join(corpus_name)
         corpus_name += '.npz'
