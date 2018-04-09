@@ -10,6 +10,7 @@ function Test-Url($url, $response) {
 
 Test-Url "http://localhost:8000/" 200
 Test-Url "http://localhost:8000/20/" 200
+Test-Url "http://localhost:8000/50/" 400
 Test-Url "http://localhost:8000/topics" 200
 Test-Url "http://localhost:8000/docs.json" 200
 Test-Url "http://localhost:8000/docs.json?random=1" 200

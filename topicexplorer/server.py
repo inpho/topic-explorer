@@ -23,7 +23,8 @@ import threading
 from urllib.parse import unquote
 import webbrowser
 
-from bottle import request, response, route, run, static_file, Bottle, ServerAdapter
+from bottle import (abort, redirect, request, response, route, run, 
+                    static_file, Bottle, ServerAdapter)
 from topicexplorer.lib.color import get_topic_colors, rgb2hex
 from topicexplorer.lib.ssl import SSLWSGIRefServer
 from topicexplorer.lib.util import (int_prompt, bool_prompt, is_valid_filepath,
@@ -138,6 +139,10 @@ class Application(Bottle):
         @self.route('/<k:int>/doc_topics/<doc_id>')
         @_set_acao_headers
         def doc_topic_csv(k, doc_id):
+            if k not in self.topic_range:
+                response.status = 400  # Not Found
+                return "No model for k = {}".format(k)
+
             response.content_type = 'text/csv; charset=UTF8'
 
             data = self.v[k].doc_topics(doc_id)
@@ -156,6 +161,10 @@ class Application(Bottle):
         @self.route('/<k:int>/docs/<doc_id>')
         @_set_acao_headers
         def doc_csv(k, doc_id, threshold=0.2):
+            if k not in self.topic_range:
+                response.status = 400  # Not Found
+                return "No model for k = {}".format(k)
+
             response.content_type = 'text/csv; charset=UTF8'
 
             data = self.v[k].dist_doc_doc(doc_id)
@@ -174,6 +183,10 @@ class Application(Bottle):
         @self.route('/<k:int>/topics/<topic_no:int>.json')
         @_set_acao_headers
         def topic_json(k, topic_no, N=40):
+            if k not in self.topic_range:
+                response.status = 400  # Not Found
+                return "No model for k = {}".format(k)
+
             response.content_type = 'application/json; charset=UTF8'
             try:
                 N = int(request.query.n)
@@ -203,6 +216,10 @@ class Application(Bottle):
         @self.route('/<k:int>/docs_topics/<doc_id:path>.json')
         @_set_acao_headers
         def doc_topics(k, doc_id, N=40):
+            if k not in self.topic_range:
+                response.status = 400  # Not Found
+                return "No model for k = {}".format(k)
+
             try:
                 N = int(request.query.n)
             except:
@@ -234,6 +251,11 @@ class Application(Bottle):
         @_set_acao_headers
         def word_docs(k, N=40):
             import numpy as np
+
+            if k not in self.topic_range:
+                response.status = 400  # Not Found
+                return "No model for k = {}".format(k)
+
             try:
                 N = int(request.query.n)
             except:
@@ -285,6 +307,10 @@ class Application(Bottle):
         def topics(k):
             from topicexplorer.lib.color import rgb2hex
             import numpy as np
+
+            if k not in self.topic_range:
+                response.status = 400  # Not Found
+                return "No model for k = {}".format(k)
 
             response.content_type = 'application/json; charset=UTF8'
             response.set_header('Expires', _cache_date())
@@ -438,8 +464,15 @@ class Application(Bottle):
                            'home_link': kwargs.get('home_link', '/')}
             return self.renderer.render(template, tmpl_params)
 
+        @self.route('/<k:int>')
+        def index_redirect(k):
+            redirect('/{}/'.format(k))
+
         @self.route('/<k:int>/')
         def index(k):
+            if k not in self.topic_range:
+                abort(400, "No model for k = {}".format(k))
+
             with open(get_static_resource_path('www/master.mustache.html'),
                       encoding='utf-8') as tmpl_file:
                 template = tmpl_file.read()
@@ -549,7 +582,7 @@ def get_host_port(args):
     """
     Returns the hostname and port number
     """
-    config = ConfigParser({'port': '8000', 'host': '0.0.0.0'})
+    config = ConfigParser({'port': '8000', 'host': '127.0.0.1'})
     with open(args.config, encoding='utf8') as configfile:
         config.read_file(configfile)
 
@@ -646,7 +679,7 @@ def create_app(args):
         'ca_certs': None,
         'ssl': False,
         'port': '8000',
-        'host': '0.0.0.0',
+        'host': '127.0.0.1',
         'icons': 'link',
         'corpus_link': None,
         'doc_title_format': '{0}',
@@ -731,7 +764,7 @@ def populate_parser(parser):
                         help="Number of Topics")
     parser.add_argument('-p', dest='port', type=int,
                         help="Port Number", default=None)
-    parser.add_argument('--host', default=None, help='Hostname')
+    parser.add_argument('--host', default='127.0.0.1', help='Hostname')
     parser.add_argument('--no-browser', dest='browser', action='store_false')
     parser.add_argument("-q", "--quiet", action="store_true")
     parser.add_argument('--fulltext', action='store_true',
