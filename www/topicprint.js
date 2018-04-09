@@ -191,8 +191,7 @@ var fingerprint = {
                 $(this).detach().appendTo(parent);
               })
             .on("click", function(d) { window.location = full_explorer_url; })
-            .style("fill", function(d) { return topics[d.name]['color']; });
-      
+            .style("fill", function(d) { return barColors(topics[d.name]['color'], d.name, svg); });
       
         $(".doc rect").tooltip({container:'body', 
                                 animation: false, placement: 'top'});
@@ -796,7 +795,7 @@ d3.json(url, function(error, data) {
             $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic + " sorted by proportion of topic " + d.name);
           }
           topicSort(d.name); })
-        .style("fill", function(d) { return barColors(topics[d.name]['color'], d.name); });
+        .style("fill", function(d) { return barColors(topics[d.name]['color'], d.name, svg); });
 
     doc.append("text")
           .text(function(d) { return d.label; })
@@ -954,7 +953,7 @@ d3.json(url, function(error, data) {
     svg.selectAll(".doc")
       .selectAll("rect")
       .data(function(d) { return d.topicMap; })
-      .style("fill", function(d) { return barColors(tops[d.name]['color'], d.name); })
+      .style("fill", function(d) { return barColors(tops[d.name]['color'], d.name, svg); })
       /*.on("mouseover", function(d) {
           // SVG element z-index determined by render order, not style sheet
           // so element must be reappended to the end on hover so border 
@@ -1074,7 +1073,7 @@ d3.json(url, function(error, data) {
     svg.selectAll(".doc")
       .selectAll("rect")
       .data(function(d) { return d.topicMap; })
-      .style("fill", function(d) { return barColors(tops[d.name]['color'], d.name); })
+      .style("fill", function(d) { return barColors(tops[d.name]['color'], d.name, svg); })
       /*
       .on("mouseover", function(d) {
           // SVG element z-index determined by render order, not style sheet
@@ -1111,9 +1110,7 @@ d3.json(url, function(error, data) {
     throw new Error('Bad Hex');
   }
 
-  function barColors(myColor, myId) {
-   // var myColor = topics[d.name]['color'];
-    //var myId = d.name;
+  function barColors(myColor, myId, svg) {
     var mainGradient = svg.append('linearGradient')
         .attr('id', myId);
     mainGradient.append('stop')
