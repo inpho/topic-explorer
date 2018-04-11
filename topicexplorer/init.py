@@ -31,7 +31,7 @@ def get_corpus_filename(corpus_path, model_path, nltk_stop=False, stop_freq=0,
         filename = '%s-freq%d.npz' % (corpus_name, stop_freq)
     else:
         filename = '%s.npz' % corpus_name
-    return os.path.join(model_path, filename)
+    return os.path.abspath(os.path.join(model_path, filename))
 
 
 def process_pdfs(corpus_path, ignore=['.json', '.log', '.err', '.pickle', '.npz']):
