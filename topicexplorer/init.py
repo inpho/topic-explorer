@@ -31,7 +31,7 @@ def get_corpus_filename(corpus_path, model_path, nltk_stop=False, stop_freq=0,
         filename = '%s-freq%d.npz' % (corpus_name, stop_freq)
     else:
         filename = '%s.npz' % corpus_name
-    return os.path.join(model_path, filename)
+    return os.path.abspath(os.path.join(model_path, filename))
 
 
 def process_pdfs(corpus_path, ignore=['.json', '.log', '.err', '.pickle', '.npz']):
@@ -220,12 +220,12 @@ def main(args):
             args.model_path = os.path.join(args.corpus_path, '../models/')
         else:
             args.model_path = os.path.dirname(args.corpus_path)
-    if args.model_path and not os.path.exists(args.model_path):
-        os.makedirs(args.model_path)
+    if args.model_path and not os.path.exists(os.path.abspath(args.model_path)):
+        os.makedirs(os.path.abspath(args.model_path))
 
     args.corpus_filename = get_corpus_filename(
         args.corpus_path, args.model_path, stop_freq=args.stop_freq)
-    if not args.rebuild and os.path.exists(args.corpus_filename):
+    if not args.rebuild and os.path.exists(os.path.abspath(args.corpus_filename)):
         if args.quiet:
             print("Path exits: {}".format(args.corpus_filename))
             sys.exit(1)
