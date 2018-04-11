@@ -82,8 +82,7 @@ def cluster(n_clusters, config_file):
     dimension_reduce_model.fit_kmeans(int(n_clusters))
 
     print("writing model files for Isomap and kmeans\n")
-    config = ConfigParser()
-    config.read(config_file)
+    config = topicexplorer.config.read(config_file)
     corpus_filename = config.get("main", "corpus_file")
     filename = corpus_filename.split('.')[0] + '-cluster.csv'
 
