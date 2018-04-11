@@ -8,10 +8,10 @@ from builtins import map
 from builtins import range
 
 from configparser import RawConfigParser as ConfigWriter
-from configparser import SafeConfigParser as ConfigParser
 from configparser import NoOptionError
 import os.path
 
+import topicexplorer.config
 from topicexplorer.lib.util import bool_prompt, int_prompt, is_valid_configfile
 
 
@@ -101,8 +101,7 @@ def main(args):
         cluster(args.cluster, args.config_file)
         return
 
-    config = ConfigParser({"sentences": "False"})
-    config.read(args.config_file)
+    config = topicexplorer.config.read(args.config_file)
     corpus_filename = config.get("main", "corpus_file")
     model_path = config.get("main", "path")
 

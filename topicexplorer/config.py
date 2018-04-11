@@ -4,9 +4,32 @@ standard_library.install_aliases()
 
 from configparser import ConfigParser
 
-def read(config_file):
-    config = ConfigParser({"htrc": False,
-                           "sentences": False})
-    config.read(config_file)
+def read(filename):
+    config = ConfigParser({
+        "htrc": False,
+        "sentences": False,
+        'certfile': None,
+        'keyfile': None,
+        'ca_certs': None,
+        'ssl': False,
+        'port': '8000',
+        'host': '127.0.0.1',
+        'icons': 'link',
+        'corpus_link': None,
+        'doc_title_format': '{0}',
+        'doc_url_format': '',
+        'raw_corpus': None,
+        'label_module': None,
+        'fulltext': False,
+        'pdf' : False,
+        'topics': None,
+        'cluster': None,
+        'corpus_desc' : None,
+        'home_link' : '/',
+        'lang' : None    
+    })
+
+    with open(filename, encoding='utf8') as configfile:
+        config.read_file(configfile)
 
     return config
