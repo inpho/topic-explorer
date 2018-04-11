@@ -15,6 +15,8 @@ import sys
 
 from codecs import open
 from unidecode import unidecode
+
+import topicexplorer.config
 from topicexplorer.lib.util import isint, is_valid_configfile, bool_prompt
 
 # NLTK Langauges
@@ -337,9 +339,7 @@ def get_low_filter(args, c, words=None, items=None, counts=None):
     return (low_filter, candidates)
 
 def main(args):
-    config = ConfigParser({"htrc": False,
-                           "sentences": "False"})
-    config.read(args.config_file)
+    config = topicexplorer.config.read(args.config_file)
 
     if config.getboolean("main", "sentences"):
         from vsm.extensions.ldasentences import CorpusSent as Corpus
