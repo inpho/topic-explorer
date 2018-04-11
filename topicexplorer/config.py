@@ -2,6 +2,7 @@ from __future__ import print_function
 from future import standard_library
 standard_library.install_aliases()
 
+from codecs import open
 from configparser import ConfigParser
 
 def read(filename):
