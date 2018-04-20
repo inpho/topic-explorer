@@ -21,7 +21,7 @@ snakeviz>=0.4.0
 sortedcontainers>=1.5.7
 ujson==1.35
 Unidecode
-vsm==0.4.7
+vsm==0.4.9
 waitress>=1.0.0
 wget>=3.2
 
