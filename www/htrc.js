@@ -24,6 +24,12 @@ htrc.solr.get = function(id, callback) {
   });
   return true; 
 };
+/*
+ *  * htrc.solr.get = function(id, callback) {
+ *   *   var url = "https://catalog.hathitrust.org/api/volumes/brief/htid/" + id + ".json";
+ *    * };
+ *     * */
+
 
 /* htrc.popover
  * Create a popover for HTRC content

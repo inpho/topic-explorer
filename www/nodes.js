@@ -87,7 +87,7 @@ d3.csv(base_url + "cluster.csv", function(error, data) {
   ks.map(function(k) { $('#sidebar-topics').append('<li><a class="bg-info" title="Toggle '+k+'-topic clusters" data-placement="right" href="javascript:toggleDisplay(' + k + ')">' + k + '</a></li>') });
   $('#sidebar-topics li a').tooltip();
 
-  var sizes = d3.scale.log()
+  var sizes = d3.scale.linear()
     .range([radius, 5]);
   sizes.domain(d3.extent(ks)).nice();
 
