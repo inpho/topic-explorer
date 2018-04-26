@@ -9,6 +9,7 @@ from configparser import RawConfigParser as ConfigParser, NoOptionError
 import csv
 from datetime import datetime, timedelta
 from functools import partial
+import hashlib
 from importlib import import_module
 from io import BytesIO,StringIO
 import json
@@ -55,12 +56,19 @@ def _set_acao_headers(f):
         return f(*args, **kwargs)
     return set_header
 
+def _generate_etag(v):
+    ''' Takes a model view and generates an etag using the v.phi and v.theta attributes '''
+    # TODO: write a function using a hashlib digest
+    x = hashlib.sha1()
+    x.update(repr(v.phi).encode('utf-8'))
+    x.update(repr(v.theta).encode('utf-8'))
+    return x.hexdigest()
 
-def _cache_date(days=1):
+def _cache_date(days=0, seconds=120):
     """
     Helper function to return the date for the cache header.
     """
-    time = datetime.now() + timedelta(days=days)
+    time = datetime.now() + timedelta(days=days, seconds=seconds)
     return time.strftime("%a, %d %b %Y %I:%M:%S GMT")
 
 
@@ -308,14 +316,21 @@ class Application(Bottle):
             from topicexplorer.lib.color import rgb2hex
             import numpy as np
 
+            etag = _generate_etag(self.v[k])
+            # Check if there is a "If-None-Match" ETag in the request
+            if request.get_header('If-None-Match', '') == etag:
+                response.status = 304
+                return "Not Modified"
+
             if k not in self.topic_range:
                 response.status = 400  # Not Found
                 return "No model for k = {}".format(k)
 
             response.content_type = 'application/json; charset=UTF8'
             response.set_header('Expires', _cache_date())
-            response.set_header('Cache-Control', 'max-age=86400')
-            
+            response.set_header('Cache-Control', 'max-age=120')
+            response.set_header('ETag', etag)
+
             # set a parameter for number of words to return
             wordmax = 10  # for alphabetic languages
             if kwargs.get('lang', None) == 'cn':
