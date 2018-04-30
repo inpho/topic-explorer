@@ -40,6 +40,13 @@
           </li>
         </ul>
       </div>
+      <div class="sidebar-helper" style="vertical-align: middle;">
+        <ul id="sidebar-topics" class="sidebar-nav">
+          {{#topic_range}}
+          <li><a class="topic-link" href="{{.}}/" title="Launch {{.}}-topic model" data-placement="right">{{.}}</a></li>
+          {{/topic_range}}
+        </ul>
+      </div>
       <div class="sidebar-helper" style="bottom: 0;">
         <ul class="sidebar-nav">
           <li><a id="helper" href="#" class="selected" data-placement="right" title="Help" data-toggle="modal" data-target="#helpModal"><strong>?</strong></a></li>
