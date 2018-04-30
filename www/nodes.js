@@ -9,7 +9,7 @@ if (q) {
   });
 };
 
-if (window.location.pathname.endsWith('topics')) {
+if (window.location.pathname.endsWith('topics') || window.location.pathname.endsWith('topics.local.html')) {
   var i = window.location.pathname.lastIndexOf('topics');
   var base_url = window.location.origin + window.location.pathname.substr(0,i);
 } else {
@@ -83,7 +83,8 @@ d3.csv(base_url + "cluster.csv", function(error, data) {
   // sidebar items
   var cluster_view = $('#sidebar-topics li:first-child').html();
   $('#sidebar-topics').html('');
-  $('#sidebar-topics').append('<li>' + cluster_view + "</li>");
+  if (!window.location.pathname.endsWith('topics.local.html'))
+    $('#sidebar-topics').append('<li>' + cluster_view + "</li>");
   ks.map(function(k) { $('#sidebar-topics').append('<li><a class="bg-info" title="Toggle '+k+'-topic clusters" data-placement="right" href="javascript:toggleDisplay(' + k + ')">' + k + '</a></li>') });
   $('#sidebar-topics li a').tooltip();
 

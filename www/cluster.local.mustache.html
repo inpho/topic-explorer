@@ -1,0 +1,31 @@
+<link rel='stylesheet' href='/css/cluster.css'>
+<script>
+$('#home-link').attr('href', '../');
+$('#cluster-link').attr('href', '#');
+</script>
+<div id="main" class="container">
+  <div class="row">
+    <div class="col-xs-12">
+    <h1><a href="{{home_link}}"><span class="logo-word">InPhO</span> Topic Explorer</a></h1>
+    <!--<h2 class="title non-null"></h2>-->
+    <h2>
+    {{#corpus_link}}<a href="{{corpus_link}}">{{corpus_name}}</a>{{/corpus_link}} 
+    {{^corpus_link}}{{corpus_name}}{{/corpus_link}}
+    </h2>
+    </div>
+  </div>
+</div>
+<div class="container-fluid">
+  <div id="chart">
+    <div id="loading" class="text-center">
+      <button class="btn btn-lg btn-info">
+        <span class="glyphicon glyphicon-refresh spinning"></span> Loading...    
+      </button>
+    </div>
+  </div>
+</div>
+    
+<script src="topics_files/jquery-2.js"></script>
+<script src="topics_files/bootstrap_002.js"></script>
+<script src="topics_files/util.js"></script>
+<script src="topics_files/nodes.js"></script>
