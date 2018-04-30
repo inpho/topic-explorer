@@ -65,9 +65,9 @@ chinese_punctuation = [
                        u'\u250B']
 
 import string 
-for a in string.lowercase[:],string.uppercase[:],range(0,10):
+for a in string.ascii_lowercase[:],string.ascii_uppercase[:],range(0,10):
     for b in a:        
-        chinese_punctuation.append(str(b).decode('utf-8'))
+        chinese_punctuation.append(str(b))
 
 # escape ASCII in the chinese range
 for n in range(32,91):
