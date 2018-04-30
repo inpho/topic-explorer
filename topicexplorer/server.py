@@ -423,6 +423,17 @@ class Application(Bottle):
                            'topic_range': self.topic_range}
             return self.renderer.render(template, tmpl_params)
 
+        @self.route('/topics.local.html')
+        @_set_acao_headers
+        def view_clusters_local():
+            with open(get_static_resource_path('www/master.local.mustache.html'),
+                      encoding='utf-8') as tmpl_file:
+                template = tmpl_file.read()
+
+            tmpl_params = {'body' : _render_template('cluster.local.mustache.html'),
+                           'topic_range': self.topic_range}
+            return self.renderer.render(template, tmpl_params)
+
 
         @self.route('/docs.json')
         @_set_acao_headers

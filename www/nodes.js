@@ -9,7 +9,7 @@ if (q) {
   });
 };
 
-if (window.location.pathname.endsWith('topics')) {
+if (window.location.pathname.endsWith('topics') || window.location.pathname.endsWith('topics.local.html')) {
   var i = window.location.pathname.lastIndexOf('topics');
   var base_url = window.location.origin + window.location.pathname.substr(0,i);
 } else {
