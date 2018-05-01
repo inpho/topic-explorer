@@ -436,7 +436,7 @@ def main(args):
                                                                's' if len(candidates) > 1 else ''))
             stoplist.update(candidates)
     elif args.high_percent:
-        args.high_filter = get_closest_bin(c, args.high_percent / 100., counts=counts)
+        args.high_filter = get_closest_bin(c, 1 - (args.high_percent / 100.), counts=counts)
         print(args.high_filter)
         candidates = get_candidate_words(c, args.high_filter, sort=False, items=items, counts=counts)
         if len(candidates):
