@@ -49,19 +49,18 @@ def main(args):
                 outfile.write(app.get(f'/{k}/topics.json').text)
             files.append(k_output)
 
+        # make sure the directories are created
+        dirname = os.path.dirname(args.output)
+        if dirname and not os.path.exists(dirname):
+            os.makedirs(dirname)
+
         # output path massaging
         if os.path.isdir(args.output):
             # make sure we've actually got a zipfile to put there
             args.output += 'topics.html.zip'
-        else:
-            # make sure the directories are created
-            dirname = os.path.dirname(args.output)
-            if dirname and not os.path.exists(dirname):
-                os.makedirs(dirname)
-
-            # make sure it ends in zip
-            if not args.output.endswith('.zip'):
-                args.output += '.zip'
+        elif not args.output.endswith('.zip'):
+            # make sure we've got a zipfile
+            args.output += '.zip'
 
         ZIPFILE = args.output
         TOPICS_ZIP = get_static_resource_path('topics.zip')
