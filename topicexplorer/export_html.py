@@ -46,7 +46,7 @@ def main(args):
                 os.makedirs(k_output)
             k_output = os.path.join(k_output, 'topics.json')
             with open(k_output, 'w') as outfile:
-                outfile.write(app.get(f'/{k}/topics.json').text)
+                outfile.write(app.get('/{}/topics.json'.format(k)).text)
             files.append(k_output)
 
         # make sure the directories are created
