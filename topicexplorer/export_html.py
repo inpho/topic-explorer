@@ -49,10 +49,21 @@ def main(args):
                 outfile.write(app.get(f'/{k}/topics.json').text)
             files.append(k_output)
 
-        if not os.path.exists(args.output):
-            os.makedirs(args.output)
+        # output path massaging
+        if os.path.isdir(args.output):
+            # make sure we've actually got a zipfile to put there
+            args.output += 'topics.html.zip'
+        else:
+            # make sure the directories are created
+            dirname = os.path.dirname(args.output)
+            if dirname and not os.path.exists(dirname):
+                os.makedirs(dirname)
 
-        ZIPFILE = os.path.join(args.output, 'topics.html.zip')
+            # make sure it ends in zip
+            if not args.output.endswith('.zip'):
+                args.output += '.zip'
+
+        ZIPFILE = args.output
         TOPICS_ZIP = get_static_resource_path('topics.zip')
         shutil.copyfile(TOPICS_ZIP, ZIPFILE)
         with ZipFile(ZIPFILE, 'a') as zipfile:
@@ -62,7 +73,8 @@ def main(args):
 def populate_parser(parser):
     parser.add_argument('config_file', help='Topic Explorer ini file',
                         type=lambda x: is_valid_configfile(parser, x))
-    parser.add_argument('-o', '--output', help='Output directory', default='./')
+    parser.add_argument('-o', '--output', default='topics.html.zip',
+                        help='Output file [Default: topics.html.zip]')
     return parser
 
 if __name__ == '__main__':
