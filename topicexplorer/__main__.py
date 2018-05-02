@@ -30,7 +30,7 @@ import platform
 import warnings
 
 from topicexplorer import (init, prep, train, server, notebook,
-    demo, update, metadata, export, tezimport)
+    demo, update, metadata, export, tezimport, export_html)
 
 from topicexplorer.lib.util import is_valid_filepath
 
@@ -153,7 +153,12 @@ def main():
     export.populate_parser(parser_export)
     parser_export.set_defaults(func="export")
     
-    # Export Parser
+    # Export HTML Parser
+    parser_export_html = parsers.add_parser('export-html', help="Export the topic cluster visualization")
+    export_html.populate_parser(parser_export_html)
+    parser_export_html.set_defaults(func="export-html")
+
+    # Import Parser
     parser_import = parsers.add_parser('import', help="Import the tez archive")
     tezimport.populate_parser(parser_import)
     parser_import.set_defaults(func="import")
@@ -264,7 +269,10 @@ def main():
     
     elif args.func == 'export':
         benchmark(export.main)(args)
-    
+
+    elif args.func == 'export-html':
+        benchmark(export_html.main)(args)
+
     elif args.func == 'import':
         benchmark(tezimport.main)(args)
 
