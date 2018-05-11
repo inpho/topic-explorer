@@ -3,7 +3,7 @@ from builtins import chr
 import os
 
 import platform
-#updated to use pymmseg function calls instead of plain mmseg
+from topicexplorer.lib.util import get_static_resource_path 
 
 chinese_punctuation = [
                        u'\xb7',
@@ -81,8 +81,8 @@ if platform.system() == 'Windows':
 else:
     import os.path
     import topicexplorer.lib.mmseg as mmseg
-    dic = mmseg.Dict("/home/jaimie/workspace/inpho/topic-explorer/topicexplorer/lib/words.dic")
-    chrs = mmseg.CharFreqs("/home/jaimie/workspace/inpho/topic-explorer/topicexplorer/lib/chars.dic")
+    dic = mmseg.Dict(get_static_resource_path("mmseg/words.dic"))
+    chrs = mmseg.CharFreqs(get_static_resource_path("mmseg/chars.dic"))
     mmseg = mmseg.MMSeg(dic, chrs)
 
     def ancient_chinese_tokenizer(raw_text):
