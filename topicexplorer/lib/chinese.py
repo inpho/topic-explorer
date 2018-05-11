@@ -76,36 +76,27 @@ for n in range(32,91):
 if platform.system() == 'Windows':
     raise NotImplementedError("mmseg Chinese language parser not implemented for Windows systems.")
 else:
-    import mmseg
+    import mmseg._mmseg as mmseg
     import os.path
 
     TOKENIZER = None
 
-    def reset_mmseg():
-        import importlib
-
-        global TOKENIZER
-        global mmseg
-        TOKENIZER = None
-        mmseg = importlib.import_module('mmseg')
-
     def ancient_chinese_tokenizer(raw_text):
+        print(type(raw_text))
         global TOKENIZER
         if TOKENIZER is not 'Ancient':
-            # reload mmseg to re-init
-            reset_mmseg()
-
             # directory of ancient dictionary
             dirname = os.path.dirname(__file__)
             dictionary = os.path.join(dirname, 'ancient words.dic')
-            # mmseg.dict_load_defaults()
-            mmseg.Dictionary.load_words(dictionary)
+            mmseg.dict_load_defaults()
+            mmseg.dict_load_words(bytes(dictionary, 'utf-8'))
             TOKENIZER = 'Ancient'
 
         # process text
-        tokenizer = mmseg.Algorithm(raw_text.encode('utf-8-sig'))
+        tokenizer = mmseg.Algorithm(raw_text)
         tokens = []
         for token in tokenizer:
+            print(type(token.text), token.text)
             token = token.text.decode('utf-8-sig', errors='replace').replace(u'\x00', '')
             if token:
                 if token not in chinese_punctuation:
@@ -123,12 +114,12 @@ else:
             dirname = os.path.dirname(__file__)
             dictionary = os.path.join(dirname, 'modern words.dic')
             mmseg.dict_load_defaults()
-            mmseg.Dictionary.load_words(dictionary)
+            mmseg.dict_load_words(dictionary, 'utf-8')
             TOKENIZER = 'Modern'
 
         # process text
         #print raw_text.encode('utf-8')
-        tokenizer = mmseg.Algorithm(raw_text.encode('utf-8-sig'))
+        tokenizer = mmseg.Algorithm(raw_text)
 
         tokens = []
         for token in tokenizer:
