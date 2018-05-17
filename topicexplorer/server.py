@@ -64,6 +64,11 @@ def _generate_etag(v):
     x.update(repr(v.theta).encode('utf-8'))
     return x.hexdigest()
 
+def _docs_etag(c):
+    x = hashlib.sha1()
+    x.update(repr(c).encode('utf-8'))
+    return x.hexdigest()
+
 def _cache_date(days=0, seconds=120):
     """
     Helper function to return the date for the cache header.
@@ -476,13 +481,13 @@ class Application(Bottle):
             response.content_type = 'application/json; charset=UTF8'
             response.set_header('Expires', _cache_date())
 
-            #etag = _generate_etag(self.v[k])
+            etag = _docs_etag(self.c)
             #Check for an "If-None-Match" tag in the header
-            #if request.get_header('If-None-Match', '') == etag:
-              #response.status=304
-              #return "Not Modified"
+            if request.get_header('If-None-Match', '') == etag:
+              response.status=304
+              return "Not Modified"
 
-            #response.set_header('Etag', etag)
+            response.set_header('Etag', etag)
 
             try:
                 if request.query.q:
