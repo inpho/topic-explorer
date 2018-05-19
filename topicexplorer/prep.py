@@ -237,7 +237,7 @@ def get_high_filter(c, words=None, items=None, counts=None):
                 else:
                     input_filter = int(input("Enter the maximum rate: ").replace('x', ''))
                 candidates = get_candidate_words(c, input_filter, words=words, items=items, counts=counts)
-                places = np.in1d(c.words[get_mask(c, words)], candidates)
+                places = np.in1d(c.words, candidates)
                 places = dict(zip(candidates, np.where(places)[0]))
                 candidates = sorted(candidates, key=lambda x: counts[places[x]], reverse=True)
                 filtered_counts = counts[get_mask(c, words)]
@@ -295,17 +295,17 @@ def get_low_filter(c, words=None, items=None, counts=None):
         print("{0:>8s} {1:>8s} {2:<36s} {3:>14s} {4:>8s}".format("Rate", 'Bottom', '% of corpus',
                                                                  "# words", "Rate"))
 
-        last_row = max(counts)
+        last_row = 0
         for bin, count in zip(bins, np.cumsum(bin_counts)):
             filtered_counts = counts[get_mask(c, words)]
-            if last_row > (filtered_counts < bin).sum() <= len(filtered_counts):
+            if last_row < (filtered_counts < bin).sum() <= len(filtered_counts):
                 percentage = (old_div(counts[counts <= bin].sum(), float(c.original_length)))
                 print("{0:>5.0f}x".format(bin).rjust(8), end=' ')
                 print('{0:2.1f}%'.format(percentage * 100).rjust(8), end=' ')
                 print((u'\u2588' * int(percentage * 36)).ljust(36), end=' ')
                 print("  {0:0.0f} words".format((filtered_counts <= bin).sum()).rjust(14), end=' ')
                 print("<= {0:>5.0f}x".format(bin).ljust(8))
-                if (filtered_counts <= bin).sum() == len(filtered_counts):
+                if (filtered_counts < bin).sum() == len(filtered_counts):
                     break
             last_row = (filtered_counts >= bin).sum()
 
@@ -324,7 +324,7 @@ def get_low_filter(c, words=None, items=None, counts=None):
                     input_filter = int(input("Enter the minimum rate: ").replace('x', ''))
 
                 candidates = get_candidate_words(c, -input_filter, words=words, items=items, counts=counts)
-                places = np.in1d(c.words[get_mask(c, words)], candidates)
+                places = np.in1d(c.words, candidates)
                 places = dict(zip(candidates, np.where(places)[0]))
                 candidates = sorted(candidates, key=lambda x: counts[places[x]])
                 filtered_counts = counts[get_mask(c, words)]
