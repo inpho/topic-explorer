@@ -13,12 +13,12 @@ import warnings
 from progressbar import ProgressBar, Percentage, Bar
 import concurrent.futures
 
-from htrc_features.utils import download_file
+from htrc_features.utils import download_file, id_to_rsync
 from htrc_features import FeatureReader
 from vsm.extensions.corpusbuilders import corpus_fromlist
 from vsm.extensions.corpusbuilders.util import process_word, apply_stoplist 
 from vsm.extensions.corpusbuilders.corpusstreamers import PickledWords
-
+'''
 def download_vols(ids, output_dir=None):
     # If no explicit output directory is specified, just create a temporary one
     if output_dir is None:
@@ -36,6 +36,26 @@ def download_vols(ids, output_dir=None):
         print("{} volume{} failed to download. "
               "See `error_missing.log`.".format(len(missing), 's' if len(missing) > 1 else ''))
         print("Continuing with volumes that succesfully downloaded...")
+    
+    paths = [p for id, p in paths.items() if os.path.exists(p)]
+    return paths
+'''
+def download_vols(ids, output_dir=None, root='/media/jammurdo/HTRC/efs/'):
+    # If no explicit output directory is specified, just create a temporary one
+    print("aw_yiss path")
+    if output_dir is None:
+        output_dir = tempfile.mkdtemp()
+
+    # Download extracted features
+    paths = {id: os.path.join(root, id_to_rsync(id)) for id in ids}
+   
+    missing = [id for id, p in paths.items() if not os.path.exists(p)]
+    with open('error_missing.log', 'w') as outfile:
+        outfile.write('\n'.join(missing))
+    
+    print("{} volume{} failed to download. "
+          "See `error_missing.log`.".format(len(missing), 's' if len(missing) > 1 else ''))
+    print("Continuing with volumes that succesfully downloaded...")
     
     paths = [p for id, p in paths.items() if os.path.exists(p)]
     return paths
@@ -88,8 +108,10 @@ def create_corpus(ids, nltk_stop=False, freq=0, verbose=1):
 
             corpus = [PickledWords(filename) for filename in corpus_files]
     
-        c = corpus_fromlist(corpus, context_type='book')
-        c = apply_stoplist(c, nltk_stop=nltk_stop, freq=freq)
+        c = corpus_fromlist(corpus, context_type='book', remove_empty=False)
+        if freq or nltk_stop:
+            c = apply_stoplist(c, nltk_stop=nltk_stop, freq=freq)
         c.context_data[0]['book_label'] = filtered_ids
+        c.remove_empty()
 
     return c

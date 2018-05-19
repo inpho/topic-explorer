@@ -256,10 +256,12 @@ def main(args):
             args.htrc_metapath = os.path.join(
                 os.path.dirname(args.htrc_metapath),
                 os.path.basename(args.htrc_metapath) + '.metadata.json')
-        
+
+        """
         import htrc.metadata
         print("Downloading metadata to ", args.htrc_metapath)
         htrc.metadata.get_metadata(ids, output_file=args.htrc_metapath)
+        """
 
     if args.rebuild and (not args.htrc or os.path.isdir(args.corpus_path)):
         try:
