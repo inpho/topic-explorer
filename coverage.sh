@@ -115,6 +115,9 @@ EXIT=$(($EXIT+$?))
 $CMD -m unittest2
 EXIT=$(($EXIT+$?))
 
+$CMD -m pytest tests/test_prep.py
+EXIT=$(($EXIT+$?))
+
 coverage report
 echo "Exiting with code ${EXIT}"
 exit $EXIT
