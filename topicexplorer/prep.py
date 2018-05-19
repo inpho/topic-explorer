@@ -201,7 +201,8 @@ def get_high_filter(c, words=None, items=None, counts=None):
     # Get frequency bins
     if items is None or counts is None:
         items, counts = get_corpus_counts(c)
-    bins = [get_closest_bin(c, thresh, counts=counts) for thresh in np.arange(1.0, -0.01, -0.025)]
+    bins = np.arange(1.0, -0.01, -0.025)
+    bins = [get_closest_bin(c, thresh, counts=counts) for thresh in bins]
     bins = sorted(set(bins))
     bins.append(max(counts))
 
@@ -214,7 +215,7 @@ def get_high_filter(c, words=None, items=None, counts=None):
         for bin, count in zip(bins[-2::-1], np.cumsum(bin_counts[::-1])):
             filtered_counts = counts[get_mask(c, words)]
             if (filtered_counts >= bin).sum() > last_row:
-                percentage = 1. - (old_div(counts[counts <= bin].sum(), float(c.original_length)))
+                percentage = 1. - (old_div(counts[counts < bin].sum(), float(c.original_length)))
                 print("{0:>5.0f}x".format(bin).rjust(8), end=' ')
                 print('{0:2.1f}%'.format(percentage * 100).rjust(8), end=' ')
                 print((u'\u2588' * int(percentage * 36)).ljust(36), end=' ')
@@ -282,8 +283,10 @@ def get_low_filter(c, words=None, items=None, counts=None):
     # Get frequency bins
     if items is None or counts is None:
         items, counts = get_corpus_counts(c)
-    bins = [get_closest_bin(c, thresh, reverse=True, counts=counts) for thresh in np.arange(1.0, -0.01, -0.025)]
+    bins = np.arange(1.0, -0.01, -0.025)
+    bins = [get_closest_bin(c, thresh, reverse=True, counts=counts) for thresh in bins]
     bins = sorted(set(bins))
+    bins.append(max(counts))
 
     low_filter = False
     while low_filter is False:
@@ -292,17 +295,17 @@ def get_low_filter(c, words=None, items=None, counts=None):
         print("{0:>8s} {1:>8s} {2:<36s} {3:>14s} {4:>8s}".format("Rate", 'Bottom', '% of corpus',
                                                                  "# words", "Rate"))
 
-        last_row = 0
-        for bin, count in zip(bins[1:], np.cumsum(bin_counts)):
+        last_row = max(counts)
+        for bin, count in zip(bins, np.cumsum(bin_counts)):
             filtered_counts = counts[get_mask(c, words)]
-            if last_row < (filtered_counts < bin).sum() <= len(filtered_counts):
+            if last_row > (filtered_counts < bin).sum() <= len(filtered_counts):
                 percentage = (old_div(counts[counts <= bin].sum(), float(c.original_length)))
-                print("{0:>5.0f}x".format(bin - 1).rjust(8), end=' ')
+                print("{0:>5.0f}x".format(bin).rjust(8), end=' ')
                 print('{0:2.1f}%'.format(percentage * 100).rjust(8), end=' ')
                 print((u'\u2588' * int(percentage * 36)).ljust(36), end=' ')
-                print("  {0:0.0f} words".format((filtered_counts < bin).sum()).rjust(14), end=' ')
-                print("<= {0:>5.0f}x".format(bin - 1).ljust(8))
-                if (filtered_counts < bin).sum() == len(filtered_counts):
+                print("  {0:0.0f} words".format((filtered_counts <= bin).sum()).rjust(14), end=' ')
+                print("<= {0:>5.0f}x".format(bin).ljust(8))
+                if (filtered_counts <= bin).sum() == len(filtered_counts):
                     break
             last_row = (filtered_counts >= bin).sum()
 

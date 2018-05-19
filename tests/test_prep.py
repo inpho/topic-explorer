@@ -56,3 +56,52 @@ def test_get_candidate_words():
         corpus, -low_freq, words=low_words)
     assert len(mask_words) == 0
 
+@patch('topicexplorer.prep.input')
+def test_get_high_filter(input_mock):
+    input_mock.side_effect = ['3', 'y']
+    high_filter, candidates = topicexplorer.prep.get_high_filter(corpus)
+    assert high_filter == 3
+    assert candidates == ['I']
+    
+    # Test selection of all words
+    input_mock.side_effect = ['3', '1', '3', 'y']
+    high_filter, candidates = topicexplorer.prep.get_high_filter(corpus)
+    assert high_filter == 3
+    assert candidates == ['I']
+    
+    # Test not accept
+    input_mock.side_effect = ['3', 'n', '3', 'y']
+    high_filter, candidates = topicexplorer.prep.get_high_filter(corpus)
+    assert high_filter == 3
+    assert candidates == ['I']
+
+    # Test invalid action
+    input_mock.side_effect = ['blahhhh', '3', 'y']
+    high_filter, candidates = topicexplorer.prep.get_high_filter(corpus)
+    assert high_filter == 3
+    assert candidates == ['I']
+
+@patch('topicexplorer.prep.input')
+def test_get_low_filter(input_mock):
+    input_mock.side_effect = ['1', 'y']
+    low_filter, candidates = topicexplorer.prep.get_low_filter(corpus)
+    assert low_filter == 1 
+    assert all(w in candidates for w in ['came', 'saw', 'conquered'])
+   
+    # Test selection of all words
+    input_mock.side_effect = ['1', '3', '1', 'y']
+    low_filter, candidates = topicexplorer.prep.get_low_filter(corpus)
+    assert low_filter == 1
+    assert all(w in candidates for w in ['came', 'saw', 'conquered'])
+
+    # Test not accept
+    input_mock.side_effect = ['1', 'n', '1', 'y']
+    low_filter, candidates = topicexplorer.prep.get_low_filter(corpus)
+    assert low_filter == 1
+    assert all(w in candidates for w in ['came', 'saw', 'conquered'])
+
+    # Test invalid action
+    input_mock.side_effect = ['blahhhh', '1', 'y']
+    low_filter, candidates = topicexplorer.prep.get_low_filter(corpus)
+    assert low_filter == 1
+    assert all(w in candidates for w in ['came', 'saw', 'conquered'])
