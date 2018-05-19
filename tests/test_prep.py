@@ -31,11 +31,28 @@ def test_get_small_words():
     assert topicexplorer.prep.get_small_words(corpus, 1) == []
 
 def test_get_closest_bin():
-    #assert topicexplorer.prep.get_closest_bin(corpus, 0) == 0 
+    assert topicexplorer.prep.get_closest_bin(corpus, 0) == 0 
     assert topicexplorer.prep.get_closest_bin(corpus, 0.2) == 1 
     assert topicexplorer.prep.get_closest_bin(corpus, 0.5) == 1 
     assert topicexplorer.prep.get_closest_bin(corpus, 0.7) == 3
-    #assert topicexplorer.prep.get_closest_bin(corpus, 0, reverse=True) == 4
+    assert topicexplorer.prep.get_closest_bin(corpus, 0, reverse=True) == 4
     assert topicexplorer.prep.get_closest_bin(corpus, 0.2, reverse=True) == 3 
     assert topicexplorer.prep.get_closest_bin(corpus, 0.5, reverse=True) == 3 
     assert topicexplorer.prep.get_closest_bin(corpus, 0.7, reverse=True) == 1
+
+def test_get_candidate_words():
+    low_freq = topicexplorer.prep.get_closest_bin(corpus, 0.5)
+    low_words = topicexplorer.prep.get_candidate_words(corpus, -low_freq)
+    assert all(w in low_words for w in ['came', 'saw', 'conquered'])
+
+    high_freq = topicexplorer.prep.get_closest_bin(corpus, 0.5, reverse=True)
+    high_words = topicexplorer.prep.get_candidate_words(corpus, high_freq)
+    assert all(w in high_words for w in ['I'])
+
+    no_words = topicexplorer.prep.get_candidate_words(corpus, 0)
+    assert no_words == []
+
+    mask_words = topicexplorer.prep.get_candidate_words(
+        corpus, -low_freq, words=low_words)
+    assert len(mask_words) == 0
+
