@@ -40,7 +40,8 @@ import random
 import pystache
 
 __all__ = ['populate_parser', 'main', '_set_acao_headers', 'Application']
-    
+
+token = ['default']
 
 def _set_acao_headers(f):
     """
@@ -92,7 +93,7 @@ class Application(Bottle):
 
     def __init__(self, corpus_file='', model_pattern='', topic_range=None,
                  context_type='', label_module=None, config_file='',
-                 fulltext=False, corpus_path='', **kwargs):
+                 fulltext=False, corpus_path='', tokenizer='default', **kwargs):
         super(Application, self).__init__()
 
         self.config_file = config_file
@@ -116,6 +117,8 @@ class Application(Bottle):
         self.topic_range = topic_range
         self.colors = dict()
         self._load_viewers(model_pattern)
+
+        token[0] = tokenizer
 
     def _load_label_module(self, label_module, config_file):
         try:
@@ -324,6 +327,7 @@ class Application(Bottle):
                 N = int(request.query.n)
             except:
                 pass
+
             try:
                 query = request.query.q.lower()
                 if self.c.words.dtype.type == np.string_:
@@ -420,22 +424,28 @@ class Application(Bottle):
             import numpy as np
             response.content_type = 'application/json; charset=UTF8'
 
+            tokenizer = token[0]
             # parse query
-            try:
-                if '|' in request.query.q:
-                    query = request.query.q.lower()
-                    if self.c.words.dtype.type == np.string_:
-                        query = query.encode('ascii', 'ignore')
-                
-                    query = query.split('|')
-                else:
-                    query = request.query.q.lower()
-                    if self.c.words.dtype.type == np.string_:
-                        query = query.encode('ascii', 'ignore')
-                
-                    query = query.split(' ')
-            except:
-                raise Exception('Must specify a query')
+            if tokenizer == 'default':
+                from vsm.extensions.corpusbuilders.util import word_tokenize
+                tokenizer = word_tokenize
+            elif tokenizer == 'zh':
+                from topicexplorer.lib.chinese import modern_chinese_tokenizer
+                tokenizer = modern_chinese_tokenizer
+            elif tokenizer == 'ltc' or tokenizer == 'och':
+                from topicexplorer.lib.chinese import ancient_chinese_tokenizer
+                tokenizer = ancient_chinese_tokenizer
+            elif tokenizer == 'inpho':
+                from topicexplorer.extensions.inpho import inpho_tokenizer
+                tokenizer = inpho_tokenizer
+            elif tokenizer == 'brain':
+                from hyperbrain.parse import brain_tokenizer
+                tokenizer = brain_tokenizer
+            else:
+                raise NotImplementedError(
+                    "Tokenizer '{}' is not included in topicexplorer".format(tokenizer))
+
+            query = list(itertools.chain(*[tokenizer(q) for q in request.query.q.split('|')]))
 
             stopped_words = [word for word in query 
                                  if word in self.c.stopped_words]
@@ -783,7 +793,8 @@ def create_app(args):
         'cluster': None,
         'corpus_desc' : None,
         'home_link' : '/',
-        'lang': None})
+        'lang': None,
+        'tokenizer': 'default'})
 
     with open(args.config, encoding='utf8') as configfile:
         config.read_file(configfile)
@@ -822,6 +833,7 @@ def create_app(args):
     corpus_path = config.get('main', 'raw_corpus')
     corpus_desc = config.get('main', 'corpus_desc')
     fulltext = args.fulltext or config.getboolean('www', 'fulltext')
+    tokenizer = config.get('www', 'tokenizer')
 
     app = Application(corpus_file=corpus_file,
                       model_pattern=model_pattern,
@@ -839,7 +851,8 @@ def create_app(args):
                       doc_url_format=doc_url_format,
                       cluster_path=cluster_path,
                       corpus_desc=corpus_desc,
-                      home_link=home_link)
+                      home_link=home_link,
+                      tokenizer=tokenizer)
 
     """
     host, port = get_host_port(args) 
