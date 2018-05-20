@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>InPhO Topic Explorer</title>
+  <script>
+  // redirect for error introduced by CAS
+  if (window.location.href.includes('%3d'))
+    window.location.href = window.location.href.replace('%3d','=');
+  </script>
+
+  <script src="topics_files/jquery-2.js"></script>
+  <!--<script src="https://code.jquery.com/jquery-1.12.4.js"></script>-->
+  <script src="topics_files/jquery.js"></script>
+  <script src="topics_files/jquery_002.js"></script>
+  <script src="topics_files/bootstrap.js"></script>
+  <script src="topics_files/d3.js"></script>
+  <script src="topics_files/mustache.js"></script>
+  <script src="topics_files/showdown.js"></script>
+  <script src="topics_files/util.js"></script>
+  <script src="topics_files/fulltext.js"></script>
+  <script src="topics_files/htrc.js"></script>
+  <!-- <script src="/topicprint.js"></script> -->
+  <script src="topics_files/icons.js"></script>
+  <link rel="stylesheet" type="text/css" href="topics_files/bootstrap.css">
+  <!-- <link rel="stylesheet" type="text/css" href="/lib/bootstrap-2.3.2/css/bootstrap.min.css" /> -->
+  <link rel="stylesheet prefetch" href="topics_files/simple-sidebar.css">
+  <link rel="stylesheet prefetch" href="topics_files/master.css">
+  <link rel="stylesheet prefetch" href="topics_files/inpho-font.css">
+</head>
+
+<body>
+  <div id="wrapper">
+    <div id="sidebar-wrapper">
+      <div class="sidebar-helper">
+        <ul class="sidebar-nav">
+          <li><a id="home-link" class="selected" data-placement="right" title="Home" href="http://analytics.hathitrust.org/"><span class="glyphicon glyphicon-home"></span></a></li>
+          <li>
+            <!--<a class="selected" href="javascript:toggleSearch()"><span class="glyphicon glyphicon-search"></span></a>-->
+          </li>
+        </ul>
+      </div>
+      <div class="sidebar-helper" style="vertical-align: middle;">
+        <ul id="sidebar-topics" class="sidebar-nav">
+          {{#topic_range}}
+          <li><a class="topic-link" href="{{.}}/" title="Launch {{.}}-topic model" data-placement="right">{{.}}</a></li>
+          {{/topic_range}}
+        </ul>
+      </div>
+      <div class="sidebar-helper" style="bottom: 0;">
+        <ul class="sidebar-nav">
+          <li><a id="helper" href="#" class="selected" data-placement="right" title="Help" data-toggle="modal" data-target="#helpModal"><strong>?</strong></a></li>
+        </ul>
+      </div>
+    </div>
+  
+    <script>
+    var ks = [{{#topic_range}}{{.}}, {{/topic_range}}];
+    $('#sidebar-wrapper li a').tooltip();
+    </script>
+    
+    <div id="page-content-wrapper">
+      {{body}}
+    </div>
+  </div>
+  
+  <div class="modal fade" tabindex="-1" role="dialog" id="rightsModal">
+    <div class="modal-dialog" role="document copyright">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h3 class="modal-title">Usage and Copyright</h3>
+        </div>
+        <div class="modal-body">
+          <p>The InPhO Topic Explorer (InPhO-TE) software is &copy; 2014-16 Trustees of Indiana University and the Indiana Philosophy Ontology (InPhO) Project.</p>
+          <p>While copyright is reserved, the software itself is released via the permissive <a href="https://github.com/inpho/topic-explorer/blob/master/LICENSE.txt" target="_blank">MIT License</a>, with open-source code available via <a href="https://github.com/inpho/topic-explorer/">GitHub</a>.</p>
+          <p>Explicit rights are granted for reuse of all visualizations and other derivatives of this software via the <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a> (CC-BY).</p>
+          <p>To satisfy the license in electronic works, please link to the primary project page at <a href="http://inphodata.cogs.indiana.edu/">http://inphodata.cogs.indiana.edu/</a>. If you use InPhO-TE in a published work, the authors request that you cite InPhO-TE as:
+              <blockquote style="font-size: inherit;">Jaimie Murdock and Colin Allen. (2015) "Visualization Techniques for Topic Model Checking" in Proceedings of the 29th AAAI Conference on Artificial Intelligence (AAAI-15). Austin, Texas, USA, January 25-29, 2015. http://inphodata.cogs.indiana.edu/</blockquote></p>
+          <p>Content for each corpus is copyright by their respective creators. Topic models performed using this content fall under fair use provisions as non-consumptive research.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal #rightsModal -->
+
+  <div class="modal fade" tabindex="-1" role="dialog" id="homeHelp">
+    <div class="modal-dialog" role="document copyright">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h3 class="modal-title">Help</h3>
+        </div>
+        <div class="modal-body" id="homeHelpText"><p>This is the <strong>InPhO Topic Explorer</strong>.  It allows you to explore a collection of documents using pre-trained topic models.</p>
+
+<p><strong>Topic models</strong> represent documents as <strong>mixtures</strong>
+ of topics. The topic model is trained by an algorithm that finds latent
+ (hidden) relationships among the documents.  Typically we train models 
+with different numbers of topics, which show different levels of detail 
+in the documents. A model with more topics will, in general, show finer 
+details.</p>
+
+<p>If you would like more information about topic modeling, you can watch the video at <a href="http://inphodata.cogs.indiana.edu/">http://inphodata.cogs.indiana.edu/</a> and read the article by <a href="http://www.cs.columbia.edu/~blei/papers/Blei2012.pdf">David Blei (2012)</a>.</p>
+
+<p>From this page you can explore the topic models in various ways using
+ the large buttons in the middle of the page and the menu items on the 
+left. On this page, you may also find some information about the 
+specific corpus used to train the models, if the person who trained the 
+models has provided it.</p>
+
+<h4 id="documents">Documents</h4>
+
+<p>The most effective way to start exploring via the documents in the corpus.</p>
+
+<p>Once you click on the document icon a panel will appear in which you can either <strong>click the crossed arrows button for a random document</strong> or select a focal document for your exploration by <strong>typing a few letters to match the title</strong>.</p>
+
+<p>You will be shown a “fingerprint” for the selected document, and you can navigate from this to the <strong>Hypershelf</strong> focused on that document.</p>
+
+<h4 id="topic">Topic</h4>
+
+<p>Clicking here will bring up a panel where you can enter a few words to identify related topics. From there you can go to the <strong>topic map</strong>
+ that lays out and groups the topics from all the models according to 
+their similarity. There is also additional help once you reach that 
+page.</p>
+
+<h4 id="leftmenu">Left Menu</h4>
+
+<p>Clicking on a number will take you to the <strong>Hypershelf</strong> for the model with the corresponding number of topics. Use the help function on that page to find out what to do next.</p>
+
+<p>Clicking on the Topics (vertical bars) icon will take you to the topics map </p></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal #rightsModal -->
+
+  <div class="modal fade" tabindex="-1" role="dialog" id="hypershelfHelp">
+    <div class="modal-dialog" role="document copyright">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h3 class="modal-title">Hypershelf Help</h3>
+        </div>
+        <div class="modal-body" id="hypershelfHelpText"><p>This is the <strong>“Hypershelf”</strong>.
+  It allows you to explore documents in the corpus using pre-trained 
+topic models.  If you are unfamiliar with topic modeling, you can watch 
+the video at <a href="http://inphodata.cogs.indiana.edu/">Inphodata.cogs.indiana.edu</a> and read an article by <a href="http://www.cs.columbia.edu/~blei/papers/Blei2012.pdf">David Blei (2012)</a>. </p>
+
+<h4 id="documentsimilarity">Document Similarity</h4>
+
+<p>The <strong>Hypershelf</strong> shows up to 40 <strong>documents</strong> that are <strong>most similar to</strong> the <strong>focal document</strong>.  Each document is represented by a bar whose colors show the <strong>mixture and proportions of topics</strong> assigned to each document by the training process. The <strong>relative lengths</strong> of the bars <strong>indicate</strong> the <strong>degree of similarity</strong> to the focal document according to the topic mixtures.</p>
+
+<h4 id="topics">Topics</h4>
+
+<p><strong>Rolling over</strong> a colored segment shows the <strong>highest probability words</strong> associated with the topic. The <strong>key</strong> on the right shows all the topics identified by the model. If you <strong>click on a topic</strong> in the bar or the key, the display will <strong>sort</strong> the <strong>current documents ranked according to that topic</strong>. In this topic-sorted mode, a <strong>Top Documents</strong> button appears at the top that lets you retrieve the documents from the entire corpus that are most similar to that topic.</p>
+
+<h4 id="focaldocument">Focal Document</h4>
+
+<p>To select a new <strong>focal document</strong> you can:</p>
+
+<ol>
+<li><strong>Start typing a few letters</strong> in the focal document entry area;</li>
+
+<li><strong>Click the crossed arrows button</strong> to the right of the focal document entry area for a <strong>random</strong> document;</li>
+
+<li><strong>Refocus</strong> on one of the already-displayed documents by moving the cursor just to the <strong>left of the topic bar</strong> and <strong>clicking</strong> on the <strong>arrow</strong> that appears.</li>
+</ol>
+
+<p>You may use the button to the right of the random document button to 
+visualize the focal document and you may use the dropdown menu attached 
+to the button to <strong>switch</strong> to a model with a different <strong>number of topics</strong>.</p>
+
+<h4 id="otheroptions">Other Options</h4>
+
+<p>Below the key are some additional display options that let you <strong>sort</strong> the displayed documents <strong>alphabetically</strong>, or to <strong>normalize</strong> the <strong>bar lengths</strong> so that you can compare the document mixtures more directly.</p>
+
+<p>Other icons to the left of each topic bar allow you to <strong>view the document contents</strong>, or see a <strong>"fingerprint"</strong>
+ of the topic mixtures for that document in all the available models 
+with different numbers of topics.  Clicking on a bar in the fingerprint 
+will take you to a hypershelf focused on the selected document with that
+ given model.</p>
+
+<p>The numbers in the menu on the left can be used to <strong>navigate directly to a model</strong> with that number of topics.</p>
+
+<p>Above the numbers on the left, the topic cluster button will take you to a different interface that lets you <strong>explore topic similarity across the models</strong>. </p>
+
+<p>The home button at the top left will take you to a <strong>general information page</strong> about the corpus and models.</p></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal #rightsModal -->
+
+  <div class="modal fade" tabindex="-1" role="dialog" id="topicsHelp">
+    <div class="modal-dialog" role="document copyright">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h3 class="modal-title">Help</h3>
+        </div>
+        <div class="modal-body" id="topicsHelpText"><p>This is the <strong>topic map</strong>.
+ It places the topics from the all the trained models on a two 
+dimensional map that attempts to place similar topics close to each 
+other. </p>
+
+<p>The clusters and colors are determined automatically by an algorithm,
+ and providing only a rough guide to groups of topics that have similar 
+themes. The different axes also do not have any intrinsic meaning, but 
+may be surprisingly interpretable.</p>
+
+<p>You can control which models are included in the map by clicking on 
+the numbers on the left to toggle the corresponding models off and on.</p>
+
+<p>You may also enter words in the search box to have the isomap change shading to help you find related topics.</p>
+
+<p>Clicking on any topic circle will take you to the Hypershelf with the top documents for that topic already selected.</p></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal #rightsModal -->
+  
+  <script>
+    var path = window.location.pathname;
+    if (path == "/") {
+      $("#helper").removeAttr("data-target");
+      $("#helper").attr("data-target", "#homeHelp");
+    }
+    console.log(path.match(/\/\d+\//));
+    if (path.match(/\/\d+\//)) {
+      console.log("hello");
+      $("#helper").removeAttr("data-target");
+      $("#helper").attr("data-target", "#hypershelfHelp");
+    }
+    if (path == "/topics") {
+      $("#helper").removeAttr("data-target");
+      $("#helper").attr("data-target", "#topicsHelp");
+    }
+  </script>
+</body>
+</html>

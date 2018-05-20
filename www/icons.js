@@ -150,7 +150,7 @@ var icon_fns = {"link" : function(ticks, i) {
           }})
         .attr("data-htrc-id", function(d) { 
           data = docs.filter(function(doc, i) { return doc.id == d})[0]
-          return data.metadata.book_label; 
+          return data.metadata.book_label.replace('+',':').replace('=','/').replace('=','/'); 
         })
         .attr("onclick", function(d) { return (d) ? "htrc.popover(this)" : ""; });
   },
@@ -160,7 +160,7 @@ var icon_fns = {"link" : function(ticks, i) {
         .attr("class", "htrcbookIcon icon")
         .on("click", function(d) { 
           data = docs.filter(function(doc, i) { return doc.id == d})[0]
-          id = data.metadata.book_label;
+          id = data.metadata.book_label.replace('+',':').replace('=','/').replace('=','/');
           page = data.metadata.seq_number;
           url = "http://babel.hathitrust.org/cgi/pt?id={0};seq={1}".format(id, page)
           window.open(url, "_blank");});

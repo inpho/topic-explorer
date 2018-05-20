@@ -55,8 +55,13 @@ def label(doc):
     if app.context_type == 'book':
         try:
             md = metadata[doc]
-            return md['titles'][0]
-        except (TypeError, KeyError):
+            titles = md.get('titles')
+            if not titles:
+                titles = md.get('title')
+
+            return titles[0]
+
+        except (TypeError, KeyError, IndexError):
             return doc
     elif app.context_type == 'page':
         context_md = ctx_md['page']

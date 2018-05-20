@@ -51,7 +51,13 @@ def _set_acao_headers(f):
         host = request.get_header('Origin')
         if host and 'cogs.indiana.edu' in host: # pragma: no cover
             response.headers['Access-Control-Allow-Origin'] = host
+        elif host and '127.0.0.1' in host: # pragma: no cover
+            response.headers['Access-Control-Allow-Origin'] = host
         elif host and 'codepen.io' in host:
+            response.headers['Access-Control-Allow-Origin'] = host
+        elif host and 'inphoproject.org' in host:
+            response.headers['Access-Control-Allow-Origin'] = host
+        elif host and 'hypershelf.org' in host:
             response.headers['Access-Control-Allow-Origin'] = host
         return f(*args, **kwargs)
     return set_header
@@ -471,6 +477,17 @@ class Application(Bottle):
                 template = tmpl_file.read()
 
             tmpl_params = {'body' : _render_template('cluster.mustache.html'),
+                           'topic_range': self.topic_range}
+            return self.renderer.render(template, tmpl_params)
+
+        @self.route('/topics.local.html')
+        @_set_acao_headers
+        def view_clusters_local():
+            with open(get_static_resource_path('www/master.local.mustache.html'),
+                      encoding='utf-8') as tmpl_file:
+                template = tmpl_file.read()
+
+            tmpl_params = {'body' : _render_template('cluster.local.mustache.html'),
                            'topic_range': self.topic_range}
             return self.renderer.render(template, tmpl_params)
 
