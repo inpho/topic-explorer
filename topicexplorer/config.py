@@ -27,7 +27,8 @@ def read(filename):
         'cluster': None,
         'corpus_desc' : None,
         'home_link' : '/',
-        'lang' : None    
+        'lang' : None, 
+        'tokenizer': 'default'
     })
 
     with open(filename, encoding='utf8') as configfile:
