@@ -76,27 +76,26 @@ for n in range(32,91):
 chinese_punctuation.append('\n')
 chinese_punctuation.append('\r')
 
-if platform.system() == 'Windows':
-    raise NotImplementedError("mmseg Chinese language parser not implemented for Windows systems.")
-else:
-    import os.path
-    import topicexplorer.lib.mmseg as mmseg
-    dic = mmseg.Dict(get_static_resource_path("mmseg/words.dic"))
-    chrs = mmseg.CharFreqs(get_static_resource_path("mmseg/chars.dic"))
-    mmseg = mmseg.MMSeg(dic, chrs)
+import os.path
+import topicexplorer.lib.mmseg as mmseg
+modern_dic = mmseg.Dict(get_static_resource_path("mmseg/modern_words.dic"))
+ancient_dic = mmseg.Dict(get_static_resource_path("mmseg/ancient_words.dic"))
+chrs = mmseg.CharFreqs(get_static_resource_path("mmseg/chars.dic"))
+ancient_mmseg = mmseg.MMSeg(ancient_dic, chrs)
+modern_mmseg = mmseg.MMSeg(modern_dic, chrs)
 
-    def ancient_chinese_tokenizer(raw_text):
-        tokens = []
-        for token in mmseg.segment(raw_text):
-            if token not in chinese_punctuation:
-                tokens.append(token)
+def ancient_chinese_tokenizer(raw_text):
+    tokens = []
+    for token in ancient_mmseg.segment(raw_text):
+        if token not in chinese_punctuation:
+            tokens.append(token)
 
-        return tokens
+    return tokens
 
-    def modern_chinese_tokenizer(raw_text):
-        tokens = []
-        for token in mmseg.segment(raw_text):
-            if token not in chinese_punctuation:
-                tokens.append(token)
+def modern_chinese_tokenizer(raw_text):
+    tokens = []
+    for token in mmseg.segment(raw_text):
+        if token not in chinese_punctuation:
+            tokens.append(token)
 
-        return tokens
+    return tokens
