@@ -26,6 +26,7 @@ import webbrowser
 
 from bottle import (abort, redirect, request, response, route, run, 
                     static_file, Bottle, ServerAdapter)
+import topicexplorer.config
 from topicexplorer.lib.color import get_topic_colors, rgb2hex
 from topicexplorer.lib.ssl import SSLWSGIRefServer
 from topicexplorer.lib.util import (int_prompt, bool_prompt, is_valid_filepath,
@@ -773,31 +774,7 @@ def main(args, app=None):
 
 
 def create_app(args):
-    # load in the configuration file
-    config = ConfigParser({
-        'certfile': None,
-        'keyfile': None,
-        'ca_certs': None,
-        'ssl': False,
-        'port': '8000',
-        'host': '127.0.0.1',
-        'icons': 'link',
-        'corpus_link': None,
-        'doc_title_format': '{0}',
-        'doc_url_format': '',
-        'raw_corpus': None,
-        'label_module': None,
-        'fulltext': 'false',
-        'pdf' : 'false',
-        'topics': None,
-        'cluster': None,
-        'corpus_desc' : None,
-        'home_link' : '/',
-        'lang': None,
-        'tokenizer': 'default'})
-
-    with open(args.config, encoding='utf8') as configfile:
-        config.read_file(configfile)
+    config = topicexplorer.config.read(args.config)
 
     # path variables
     context_type = config.get('main', 'context_type')
