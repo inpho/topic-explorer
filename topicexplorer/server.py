@@ -70,6 +70,11 @@ def _generate_etag(v):
     x.update(repr(v.theta).encode('utf-8'))
     return x.hexdigest()
 
+def _docs_etag(c):
+    x = hashlib.sha1()
+    x.update(repr(c).encode('utf-8'))
+    return x.hexdigest()
+
 def _cache_date(days=0, seconds=120):
     """
     Helper function to return the date for the cache header.
@@ -153,6 +158,17 @@ class Application(Bottle):
         @self.route('/<k:int>/doc_topics/<doc_id>')
         @_set_acao_headers
         def doc_topic_csv(k, doc_id):
+
+            etag = _generate_etag(self.v[k])
+            
+            # Check for an "If-None-Match" tag in the header
+            if request.get_header('If-None-Match', '') == etag:
+                response.status = 304
+                return "Not Modified"
+
+            response.set_header("Etag", etag)
+            #response.set_header('Cache-Control', 'max-age=120')
+            
             if k not in self.topic_range:
                 response.status = 400  # Not Found
                 return "No model for k = {}".format(k)
@@ -175,10 +191,18 @@ class Application(Bottle):
         @self.route('/<k:int>/docs/<doc_id>')
         @_set_acao_headers
         def doc_csv(k, doc_id, threshold=0.2):
+            
+            etag = _generate_etag(self.v[k])
+
+            if request.get_header('If-None-Match', '') == etag:
+                response.status = 304
+                return "Not Modified"
+
             if k not in self.topic_range:
                 response.status = 400  # Not Found
                 return "No model for k = {}".format(k)
 
+            response.set_header('Etag', etag)
             response.content_type = 'text/csv; charset=UTF8'
 
             data = self.v[k].dist_doc_doc(doc_id)
@@ -197,9 +221,20 @@ class Application(Bottle):
         @self.route('/<k:int>/topics/<topic_no:int>.json')
         @_set_acao_headers
         def topic_json(k, topic_no, N=40):
+            
+            etag = _generate_etag(self.v[k])
+            
+            #Check for an "If-None-Match" in the request
+            if request.get_header('If-None-Match', '') == etag:
+                response.status = 304
+                return "Not Modified"
+
             if k not in self.topic_range:
                 response.status = 400  # Not Found
                 return "No model for k = {}".format(k)
+
+            #response.set_header('Cache-Control', 'max-age=120')
+            response.set_header('Etag', etag)
 
             response.content_type = 'application/json; charset=UTF8'
             try:
@@ -230,6 +265,13 @@ class Application(Bottle):
         @self.route('/<k:int>/docs_topics/<doc_id:path>.json')
         @_set_acao_headers
         def doc_topics(k, doc_id, N=40):
+            
+            etag = _generate_etag(self.v[k])
+
+            if request.get_header('If-None-Match', '') == etag:
+                response.status = 304
+                return "Not Modified"
+
             if k not in self.topic_range:
                 response.status = 400  # Not Found
                 return "No model for k = {}".format(k)
@@ -239,6 +281,7 @@ class Application(Bottle):
             except:
                 pass
 
+            response.set_header('Etag', etag)
             response.content_type = 'application/json; charset=UTF8'
 
             if N > 0:
@@ -266,6 +309,13 @@ class Application(Bottle):
         def word_docs(k, N=40):
             import numpy as np
 
+            etag = _generate_etag(self.v[k])
+            
+            # Check for an 'If-None-Match' tag  
+            if request.get_header('If-None-Match', '') == etag:
+                response.status = 304
+                return "Not Modified"
+
             if k not in self.topic_range:
                 response.status = 400  # Not Found
                 return "No model for k = {}".format(k)
@@ -283,6 +333,7 @@ class Application(Bottle):
             except:
                 raise Exception('Must specify a query')
 
+            response.set_header('Etag', etag)
             response.content_type = 'application/json; charset=UTF8'
 
             query = [word for word in query if word in self.c.words]
@@ -446,6 +497,14 @@ class Application(Bottle):
         def docs(docs=None, q=None, n=None):
             response.content_type = 'application/json; charset=UTF8'
             response.set_header('Expires', _cache_date())
+
+            etag = _docs_etag(self.c)
+            #Check for an "If-None-Match" tag in the header
+            if request.get_header('If-None-Match', '') == etag:
+              response.status=304
+              return "Not Modified"
+
+            response.set_header('Etag', etag)
 
             try:
                 if request.query.q:
