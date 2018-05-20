@@ -118,20 +118,24 @@ def get_candidate_words(c, n_filter, sort=True, words=None,
     If n_filter > 0, filter words occuring at least n_filter times.
     If n_filter < 0, filter words occuring less than n_filter times.
     """
-    if items is None or counts is None:
-        items, counts = get_corpus_counts(c)
-    if n_filter >= 0:
-        filter = items[counts > n_filter]
-        if sort:
-            filter = filter[counts[counts > n_filter].argsort()[::-1]]
+    if n_filter == 0:
+        return []
+    else:
+        if items is None or counts is None:
+            items, counts = get_corpus_counts(c)
 
-    elif n_filter < 0:
-        filter = items[counts <= -n_filter]
-        if sort:
-            filter = filter[counts[counts <= -n_filter].argsort()[::-1]]
+        if n_filter > 0:
+            filter = items[counts >= n_filter]
+            if sort:
+                filter = filter[counts[counts >= n_filter].argsort()[::-1]]
+    
+        elif n_filter < 0:
+            filter = items[counts <= -n_filter]
+            if sort:
+                filter = filter[counts[counts <= -n_filter].argsort()[::-1]]
 
-    mask = get_mask(c, words, filter=filter)
-    return c.words[mask]
+        mask = get_mask(c, words, filter=filter)
+        return c.words[mask]
 
 
 def get_mask(c, words=None, filter=None):
@@ -142,7 +146,7 @@ def get_mask(c, words=None, filter=None):
         mask = np.zeros(len(c.words), dtype=bool)  # all elements excluded/False.
         mask[filter] = True
 
-    if words:
+    if words is not None:
         ix = np.in1d(c.words, list(words))
         ix = np.where(ix)
         mask[ix] = False              # Set unwanted elements to False
@@ -158,32 +162,49 @@ def get_special_chars(c):
     return [word for word in c.words if re.findall('[^A-Za-z\-\']', word)]
 
 def get_closest_bin(c, thresh, reverse=False, counts=None):
+    """
+    Takes a corpus `c` and a `thresh`, returning the frequency that 
+    is the lowest match for that threshold. Default is to count up, 
+    selecting a lower bound threshold. If `reverse=True`, sums are
+    reversed, selecting a filter for the higher bound.
+
+
+    """
     import numpy as np
+    
+    # get counts
     if counts is None:
         _, counts = get_corpus_counts(c)
-    counts = counts[counts.argsort()]
-    if reverse:
-        counts = counts[::-1]
 
-    cumsum = old_div(np.cumsum(counts), float(c.original_length))
-    bin = counts[min(np.searchsorted(cumsum, thresh), len(counts)-1)]
-    percentile = 1. - (old_div(counts[counts < bin].sum(), float(c.original_length)))
-    return bin
+    if thresh == 0 and reverse:
+        return max(counts) + 1
+    elif thresh == 0 and not reverse:
+        return 0
+    else:
+        # sort counts
+        counts = counts[counts.argsort()]
+        if reverse:
+            counts = counts[::-1]
+
+        # find insertion point
+        cumsum = old_div(np.cumsum(counts), float(c.original_length))
+        return counts[min(np.searchsorted(cumsum, thresh), len(counts)-1)]
 
 
-def get_high_filter(args, c, words=None, items=None, counts=None):
+def get_high_filter(c, words=None, items=None, counts=None):
     import numpy as np
     header = "FILTER HIGH FREQUENCY WORDS"
     stars = old_div((80 - len(header) - 2), 2)
     print("\n\n{0} {1} {0}".format('*' * stars, header))
-    print("    This will remove all words occurring more than N times.")
+    print("    This will remove all words occurring N or more times.")
     print("    The histogram below shows how many words will be removed")
     print("    by selecting each maximum frequency threshold.\n")
 
     # Get frequency bins
     if items is None or counts is None:
         items, counts = get_corpus_counts(c)
-    bins = [get_closest_bin(c, thresh, counts=counts) for thresh in np.arange(1.0, -0.01, -0.025)]
+    bins = np.arange(1.0, -0.01, -0.025)
+    bins = [get_closest_bin(c, thresh, counts=counts) for thresh in bins]
     bins = sorted(set(bins))
     bins.append(max(counts))
 
@@ -218,17 +239,17 @@ def get_high_filter(args, c, words=None, items=None, counts=None):
                 else:
                     input_filter = int(input("Enter the maximum rate: ").replace('x', ''))
                 candidates = get_candidate_words(c, input_filter, words=words, items=items, counts=counts)
-                places = np.in1d(c.words[get_mask(c, words)], candidates)
+                places = np.in1d(c.words, candidates)
                 places = dict(zip(candidates, np.where(places)[0]))
                 candidates = sorted(candidates, key=lambda x: counts[places[x]], reverse=True)
                 filtered_counts = counts[get_mask(c, words)]
 
-                print("Filter will remove", filtered_counts[filtered_counts > input_filter].sum(), end=' ')
-                print("occurrences", "of these", len(filtered_counts[filtered_counts > input_filter]), "words:")
+                print("Filter will remove", filtered_counts[filtered_counts >= input_filter].sum(), end=' ')
+                print("occurrences", "of these", len(filtered_counts[filtered_counts >= input_filter]), "words:")
                 print(u' '.join(candidates))
 
-                print("\nFilter will remove", filtered_counts[filtered_counts > input_filter].sum(), end=' ')
-                print("occurrences", "of these", len(filtered_counts[filtered_counts > input_filter]), "words.", end=' ')
+                print("\nFilter will remove", filtered_counts[filtered_counts >= input_filter].sum(), end=' ')
+                print("occurrences", "of these", len(filtered_counts[filtered_counts >= input_filter]), "words.", end=' ')
                 if len(candidates) == len(c.words):
                     print("\n\nChoice of", input_filter, "will remove ALL words from the corpus.")
                     print("Please choose a different filter.")
@@ -252,7 +273,7 @@ def get_high_filter(args, c, words=None, items=None, counts=None):
     return (high_filter, candidates)
 
 
-def get_low_filter(args, c, words=None, items=None, counts=None):
+def get_low_filter(c, words=None, items=None, counts=None):
     import numpy as np
     header = "FILTER LOW FREQUENCY WORDS"
     stars = old_div((80 - len(header) - 2), 2)
@@ -264,8 +285,10 @@ def get_low_filter(args, c, words=None, items=None, counts=None):
     # Get frequency bins
     if items is None or counts is None:
         items, counts = get_corpus_counts(c)
-    bins = [get_closest_bin(c, thresh, reverse=True, counts=counts) for thresh in np.arange(1.0, -0.01, -0.025)]
+    bins = np.arange(1.0, -0.01, -0.025)
+    bins = [get_closest_bin(c, thresh, reverse=True, counts=counts) for thresh in bins]
     bins = sorted(set(bins))
+    bins.append(max(counts))
 
     low_filter = False
     while low_filter is False:
@@ -275,15 +298,15 @@ def get_low_filter(args, c, words=None, items=None, counts=None):
                                                                  "# words", "Rate"))
 
         last_row = 0
-        for bin, count in zip(bins[1:], np.cumsum(bin_counts)):
+        for bin, count in zip(bins, np.cumsum(bin_counts)):
             filtered_counts = counts[get_mask(c, words)]
             if last_row < (filtered_counts < bin).sum() <= len(filtered_counts):
                 percentage = (old_div(counts[counts <= bin].sum(), float(c.original_length)))
-                print("{0:>5.0f}x".format(bin - 1).rjust(8), end=' ')
+                print("{0:>5.0f}x".format(bin).rjust(8), end=' ')
                 print('{0:2.1f}%'.format(percentage * 100).rjust(8), end=' ')
                 print((u'\u2588' * int(percentage * 36)).ljust(36), end=' ')
-                print("  {0:0.0f} words".format((filtered_counts < bin).sum()).rjust(14), end=' ')
-                print("<= {0:>5.0f}x".format(bin - 1).ljust(8))
+                print("  {0:0.0f} words".format((filtered_counts <= bin).sum()).rjust(14), end=' ')
+                print("<= {0:>5.0f}x".format(bin).ljust(8))
                 if (filtered_counts < bin).sum() == len(filtered_counts):
                     break
             last_row = (filtered_counts >= bin).sum()
@@ -303,7 +326,7 @@ def get_low_filter(args, c, words=None, items=None, counts=None):
                     input_filter = int(input("Enter the minimum rate: ").replace('x', ''))
 
                 candidates = get_candidate_words(c, -input_filter, words=words, items=items, counts=counts)
-                places = np.in1d(c.words[get_mask(c, words)], candidates)
+                places = np.in1d(c.words, candidates)
                 places = dict(zip(candidates, np.where(places)[0]))
                 candidates = sorted(candidates, key=lambda x: counts[places[x]])
                 filtered_counts = counts[get_mask(c, words)]
@@ -422,7 +445,7 @@ def main(args):
     # cache item counts
     items, counts = get_corpus_counts(c)
     if args.high_filter is None and args.high_percent is None and not args.quiet:
-        args.high_filter, candidates = get_high_filter(args, c, words=stoplist, items=items, counts=counts)
+        args.high_filter, candidates = get_high_filter(c, words=stoplist, items=items, counts=counts)
         if len(candidates):
             print("Filtering {} high frequency word{}.".format(len(candidates),
                                                                's' if len(candidates) > 1 else ''))
@@ -436,7 +459,7 @@ def main(args):
                                                                's' if len(candidates) > 1 else ''))
             stoplist.update(candidates)
     elif args.high_percent:
-        args.high_filter = get_closest_bin(c, args.high_percent / 100., counts=counts)
+        args.high_filter = get_closest_bin(c, 1 - (args.high_percent / 100.), counts=counts)
         print(args.high_filter)
         candidates = get_candidate_words(c, args.high_filter, sort=False, items=items, counts=counts)
         if len(candidates):
@@ -445,7 +468,7 @@ def main(args):
             stoplist.update(candidates)
 
     if args.low_filter is None and args.low_percent is None and not args.quiet:
-        args.low_filter, candidates = get_low_filter(args, c, words=stoplist, items=items, counts=counts)
+        args.low_filter, candidates = get_low_filter(c, words=stoplist, items=items, counts=counts)
         if len(candidates):
             print("Filtering {} low frequency word{}.".format(len(candidates),
                                                               's' if len(candidates) > 1 else ''))
@@ -459,7 +482,7 @@ def main(args):
             stoplist.update(candidates)
 
     elif args.low_percent:
-        args.low_filter = get_closest_bin(c, 1 - (args.low_percent / 100.), reverse=True, counts=counts) - 1
+        args.low_filter = get_closest_bin(c, 1 - (args.low_percent / 100.), reverse=True, counts=counts)
         print(args.low_filter)
         candidates = get_candidate_words(c, -1 * args.low_filter, sort=False, items=items, counts=counts)
         if len(candidates):

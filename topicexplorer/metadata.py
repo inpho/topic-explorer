@@ -7,6 +7,7 @@ from configparser import RawConfigParser as ConfigParser
 from ast import literal_eval
 from codecs import open 
 import csv
+import os.path
 
 from topicexplorer.lib.util import isint, is_valid_configfile, bool_prompt
 from sortedcontainers import SortedDict
@@ -134,6 +135,32 @@ def add_metadata(corpus, ctx_type, new_metadata, force=False, rename=False):
     return corpus
 
 
+def add_htrc_metadata(config, corpus=None):
+    import htrc.metadata
+
+    config.set("main", "label_module", "topicexplorer.extensions.htrc")
+    config.set("www", "doc_title_format", '<a href="{1}">{0}</a>')
+    config.set("www", "doc_url_format", 'http://hdl.handle.net/2027/{0}')
+    config.set("www", "icons", "htrcbook,link")
+    config.set("main", "htrc", True)
+    
+    if corpus:
+        ctx_type = config.get("main", "context_type")
+        label_name = doc_label_name(ctx_type)
+        ids = corpus.view_metadata(ctx_type)[label_name]
+        
+        htrc_metapath = os.path.abspath(config.get("main", "corpus_file"))
+        htrc_metapath = os.path.join(
+            os.path.dirname(htrc_metapath),
+            os.path.basename(htrc_metapath) + '.metadata.json')
+
+        print("Downloading metadata to ", htrc_metapath)
+        htrc.metadata.get_metadata(ids, output_file=htrc_metapath)
+        
+        config.set("www", "htrc_metadata", htrc_metapath)
+
+    return config
+
 def main(args):
     from vsm.corpus import Corpus
 
@@ -155,6 +182,10 @@ def main(args):
         extract_labels(c, context_type, args.list)
     if args.extract:
         extract_metadata(c, context_type, args.extract)
+    if args.htrc:
+        config = add_htrc_metadata(config, corpus=c)
+        with open(args.config_file, "w") as configfh:
+            config.write(configfh)
 
 
 def populate_parser(parser):
@@ -165,6 +196,8 @@ def populate_parser(parser):
     parser.add_argument("-l", "--list", help="List all labels")
     parser.add_argument("-f", "--force", action='store_true', default=False,
         help="Force insertion of blank metadata")
+    parser.add_argument("--htrc", action='store_true', default=False,
+        help="Download HTRC metadata and configure explorer.")
     parser.add_argument("--rename", action='store_true', default=False,
         help="Rename labels, assumes same document order. See documentation.")
 
