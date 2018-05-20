@@ -14,7 +14,11 @@ class _VersionModule(types.ModuleType):
     @property
     def __pretty_version__(self):
         from topicexplorer.update import get_dist
-        from pip.utils import dist_is_editable
+        try:
+            from pip.utils import dist_is_editable
+        except ImportError:
+            from pip._internal.utils.misc import dist_is_editable
+
         dist = get_dist('topicexplorer')
         __pv__ = None
         if dist_is_editable(dist):
