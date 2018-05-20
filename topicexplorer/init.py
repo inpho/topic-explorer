@@ -16,6 +16,8 @@ import sys
 from topicexplorer.lib.util import (prompt, is_valid_filepath, bool_prompt,
                                     listdir_nohidden, contains_pattern)
 
+from topicexplorer.metadata import add_htrc_metadata
+
 
 def get_corpus_filename(corpus_path, model_path, nltk_stop=False, stop_freq=0,
                         context_type='document'):
@@ -252,14 +254,6 @@ def main(args):
             c = htrc_features.create_corpus(ids, nltk_stop=args.nltk,freq=args.stop_freq)
             c.save(args.corpus_filename)
 
-            args.htrc_metapath = os.path.abspath(args.corpus_path)
-            args.htrc_metapath = os.path.join(
-                os.path.dirname(args.htrc_metapath),
-                os.path.basename(args.htrc_metapath) + '.metadata.json')
-        
-        import htrc.metadata
-        print("Downloading metadata to ", args.htrc_metapath)
-        htrc.metadata.get_metadata(ids, output_file=args.htrc_metapath)
 
     if args.rebuild and (not args.htrc or os.path.isdir(args.corpus_path)):
         try:
@@ -348,15 +342,9 @@ def write_config(args, config_file=None):
     config.set("logging", "path", "logs/%s/{0}.log" % args.corpus_name)
 
     if args.htrc:
-        config.set("main", "label_module", "topicexplorer.extensions.htrc")
+        config = add_htrc_metadata(config)
         if not args.corpus_print_name:
             config.set("www", "corpus_name", "HTRC Data Capsule")
-        config.set("www", "doc_title_format", '<a href="{1}">{0}</a>')
-        config.set("www", "doc_url_format", 'http://hdl.handle.net/2027/{0}')
-        config.set("www", "icons", "htrcbook,link")
-        config.set("main", "htrc", True)
-        # TODO: Fix HTRC Metadata download
-        config.set("www", "htrc_metadata", args.htrc_metapath)
 
     if args.tokenizer in ['zh','ltc','och']:
         config.set("main", "lang", "cn")

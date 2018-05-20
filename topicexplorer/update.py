@@ -61,7 +61,10 @@ def process_exists(processname): # pragma: no cover
 
 
 def update(args=None):
-    from pip.utils import (get_installed_version, dist_is_editable, dist_location)
+    try:
+        from pip._internal.utils.misc import (get_installed_version, dist_is_editable, dist_location)
+    except ImportError:
+        from pip.utils import (get_installed_version, dist_is_editable, dist_location)
 
     import platform
     import subprocess

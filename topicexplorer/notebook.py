@@ -10,7 +10,7 @@ from string import Template
 import sys
 import time
 
-from topicexplorer.lib.util import overwrite_prompt, is_valid_configfile
+from topicexplorer.lib.util import (overwrite_prompt, is_valid_configfile, get_static_resource_path)
 
 if platform.system() == 'Windows':
     import topicexplorer.lib.win32
@@ -18,11 +18,7 @@ if platform.system() == 'Windows':
 
 def main(args):
     args.config_file = os.path.abspath(args.config_file)
-
-    template_dir = os.path.dirname(__file__)
-    template_dir = os.path.join(template_dir, '../ipynb/')
-    template_dir = os.path.normpath(template_dir)
-    with open(os.path.join(template_dir, 'corpus.tmpl.py')) as corpustmpl:
+    with open(get_static_resource_path('ipynb/corpus.tmpl.py')) as corpustmpl:
         corpus_py = corpustmpl.read()
         corpus_py = Template(corpus_py)
         corpus_py = corpus_py.safe_substitute(config_file=args.config_file)
@@ -39,7 +35,7 @@ def main(args):
         with open(filename, 'w') as corpusloader:
             corpusloader.write(corpus_py)
     pyflag = 'py2' if sys.version_info.major == 2 else 'py3'
-    glob_path = (template_dir + '/*.{}.ipynb').format(pyflag)
+    glob_path = (get_static_resource_path('ipynb') + '/*.{}.ipynb').format(pyflag)
 
     for notebook in glob(glob_path):
         new_nb_name = os.path.basename(notebook).replace('.' +pyflag, '')
