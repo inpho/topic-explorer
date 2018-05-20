@@ -241,7 +241,7 @@ Do you want to continue training your existing models? """, default=True))):
             config.remove_option("main", "cluster")
             try:
                 os.remove(cluster_path)
-            except IOError:
+            except OSError, IOError:
                 # fail silently on IOError
                 pass
 
