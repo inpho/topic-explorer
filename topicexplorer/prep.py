@@ -482,7 +482,7 @@ def main(args):
             stoplist.update(candidates)
 
     elif args.low_percent:
-        args.low_filter = get_closest_bin(c, 1 - (args.low_percent / 100.), reverse=True, counts=counts) - 1
+        args.low_filter = get_closest_bin(c, 1 - (args.low_percent / 100.), reverse=True, counts=counts)
         print(args.low_filter)
         candidates = get_candidate_words(c, -1 * args.low_filter, sort=False, items=items, counts=counts)
         if len(candidates):
