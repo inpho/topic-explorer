@@ -327,6 +327,7 @@ class Application(Bottle):
                 N = int(request.query.n)
             except:
                 pass
+
             try:
                 query = request.query.q.lower()
                 if self.c.words.dtype.type == np.string_:
@@ -444,7 +445,7 @@ class Application(Bottle):
                 raise NotImplementedError(
                     "Tokenizer '{}' is not included in topicexplorer".format(tokenizer))
 
-            query = tokenizer(request.query.q)
+            query = list(itertools.chain(*[tokenizer(q) for q in request.query.q.split('|')]))
 
             stopped_words = [word for word in query 
                                  if word in self.c.stopped_words]
