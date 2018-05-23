@@ -5,9 +5,10 @@
       <h1><a href="{{home_link}}"><span class="logo-word">InPhO</span> Topic Explorer</a></h1>
       <!--<h2 class="title non-null"></h2>-->
       <h2 class="text-center">
-      {{#corpus_link}}<a href="{{corpus_link}}">{{corpus_name}}</a>{{/corpus_link}} 
-      {{^corpus_link}}{{corpus_name}}{{/corpus_link}}
-      </h2>
+        {{#corpus_link}}<a href="{{corpus_link}}">{{corpus_name}}</a>{{/corpus_link}} 
+        {{^corpus_link}}{{corpus_name}}{{/corpus_link}} <br />
+        <small><a id="aboutLink" href="#about">About this corpus <span class="glyphicon glyphicon-arrow-down"></span></a></small><br />
+        <small>Click ? button at bottom left for help with the topic explorer interface.</small></h2>
     </div>
   </div>
   <div class="row">
@@ -77,6 +78,18 @@
   <button class="btn btn-default reset" onclick="resetTopicSort()" disabled>Reset Topic Sort</button><br>
 </div>
 
+<div id="about">
+  <div class="col-xs-8 col-xs-offset-2">
+    <h2>About this corpus<br />
+    <a href="#top"><small>Back to top <span class="glyphicon glyphicon-arrow-up"> </span></small></a></h2>
+    <div id="aboutText">
+
+    </div>
+    <h2><br /></h2>
+    <h2 class="back"><a href="#top"><small>Back to top <span class="glyphicon glyphicon-arrow-up"> </span></small></a></h2>
+  </div>
+</div>
+    
 <div class="modal fade" tabindex="-1" role="dialog" id="fingerprintModal">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
