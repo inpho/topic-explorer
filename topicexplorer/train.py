@@ -84,7 +84,7 @@ def cluster(n_clusters, config_file):
     print("writing model files for Isomap and kmeans\n")
     config = topicexplorer.config.read(config_file)
     corpus_filename = config.get("main", "corpus_file")
-    filename = corpus_filename.split('.')[0] + '-cluster.csv'
+    filename = '.'.join(corpus_filename.split('.')[:-1]) + '-cluster.csv'
 
     config.set("main", "cluster", filename)
     with open(config_file, "w") as configfh:
