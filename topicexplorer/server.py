@@ -179,7 +179,10 @@ class Application(Bottle):
 
             response.content_type = 'text/csv; charset=UTF8'
 
-            data = self.v[k].doc_topics(doc_id)
+            try:
+                data = self.v[k].doc_topics(doc_id)
+            except KeyErrror:
+                data = self.v[k].doc_topics(doc_id.decode('utf-8'))
 
             if sys.version_info[0] == 3:
                 output = StringIO()
@@ -195,7 +198,6 @@ class Application(Bottle):
         @self.route('/<k:int>/docs/<doc_id>')
         @_set_acao_headers
         def doc_csv(k, doc_id, threshold=0.2):
-            
             etag = _generate_etag(self.v[k])
 
             if request.get_header('If-None-Match', '') == etag:
@@ -209,7 +211,10 @@ class Application(Bottle):
             response.set_header('Etag', etag)
             response.content_type = 'text/csv; charset=UTF8'
 
-            data = self.v[k].dist_doc_doc(doc_id)
+            try:
+                data = self.v[k].dist_doc_doc(doc_id)
+            except KeyError:
+                data = self.v[k].dist_doc_doc(doc_id.decode('utf-8'))
 
             if sys.version_info[0] == 3:
                 output = StringIO()
@@ -288,11 +293,19 @@ class Application(Bottle):
             response.set_header('Etag', etag)
             response.content_type = 'application/json; charset=UTF8'
 
-            if N > 0:
-                data = self.v[k].dist_doc_doc(doc_id)[:N]
-            else:
-                data = self.v[k].dist_doc_doc(doc_id)[N:]
-                data = reversed(data)
+            try:
+                if N > 0:
+                    data = self.v[k].dist_doc_doc(doc_id)[:N]
+                else:
+                    data = self.v[k].dist_doc_doc(doc_id)[N:]
+                    data = reversed(data)
+            except KeyError:
+                doc_id = doc_id.decode('utf-8')
+                if N > 0:
+                    data = self.v[k].dist_doc_doc(doc_id)[:N]
+                else:
+                    data = self.v[k].dist_doc_doc(doc_id)[N:]
+                    data = reversed(data)
 
             docs = [doc for doc, prob in data]
             doc_topics_mat = self.v[k].doc_topics(docs)
