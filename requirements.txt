@@ -23,6 +23,7 @@ ujson==1.35
 Unidecode
 vsm>=0.4.10
 waitress>=1.0.0
+webtest>=2.0.29
 wget>=3.2
 
 configparser==3.5.0; python_version=='2.7'

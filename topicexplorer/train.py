@@ -8,10 +8,10 @@ from builtins import map
 from builtins import range
 
 from configparser import RawConfigParser as ConfigWriter
-from configparser import SafeConfigParser as ConfigParser
 from configparser import NoOptionError
 import os.path
 
+import topicexplorer.config
 from topicexplorer.lib.util import bool_prompt, int_prompt, is_valid_configfile
 
 
@@ -82,10 +82,9 @@ def cluster(n_clusters, config_file):
     dimension_reduce_model.fit_kmeans(int(n_clusters))
 
     print("writing model files for Isomap and kmeans\n")
-    config = ConfigParser()
-    config.read(config_file)
+    config = topicexplorer.config.read(config_file)
     corpus_filename = config.get("main", "corpus_file")
-    filename = corpus_filename.split('.')[0] + '-cluster.csv'
+    filename = '.'.join(corpus_filename.split('.')[:-1]) + '-cluster.csv'
 
     config.set("main", "cluster", filename)
     with open(config_file, "w") as configfh:
@@ -101,8 +100,7 @@ def main(args):
         cluster(args.cluster, args.config_file)
         return
 
-    config = ConfigParser({"sentences": "False"})
-    config.read(args.config_file)
+    config = topicexplorer.config.read(args.config_file)
     corpus_filename = config.get("main", "corpus_file")
     model_path = config.get("main", "path")
 
@@ -243,7 +241,7 @@ Do you want to continue training your existing models? """, default=True))):
             config.remove_option("main", "cluster")
             try:
                 os.remove(cluster_path)
-            except IOError:
+            except (OSError, IOError):
                 # fail silently on IOError
                 pass
 

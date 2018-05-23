@@ -1,6 +1,5 @@
 *.pyc
 sandbox
-config.*
 .coverage
 mprofile_*
 

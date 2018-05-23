@@ -3,7 +3,7 @@ from builtins import chr
 import os
 
 import platform
-#updated to use pymmseg function calls instead of plain mmseg
+from topicexplorer.lib.util import get_static_resource_path 
 
 chinese_punctuation = [
                        u'\xb7',
@@ -65,76 +65,37 @@ chinese_punctuation = [
                        u'\u250B']
 
 import string 
-for a in string.lowercase[:],string.uppercase[:],range(0,10):
+for a in string.ascii_lowercase[:],string.ascii_uppercase[:],range(0,10):
     for b in a:        
-        chinese_punctuation.append(str(b).decode('utf-8'))
+        chinese_punctuation.append(str(b))
 
 # escape ASCII in the chinese range
 for n in range(32,91):
     chinese_punctuation.append(chr(n+65280))
 
-if platform.system() == 'Windows':
-    raise NotImplementedError("mmseg Chinese language parser not implemented for Windows systems.")
-else:
-    import mmseg
-    import os.path
+chinese_punctuation.append('\n')
+chinese_punctuation.append('\r')
 
-    TOKENIZER = None
+import os.path
+import topicexplorer.lib.mmseg as mmseg
+modern_dic = mmseg.Dict(get_static_resource_path("mmseg/modern_words.dic"))
+ancient_dic = mmseg.Dict(get_static_resource_path("mmseg/ancient_words.dic"))
+chrs = mmseg.CharFreqs(get_static_resource_path("mmseg/chars.dic"))
+ancient_mmseg = mmseg.MMSeg(ancient_dic, chrs)
+modern_mmseg = mmseg.MMSeg(modern_dic, chrs)
 
-    def reset_mmseg():
-        import importlib
+def ancient_chinese_tokenizer(raw_text):
+    tokens = []
+    for token in ancient_mmseg.segment(raw_text):
+        if token not in chinese_punctuation:
+            tokens.append(token)
 
-        global TOKENIZER
-        global mmseg
-        TOKENIZER = None
-        mmseg = importlib.import_module('mmseg')
+    return tokens
 
-    def ancient_chinese_tokenizer(raw_text):
-        global TOKENIZER
-        if TOKENIZER is not 'Ancient':
-            # reload mmseg to re-init
-            reset_mmseg()
+def modern_chinese_tokenizer(raw_text):
+    tokens = []
+    for token in mmseg.segment(raw_text):
+        if token not in chinese_punctuation:
+            tokens.append(token)
 
-            # directory of ancient dictionary
-            dirname = os.path.dirname(__file__)
-            dictionary = os.path.join(dirname, 'ancient words.dic')
-            # mmseg.dict_load_defaults()
-            mmseg.Dictionary.load_words(dictionary)
-            TOKENIZER = 'Ancient'
-
-        # process text
-        tokenizer = mmseg.Algorithm(raw_text.encode('utf-8-sig'))
-        tokens = []
-        for token in tokenizer:
-            token = token.text.decode('utf-8-sig', errors='replace').replace(u'\x00', '')
-            if token:
-                if token not in chinese_punctuation:
-                    tokens.append(token)
-
-        return tokens
-
-    def modern_chinese_tokenizer(raw_text):
-        global TOKENIZER
-        if TOKENIZER is not 'Modern':
-            # reload mmseg to re-init
-            reset_mmseg()
-    
-            #directory of modern dictionary
-            dirname = os.path.dirname(__file__)
-            dictionary = os.path.join(dirname, 'modern words.dic')
-            mmseg.dict_load_defaults()
-            mmseg.Dictionary.load_words(dictionary)
-            TOKENIZER = 'Modern'
-
-        # process text
-        #print raw_text.encode('utf-8')
-        tokenizer = mmseg.Algorithm(raw_text.encode('utf-8-sig'))
-
-        tokens = []
-        for token in tokenizer:
-            token = token.text.decode('utf-8-sig', errors='replace').replace(u'\x00', '')
-            if token:
-                if token not in chinese_punctuation:
-                    tokens.append(token)
-
-        return tokens
+    return tokens

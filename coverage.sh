@@ -20,7 +20,7 @@ trap 'echo "trying to kill $DEMO_PID" && kill -2 $DEMO_PID && echo "killed $DEMO
 sleep 15
 
 test_url () {
-    return $([ $(curl -i $1 2>/dev/null | head -n 1 | cut -d$' ' -f2) == $2 ])
+    return $([[ $(curl -i $1 2>/dev/null | head -n 1 | cut -d$' ' -f2) == $2 ]])
 }
 test_url http://localhost:8000/ 200
 EXIT=$(($EXIT+$?))
@@ -113,6 +113,10 @@ EXIT=$(($EXIT+$?))
 
 
 $CMD -m unittest2
+EXIT=$(($EXIT+$?))
+
+pip install pytest
+$CMD -m pytest tests/test_prep.py
 EXIT=$(($EXIT+$?))
 
 coverage report

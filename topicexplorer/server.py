@@ -9,6 +9,7 @@ from configparser import RawConfigParser as ConfigParser, NoOptionError
 import csv
 from datetime import datetime, timedelta
 from functools import partial
+import hashlib
 from importlib import import_module
 from io import BytesIO,StringIO
 import json
@@ -25,6 +26,7 @@ import webbrowser
 
 from bottle import (abort, redirect, request, response, route, run, 
                     static_file, Bottle, ServerAdapter)
+import topicexplorer.config
 from topicexplorer.lib.color import get_topic_colors, rgb2hex
 from topicexplorer.lib.ssl import SSLWSGIRefServer
 from topicexplorer.lib.util import (int_prompt, bool_prompt, is_valid_filepath,
@@ -39,7 +41,8 @@ import random
 import pystache
 
 __all__ = ['populate_parser', 'main', '_set_acao_headers', 'Application']
-    
+
+token = ['default']
 
 def _set_acao_headers(f):
     """
@@ -50,17 +53,35 @@ def _set_acao_headers(f):
         host = request.get_header('Origin')
         if host and 'cogs.indiana.edu' in host: # pragma: no cover
             response.headers['Access-Control-Allow-Origin'] = host
+        elif host and '127.0.0.1' in host: # pragma: no cover
+            response.headers['Access-Control-Allow-Origin'] = host
         elif host and 'codepen.io' in host:
+            response.headers['Access-Control-Allow-Origin'] = host
+        elif host and 'inphoproject.org' in host:
+            response.headers['Access-Control-Allow-Origin'] = host
+        elif host and 'hypershelf.org' in host:
             response.headers['Access-Control-Allow-Origin'] = host
         return f(*args, **kwargs)
     return set_header
 
+def _generate_etag(v):
+    ''' Takes a model view and generates an etag using the v.phi and v.theta attributes '''
+    # TODO: write a function using a hashlib digest
+    x = hashlib.sha1()
+    x.update(repr(v.phi).encode('utf-8'))
+    x.update(repr(v.theta).encode('utf-8'))
+    return x.hexdigest()
 
-def _cache_date(days=1):
+def _docs_etag(c):
+    x = hashlib.sha1()
+    x.update(repr(c).encode('utf-8'))
+    return x.hexdigest()
+
+def _cache_date(days=0, seconds=120):
     """
     Helper function to return the date for the cache header.
     """
-    time = datetime.now() + timedelta(days=days)
+    time = datetime.now() + timedelta(days=days, seconds=seconds)
     return time.strftime("%a, %d %b %Y %I:%M:%S GMT")
 
 
@@ -73,7 +94,7 @@ class Application(Bottle):
 
     def __init__(self, corpus_file='', model_pattern='', topic_range=None,
                  context_type='', label_module=None, config_file='',
-                 fulltext=False, corpus_path='', **kwargs):
+                 fulltext=False, corpus_path='', tokenizer='default', **kwargs):
         super(Application, self).__init__()
 
         self.config_file = config_file
@@ -97,6 +118,8 @@ class Application(Bottle):
         self.topic_range = topic_range
         self.colors = dict()
         self._load_viewers(model_pattern)
+
+        token[0] = tokenizer
 
     def _load_label_module(self, label_module, config_file):
         try:
@@ -139,13 +162,27 @@ class Application(Bottle):
         @self.route('/<k:int>/doc_topics/<doc_id>')
         @_set_acao_headers
         def doc_topic_csv(k, doc_id):
+
+            etag = _generate_etag(self.v[k])
+            
+            # Check for an "If-None-Match" tag in the header
+            if request.get_header('If-None-Match', '') == etag:
+                response.status = 304
+                return "Not Modified"
+
+            response.set_header("Etag", etag)
+            #response.set_header('Cache-Control', 'max-age=120')
+            
             if k not in self.topic_range:
                 response.status = 400  # Not Found
                 return "No model for k = {}".format(k)
 
             response.content_type = 'text/csv; charset=UTF8'
 
-            data = self.v[k].doc_topics(doc_id)
+            try:
+                data = self.v[k].doc_topics(doc_id)
+            except KeyErrror:
+                data = self.v[k].doc_topics(doc_id.decode('utf-8'))
 
             if sys.version_info[0] == 3:
                 output = StringIO()
@@ -161,13 +198,23 @@ class Application(Bottle):
         @self.route('/<k:int>/docs/<doc_id>')
         @_set_acao_headers
         def doc_csv(k, doc_id, threshold=0.2):
+            etag = _generate_etag(self.v[k])
+
+            if request.get_header('If-None-Match', '') == etag:
+                response.status = 304
+                return "Not Modified"
+
             if k not in self.topic_range:
                 response.status = 400  # Not Found
                 return "No model for k = {}".format(k)
 
+            response.set_header('Etag', etag)
             response.content_type = 'text/csv; charset=UTF8'
 
-            data = self.v[k].dist_doc_doc(doc_id)
+            try:
+                data = self.v[k].dist_doc_doc(doc_id)
+            except KeyError:
+                data = self.v[k].dist_doc_doc(doc_id.decode('utf-8'))
 
             if sys.version_info[0] == 3:
                 output = StringIO()
@@ -183,9 +230,20 @@ class Application(Bottle):
         @self.route('/<k:int>/topics/<topic_no:int>.json')
         @_set_acao_headers
         def topic_json(k, topic_no, N=40):
+            
+            etag = _generate_etag(self.v[k])
+            
+            #Check for an "If-None-Match" in the request
+            if request.get_header('If-None-Match', '') == etag:
+                response.status = 304
+                return "Not Modified"
+
             if k not in self.topic_range:
                 response.status = 400  # Not Found
                 return "No model for k = {}".format(k)
+
+            #response.set_header('Cache-Control', 'max-age=120')
+            response.set_header('Etag', etag)
 
             response.content_type = 'application/json; charset=UTF8'
             try:
@@ -216,6 +274,13 @@ class Application(Bottle):
         @self.route('/<k:int>/docs_topics/<doc_id:path>.json')
         @_set_acao_headers
         def doc_topics(k, doc_id, N=40):
+            
+            etag = _generate_etag(self.v[k])
+
+            if request.get_header('If-None-Match', '') == etag:
+                response.status = 304
+                return "Not Modified"
+
             if k not in self.topic_range:
                 response.status = 400  # Not Found
                 return "No model for k = {}".format(k)
@@ -225,13 +290,22 @@ class Application(Bottle):
             except:
                 pass
 
+            response.set_header('Etag', etag)
             response.content_type = 'application/json; charset=UTF8'
 
-            if N > 0:
-                data = self.v[k].dist_doc_doc(doc_id)[:N]
-            else:
-                data = self.v[k].dist_doc_doc(doc_id)[N:]
-                data = reversed(data)
+            try:
+                if N > 0:
+                    data = self.v[k].dist_doc_doc(doc_id)[:N]
+                else:
+                    data = self.v[k].dist_doc_doc(doc_id)[N:]
+                    data = reversed(data)
+            except KeyError:
+                doc_id = doc_id.decode('utf-8')
+                if N > 0:
+                    data = self.v[k].dist_doc_doc(doc_id)[:N]
+                else:
+                    data = self.v[k].dist_doc_doc(doc_id)[N:]
+                    data = reversed(data)
 
             docs = [doc for doc, prob in data]
             doc_topics_mat = self.v[k].doc_topics(docs)
@@ -252,6 +326,13 @@ class Application(Bottle):
         def word_docs(k, N=40):
             import numpy as np
 
+            etag = _generate_etag(self.v[k])
+            
+            # Check for an 'If-None-Match' tag  
+            if request.get_header('If-None-Match', '') == etag:
+                response.status = 304
+                return "Not Modified"
+
             if k not in self.topic_range:
                 response.status = 400  # Not Found
                 return "No model for k = {}".format(k)
@@ -260,6 +341,7 @@ class Application(Bottle):
                 N = int(request.query.n)
             except:
                 pass
+
             try:
                 query = request.query.q.lower()
                 if self.c.words.dtype.type == np.string_:
@@ -269,6 +351,7 @@ class Application(Bottle):
             except:
                 raise Exception('Must specify a query')
 
+            response.set_header('Etag', etag)
             response.content_type = 'application/json; charset=UTF8'
 
             query = [word for word in query if word in self.c.words]
@@ -308,14 +391,21 @@ class Application(Bottle):
             from topicexplorer.lib.color import rgb2hex
             import numpy as np
 
+            etag = _generate_etag(self.v[k])
+            # Check if there is a "If-None-Match" ETag in the request
+            if request.get_header('If-None-Match', '') == etag:
+                response.status = 304
+                return "Not Modified"
+
             if k not in self.topic_range:
                 response.status = 400  # Not Found
                 return "No model for k = {}".format(k)
 
             response.content_type = 'application/json; charset=UTF8'
             response.set_header('Expires', _cache_date())
-            response.set_header('Cache-Control', 'max-age=86400')
-            
+            response.set_header('Cache-Control', 'max-age=120')
+            response.set_header('ETag', etag)
+
             # set a parameter for number of words to return
             wordmax = 10  # for alphabetic languages
             if kwargs.get('lang', None) == 'cn':
@@ -348,22 +438,28 @@ class Application(Bottle):
             import numpy as np
             response.content_type = 'application/json; charset=UTF8'
 
+            tokenizer = token[0]
             # parse query
-            try:
-                if '|' in request.query.q:
-                    query = request.query.q.lower()
-                    if self.c.words.dtype.type == np.string_:
-                        query = query.encode('ascii', 'ignore')
-                
-                    query = query.split('|')
-                else:
-                    query = request.query.q.lower()
-                    if self.c.words.dtype.type == np.string_:
-                        query = query.encode('ascii', 'ignore')
-                
-                    query = query.split(' ')
-            except:
-                raise Exception('Must specify a query')
+            if tokenizer == 'default':
+                from vsm.extensions.corpusbuilders.util import word_tokenize
+                tokenizer = word_tokenize
+            elif tokenizer == 'zh':
+                from topicexplorer.lib.chinese import modern_chinese_tokenizer
+                tokenizer = modern_chinese_tokenizer
+            elif tokenizer == 'ltc' or tokenizer == 'och':
+                from topicexplorer.lib.chinese import ancient_chinese_tokenizer
+                tokenizer = ancient_chinese_tokenizer
+            elif tokenizer == 'inpho':
+                from topicexplorer.extensions.inpho import inpho_tokenizer
+                tokenizer = inpho_tokenizer
+            elif tokenizer == 'brain':
+                from hyperbrain.parse import brain_tokenizer
+                tokenizer = brain_tokenizer
+            else:
+                raise NotImplementedError(
+                    "Tokenizer '{}' is not included in topicexplorer".format(tokenizer))
+
+            query = list(itertools.chain(*[tokenizer(q) for q in request.query.q.split('|')]))
 
             stopped_words = [word for word in query 
                                  if word in self.c.stopped_words]
@@ -408,12 +504,31 @@ class Application(Bottle):
                            'topic_range': self.topic_range}
             return self.renderer.render(template, tmpl_params)
 
+        @self.route('/topics.local.html')
+        @_set_acao_headers
+        def view_clusters_local():
+            with open(get_static_resource_path('www/master.local.mustache.html'),
+                      encoding='utf-8') as tmpl_file:
+                template = tmpl_file.read()
+
+            tmpl_params = {'body' : _render_template('cluster.local.mustache.html'),
+                           'topic_range': self.topic_range}
+            return self.renderer.render(template, tmpl_params)
+
 
         @self.route('/docs.json')
         @_set_acao_headers
         def docs(docs=None, q=None, n=None):
             response.content_type = 'application/json; charset=UTF8'
             response.set_header('Expires', _cache_date())
+
+            etag = _docs_etag(self.c)
+            #Check for an "If-None-Match" tag in the header
+            if request.get_header('If-None-Match', '') == etag:
+              response.status=304
+              return "Not Modified"
+
+            response.set_header('Etag', etag)
 
             try:
                 if request.query.q:
@@ -672,30 +787,7 @@ def main(args, app=None):
 
 
 def create_app(args):
-    # load in the configuration file
-    config = ConfigParser({
-        'certfile': None,
-        'keyfile': None,
-        'ca_certs': None,
-        'ssl': False,
-        'port': '8000',
-        'host': '127.0.0.1',
-        'icons': 'link',
-        'corpus_link': None,
-        'doc_title_format': '{0}',
-        'doc_url_format': '',
-        'raw_corpus': None,
-        'label_module': None,
-        'fulltext': 'false',
-        'pdf' : 'false',
-        'topics': None,
-        'cluster': None,
-        'corpus_desc' : None,
-        'home_link' : '/',
-        'lang': None})
-
-    with open(args.config, encoding='utf8') as configfile:
-        config.read_file(configfile)
+    config = topicexplorer.config.read(args.config)
 
     # path variables
     context_type = config.get('main', 'context_type')
@@ -731,6 +823,7 @@ def create_app(args):
     corpus_path = config.get('main', 'raw_corpus')
     corpus_desc = config.get('main', 'corpus_desc')
     fulltext = args.fulltext or config.getboolean('www', 'fulltext')
+    tokenizer = config.get('www', 'tokenizer')
 
     app = Application(corpus_file=corpus_file,
                       model_pattern=model_pattern,
@@ -748,7 +841,8 @@ def create_app(args):
                       doc_url_format=doc_url_format,
                       cluster_path=cluster_path,
                       corpus_desc=corpus_desc,
-                      home_link=home_link)
+                      home_link=home_link,
+                      tokenizer=tokenizer)
 
     """
     host, port = get_host_port(args) 
