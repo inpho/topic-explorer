@@ -51,6 +51,12 @@ def absolutize_config_file(config_file, output_dir):
         corpus_desc = os.path.join(output_dir, corpus_desc)
         corpus_desc = os.path.abspath(corpus_desc)
         config.set('main', 'corpus_desc', corpus_desc)
+    
+    htrc_metadata = config.get('main', 'htrc_metadata')
+    if htrc_metadata is not None and htrc_metadata != 'None':
+        htrc_metadata = os.path.join(output_dir, htrc_metadata)
+        htrc_metadata = os.path.abspath(htrc_metadata)
+        config.set('www', 'htrc_metadata', htrc_metadata)
 
     with open(config_file, 'w', encoding='utf8') as configfile:
         config.write(configfile)
