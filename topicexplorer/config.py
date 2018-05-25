@@ -8,6 +8,7 @@ from configparser import ConfigParser
 def read(filename):
     config = ConfigParser({
         "htrc": False,
+        "htrc_metadata" : None,
         "sentences": False,
         'certfile': None,
         'keyfile': None,

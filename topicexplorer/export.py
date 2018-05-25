@@ -15,7 +15,8 @@ from zipfile import ZipFile
 from topicexplorer.lib.util import is_valid_configfile
 
 def build_manifest(config_file, corpus_file, model_pattern, topic_range,
-                   cluster_path=None, raw_corpus=None, corpus_desc=None):
+                   cluster_path=None, raw_corpus=None, corpus_desc=None,
+                   htrc_metapath=None):
     files = [config_file, corpus_file]
 
     for k in topic_range:
@@ -25,6 +26,9 @@ def build_manifest(config_file, corpus_file, model_pattern, topic_range,
         files.append(cluster_path)
     if corpus_desc and corpus_desc != 'None':
         files.append(corpus_desc)
+
+    if htrc_metapath and htrc_metapath != 'None':
+        files.append(htrc_metapath)
 
     if raw_corpus and raw_corpus != 'None':
         for root, dirs, corpus_files in os.walk(raw_corpus):
@@ -44,7 +48,8 @@ def create_relative_config_file(config_file, manifest, include_corpus=False):
         'corpus_desc' : None,
         'raw_corpus': None,
         'cluster_path' : None,
-        'path' : None
+        'path' : None,
+        'htrc_metadata' : None
         }) 
     with open(config_file, encoding='utf8') as configfile:
         config.read_file(configfile)
@@ -69,6 +74,11 @@ def create_relative_config_file(config_file, manifest, include_corpus=False):
         config.set('main', 'raw_corpus', None)
     if corpus_desc is not None:
         config.set('main', 'corpus_desc', corpus_desc.replace(root, ''))
+
+    if config.getboolean('main', 'htrc'):
+        htrc_metapath = config.get('www', 'htrc_metadata')
+        if htrc_metapath is not None:
+            config.set('www', 'htrc_metadata', htrc_metapath.replace(root, ''))
 
     tempfh = NamedTemporaryFile(prefix='tez.'+config_file, delete=False)
     temp_config_file = tempfh.name
@@ -156,10 +166,16 @@ def main(args=None):
     else:
         raw_corpus = None
 
+    if config.getboolean('main', 'htrc'):
+        htrc_metapath = config.get('www', 'htrc_metadata')
+    else:
+        htrc_metapath = None
+
     # get manifest for zip file
     filenames = build_manifest(
         args.config, corpus_file, model_pattern, topic_range, cluster_path,
-        raw_corpus=raw_corpus, corpus_desc=corpus_desc)
+        raw_corpus=raw_corpus, corpus_desc=corpus_desc,
+        htrc_metapath=htrc_metapath)
 
     zip_files(args.output, filenames, args.include_corpus)
 
