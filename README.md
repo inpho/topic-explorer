@@ -18,16 +18,16 @@ There are two types of install: Default and Developer. Currently we are debuggin
 **Note:** If you attempt to install this while connected to the Internet by way of a restricted network (such as eduroam) you may experience difficulty.  Our pypi server requires port 8080 to be accessible, and this is sometimes blocked on public networks.
 
 ### Default Install (Windows users should use Developer Install until further notice)
-1.  Go to the [Anaconda website](http://continuum.io/downloads) and choose the Python 2.7 Distribution. (Windows users: during installation, during "Advanced Options" choose "Add Anaconda to my PATH environment variable" and don't worry about the warning.)
+1.  Go to the [Anaconda website](http://continuum.io/downloads) and choose the Python 3.6 Distribution. (Windows users: during installation, during "Advanced Options" choose "Add Anaconda to my PATH environment variable" and don't worry about the warning.)
 2.  Open a Terminal (Mac and Linux) or PowerShell (Windows).
-3.  Run `pip install --pre topicexplorer -i https://inpho.cogs.indiana.edu/pypi/`.
+3.  Run `pip install --pre topicexplorer`.
     
     **Note:** `--pre` has *two* `-` characters. When the `1.0` release happens, `--pre` will no longer be necessary.
 4.  Test installation by typing `topicexplorer -h` to print usage instructions.
 
 ### Developer Install
 1.  [Set up Git](https://help.github.com/articles/set-up-git/)
-2.  Install the [Anaconda Python 2.7 Distribution](http://continuum.io/downloads).
+2.  Install the [Anaconda Python 3.6 Distribution](http://continuum.io/downloads).
 3.  Open a terminal and run `pip install --src . -e git+https://github.com/inpho/topic-explorer#egg=topicexplorer`
 4.  Test installation by typing `topicexplorer -h` to print usage instructions.
 
