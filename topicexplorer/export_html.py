@@ -64,9 +64,9 @@ def main(args):
             args.output += '.zip'
 
         ZIPFILE = args.output
-        TOPICS_ZIP = get_static_resource_path('topics.zip')
-        shutil.copyfile(TOPICS_ZIP, ZIPFILE)
-        with ZipFile(ZIPFILE, 'a') as zipfile:
+        # TOPICS_ZIP = get_static_resource_path('topics.zip')
+        # shutil.copyfile(TOPICS_ZIP, ZIPFILE)
+        with ZipFile(ZIPFILE, 'w') as zipfile:
             for f in files:
                 zipfile.write(f, arcname=f.replace(OUTPUT_DIR, ''))
 
