@@ -5,17 +5,21 @@ $(".typeahead").typeahead({items: 12,
       clearTimeout(taTimeout);
 
     this.$menu.find('.active').removeClass('active');
-    taTimeout = setTimeout(function () {
-      $.getJSON('docs.json?q=' + encodeURIComponent(query), function(data) {
+    var processAutocomplete = function(data) {
         labels = [];
         mapped = {};
         $.each(data, function(i, item) {
           mapped[item.label] = item;
           labels.push(item.label);
-        });
-      
+        })
+
         process(labels);
-    })}, 300);
+    };
+    taTimeout = setTimeout(function () {
+      $.getJSON('../docs.json?q=' + encodeURIComponent(query), processAutocomplete)
+        .error(function() {
+           $.getJSON('docs.json?q=' + encodeURIComponent(query), processAutocomplete)
+        })}, 300);
   },
   updater: function(item) {
       if (!item) { 
