@@ -1,4 +1,6 @@
 from argparse import ArgumentParser
+from codecs import open
+import json
 from multiprocessing import Process
 import os
 import os.path
@@ -31,7 +33,7 @@ def main(args):
     with TD(prefix='vsm-') as OUTPUT_DIR:
         files = []
         output = os.path.join(OUTPUT_DIR, 'topics.html')
-        with open(output, 'w') as outfile:
+        with open(output, 'w', encoding='utf-8') as outfile:
             outfile.write(app.get('/topics.local.html').text)
         files.append(output)
 
@@ -40,14 +42,13 @@ def main(args):
             outfile.write(app.get('/cluster.csv').text)
         files.append(output)
 
+        output = os.path.join(OUTPUT_DIR, 'topics.json')
+        topic_data = dict()
         for k in topics:
-            k_output = os.path.join(OUTPUT_DIR, str(k))
-            if not os.path.exists(k_output):
-                os.makedirs(k_output)
-            k_output = os.path.join(k_output, 'topics.json')
-            with open(k_output, 'w') as outfile:
-                outfile.write(app.get('/{}/topics.json'.format(k)).text)
-            files.append(k_output)
+            topic_data[k] = json.loads(app.get('/{}/topics.json'.format(k)).text)
+        with open(output, 'w', encoding='utf8') as outfile:
+            json.dump(topic_data, outfile)
+        files.append(output)
 
         # make sure the directories are created
         dirname = os.path.dirname(args.output)
