@@ -23,7 +23,7 @@ def read(filename):
         'label_module': None,
         'fulltext': False,
         'pdf' : False,
-        'topics': None,
+        'topics': [],
         'cluster': None,
         'corpus_desc' : None,
         'home_link' : '/',

@@ -240,7 +240,8 @@ Do you want to continue training your existing models? """, default=True))):
             cluster_path = config.get("main", "cluster", fallback=None)
             config.remove_option("main", "cluster")
             try:
-                os.remove(cluster_path)
+                if cluster_path:
+                    os.remove(cluster_path)
             except (OSError, IOError):
                 # fail silently on IOError
                 pass
