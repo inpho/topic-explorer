@@ -173,3 +173,7 @@ dt {
     display: inline-flex;
     white-space: nowrap;
 }
+
+#aboutLink {
+    color: black;
+}
