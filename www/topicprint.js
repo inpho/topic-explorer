@@ -225,7 +225,7 @@ var converter = new showdown.Converter({
 	tables: true
 });
 
-$.get('../description.md').
+$.get('description.md').
   done(function(data) { 
     var html = converter.makeHtml(data);
     $('#aboutText').html(html);
