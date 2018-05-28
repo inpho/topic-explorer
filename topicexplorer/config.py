@@ -29,7 +29,9 @@ def read(filename):
         'corpus_desc' : None,
         'home_link' : '/',
         'lang' : None, 
-        'tokenizer': 'default'
+        'tokenizer': 'default',
+        'topic_range': None,
+        'sentences' : 'false'
     })
 
     with open(filename, encoding='utf8') as configfile:
