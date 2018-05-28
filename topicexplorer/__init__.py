@@ -26,12 +26,11 @@ def from_config(config_file):
     # Load the corpus and metadata
     c = Corpus.load(config.get('main', 'corpus_file'))
     context_type = config.get('main', 'context_type')
-    ctx_metadata = c.view_metadata(context_type)
-    all_ids = ctx_metadata[doc_label_name(context_type)]
 
     # create topic model patterns
     pattern = config.get('main', 'model_pattern')
-    if config.get('main', 'topic_range'):
+    topic_range = config.get('main', 'topic_range')
+    if topic_range and topic_range != 'None':
         topic_range = list(map(int, config.get('main', 'topic_range').split(',')))
         topic_range = list(range(*topic_range))
     if config.get('main', 'topics'):
@@ -51,7 +50,8 @@ def from_config(config_file):
     lda_m = keydefaultdict(load_model)
     lda_v = keydefaultdict(load_viewer)
 
-    return TopicExplorer(c, lda_v)
+    corpus = TECorpus(c, context_type)
+    return TopicExplorer(corpus, lda_v)
 
 class TopicExplorer(object):
     def __init__(self, corpus, viewers):
@@ -69,3 +69,25 @@ class TopicExplorer(object):
     def __getitem__(self, key):
         """ Returns a viewer. """
         return self._viewers[key]
+
+class TECorpus(object):
+    def __init__(self, corpus, context_type):
+        self._corpus = corpus
+        self._context_type = context_type
+
+        self.words = corpus.words
+        self.tokens = corpus.corpus
+
+        # TODO: Convert metadata to pandas dataframe with self.ids as key
+        self.metadata = corpus.view_metadata(context_type)
+        self.ids = self.metadata[doc_label_name(context_type)].tolist()
+
+    def __contains__(self, key):
+        return key in self.ids
+    
+    def __getitem__(self, key):
+        if key not in self:
+            raise KeyError("Document {} not in corpus".format(key))
+
+        # TODO: Optimize this view_contexts function using the metadata pointers
+        return self._corpus.view_contexts(self._context_type)[self.ids.index(key)]
