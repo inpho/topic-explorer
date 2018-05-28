@@ -94,7 +94,7 @@ def ancient_chinese_tokenizer(raw_text):
 
 def modern_chinese_tokenizer(raw_text):
     tokens = []
-    for token in mmseg.segment(raw_text):
+    for token in modern_mmseg.segment(raw_text):
         if token not in chinese_punctuation:
             tokens.append(token)
 
