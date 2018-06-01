@@ -74,16 +74,18 @@ def create_relative_config_file(config_file, manifest, include_corpus=False):
         config.set('main', 'raw_corpus', None)
     if corpus_desc is not None:
         config.set('main', 'corpus_desc', corpus_desc.replace(root, ''))
-
-    if config.getboolean('main', 'htrc'):
-        htrc_metapath = config.get('www', 'htrc_metadata')
-        if htrc_metapath is not None:
-            config.set('www', 'htrc_metadata', htrc_metapath.replace(root, ''))
+    try:
+        if config.getboolean('main', 'htrc'):
+            htrc_metapath = config.get('www', 'htrc_metadata')
+            if htrc_metapath is not None:
+                config.set('www', 'htrc_metadata', htrc_metapath.replace(root, ''))
+    except:
+        pass
 
     tempfh = NamedTemporaryFile(prefix='tez.'+config_file, delete=False)
     temp_config_file = tempfh.name
     tempfh.close()
-    with open(temp_config_file, 'w') as tempfile:
+    with open(temp_config_file, 'w', encoding='utf-8') as tempfile:
         config.write(tempfile)
 
     return temp_config_file
@@ -166,9 +168,12 @@ def main(args=None):
     else:
         raw_corpus = None
 
-    if config.getboolean('main', 'htrc'):
-        htrc_metapath = config.get('www', 'htrc_metadata')
-    else:
+    try:
+        if config.getboolean('main', 'htrc'):
+            htrc_metapath = config.get('www', 'htrc_metadata')
+        else:
+            htrc_metapath = None
+    except:
         htrc_metapath = None
 
     # get manifest for zip file
