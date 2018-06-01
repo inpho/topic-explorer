@@ -1,4 +1,4 @@
-# InPhO Topic Explorer
+# InPhO Topic Explorer and Hypershelf
 
 [![Join the chat at https://gitter.im/inpho/topic-explorer](https://badges.gitter.im/inpho/topic-explorer.svg)](https://gitter.im/inpho/topic-explorer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Travis](https://img.shields.io/travis/inpho/topic-explorer.svg)](https://travis-ci.org/inpho/topic-explorer)
@@ -8,9 +8,9 @@
 
 The InPhO topic explorer provides an integrated system for text modeling making it simple to go from a set of documents to an interactive visualization of LDA topic models generated using the [InPhO VSM module](http://github.com/inpho/vsm/). More advanced analysis is made possible by a built-in pipeline to Jupyter (iPython) notebooks. 
 
-Live demos trained on the Stanford Encyclopedia of Philosophy, a selection of books from the HathiTrust Digital Library, and the original LDA training set of Associated Press articles are available at [http://hypershelf.org](http://hypershelf.org/).
+Live demos trained on the Stanford Encyclopedia of Philosophy, a selection of books from the HathiTrust Digital Library, and the original LDA training set of Associated Press articles are available at [https://www.hypershelf.org](https://www.hypershelf.org/).
 
-The color bands within each article's row show the topic distribution within that article, and the relative sizes of each band indicates the weight of that topic in the article. The total width of each row indicates similarity to the focal topic or document, measured by the quantity sim(doc) = 1 – JSD(doc, focus entity), where JSD is the Jensen-Shannon distance between the word probability distributions of each item. Each topic's label and color is arbitrarily assigned, but is consistent across articles in the browser.
+The hypershelf provides a document-centered view of the topic models. Each document is represented by a multi-colored, horizontal bar representing the overall topic distribution for the document, with different colors representing the topics. The relative lengths of each segment of the bar indicates the weight of the topic in that document. The total width of each row indicates similarity to the focal topic or document, measured by the quantity sim(doc) = 1 – JSD(doc, focus entity), where JSD is the Jensen-Shannon distance between the word probability distributions of each item. Each topic's label and color is arbitrarily assigned, but is consistent across articles in the browser.
 
 Display options include topic normalization, alphabetical sort and topic sort. By normalizing topics, the combined width of each bar expands so that topic weights per document can be compared. By clicking a topic, the documents will reorder acoording to that topic's weight and topic bars will reorder according to the topic weights in the highest weighted document. When a topic is selected, clicking "Top Documents for [Topic]" will take you to a new page showing the most similar documents to that topic's word distribution. The original sort order can be restored with the "Reset Topic Sort" button.
 
