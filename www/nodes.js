@@ -197,11 +197,16 @@ d3.csv(base_url + "cluster.csv", function(error, data) {
           .attr("r", function(d) { return d.radius; })
           .attr("cx", function(d) { return x(d[xVar]); })
           .attr("cy", function(d) { return y(d[yVar]); })
+          .attr("visibility", 'hidden')
           //.attr("style", function(d) { return "fill:" + d.color +"; fill-opacity: "+ opacity(d.opacity) + ";"; })
           .style("fill", function(d) { 
             var url = base_url + d.k + '/topics.json';
             d3.json(url, function(topics) {
               document.getElementById(d.k + '_' + d.topic).style.fill = topics[d.topic].color;
+              $(document).ready(function(){
+                  document.getElementById(d.k + '_' + d.topic).style.visibility = 'visible';
+              });
+              console.log(document.getElementById(d.k + '_' + d.topic).visibility);
             });
           })
           .style("fill-opacity", function(d) { return opacity(d.opacity) || 0.7; })
@@ -214,7 +219,7 @@ d3.csv(base_url + "cluster.csv", function(error, data) {
         .on("mouseout", function (d) { $(this).tooltip('hide')});
       
       $(".dot").tooltip({container:'body', trigger: 'manual', animation: false, html: true});
-
+      
   });
 /*
   var legend = svg.selectAll(".legend")
