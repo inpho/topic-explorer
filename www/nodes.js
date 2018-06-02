@@ -188,16 +188,22 @@ d3.csv(base_url + "cluster.csv", function(error, data) {
           }
       }
     }).then(function() {
-      console.log(data); 
+      console.log(data);
       node = svg.selectAll(".dot")
           .data(data, function(d) { return d.k + '-' + d.topic; })
         .enter().append("circle")
           .attr("class", "dot")
+          .attr("id", function(d) { return d.k + '_' + d.topic; })
           .attr("r", function(d) { return d.radius; })
           .attr("cx", function(d) { return x(d[xVar]); })
           .attr("cy", function(d) { return y(d[yVar]); })
           //.attr("style", function(d) { return "fill:" + d.color +"; fill-opacity: "+ opacity(d.opacity) + ";"; })
-          .style("fill", function(d) { return d.color; })
+          .style("fill", function(d) { 
+            var url = base_url + d.k + '/topics.json';
+            d3.json(url, function(topics) {
+              document.getElementById(d.k + '_' + d.topic).style.fill = topics[d.topic].color;
+            });
+          })
           .style("fill-opacity", function(d) { return opacity(d.opacity) || 0.7; })
           .on("click", function(d) { window.location.href = base_url + d.k + "/?topic=" + d.topic })
           .attr("title", function(d) {
