@@ -940,16 +940,44 @@ d3.json(url, function(error, data) {
         .style("fill", "black")
         .attr("transform", "translate(-40, " + ((d3.keys(topics).length / 2) + 3.2) * 20 + ")");*/
 
-    legend.append("foreignObject")
+    /*legend.append("foreignObject")
         .attr("width", 119)
         .attr("height", 138.66)
-        .html("<div id=controls" +
-                  "<strong>Display Options</strong>" +
+        .attr("transform", "translate(0, " + ((d3.keys(topics).length / 2) + 1) * 20 + ")")
+        .append("xhtml:div")
+        .attr("id", "controls")
+        .style("display", "none")
+        .text("hello")
+        .html("<strong>Display Options</strong>" +
                   "<label class=checkbox><input class=sort type=checkbox> Alphabetical sort</label>" +
                   "<label class=checkbox><input class=scale type=checkbox> Normalize topic bars</label>" +
-                  "<button class=btn btn-default reset onclick=resetTopicSort() disabled>Reset Topic Sort</button><br>" +
-              "</div>")
-        .attr("transform", "translate(0, " + ((d3.keys(topics).length / 2) + 1) * 20 + ")");
+                  "<button class='btn btn-default reset' onclick=resetTopicSort() disabled>Reset Topic Sort</button><br>");*/
+
+    console.log("going");
+    var ns = 'http://www.w3.org/2000/svg';
+    var newLegend = document.getElementById('legend');
+
+    var foreignObject = document.createElementNS(ns, 'foreignObject');
+    foreignObject.setAttribute("width", 120);
+    foreignObject.setAttribute("height", 140);
+    foreignObject.setAttribute("transform", "translate(20, " + (((d3.keys(topics).length / 2) + 1) * 20 + 65) + ")");
+    var div = document.createElement('div');
+    div.innerHTML = '<Strong>Display Options</strong>';
+    var label = document.createElement('label');
+    //$(label).addClass("checkbox");
+    label.classList.add("checkbox");
+    label.innerHTML = "<input class='sort' type='checkbox'>Alphabetical Sort";
+    div.appendChild(label);
+    label = document.createElement('label');
+    label.classList.add("checkbox");
+    label.innerHTML = "<input class='scale' type='checkbox'>Normalize Topic Bars";
+    div.appendChild(label);
+    var button = document.createElement('button');
+    button.addEventListener("click", resetTopicSort());
+    $(button).addClass("btn btn-default reset");
+    foreignObject.appendChild(div);
+    foreignObject.append(button);
+    newLegend.append(foreignObject);
     
     d3.select(window).on('resize', resize);
 
