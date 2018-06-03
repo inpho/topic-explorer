@@ -901,8 +901,96 @@ d3.json(url, function(error, data) {
         .style("overflow-wrap", "normal")
         .text("ordered by proportion of T in " + (docid ? "focal document" : "corpus"));
 
+    /*legend.append("text")
+        .attr("dx", -20)
+        .attr("transform", "translate(0, " + ((d3.keys(topics).length / 2) + 1) * 20 + ")")
+        .attr("font-weight", "bold")
+        .on("click", function() { console.log(d3.keys(topics).length); })
+        .text("Display Options");
+    legend.append("text")
+        .attr("dx", -20)
+        .attr("transform", "translate(0, " + ((d3.keys(topics).length / 2) + 2.5) * 20 + ")")
+        .attr("font-weight", "bold")
+        .text("Alphabetical sort");
+    /*legend.append("rect")
+        .attr("width", 12)
+        .attr("height", 12)
+        .attr("rx", 2)
+        .attr("ry", 2)
+        .attr("id", "abcd")
+        .style("fill", "white")
+        .style("stroke", "black")
+        .attr("transform", "translate(-40, " + ((d3.keys(topics).length / 2) + 2) * 20 + ")")
+        .on("click", function() {
+          console.log("hello");
+          console.log(document.getElementById("abcd"));
+          console.log(document.getElementById("abcd").style.fill);
+          if(document.getElementById("abcd").style.fill === "white") {
+            console.log("white");
+            document.getElementById("abcd").style.fill = "black";
+
+          } else {
+            console.log("black");
+          }
+        });
+    legend.append("foreignObject")
+        //.attr("width", 12)
+        //.attr("height", 12)
+        //.append("xhtml:body")
+        .html("<label class=checkbox><input class=scale type=checkbox> Normalize topic bars</label>")
+        .attr("transform", "translate(-40, " + ((d3.keys(topics).length / 2) + 2) * 20 + ")");
+    legend.append("text")
+        .attr("dx", -20)
+        .attr("transform", "translate(0, " + ((d3.keys(topics).length / 2) + 3.75) * 20 + ")")
+        .attr("font-weight", "bold")
+        .text("Normalize topic bars");
+    legend.append("rect")
+        .attr("width", 12)
+        .attr("height", 12)
+        .style("fill", "black")
+        .attr("transform", "translate(-40, " + ((d3.keys(topics).length / 2) + 3.2) * 20 + ")");*/
+
+    /*legend.append("foreignObject")
+        .attr("width", 119)
+        .attr("height", 138.66)
+        .attr("transform", "translate(0, " + ((d3.keys(topics).length / 2) + 1) * 20 + ")")
+        .append("xhtml:div")
+        .attr("id", "controls")
+        .style("display", "none")
+        .text("hello")
+        .html("<strong>Display Options</strong>" +
+                  "<label class=checkbox><input class=sort type=checkbox> Alphabetical sort</label>" +
+                  "<label class=checkbox><input class=scale type=checkbox> Normalize topic bars</label>" +
+                  "<button class='btn btn-default reset' onclick=resetTopicSort() disabled>Reset Topic Sort</button><br>");*/
+
+    console.log("going");
+    var ns = 'http://www.w3.org/2000/svg';
+    var newLegend = document.getElementById('legend');
+
+    var foreignObject = document.createElementNS(ns, 'foreignObject');
+    foreignObject.setAttribute("width", 120);
+    foreignObject.setAttribute("height", 140);
+    foreignObject.setAttribute("transform", "translate(20, " + (((d3.keys(topics).length / 2) + 1) * 20 + 65) + ")");
+    var div = document.createElement('div');
+    div.innerHTML = '<Strong>Display Options</strong>';
+    var label = document.createElement('label');
+    //$(label).addClass("checkbox");
+    label.classList.add("checkbox");
+    label.innerHTML = "<input class='sort' type='checkbox'>Alphabetical Sort";
+    div.appendChild(label);
+    label = document.createElement('label');
+    label.classList.add("checkbox");
+    label.innerHTML = "<input class='scale' type='checkbox'>Normalize Topic Bars";
+    div.appendChild(label);
+    var button = document.createElement('button');
+    button.addEventListener("click", resetTopicSort());
+    $(button).addClass("btn btn-default reset");
+    foreignObject.appendChild(div);
+    foreignObject.append(button);
+    newLegend.append(foreignObject);
+    
     d3.select(window).on('resize', resize);
-  
+
     function resize() {
       computeWidth(legendCols);
   
