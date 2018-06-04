@@ -443,6 +443,9 @@ class Application(Bottle):
             if tokenizer == 'default':
                 from vsm.extensions.corpusbuilders.util import word_tokenize
                 tokenizer = word_tokenize
+            elif tokenizer == 'simple':
+                from topicexplorer.tokenizer import simple_tokenizer
+                tokenizer = simple_tokenizer
             elif tokenizer == 'zh':
                 from topicexplorer.lib.chinese import modern_chinese_tokenizer
                 tokenizer = modern_chinese_tokenizer
