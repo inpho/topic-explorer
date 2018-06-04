@@ -112,11 +112,8 @@ $CMD -m topicexplorer.train ap -k 20 --iter 20 --continue --quiet
 EXIT=$(($EXIT+$?))
 
 
-$CMD -m unittest2
-EXIT=$(($EXIT+$?))
-
 pip install pytest
-$CMD -m pytest tests/test_prep.py
+$CMD -m pytest tests/test_*.py
 EXIT=$(($EXIT+$?))
 
 coverage report
