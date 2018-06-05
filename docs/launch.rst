@@ -1,5 +1,5 @@
 ``topicexplorer launch``
 --------------------------
 
-.. automodule:: topicexplorer.launch
+.. automodule:: topicexplorer.server
     :members:
