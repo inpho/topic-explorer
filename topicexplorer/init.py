@@ -6,6 +6,29 @@ corpus.
 It creates a ``.ini`` configuration with the settings for this instance. It also
 creates a ``vsm.Corpus`` object saved in a ``.npz`` file.
 
+Corpus Name (``--name``)
+--------------------------
+The name of the corpus displayed in the visualizations.
+
+.. note::
+   
+    Make sure to surround the corpus name with quotes. For example::
+
+        topicexplorer init --name "Stanford Encyclopedia of Philosophy" sep
+
+Model Path (``--model-path``)
+-------------------------------
+The path to store the model files. 
+
+Defaults to a ``models`` directory at the same level as the corpus directory. ::
+
+    topicexplorer init sep
+
+    Documents
+    |-- sep
+    |-- models
+
+
 Tokenization and Normalization (``--tokenizer``)
 --------------------------------------------------
 Tokenization is the process of segmenting text into discrete units, or tokens.
@@ -29,16 +52,25 @@ flag. They are:
 -   *ltc* -- late classical Chinese tokenizer.
 -   *zh* -- modern Chinese tokenizer
 
+Unidecode (``--unidecode``)
+-----------------------------
+This flag adds an additional normalization step, transliterating accented
+characters using the `Unidecode`_ library.
+
+For example, ``naïveté`` becomes ``naivete``.
+
+.. _Unidecode:
+    https://pypi.org/project/Unidecode/
+
+Rebuild (``--rebuild``)
+-------------------------
+Re-tokenizes the corpus and recreates the configuration file.
 
 Quiet Mode (``-q``)
 ---------------------
 Suppresses all user input requests. Uses default values unless otherwise
 specified by other argument flags. Very useful for scripting automated
 pipelines.
-
-Rebuild (``--rebuild``)
--------------------------
-Re-tokenizes the corpus and recreates the configuration file.
 
 """
 from __future__ import print_function
@@ -436,10 +468,7 @@ def populate_parser(parser):
     parser.add_argument("--model-path", dest="model_path",
                         help="Model Path [Default: [corpus_path]/../models]")
 
-    group = parser.add_mutually_exclusive_group()
-    group.add_argument("--unicode", action="store_false", dest='decode',
-                       help="Store unicode characters. [Default]")
-    group.add_argument("--decode", action="store_true", dest='decode',
+    parser.add_argument("--unidecode", action="store_true", dest='decode',
                        help="Convert unicode characters to ascii.")
     parser.set_defaults(decode=False)
 
