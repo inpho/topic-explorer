@@ -2,4 +2,3 @@
 ------------------------
 
 .. automodule:: topicexplorer.init
-    :members:
