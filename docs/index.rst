@@ -16,6 +16,9 @@ Contents:
    train
    launch
    notebook
+   metadata
+   import_export
+   htrc
 
 
 
