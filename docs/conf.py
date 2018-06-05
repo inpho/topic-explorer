@@ -227,7 +227,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'InPhOTopicExplorer.tex', u'InPhO Topic Explorer Documentation',
-     u'Trustees of Indiana University', 'manual'),
+     u'Jaimie Murdock and Colin Allen', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
