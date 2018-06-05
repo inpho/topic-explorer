@@ -11,7 +11,11 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   modules
+   init
+   prep
+   train
+   launch
+   notebook
 
 
 

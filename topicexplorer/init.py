@@ -1,3 +1,46 @@
+"""topicexplorer.init
+
+This module initializes the topicexplorer. It performs tokenization of the
+corpus.
+
+It creates a ``.ini`` configuration with the settings for this instance. It also
+creates a ``vsm.Corpus`` object saved in a ``.npz`` file.
+
+Tokenization and Normalization (``--tokenizer``)
+--------------------------------------------------
+Tokenization is the process of segmenting text into discrete units, or tokens.
+
+Normalization is the process of folding equivalent tokens together. For example,
+"The" and "the" are normalized to a single, lower-case "the" token. The token
+"Lower-case" is normalized to "lowercase" with the default tokenizer.
+
+.. note:: 
+
+    Note that "the" would commonly be "stopped" or removed from the corpus. This
+    happens during the ``topicexplorer prep`` stage. 
+
+``topicexplorer`` includes several tokenizers, selected with the ``--tokenizer``
+flag. They are:
+
+-   *default* -- default tokenizer. normalizes with removed punctuation and
+    digits. Re-hyphenates multi-character dashes by adding spaces to split
+    words.
+-   *simple* -- normalies by removing digits and a limited set of punctuation.
+-   *ltc* -- late classical Chinese tokenizer.
+-   *zh* -- modern Chinese tokenizer
+
+
+Quiet Mode (``-q``)
+---------------------
+Suppresses all user input requests. Uses default values unless otherwise
+specified by other argument flags. Very useful for scripting automated
+pipelines.
+
+Rebuild (``--rebuild``)
+-------------------------
+Re-tokenizes the corpus and recreates the configuration file.
+
+"""
 from __future__ import print_function
 
 from future import standard_library
