@@ -1,5 +1,4 @@
-"""topicexplorer.init
-
+"""
 This module initializes the topicexplorer. It performs tokenization of the
 corpus.
 
