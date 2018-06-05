@@ -427,11 +427,12 @@ def write_config(args, config_file=None):
 def populate_parser(parser):
     parser.add_argument("corpus_path", help="Path to Corpus",
                         type=lambda x: is_valid_filepath(parser, x))
+    parser.add_argument("config_file", nargs="?",
+                        help="Path to Config [optional]")
+    
     parser.add_argument("--name", dest="corpus_print_name",
                         metavar="\"CORPUS NAME\"",
                         help="Corpus name (for web interface) [Default: [corpus_path]]")
-    parser.add_argument("config_file", nargs="?",
-                        help="Path to Config [optional]")
     parser.add_argument("--model-path", dest="model_path",
                         help="Model Path [Default: [corpus_path]/../models]")
 
@@ -442,19 +443,15 @@ def populate_parser(parser):
                        help="Convert unicode characters to ascii.")
     parser.set_defaults(decode=False)
 
+    
+    parser.add_argument("--tokenizer", default="default",
+        choices=['zh', 'ltc', 'och', 'inpho', 'default', 'simple', 'brain'])
+    
     parser.add_argument("--htrc", action="store_true")
     parser.add_argument("--rebuild", action="store_true")
     parser.add_argument("-q", "--quiet", action="store_true")
-    parser.add_argument("--tokenizer", default="default",
-        choices=['zh', 'ltc', 'och', 'inpho', 'default', 'simple', 'brain'])
 
-    parser.add_argument("--simple", action="store_true", default=True,
-                        help="Skip sentence tokenizations [default].")
-    parser.add_argument("--nltk-stoplist", action="store_true", dest="nltk",
-                        help="use the English NLTK stoplist")
-    parser.add_argument("--sentences", action="store_true", help="Parse at the sentence level")
-    parser.add_argument("--freq", dest="stop_freq", default=0, type=int,
-                        help="Filter words occurring less than freq times [Default: 0])")
+    parser.set_defaults(freq=0, nltk=False, simple=True, sentences=False)
 
 
 if __name__ == '__main__':
