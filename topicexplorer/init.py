@@ -5,6 +5,48 @@ corpus.
 It creates a ``.ini`` configuration with the settings for this instance. It also
 creates a ``vsm.Corpus`` object saved in a ``.npz`` file.
 
+
+Tokenization and Normalization
+================================
+Tokenization_ is the process of segmenting text into discrete units, or tokens.
+
+Normalization_ is the process of folding equivalent tokens together.
+
+For example, ``The`` and ``the`` are normalized to a single, lower-case ``the``
+token. The token ``Lower-case`` is normalized to ``lowercase`` with the default
+tokenizer.
+
+.. note:: 
+
+    Note that ``the`` would commonly be "stopped" or removed from the corpus.
+    This occurs during the ``topicexplorer prep`` stage. 
+
+Tokenization is language-dependent. While many languages (including English) can be
+tokenized by splitting on whitespace characters, other languages (such as
+Chinese) require more advanced techniques.
+
+``topicexplorer init`` includes several tokenizers, including two
+Chinese-language functions, selected with the |tokenizer argument|_.
+
+.. |tokenizer argument| replace:: ``--tokenizer`` argument
+.. _tokenizer argument: #tokenizer-selection-tokenizer
+
+.. seealso::
+    `Introduction to Information Retrieval -- Tokenization`_
+        Stanford Information Retrieval book section introducing tokenization.
+    `Introduction to Information Retrieval -- Normalization`_
+        Stanford Information Retrieval book section introducing normalization.
+
+
+.. _Introduction to Information Retrieval -- Tokenization:
+.. _Tokenization:
+    https://nlp.stanford.edu/IR-book/html/htmledition/tokenization-1.html
+
+.. _Introduction to Information Retrieval -- Normalization:
+.. _Normalization:
+    https://nlp.stanford.edu/IR-book/html/htmledition/normalization-equivalence-classing-of-terms-1.html
+
+
 Input Formats
 ===============
 
@@ -19,6 +61,7 @@ Other types of files will need to first be converted to plain-text. We recommend
 
 .. _pandoc:
     https://pandoc.org/
+
 
 PDFs
 ------
@@ -36,6 +79,7 @@ removed, the plain-text will be served from the ``example-txt`` folder.
 
 .. _pdfminer:
     https://github.com/pdfminer/pdfminer.six    
+
 
 BibTeX
 --------
@@ -80,6 +124,7 @@ The name of the corpus displayed in the visualizations.
 
         topicexplorer init --name "The Example Corpus" example
 
+
 Model Path (``--model-path``)
 -------------------------------
 The path to store the model files. 
@@ -93,19 +138,8 @@ Defaults to a ``models`` directory at the same level as the corpus directory. ::
     |-- models
 
 
-Tokenization and Normalization (``--tokenizer``)
+Tokenizer Selection (``--tokenizer``)
 --------------------------------------------------
-Tokenization is the process of segmenting text into discrete units, or tokens.
-
-Normalization is the process of folding equivalent tokens together. For example,
-"The" and "the" are normalized to a single, lower-case "the" token. The token
-"Lower-case" is normalized to "lowercase" with the default tokenizer.
-
-.. note:: 
-
-    Note that "the" would commonly be "stopped" or removed from the corpus. This
-    happens during the ``topicexplorer prep`` stage. 
-
 ``topicexplorer`` includes several tokenizers, selected with the ``--tokenizer``
 flag. They are:
 
@@ -126,9 +160,11 @@ For example, ``naïveté`` becomes ``naivete``.
 .. _Unidecode:
     https://pypi.org/project/Unidecode/
 
+
 Rebuild (``--rebuild``)
 -------------------------
 Re-tokenizes the corpus and recreates the configuration file.
+
 
 Quiet Mode (``-q``)
 ---------------------
