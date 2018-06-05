@@ -468,13 +468,12 @@ def populate_parser(parser):
     parser.add_argument("--model-path", dest="model_path",
                         help="Model Path [Default: [corpus_path]/../models]")
 
+    parser.add_argument("--tokenizer", default="default",
+        choices=['default', 'simple', 'ltc', 'zh', 'inpho', 'brain'])
+    
     parser.add_argument("--unidecode", action="store_true", dest='decode',
                        help="Convert unicode characters to ascii.")
     parser.set_defaults(decode=False)
-
-    
-    parser.add_argument("--tokenizer", default="default",
-        choices=['zh', 'ltc', 'och', 'inpho', 'default', 'simple', 'brain'])
     
     parser.add_argument("--htrc", action="store_true")
     parser.add_argument("--rebuild", action="store_true")
