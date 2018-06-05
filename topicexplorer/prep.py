@@ -1,3 +1,97 @@
+"""
+Prepares a corpus for modeling with stoplist management tools.
+
+
+Stoplisting
+=============
+
+What is stoplisting?
+----------------------
+Extremely common words can be of little value in discriminating between
+documents and can create uninterpretable topics. Terms like ``the``, ``of``,
+``is``, ``and``, ``but``, and ``or`` are thus excluded from modeling. These
+terms are called *stop words*. The process of removing stop words is
+stoplisting.
+
+
+How ``topicexplorer prep`` generates stoplists
+------------------------------------------------
+``topicexplorer prep`` generates stoplists from the frequencies of words in the
+collection being modeled, rather than using the same list of words across
+different collections. Arbitrary lists can still be excluded with the 
+|stopword-file argument|_.
+
+.. |stopword-file argument| replace:: ``--stopword-file`` argument
+.. _stopword-file argument: #custom-stopwords-stopword-file
+
+While most natural language processing (NLP) tools exclude common words,
+``topicexplorer prep`` also provides functionality to remove low-frequency
+words. The contribution of low-freuqency words to the probability distribution
+is negligible -- if a word only occurs once in a 1 million word corpus (which
+can easily be hit with only 25-50 volumes), then it has a .000001 probability of
+occurring. The runtime improvements gained from excluding these low frequency
+words from the word-topic matrix far outweigh the marginal improvements to model
+fit.
+
+Another benefit of removing low-frequency words is the removal of spurious
+tokens introduced by optical character recognition (OCR) in scanned documents.
+
+Finally, very small words can be excluded with the |min-word-len argument|_.
+These small words often appear when mathematical formulas are in a text (e.g.,``y =
+mx + b`` would introduce ``y``, ``mx``, and ``b``). Usually, they will be caught
+by the low-frequency filters, but this ensures they are left out.
+
+.. |min-word-len argument| replace:: ``--min-word-len`` argument
+.. _min-word-len argument: #small-words-min-word-len
+
+
+.. seealso:
+    `Introduction to Information Retrieval -- stop words`_
+        Stanford textbook on stop words.
+
+.. _Stop words:
+.. _Introduction to Information Retrieval -- stop words:
+    https://nlp.stanford.edu/IR-book/html/htmledition/dropping-common-terms-stop-words-1.html
+
+
+
+Recommendations
+-----------------
+
+Then stoplist low-probability words totaling 20% of all occurrences in a
+document, then stoplist high-probability words totaling 30% of a document, These
+stoplists result in a 50% reduction in corpus size. Every other occurrence is
+excluded, but the occurrences excluded are selected in a principled manner,
+resulting in a better quality topic model. This lines up with some research in
+linguistics showing that it is the middle-frequency terms that really determine
+meaning. It also lines up well with our non-consumptive goals: by removing the
+words from the corpus, the original corpus is nearly impossible to reconstruct.
+
+
+Command Line Arguments
+========================
+
+High-probability words (``--high-percent``)
+---------------------------------------------
+
+
+Low-probability words (``--low-percent``)
+-------------------------------------------
+
+
+Small words (``--min-word-len``)
+----------------------------------
+
+
+Custom stopwords (``-stopword-file``)
+---------------------------------------
+
+
+Quiet mode (``-q``)
+---------------------
+
+"""
+
 from __future__ import division
 from __future__ import print_function
 from future import standard_library
