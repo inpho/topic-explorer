@@ -169,23 +169,6 @@ def stop_language(c, language):
     return words
 
 
-def get_htrc_langs(args):
-    global langs
-    md_langs = []
-
-    metadata_path = os.path.dirname(args.corpus_path)
-    metadata_path = os.path.join(metadata_path, '../metadata.json')
-    if os.path.exists(metadata_path):
-        print("HTRC metadata file found!")
-        with open(metadata_path) as jsonfile:
-            data = json.load(jsonfile)
-
-        md_langs = set([lang for d in data.values() for lang in d.get('language', list())
-            if lang.lower() in langs.values()])
-
-    return md_langs
-
-
 def detect_langs(corpus):
     global langs
     import langdetect
@@ -251,9 +234,6 @@ def get_mask(c, words=None, filter=None):
 def get_small_words(c, min_len):
     return [word for word in c.words if len(word) < min_len]
 
-
-def get_special_chars(c):
-    return [word for word in c.words if re.findall('[^A-Za-z\-\']', word)]
 
 def get_closest_bin(c, thresh, reverse=False, counts=None):
     """
@@ -476,12 +456,6 @@ def main(args):
         print("         topicexplorer train", args.config_file)
         sys.exit(1)
 
-    # check for htrc metadata
-    if args.htrc or config.get("main", "htrc"):
-        htrc_langs = get_htrc_langs(args)
-        if htrc_langs:
-            args.lang.extend(htrc_langs)
-
     # auto-guess a language
     """
     new_langs = [lang for lang in detect_langs(c) if lang in langs and lang not in args.lang]
@@ -529,12 +503,6 @@ def main(args):
                 len(candidates), 's' if len(candidates) > 1 else '', args.min_word_len))
             stoplist.update(candidates)
 
-    if not args.special_chars:
-        candidates = get_special_chars(c)
-        if len(candidates):
-            print("Filtering {} word{} with special characters.".format(
-                len(candidates), 's' if len(candidates) > 1 else ''))
-            stoplist.update(candidates)
 
     # cache item counts
     items, counts = get_corpus_counts(c)
@@ -626,36 +594,38 @@ def main(args):
 
 
 def populate_parser(parser):
-    parser.epilog = ('Available language stoplists (use 2-letter code): \n\t' +
-                     '\n\t'.join(['{k}    {v}'.format(k=k, v=v.capitalize())
-                                  for k, v in sorted(langs.items(),
-                                                     key=lambda x: x[1])]))
+    import argparse
     parser.add_argument("config_file", help="Path to Config",
                         type=lambda x: is_valid_configfile(parser, x))
-    parser.add_argument("--htrc", action="store_true")
-    parser.add_argument("--stopword-file", dest="stopword_file",
-                        help="File with custom stopwords")
 
     group = parser.add_mutually_exclusive_group(required=False)
     group.add_argument("--high", type=int, dest="high_filter",
-                        help="High frequency word filter", default=None)
+                        help=argparse.SUPPRESS, default=None)
     group.add_argument("--high-percent", type=float, dest="high_percent",
                         help="High frequency word filter", default=None)
     
     group = parser.add_mutually_exclusive_group(required=False)
     group.add_argument("--low", type=int, dest="low_filter",
-                        default=None, help="Low frequency word filter")
+                        default=None, help=argparse.SUPPRESS)
     group.add_argument("--low-percent", type=float, dest="low_percent",
                         default=None, help="Low frequency word filter")
 
     parser.add_argument("--min-word-len", type=int, dest="min_word_len",
                         default=0, help="Filter short words [Default: 0]")
-    parser.add_argument("--exclude-special-chars", action="store_false",
-                        dest='special_chars')
-    parser.add_argument("--lang", nargs='+', choices=langs.keys(),
-                        help="Languages to stoplist. See options below.", metavar='xx')
+
+    parser.add_argument("--stopword-file", dest="stopword_file",
+                        help="File with custom stopwords")
+
     parser.add_argument("-q", "--quiet", help="Do not prompt for input",
                         action="store_true")
+
+    # TODO: Figure out final resolution to #159.
+    parser.add_argument("--lang", nargs='+', choices=langs.keys(),
+                        help="Languages to stoplist. See options below.", metavar='xx')
+    parser.epilog = ('Available language stoplists (use 2-letter code): \n\t' +
+                     '\n\t'.join(['{k}    {v}'.format(k=k, v=v.capitalize())
+                                  for k, v in sorted(langs.items(),
+                                                     key=lambda x: x[1])]))
 
 if __name__ == '__main__':
     import argparse
