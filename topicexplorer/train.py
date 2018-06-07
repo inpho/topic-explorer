@@ -116,7 +116,7 @@ def main(args):
                 if args.quiet:
                     args.k = [int(n) for n in default.split()]
             else:
-                raise NoOptionError
+                raise NoOptionError('main', 'topics')
         except NoOptionError:
             default = ' '.join(map(str, range(20, 100, 20)))
 
