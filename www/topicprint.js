@@ -975,13 +975,27 @@ d3.json(url, function(error, data) {
     div.innerHTML = '<Strong>Display Options</strong>';
     var label = document.createElement('label');
     //$(label).addClass("checkbox");
-    label.classList.add("checkbox");
-    label.innerHTML = "<input class='sort' type='checkbox'>Alphabetical Sort";
+    //label.classList.add("checkbox");
+    //label.innerHTML = "<input class='sort' type='checkbox'>Alphabetical Sort";
+    var checkbox = document.createElement("INPUT");
+    checkbox.setAttribute("type", "checkbox");
+    checkbox.classList.add("sort");
+    var t = document.createTextNode("Alphabetical Sort");
+    label.appendChild(checkbox);
+    label.appendChild(t);
     div.appendChild(label);
+    
     label = document.createElement('label');
-    label.classList.add("checkbox");
-    label.innerHTML = "<input class='scale' type='checkbox'>Normalize Topic Bars";
+    checkbox = document.createElement("INPUT");
+    checkbox.setAttribute("type", "checkbox");
+    checkbox.classList.add("scale");
+    t = document.createTextNode("Normalize Topic Bars");
+    label.appendChild(checkbox);
+    label.appendChild(t);
+    //label.classList.add("checkbox");
+    //label.innerHTML = "<input class='scale' type='checkbox'>Normalize Topic Bars";
     div.appendChild(label);
+    
     var button = document.createElement('button');
     button.addEventListener("click", resetTopicSort());
     $(button).addClass("btn btn-default reset");
