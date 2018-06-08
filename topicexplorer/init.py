@@ -155,6 +155,9 @@ def build_corpus(corpus_path, model_path, nltk_stop=False, stop_freq=0,
     if tokenizer == 'default':
         from vsm.extensions.corpusbuilders.util import word_tokenize
         tokenizer = word_tokenize
+    elif tokenizer == 'simple':
+        from topicexplorer.tokenizer import simple_tokenizer
+        tokenizer = simple_tokenizer
     elif tokenizer == 'zh':
         from topicexplorer.lib.chinese import modern_chinese_tokenizer
         tokenizer = modern_chinese_tokenizer
@@ -400,7 +403,7 @@ def populate_parser(parser):
     parser.add_argument("--rebuild", action="store_true")
     parser.add_argument("-q", "--quiet", action="store_true")
     parser.add_argument("--tokenizer", default="default",
-        choices=['zh', 'ltc', 'och', 'inpho', 'default', 'brain'])
+        choices=['zh', 'ltc', 'och', 'inpho', 'default', 'simple', 'brain'])
 
     parser.add_argument("--simple", action="store_true", default=True,
                         help="Skip sentence tokenizations [default].")
