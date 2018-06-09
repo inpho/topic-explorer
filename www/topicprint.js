@@ -998,16 +998,23 @@ d3.json(url, function(error, data) {
     label.style.left = "20px";
     
     div.appendChild(label);
-    
+  
+    console.log("reset topic sort");
+
     var button = document.createElement('button');
-    button.addEventListener("click", resetTopicSort());
-    $(button).addClass("btn btn-default reset");i
+    //button.addEventListener("click", resetTopicSort());
+    $(button).addClass("btn btn-default reset");
+    $(button).attr('id', 'buttonThingy');
+    $(button).attr('disabled', true);
     var t = document.createTextNode("Reset Topic Sort");
     button.appendChild(t);
     foreignObject.appendChild(div);
     foreignObject.append(button);
     newLegend.append(foreignObject);
-    
+
+    console.log("reset topic sort 2");
+    //button.addEventListener("onclick", resetTopicSort);
+    button.onclick = resetTopicSort;
     d3.select(window).on('resize', resize);
 
     function resize() {
@@ -1125,7 +1132,7 @@ d3.json(url, function(error, data) {
     else
       sortDataset(function(a, b) { return b.prob - a.prob; });
   }
-
+  
   function resetTopicSort() {
     $('.reset').attr('disabled',true);
     $('.topicsort').attr('disabled',true);
@@ -1134,11 +1141,15 @@ d3.json(url, function(error, data) {
     $('.topdoc').removeClass('btn-primary');
     $('.topdoc').addClass('btn-default');
     $('.topdoc').attr('disabled', 'disabled');
-    if (!($('.sort')[0].checked))
-      sortDataset(function(a,b) { return b.prob - a.prob; });
-
+    $(document).ready(function() {
+      if (!($('.sort')[0].checked))
+        sortDataset(function(a,b) { return b.prob - a.prob; });
+    });
     redrawBars(function(a,b) { return original_root.topics[b] - original_root.topics[a]; });
   }
+
+  //console.log(document.getElementById('buttonThingy'));
+  //$(document).ready(function() { document.getElementById('buttonThingy').addEventListener("click", resetTopicSort())});
 
   function topicSort(topic) {
     // Copy-on-write since tweens are evaluated after a delay.
