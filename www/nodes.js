@@ -206,7 +206,6 @@ d3.csv(base_url + "cluster.csv", function(error, data) {
               $(document).ready(function(){
                   document.getElementById(d.k + '_' + d.topic).style.visibility = 'visible';
               });
-              console.log(document.getElementById(d.k + '_' + d.topic).visibility);
             });
           })
           .style("fill-opacity", function(d) { return opacity(d.opacity) || 0.7; })
