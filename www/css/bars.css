@@ -84,6 +84,12 @@ rect:hover, .legend.hover rect, .legend.selected rect {
   position: absolute;
   overflow: visible;
 }
+
+#legend_scroll{
+  position: fixed;
+  overflow: visible;
+  top: 100px;
+}
 #controls {
   top: 0 !important;
 }

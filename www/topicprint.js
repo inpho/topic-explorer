@@ -1173,5 +1173,26 @@ $('.topic-link').each(function(i,elt) {
     var url = '../' + $(elt).attr('href');
     if(docid) url += '?doc=' + docid;
     $(this).attr('href', url);
-  }); 
+  });
+
+$.fn.followTo = function (pos) {
+    var $this = this,
+        $window = $(window);
+
+    $window.scroll(function (e) {
+        if ($window.scrollTop() > pos) {
+            $this.css({
+                position: 'fixed',
+                top: 120
+            });
+        } else {
+            $this.css({
+                position: 'absolute',
+                top:405
+            });
+        }
+    });
+};
+
+$('#legend').followTo(285);
 
