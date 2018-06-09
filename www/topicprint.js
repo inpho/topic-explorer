@@ -690,11 +690,7 @@ d3.json(url, function(error, data) {
     dataset = data;
     original_root = data[0];
     if (roottopic) docid = data[0]['doc'];
-  
-    calculateTopicMap(data, !($('.scale')[0].checked), function(a,b) {return data[0].topics[b] - data[0].topics[a];});
-  
-  
-  
+    
     svg.append("g")
         .attr("class", "x axis")
         .attr("transform", "translate(10,-10)")
@@ -762,10 +758,18 @@ d3.json(url, function(error, data) {
             icons.reduce(function(prev, cur) {
               return prev.next(".{0}Icon".format(cur)).css('opacity', '');
             }, tick);
-          })
-        ;
+          });
 
-  
+    var label2 = document.createElement('label');
+    label2.classList.add("checkbox");
+    label2.innerHTML = "<input class='scale' type='checkbox'>Normalize Topic Bars";i
+    label2.style.left = "20px";
+
+    document.body.append(label2);
+    d3.select(".scale").on("change", scaleTopics);
+
+    calculateTopicMap(data, !($('.scale')[0].checked), function(a,b) {return data[0].topics[b] - data[0].topics[a];});
+
     // Draw topic bars
     doc.selectAll("rect")
         .data(function(d) { return d.topicMap; })
@@ -901,69 +905,6 @@ d3.json(url, function(error, data) {
         .style("overflow-wrap", "normal")
         .text("ordered by proportion of T in " + (docid ? "focal document" : "corpus"));
 
-    /*legend.append("text")
-        .attr("dx", -20)
-        .attr("transform", "translate(0, " + ((d3.keys(topics).length / 2) + 1) * 20 + ")")
-        .attr("font-weight", "bold")
-        .on("click", function() { console.log(d3.keys(topics).length); })
-        .text("Display Options");
-    legend.append("text")
-        .attr("dx", -20)
-        .attr("transform", "translate(0, " + ((d3.keys(topics).length / 2) + 2.5) * 20 + ")")
-        .attr("font-weight", "bold")
-        .text("Alphabetical sort");
-    /*legend.append("rect")
-        .attr("width", 12)
-        .attr("height", 12)
-        .attr("rx", 2)
-        .attr("ry", 2)
-        .attr("id", "abcd")
-        .style("fill", "white")
-        .style("stroke", "black")
-        .attr("transform", "translate(-40, " + ((d3.keys(topics).length / 2) + 2) * 20 + ")")
-        .on("click", function() {
-          console.log("hello");
-          console.log(document.getElementById("abcd"));
-          console.log(document.getElementById("abcd").style.fill);
-          if(document.getElementById("abcd").style.fill === "white") {
-            console.log("white");
-            document.getElementById("abcd").style.fill = "black";
-
-          } else {
-            console.log("black");
-          }
-        });
-    legend.append("foreignObject")
-        //.attr("width", 12)
-        //.attr("height", 12)
-        //.append("xhtml:body")
-        .html("<label class=checkbox><input class=scale type=checkbox> Normalize topic bars</label>")
-        .attr("transform", "translate(-40, " + ((d3.keys(topics).length / 2) + 2) * 20 + ")");
-    legend.append("text")
-        .attr("dx", -20)
-        .attr("transform", "translate(0, " + ((d3.keys(topics).length / 2) + 3.75) * 20 + ")")
-        .attr("font-weight", "bold")
-        .text("Normalize topic bars");
-    legend.append("rect")
-        .attr("width", 12)
-        .attr("height", 12)
-        .style("fill", "black")
-        .attr("transform", "translate(-40, " + ((d3.keys(topics).length / 2) + 3.2) * 20 + ")");*/
-
-    /*legend.append("foreignObject")
-        .attr("width", 119)
-        .attr("height", 138.66)
-        .attr("transform", "translate(0, " + ((d3.keys(topics).length / 2) + 1) * 20 + ")")
-        .append("xhtml:div")
-        .attr("id", "controls")
-        .style("display", "none")
-        .text("hello")
-        .html("<strong>Display Options</strong>" +
-                  "<label class=checkbox><input class=sort type=checkbox> Alphabetical sort</label>" +
-                  "<label class=checkbox><input class=scale type=checkbox> Normalize topic bars</label>" +
-                  "<button class='btn btn-default reset' onclick=resetTopicSort() disabled>Reset Topic Sort</button><br>");*/
-
-    console.log("going");
     var ns = 'http://www.w3.org/2000/svg';
     var newLegend = document.getElementById('legend');
 
@@ -974,47 +915,24 @@ d3.json(url, function(error, data) {
     var div = document.createElement('div');
     div.innerHTML = '<Strong>Display Options</strong>';
     var label = document.createElement('label');
-    //$(label).addClass("checkbox");
     label.classList.add("checkbox");
     label.innerHTML = "<input class='sort' type='checkbox'>Alphabetical Sort";
-    /*var checkbox = document.createElement("INPUT");
-    checkbox.setAttribute("type", "checkbox");
-    checkbox.classList.add("sort");
-    var t = document.createTextNode("Alphabetical Sort");
-    label.appendChild(checkbox);
-    label.appendChild(t);*/
     label.style.left = "20px";
-    div.appendChild(label);
-    
-    label = document.createElement('label');
-    /*checkbox = document.createElement("INPUT");
-    checkbox.setAttribute("type", "checkbox");
-    checkbox.classList.add("scale");
-    t = document.createTextNode("Normalize Topic Bars");
-    label.appendChild(checkbox);
-    label.appendChild(t);*/
-    label.classList.add("checkbox");
-    label.innerHTML = "<input class='scale' type='checkbox'>Normalize Topic Bars";i
-    label.style.left = "20px";
-    
-    div.appendChild(label);
+    div.appendChild(label); 
+    div.appendChild(label2);
   
-    console.log("reset topic sort");
-
     var button = document.createElement('button');
-    //button.addEventListener("click", resetTopicSort());
     $(button).addClass("btn btn-default reset");
-    $(button).attr('id', 'buttonThingy');
     $(button).attr('disabled', true);
     var t = document.createTextNode("Reset Topic Sort");
     button.appendChild(t);
+    div.appendChild(button);
+    div.appendChild(document.createElement('br'));
     foreignObject.appendChild(div);
-    foreignObject.append(button);
     newLegend.append(foreignObject);
 
-    console.log("reset topic sort 2");
-    //button.addEventListener("onclick", resetTopicSort);
     button.onclick = resetTopicSort;
+
     d3.select(window).on('resize', resize);
 
     function resize() {
@@ -1102,7 +1020,6 @@ d3.json(url, function(error, data) {
       ("Similarity to " + $('.title').first().text()));
   }
 
-  d3.select(".scale").on("change", scaleTopics);
   function sortDataset(sortFn) {
     dataset = dataset.sort(sortFn);
 
@@ -1147,9 +1064,6 @@ d3.json(url, function(error, data) {
     });
     redrawBars(function(a,b) { return original_root.topics[b] - original_root.topics[a]; });
   }
-
-  //console.log(document.getElementById('buttonThingy'));
-  //$(document).ready(function() { document.getElementById('buttonThingy').addEventListener("click", resetTopicSort())});
 
   function topicSort(topic) {
     // Copy-on-write since tweens are evaluated after a delay.
