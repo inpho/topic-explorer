@@ -968,37 +968,42 @@ d3.json(url, function(error, data) {
     var newLegend = document.getElementById('legend');
 
     var foreignObject = document.createElementNS(ns, 'foreignObject');
-    foreignObject.setAttribute("width", 120);
+    foreignObject.setAttribute("width", 140);
     foreignObject.setAttribute("height", 140);
     foreignObject.setAttribute("transform", "translate(20, " + (((d3.keys(topics).length / 2) + 1) * 20 + 65) + ")");
     var div = document.createElement('div');
     div.innerHTML = '<Strong>Display Options</strong>';
     var label = document.createElement('label');
     //$(label).addClass("checkbox");
-    //label.classList.add("checkbox");
-    //label.innerHTML = "<input class='sort' type='checkbox'>Alphabetical Sort";
-    var checkbox = document.createElement("INPUT");
+    label.classList.add("checkbox");
+    label.innerHTML = "<input class='sort' type='checkbox'>Alphabetical Sort";
+    /*var checkbox = document.createElement("INPUT");
     checkbox.setAttribute("type", "checkbox");
     checkbox.classList.add("sort");
     var t = document.createTextNode("Alphabetical Sort");
     label.appendChild(checkbox);
-    label.appendChild(t);
+    label.appendChild(t);*/
+    label.style.left = "20px";
     div.appendChild(label);
     
     label = document.createElement('label');
-    checkbox = document.createElement("INPUT");
+    /*checkbox = document.createElement("INPUT");
     checkbox.setAttribute("type", "checkbox");
     checkbox.classList.add("scale");
     t = document.createTextNode("Normalize Topic Bars");
     label.appendChild(checkbox);
-    label.appendChild(t);
-    //label.classList.add("checkbox");
-    //label.innerHTML = "<input class='scale' type='checkbox'>Normalize Topic Bars";
+    label.appendChild(t);*/
+    label.classList.add("checkbox");
+    label.innerHTML = "<input class='scale' type='checkbox'>Normalize Topic Bars";i
+    label.style.left = "20px";
+    
     div.appendChild(label);
     
     var button = document.createElement('button');
     button.addEventListener("click", resetTopicSort());
-    $(button).addClass("btn btn-default reset");
+    $(button).addClass("btn btn-default reset");i
+    var t = document.createTextNode("Reset Topic Sort");
+    button.appendChild(t);
     foreignObject.appendChild(div);
     foreignObject.append(button);
     newLegend.append(foreignObject);
