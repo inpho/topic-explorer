@@ -165,6 +165,12 @@ Rebuild (``--rebuild``)
 -------------------------
 Re-tokenizes the corpus and recreates the configuration file.
 
+HathiTrust Integration (``--htrc``)
+-------------------------------------
+For use with a list of HathiTrust volumes. See `HTRC Integrations - Working with Extracted Features`_.
+
+.. _HTRC Integrations - Working with Extracted Features:
+    htrc.html#working-with-htrc-extracted-features
 
 Quiet Mode (``-q``)
 ---------------------
