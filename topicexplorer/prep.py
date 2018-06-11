@@ -26,7 +26,9 @@ different collections. Arbitrary lists can still be excluded with the
 
 While most natural language processing (NLP) tools exclude common words,
 ``topicexplorer prep`` also provides functionality to remove low-frequency
-words. The contribution of low-freuqency words to the probability distribution
+words. 
+
+The contribution of low-freuqency words to the probability distribution
 is negligible -- if a word only occurs once in a 1 million word corpus (which
 can easily be hit with only 25-50 volumes), then it has a .000001 probability of
 occurring. The runtime improvements gained from excluding these low frequency
@@ -37,15 +39,15 @@ Another benefit of removing low-frequency words is the removal of spurious
 tokens introduced by optical character recognition (OCR) in scanned documents.
 
 Finally, very small words can be excluded with the |min-word-len argument|_.
-These small words often appear when mathematical formulas are in a text (e.g.,``y =
-mx + b`` would introduce ``y``, ``mx``, and ``b``). Usually, they will be caught
-by the low-frequency filters, but this ensures they are left out.
+These small words often appear when mathematical formulas are in a text (e.g.,
+``y = mx + b`` would introduce ``y``, ``mx``, and ``b``). Usually, they will be
+caught by the low-frequency filters, but this ensures they are left out.
 
 .. |min-word-len argument| replace:: ``--min-word-len`` argument
 .. _min-word-len argument: #small-words-min-word-len
 
 
-.. seealso:
+.. seealso::
     `Introduction to Information Retrieval -- stop words`_
         Stanford textbook on stop words.
 
@@ -73,22 +75,38 @@ Command Line Arguments
 
 High-probability words (``--high-percent``)
 ---------------------------------------------
+Remove common words from the corpus, accounting for up to ``HIGH_PERCENT`` of
+the total occurrences in the corpus.
+
+**Recommended, but not default:** ``--high-percent 50``
 
 
 Low-probability words (``--low-percent``)
 -------------------------------------------
+Remove uncommon words from the corpus, accounting for up to ``LOW_PERCENT`` of
+the total occurrences in the corpus.
+
+**Recommended, but not default:** ``--low-percent 10``
 
 
 Small words (``--min-word-len``)
 ----------------------------------
+Remove words with few characters from the corpus. Often includes mathematical
+notation and OCR errors. 
+
+**Recommended, but not default:** ``--min-word-len 3``
 
 
 Custom stopwords (``-stopword-file``)
 ---------------------------------------
+Remove custom words from the corpus.
 
 
 Quiet mode (``-q``)
 ---------------------
+Suppresses all user input requests. Uses default values unless otherwise
+specified by other argument flags. Very useful for scripting automated
+pipelines.
 
 """
 
