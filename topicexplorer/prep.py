@@ -57,17 +57,16 @@ caught by the low-frequency filters, but this ensures they are left out.
 
 
 
-Recommendations
------------------
+Recommended Settings
+======================
+Each argument has a suggested value. A quick start, assuming your corpus is in
+a folder called "workset" is::
 
-Then stoplist low-probability words totaling 20% of all occurrences in a
-document, then stoplist high-probability words totaling 30% of a document, These
-stoplists result in a 50% reduction in corpus size. Every other occurrence is
-excluded, but the occurrences excluded are selected in a principled manner,
-resulting in a better quality topic model. This lines up with some research in
-linguistics showing that it is the middle-frequency terms that really determine
-meaning. It also lines up well with our non-consumptive goals: by removing the
-words from the corpus, the original corpus is nearly impossible to reconstruct.
+    topicexplorer prep workset --high-percent 50 --low-percent 10 --min-word-len 3 -q
+
+These parameters work well for English-language text. For languages without
+articles (e.g., "a", "the"), we recommend reducing the ``--high-percent``
+argument to ``--high-percent 25``.
 
 
 Command Line Arguments
