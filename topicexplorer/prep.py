@@ -636,13 +636,14 @@ def populate_parser(parser):
     parser.add_argument("-q", "--quiet", help="Do not prompt for input",
                         action="store_true")
 
-    # TODO: Figure out final resolution to #159.
     parser.add_argument("--lang", nargs='+', choices=langs.keys(),
-                        help="Languages to stoplist. See options below.", metavar='xx')
+                        help=argparse.SUPPRESS, metavar='xx')
+    """
     parser.epilog = ('Available language stoplists (use 2-letter code): \n\t' +
                      '\n\t'.join(['{k}    {v}'.format(k=k, v=v.capitalize())
                                   for k, v in sorted(langs.items(),
                                                      key=lambda x: x[1])]))
+    """
 
 if __name__ == '__main__':
     import argparse
