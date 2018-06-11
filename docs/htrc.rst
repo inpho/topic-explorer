@@ -63,7 +63,7 @@ Working with Collections
 --------------------------
 Any work with the HathiTrust requires management of HathiTrust IDs. The simplest
 form of collection management involves a simple text file consisting of
-identifiers:
+identifiers::
 
     mdp.49015002517150
     mdp.39015045637462
@@ -174,14 +174,26 @@ Analyses performed in HTRC Data Capsules must be reviewed for compliance with
 
 Working with HTRC Extracted Features 
 --------------------------------------
-The `HTRC Extracted Features dataset`_ consists of word counts for 15.7 million
-volumes of public domain and in-copyright works. 
+The `HTRC Extracted Features dataset`_ contains word counts for 15.7 million
+volumes of public domain and in-copyright works. These word counts are already a
+`non-consumptive use`_, so the extracted features can be downloaded to any
+computer.
 
-``topicexplorer init --htrc``
+To use the InPhO Topic Explorer with extracted features: 
+
+1.  Create a text file with volume IDs, possibly using the |htrc export
+    command|_ on a HathiTrust collection URL.
+2.  Use the ``--htrc`` flag on the Topic Explorer to download volumes from the
+    extracted features dataset and construct a corpus object::
+
+        topicexplorer init --htrc volumes.txt
+
+    where volumes.txt is the name of the file containing volume IDs.
 
 .. _HTRC Extracted Features dataset:
     https://wiki.htrc.illinois.edu/display/COM/Extracted+Features+Dataset
-
+.. |htrc export command| replace:: ``htrc export`` command
+.. _htrc export command: #hathitrust-collection-builder
 
 
 Adding HathiTrust Metadata
