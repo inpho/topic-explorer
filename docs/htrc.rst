@@ -198,5 +198,9 @@ To use the InPhO Topic Explorer with extracted features:
 
 Adding HathiTrust Metadata
 ----------------------------
-``topicexplorer metadata --htrc``
+The ``topicexplorer metadata --htrc`` command will add volume titles and 
+links to the HathiTrust Page Turner fulltext view to the InPhO Topic Explorer
+document view.
 
+The metadata command may be run on datasets computed via HTRC Algorithms, in
+Data Capsules, and using Extracted Features.
