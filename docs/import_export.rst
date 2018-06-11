@@ -1,17 +1,17 @@
 Import and Export
 ===================
 
-`tez` files
--------------
-`tez` files are just `zip` files with a different extension. They contain:
+``tez`` Files
+---------------
+``tez`` files are just ``zip`` files with a different extension. They contain:
 
- -  the `ini` configuration file
- -  the `npz` corpus file
- -  any `npz` topic model files
- -  a `metadata.json` for the corpus
+ -  the ``ini`` configuration file
+ -  the ``npz`` corpus file
+ -  any ``npz`` topic model files
+ -  a ``metadata.json`` for the corpus
  -  the raw corpus (only with the |export include-corpus|_ flag)
 
-.. |export include-corpus| replace: ``export --include-corpus``
+.. |export include-corpus| replace:: ``export --include-corpus``
 .. _export include-corpus: #include-corpus
 
 
@@ -21,7 +21,7 @@ Import and Export
 Command Line Arguments
 ''''''''''''''''''''''''
 
-Output Path (``--o``)
+Output Path (``-o``)
 """""""""""""""""""""""
 **Default:** Current direcotry
 
