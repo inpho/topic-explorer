@@ -1,3 +1,37 @@
+"""
+Train topic models on a corpus using Latent Dirichlet Allocation.
+
+Command Line Interface
+------------------------
+
+Number of Topics (``-k``)
+'''''''''''''''''''''''''''
+
+Number of Iterations (``--iter``)
+'''''''''''''''''''''''''''''''''''
+
+Number of Processes (``-p``)
+''''''''''''''''''''''''''''''
+
+Random Seed (``--seed``)
+''''''''''''''''''''''''''
+
+Test (``--dry-run``)
+''''''''''''''''''''''
+
+Rebuild models (``--rebuild``)
+''''''''''''''''''''''''''''''''
+
+Continue models (``--continue``)
+''''''''''''''''''''''''''''''''''
+
+Quiet Mode (``-q``)
+'''''''''''''''''''''
+Suppresses all user input requests. Uses default values unless otherwise
+specified by other argument flags. Very useful for scripting automated
+pipelines.
+
+"""
 from __future__ import print_function
 from __future__ import absolute_import
 from future import standard_library
@@ -252,25 +286,26 @@ Do you want to continue training your existing models? """, default=True))):
 
 
 def populate_parser(parser):
+    import argparse
     parser.add_argument("config_file", help="Path to Config",
                         type=lambda x: is_valid_configfile(parser, x))
-    parser.add_argument("--context-type", dest='context_type',
-                        help="Level of corpus modeling, prompts if not set")
-    parser.add_argument("-p", "--processes", default=1, type=int,
-                        help="Number of CPU cores for training [Default: 1]")
-    parser.add_argument("--seed", default=None, type=int,
-                        help="Random seed for topic modeling [Default: None]")
     parser.add_argument("-k", nargs='+',
                         help="K values to train upon", type=int)
     parser.add_argument('--iter', type=int,
                         help="Number of training iterations")
+    parser.add_argument("-p", "--processes", default=1, type=int,
+                        help="Number of CPU cores for training [Default: 1]")
+    parser.add_argument("--context-type", dest='context_type',
+                        help=argparse.SUPPRESS)
+    parser.add_argument("--seed", default=None, type=int,
+                        help="Random seed for topic modeling [Default: None]")
     parser.add_argument('--dry-run', dest='dry_run', action='store_true',
                         help="Run code without training models")
     parser.add_argument('--rebuild', action='store_true')
     parser.add_argument('--continue', dest='cont', action='store_true')
     parser.add_argument('-q', '--quiet', action='store_true')
     parser.add_argument('--cluster', type=int,
-                        help="Cluster an existing model")
+                        help=argparse.SUPPRESS)
 
 
 if __name__ == '__main__':
