@@ -185,7 +185,7 @@ var icon_fns = {"link" : function(ticks, i) {
       base_fn(ticks,i)
         .attr("xlink:href","/img/inpho.png")
         .attr("class", "inphoIcon icon")
-        .on("click", function(d) { window.open("https://inpho.cogs.indiana.edu/entity?redirect=True&sep=" + d, "_blank");});
+        .on("click", function(d) { window.open("https://www.inphoproject.org/entity?redirect=True&sep=" + d, "_blank");});
    },
  "sep" : function(ticks, i) {
       base_fn(ticks,i)
