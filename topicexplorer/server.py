@@ -1,3 +1,49 @@
+"""
+Starts a web server and displays the Topic Explorer visualizations.
+
+Visualizations
+================
+Often, a topic is represented by the top 10 highest probability words in the
+topic's word distribution. However, it is important to recognize that these
+words do not fully represent the topic.
+
+Topic Map
+-----------
+The **topic map** places the topics from the all the trained models on
+a two-dimensional map that attempts to place similar topics close to each
+other.
+
+The clusters and colors are determined automatically by an algorithm, and
+provide only a rough guide to groups of topics that have similar themes. The
+different axes also do not have any intrinsic meaning, but are often
+interpretable as representing historical or thematic dimensions in the
+underlying corpus.
+
+Checking the *collision detection* checkbox will minimize overlap among the
+nodes but distort the underlying similarity relationships.
+
+The nodes are scaled according to the number of topics in the corresponding
+model. Larger circles correspond to models with fewer topics. You can control
+which models are included in the map by clicking on the numbers on the left to
+toggle the corresponding models off and on.
+
+You may also enter words in the search box to have the isomap change shading
+to help you find topics related to the words.
+
+Clicking on any topic circle will take you to the `hypershelf`_ with the top
+documents for that topic already selected.
+
+The topic map displayed here uses the non-linear isomap method for reducing
+the multi-dimensional topic space to two dimensions.
+
+.. _hypershelf: #hypershelf
+
+Hypershelf
+------------
+
+
+"""
+
 from __future__ import print_function
 from future import standard_library
 standard_library.install_aliases()
