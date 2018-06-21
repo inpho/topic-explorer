@@ -2,7 +2,7 @@ This is the **InPhO Topic Explorer**.  It allows you to explore a collection of 
 
 **Topic models** represent documents as **mixtures** of topics. The topic model is trained by an algorithm that finds latent (hidden) relationships among the documents.  Typically we train models with different numbers of topics, which show different levels of detail in the documents. A model with more topics will, in general, show finer details.
 
-If you would like more information about topic modeling, you can watch the video at [http://inphodata.cogs.indiana.edu/](http://inphodata.cogs.indiana.edu) and read the article by [David Blei (2012)](http://www.cs.columbia.edu/~blei/papers/Blei2012.pdf).
+If you would like more information about topic modeling, you can watch the video at [https://www.hypershelf.org/](https://www.hypershelf.org) and read the article by [David Blei (2012)](http://www.cs.columbia.edu/~blei/papers/Blei2012.pdf).
 
 From this page you can explore the topic models in various ways using the large buttons in the middle of the page and the menu items on the left. On this page, you may also find some information about the specific corpus used to train the models, if the person who trained the models has provided it.
 
