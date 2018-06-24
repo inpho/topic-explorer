@@ -89,30 +89,30 @@ The home button at the top left will take you to a general information page
 about the corpus and models.
 
 
-Command Line Interface
-------------------------
+Command Line Arguments 
+========================
 
 Hostname (``--host``)
-'''''''''''''''''''''''
+-----------------------
 Hostname for the server instance. Set to ``0.0.0.0`` to listen on all names.
 
 **Default:** ``127.0.0.1`` (``localhost``)
 
 Port (``--port``)
-'''''''''''''''''''
+-------------------
 Port number for the server instance.
 
 **Default:** 8000 
 
 
 No browser launch (``--no-browser``)
-''''''''''''''''''''''''''''''''''''''
+--------------------------------------
 By default, ``topicexplorer launch`` will open the server instance in the
 default browser. With ``--no-browser``, only the server daemon will run.
 
 
 Quiet Mode (``-q``)
-'''''''''''''''''''''
+---------------------
 Suppresses all user input requests. Uses default values unless otherwise
 specified by other argument flags. Very useful for scripting automated
 pipelines.

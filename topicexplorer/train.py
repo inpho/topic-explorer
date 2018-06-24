@@ -44,7 +44,7 @@ same text, the |seed parameter| must be set to the same number.
 .. _InPhO Topic Explorer - The HTRC 1315 Hypershelf:
     https://www.youtube.com/watch?v=QAPKCyA4uOc
 
-Command Line Interface
+Command Line Arguments 
 ------------------------
 
 Number of Topics (``-k``)
