@@ -89,8 +89,8 @@ The home button at the top left will take you to a general information page
 about the corpus and models.
 
 
-Command Line Arguments
-========================
+Command Line Interface
+------------------------
 
 Hostname (``--host``)
 '''''''''''''''''''''''
