@@ -91,6 +91,32 @@ about the corpus and models.
 
 Command Line Arguments
 ========================
+
+Hostname (``--host``)
+'''''''''''''''''''''''
+Hostname for the server instance. Set to ``0.0.0.0`` to listen on all names.
+
+**Default:** ``127.0.0.1`` (``localhost``)
+
+Port (``--port``)
+'''''''''''''''''''
+Port number for the server instance.
+
+**Default:** 8000 
+
+
+No browser launch (``--no-browser``)
+''''''''''''''''''''''''''''''''''''''
+By default, ``topicexplorer launch`` will open the server instance in the
+default browser. With ``--no-browser``, only the server daemon will run.
+
+
+Quiet Mode (``-q``)
+'''''''''''''''''''''
+Suppresses all user input requests. Uses default values unless otherwise
+specified by other argument flags. Very useful for scripting automated
+pipelines.
+
 """
 
 from __future__ import print_function
@@ -123,7 +149,6 @@ from bottle import (abort, redirect, request, response, route, run,
                     static_file, Bottle, ServerAdapter)
 import topicexplorer.config
 from topicexplorer.lib.color import get_topic_colors, rgb2hex
-from topicexplorer.lib.ssl import SSLWSGIRefServer
 from topicexplorer.lib.util import (int_prompt, bool_prompt, is_valid_filepath,
     is_valid_configfile, get_static_resource_path)
 
@@ -952,30 +977,13 @@ def create_app(args):
 def populate_parser(parser):
     parser.add_argument('config', type=lambda x: is_valid_configfile(parser, x),
                         help="Configuration file path")
-    parser.add_argument('-k', type=int, required=False,
-                        help="Number of Topics")
-    parser.add_argument('-p', dest='port', type=int,
-                        help="Port Number", default=None)
     parser.add_argument('--host', default='127.0.0.1', help='Hostname')
+    parser.add_argument('-p', '--port', dest='port', type=int,
+                        help="Port Number", default=8000)
     parser.add_argument('--no-browser', dest='browser', action='store_false')
-    parser.add_argument("-q", "--quiet", action="store_true")
     parser.add_argument('--fulltext', action='store_true',
                         help='Serve raw corpus files.')
-    parser.add_argument('--bibtex', default=None,
-                        type=lambda x: is_valid_filepath(parser, x),
-                        help='BibTeX library location')
-    parser.add_argument('--ssl', action='store_true',
-                        help="Use SSL (must specify certfile, keyfile, and ca_certs in config)")
-    parser.add_argument('--ssl-certfile', dest='certfile', nargs="?",
-                        const='server.pem', default=None,
-                        type=lambda x: is_valid_filepath(parser, x),
-                        help="SSL certificate file")
-    parser.add_argument('--ssl-keyfile', dest='keyfile', default=None,
-                        type=lambda x: is_valid_filepath(parser, x),
-                        help="SSL certificate key file")
-    parser.add_argument('--ssl-ca', dest='ca_certs', default=None,
-                        type=lambda x: is_valid_filepath(parser, x),
-                        help="SSL certificate authority file")
+    parser.add_argument("-q", "--quiet", action="store_true")
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
