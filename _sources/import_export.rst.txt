@@ -23,10 +23,13 @@ Command Line Arguments
 
 Output Path (``-o``)
 """""""""""""""""""""""
+Specifies the output path for the `tez` file.
+
 **Default:** Current direcotry
 
 ``--include-corpus``
 """"""""""""""""""""""
+Include the raw corpus for fulltext view. Corpus inclusion is disabled by default to protect copyrighted source data.
 
 
 ``topicexplorer import``

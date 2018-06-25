@@ -40,8 +40,64 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="topicexplorer-metadata">
-<h1><code class="docutils literal"><span class="pre">topicexplorer</span> <span class="pre">metadata</span></code><a class="headerlink" href="#topicexplorer-metadata" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-topicexplorer.metadata">
+<span id="topicexplorer-metadata"></span><h1><code class="docutils literal"><span class="pre">topicexplorer</span> <span class="pre">metadata</span></code><a class="headerlink" href="#module-topicexplorer.metadata" title="Permalink to this headline">¶</a></h1>
+<p>Assists with metadata management.</p>
+<p>The <code class="docutils literal"><span class="pre">topicexplorer</span> <span class="pre">metadata</span></code> command provides several metadata management
+tools. It works with tab-separated files (TSV).</p>
+<div class="section" id="example-workflow">
+<h2>Example Workflow<a class="headerlink" href="#example-workflow" title="Permalink to this headline">¶</a></h2>
+<p>A typical workflow, assuming a Topic Explorer environment defined by
+<code class="docutils literal"><span class="pre">example.ini</span></code>:</p>
+<ol class="arabic simple">
+<li>Extract metadata with <code class="docutils literal"><span class="pre">topicexplorer</span> <span class="pre">metadata</span> <span class="pre">-e</span> <span class="pre">metadata.tsv</span> <span class="pre">example.ini</span></code></li>
+<li>Open file in a text editor to change values.</li>
+<li>Save file.</li>
+<li>Update metadata with <code class="docutils literal"><span class="pre">topicexplorer</span> <span class="pre">metadata</span> <span class="pre">-a</span> <span class="pre">metadata.tsv</span> <span class="pre">example.ini</span></code></li>
+</ol>
+<p>For label updating, see documentation for <a class="reference external" href="#list-labels-l">list labels (<code class="docutils literal"><span class="pre">-l</span></code>)</a>.</p>
+</div>
+<div class="section" id="command-line-arguments">
+<h2>Command Line Arguments<a class="headerlink" href="#command-line-arguments" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="extract-metadata-e">
+<h3>Extract Metadata (<code class="docutils literal"><span class="pre">-e</span></code>)<a class="headerlink" href="#extract-metadata-e" title="Permalink to this headline">¶</a></h3>
+<p>Extracts all metadata to a TSV file.</p>
+</div>
+<div class="section" id="list-labels-l">
+<h3>List labels (<code class="docutils literal"><span class="pre">-l</span></code>)<a class="headerlink" href="#list-labels-l" title="Permalink to this headline">¶</a></h3>
+<p>Extracts labels to a TSV file.</p>
+<p>Usage should be combined with <code class="docutils literal"><span class="pre">--rename</span></code>:</p>
+<ol class="arabic simple">
+<li><code class="docutils literal"><span class="pre">topicexplorer</span> <span class="pre">metadata</span> <span class="pre">-l</span> <span class="pre">labels.tsv</span> <span class="pre">example.ini</span></code></li>
+<li>Edit the labels you wish to change.</li>
+<li><code class="docutils literal"><span class="pre">topicexplorer</span> <span class="pre">metadata</span> <span class="pre">--rename</span> <span class="pre">-a</span> <span class="pre">labels.tsv</span> <span class="pre">example.ini</span></code></li>
+</ol>
+</div>
+<div class="section" id="force-insertion-f">
+<h3>Force insertion (<code class="docutils literal"><span class="pre">-f</span></code>)<a class="headerlink" href="#force-insertion-f" title="Permalink to this headline">¶</a></h3>
+<p>Forces blank metadata to be inserted for non-specified fields.</p>
+</div>
+<div class="section" id="rename-labels-rename">
+<h3>Rename labels (<code class="docutils literal"><span class="pre">--rename</span></code>)<a class="headerlink" href="#rename-labels-rename" title="Permalink to this headline">¶</a></h3>
+<p>Changing document labels can cause many issues for reconstructing the document,
+any renames must be explicitly enabled with the <code class="docutils literal"><span class="pre">--rename</span></code> flag. Documents
+will be updated assuming the original order of the extracted TSV file.</p>
+</div>
+<div class="section" id="hathitrust-integration-htrc">
+<h3>HathiTrust Integration (<code class="docutils literal"><span class="pre">--htrc</span></code>)<a class="headerlink" href="#hathitrust-integration-htrc" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal"><span class="pre">topicexplorer</span> <span class="pre">metadata</span> <span class="pre">--htrc</span></code> command will add volume titles and 
+links to the HathiTrust Page Turner fulltext view to the InPhO Topic Explorer
+document view.</p>
+<p>The argument is only a flag, and does not require a TSV file to be specified.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference external" href="htrc.html">HathiTrust Integrations</a></dt>
+<dd>Expanded documentation of the HathiTrust integrations.</dd>
+</dl>
+</div>
+</div>
+</div>
 </div>
 
 
@@ -49,7 +105,23 @@
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper"><div class="relations">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><code class="docutils literal"><span class="pre">topicexplorer</span> <span class="pre">metadata</span></code></a><ul>
+<li><a class="reference internal" href="#example-workflow">Example Workflow</a></li>
+<li><a class="reference internal" href="#command-line-arguments">Command Line Arguments</a><ul>
+<li><a class="reference internal" href="#extract-metadata-e">Extract Metadata (<code class="docutils literal"><span class="pre">-e</span></code>)</a></li>
+<li><a class="reference internal" href="#list-labels-l">List labels (<code class="docutils literal"><span class="pre">-l</span></code>)</a></li>
+<li><a class="reference internal" href="#force-insertion-f">Force insertion (<code class="docutils literal"><span class="pre">-f</span></code>)</a></li>
+<li><a class="reference internal" href="#rename-labels-rename">Rename labels (<code class="docutils literal"><span class="pre">--rename</span></code>)</a></li>
+<li><a class="reference internal" href="#hathitrust-integration-htrc">HathiTrust Integration (<code class="docutils literal"><span class="pre">--htrc</span></code>)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
