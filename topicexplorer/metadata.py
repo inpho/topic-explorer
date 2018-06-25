@@ -1,3 +1,76 @@
+"""
+Assists with metadata management.
+
+The ``topicexplorer metadata`` command provides several metadata management
+tools. It works with tab-separated files (TSV).
+
+Example Workflow
+------------------
+
+A typical workflow, assuming a Topic Explorer environment defined by
+``example.ini``:
+
+1.  Extract metadata with ``topicexplorer metadata -e metadata.tsv example.ini``
+2.  Open file in a text editor to change values.
+3.  Save file.
+4.  Update metadata with ``topicexplorer metadata -a metadata.tsv example.ini``
+
+For label updating, see documentation for |list labels|_.
+
+.. |list labels| replace:: 
+    list labels (``-l``)
+
+.. _list labels:
+    #list-labels-l
+
+
+Command Line Arguments
+------------------------
+
+Extract Metadata (``-e``)
+'''''''''''''''''''''''''''
+Extracts all metadata to a TSV file.
+
+
+List labels (``-l``)
+''''''''''''''''''''''
+Extracts labels to a TSV file.
+
+Usage should be combined with ``--rename``:
+
+1.  ``topicexplorer metadata -l labels.tsv example.ini``
+2.  Edit the labels you wish to change.
+3.  ``topicexplorer metadata --rename -a labels.tsv example.ini``
+
+
+Force insertion (``-f``)
+''''''''''''''''''''''''''
+Forces blank metadata to be inserted for non-specified fields.
+
+
+Rename labels (``--rename``)
+''''''''''''''''''''''''''''''
+Changing document labels can cause many issues for reconstructing the document,
+any renames must be explicitly enabled with the ``--rename`` flag. Documents
+will be updated assuming the original order of the extracted TSV file.
+
+
+HathiTrust Integration (``--htrc``)
+'''''''''''''''''''''''''''''''''''''
+The ``topicexplorer metadata --htrc`` command will add volume titles and 
+links to the HathiTrust Page Turner fulltext view to the InPhO Topic Explorer
+document view.
+
+The argument is only a flag, and does not require a TSV file to be specified.
+
+.. seealso::
+    `HathiTrust Integrations`_
+        Expanded documentation of the HathiTrust integrations.
+
+.. _HathiTrust Integrations: htrc.html
+
+
+"""
 from __future__ import print_function
 from future import standard_library
 standard_library.install_aliases()
@@ -37,20 +110,20 @@ def parse_metadata_from_csvfile(filename, context_type):
     label_name = doc_label_name(context_type)
 
     with open(filename, encoding='utf8') as csvfile:
-        reader = UnicodeDictReader(csvfile)
+        reader = UnicodeDictReader(csvfile, delimiter='\t')
         metadata = SortedDict()
         for row in reader:
             metadata[row[label_name]] = row
 
     return metadata
 
-def extract_metadata(corpus, ctx_type, filename, format='csv'):
+def extract_metadata(corpus, ctx_type, filename, format='tsv'):
     """
     Takes a corpus object, a context_type, and a filename to export
     all metadata to.
     """
     with open(filename, 'w') as csvfile:
-        writer = csv.writer(csvfile)
+        writer = csv.writer(csvfile, delimiter='\t')
         ctx_index = corpus.context_types.index(ctx_type)
 
         ctx_data = corpus.context_data[ctx_index]
@@ -194,12 +267,12 @@ def populate_parser(parser):
     parser.add_argument("-e", "--extract", help="Extract metadata to file")
     parser.add_argument("-a", "--add", help="Add metadata from file")
     parser.add_argument("-l", "--list", help="List all labels")
+    parser.add_argument("--rename", action='store_true', default=False,
+        help="Rename labels, assumes same document order. See documentation.")
     parser.add_argument("-f", "--force", action='store_true', default=False,
         help="Force insertion of blank metadata")
     parser.add_argument("--htrc", action='store_true', default=False,
         help="Download HTRC metadata and configure explorer.")
-    parser.add_argument("--rename", action='store_true', default=False,
-        help="Rename labels, assumes same document order. See documentation.")
 
 
 if __name__ == '__main__':
