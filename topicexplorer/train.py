@@ -18,7 +18,7 @@ visualization|_.
 
 Each topic is a probability distribution over all the words in a corpus. Each
 document is represented as a probability distribution over all the topics
-inferred from the corpus. These two matricies (*word-topic* and
+inferred from the corpus. These two matrices (*word-topic* and
 *topic-document*) represent the results of a topic model.
 
 Running the topic model on the same text with the same parameters does not
@@ -87,11 +87,16 @@ Rebuild models (``--rebuild``)
 If there are existing models for the specified values of ``-k``, retrain them
 with ``--iter`` iterations.
 
+``--rebuild`` cannot be used with ``--continue``.
+
 
 Continue models (``--continue``)
 ''''''''''''''''''''''''''''''''''
 If there are existing models for the specified values of ``-k``, train them for
 an additional ``--iter`` iterations.
+
+``--continue`` cannot be used with ``--rebuild``.
+
 
 
 Quiet Mode (``-q``)

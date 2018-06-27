@@ -3,7 +3,8 @@ This module initializes the topicexplorer. It performs tokenization of the
 corpus.
 
 It creates a ``.ini`` configuration with the settings for this instance. It also
-creates a ``vsm.Corpus`` object saved in a ``.npz`` file.
+creates a ``vsm.Corpus`` object saved in a ``.npz`` file. The corpus object
+stores basic information about documents and the words they contain.
 
 
 Tokenization and Normalization

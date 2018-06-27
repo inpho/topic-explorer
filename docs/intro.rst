@@ -4,8 +4,8 @@ Topic Explorer Introduction
 
 The InPhO Topic Explorer provides an integrated system for text modeling making
 it simple to go from a set of documents to an interactive visualization of LDA
-topic models generated using the |InPhO vsm module|_. More advanced analysis is
-made possible by a built-in pipeline to `Jupyter notebooks`_.
+topic models. More advanced analysis is made possible by a built-in pipeline to
+`Jupyter notebooks`_.
 
 Live demos trained on the Stanford Encyclopedia of Philosophy, a selection of
 books from the HathiTrust Digital Library, a collection of Chinese-language
@@ -35,9 +35,9 @@ Installation
 
 Example Workflow
 ------------------
-The Topic Explorer is a 4-step process. Each step creates and consumes a
-``.ini`` file that defines the links to corpus and model files, along with other
-configuration options.
+The Topic Explorer is a 4-step process. Each step creates or modifies a
+``.ini`` file that defines the links to corpus and model files, along with
+other configuration options.
 
 The Topic Explorer is run from the Terminal (macOS or Linux) or PowerShell
 (Windows).
@@ -55,30 +55,26 @@ The Topic Explorer is run from the Terminal (macOS or Linux) or PowerShell
     ``example`` will be replaced with the folder you select. A configuration
     file called ``example.ini`` will be generated.
 
-2.  Train LDA models using the on-screen instructions::
-        
-        topicexplorer train example
-
-3.  Launch the Topic Explorer::
-
-        topicexplorer launch example
-
-4.  Press Ctrl+C to quit the server instance.
-
-
-.. note::
-    The example above has no corpus preparation stage. Topic results may be poor
-    as a result. After ``init``, the addition of::
+2.  Prepare the corpus for modeling by removing common words to improve topic
+    quality and removing uncommon words to improve modeling speed::
 
         topicexplorer prep example
 
-    will help remove common words to improve topic quality and remove uncommon
-    words to improve modeling speed.
-
     If you are unsure of what to select, we encourage experimentation but
     recommend the following settings::
-        
+
         topicexplorer prep example --high-percent 50 --low-percent 10 --min-word-len 3 -q
+
+3.  Train LDA models using the on-screen instructions::
+        
+        topicexplorer train example
+
+4.  Launch the Topic Explorer::
+
+        topicexplorer launch example
+
+5.  Press Ctrl+C to quit the server instance.
+
 
 .. seealso::
     |topicexplorer init|_
@@ -119,7 +115,7 @@ The project may be cited as:
 
 Collaboration and Maintenance
 -------------------------------
-The InPhO Topic Explroer in maintained by `Jaimie Murdock`_:
+The InPhO Topic Explorer is maintained by `Jaimie Murdock`_:
 
 -  E-mail: `<jammurdo@indiana.edu>`_
 -  Twitter: `@JaimieMurdock <https://twitter.com/JaimieMurdock>`_
