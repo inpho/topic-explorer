@@ -44,8 +44,8 @@
 <h1>Topic Explorer Introduction<a class="headerlink" href="#topic-explorer-introduction" title="Permalink to this headline">¶</a></h1>
 <p>The InPhO Topic Explorer provides an integrated system for text modeling making
 it simple to go from a set of documents to an interactive visualization of LDA
-topic models generated using the <a class="reference external" href="https://github.com/inpho/vsm">InPhO <code class="docutils literal"><span class="pre">vsm</span></code> module</a>. More advanced analysis is
-made possible by a built-in pipeline to <a class="reference external" href="http://jupyter.org/">Jupyter notebooks</a>.</p>
+topic models. More advanced analysis is made possible by a built-in pipeline to
+<a class="reference external" href="http://jupyter.org/">Jupyter notebooks</a>.</p>
 <p>Live demos trained on the Stanford Encyclopedia of Philosophy, a selection of
 books from the HathiTrust Digital Library, a collection of Chinese-language
 texts and the original LDA training set of Associated Press articles are
@@ -68,9 +68,9 @@ instructions.</p>
 </div>
 <div class="section" id="example-workflow">
 <h2>Example Workflow<a class="headerlink" href="#example-workflow" title="Permalink to this headline">¶</a></h2>
-<p>The Topic Explorer is a 4-step process. Each step creates and consumes a
-<code class="docutils literal"><span class="pre">.ini</span></code> file that defines the links to corpus and model files, along with other
-configuration options.</p>
+<p>The Topic Explorer is a 4-step process. Each step creates or modifies a
+<code class="docutils literal"><span class="pre">.ini</span></code> file that defines the links to corpus and model files, along with
+other configuration options.</p>
 <p>The Topic Explorer is run from the Terminal (macOS or Linux) or PowerShell
 (Windows).</p>
 <ol class="arabic">
@@ -81,6 +81,17 @@ folders:</p>
 </div>
 <p><code class="docutils literal"><span class="pre">example</span></code> will be replaced with the folder you select. A configuration
 file called <code class="docutils literal"><span class="pre">example.ini</span></code> will be generated.</p>
+</li>
+<li><p class="first">Prepare the corpus for modeling by removing common words to improve topic
+quality and removing uncommon words to improve modeling speed:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">topicexplorer</span> <span class="n">prep</span> <span class="n">example</span>
+</pre></div>
+</div>
+<p>If you are unsure of what to select, we encourage experimentation but
+recommend the following settings:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">topicexplorer</span> <span class="n">prep</span> <span class="n">example</span> <span class="o">--</span><span class="n">high</span><span class="o">-</span><span class="n">percent</span> <span class="mi">50</span> <span class="o">--</span><span class="n">low</span><span class="o">-</span><span class="n">percent</span> <span class="mi">10</span> <span class="o">--</span><span class="nb">min</span><span class="o">-</span><span class="n">word</span><span class="o">-</span><span class="nb">len</span> <span class="mi">3</span> <span class="o">-</span><span class="n">q</span>
+</pre></div>
+</div>
 </li>
 <li><p class="first">Train LDA models using the on-screen instructions:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">topicexplorer</span> <span class="n">train</span> <span class="n">example</span>
@@ -95,21 +106,6 @@ file called <code class="docutils literal"><span class="pre">example.ini</span><
 <li><p class="first">Press Ctrl+C to quit the server instance.</p>
 </li>
 </ol>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p>The example above has no corpus preparation stage. Topic results may be poor
-as a result. After <code class="docutils literal"><span class="pre">init</span></code>, the addition of:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">topicexplorer</span> <span class="n">prep</span> <span class="n">example</span>
-</pre></div>
-</div>
-<p>will help remove common words to improve topic quality and remove uncommon
-words to improve modeling speed.</p>
-<p>If you are unsure of what to select, we encourage experimentation but
-recommend the following settings:</p>
-<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="n">topicexplorer</span> <span class="n">prep</span> <span class="n">example</span> <span class="o">--</span><span class="n">high</span><span class="o">-</span><span class="n">percent</span> <span class="mi">50</span> <span class="o">--</span><span class="n">low</span><span class="o">-</span><span class="n">percent</span> <span class="mi">10</span> <span class="o">--</span><span class="nb">min</span><span class="o">-</span><span class="n">word</span><span class="o">-</span><span class="nb">len</span> <span class="mi">3</span> <span class="o">-</span><span class="n">q</span>
-</pre></div>
-</div>
-</div>
 <div class="admonition seealso">
 <p class="first admonition-title">See also</p>
 <dl class="last docutils">
@@ -138,7 +134,7 @@ Artificial Intelligence (AAAI-15). Austin, Texas, USA, January 25-29,
 </div>
 <div class="section" id="collaboration-and-maintenance">
 <h2>Collaboration and Maintenance<a class="headerlink" href="#collaboration-and-maintenance" title="Permalink to this headline">¶</a></h2>
-<p>The InPhO Topic Explroer in maintained by <a class="reference external" href="http:/jamram.net/">Jaimie Murdock</a>:</p>
+<p>The InPhO Topic Explorer is maintained by <a class="reference external" href="http:/jamram.net/">Jaimie Murdock</a>:</p>
 <ul class="simple">
 <li>E-mail: <a class="reference external" href="mailto:jammurdo&#37;&#52;&#48;indiana&#46;edu">mailto:jammurdo<span>&#64;</span>indiana<span>&#46;</span>edu</a></li>
 <li>Twitter: <a class="reference external" href="https://twitter.com/JaimieMurdock">&#64;JaimieMurdock</a></li>

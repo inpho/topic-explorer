@@ -56,7 +56,7 @@ levels of detail in the documents. A model with more topics will, in general,
 show finer details. These models can be compared using the <a class="reference external" href="launch.html#topic-map"><em>topic map visualization</em> in <code class="docutils literal"><span class="pre">topicexplorer</span> <span class="pre">launch</span></code></a>.</p>
 <p>Each topic is a probability distribution over all the words in a corpus. Each
 document is represented as a probability distribution over all the topics
-inferred from the corpus. These two matricies (<em>word-topic</em> and
+inferred from the corpus. These two matrices (<em>word-topic</em> and
 <em>topic-document</em>) represent the results of a topic model.</p>
 <p>Running the topic model on the same text with the same parameters does not
 guarantee the same results due to the probabilistic nature of the inference
@@ -104,11 +104,13 @@ same numbers, and therefore generate the same topic models.</p>
 <h3>Rebuild models (<code class="docutils literal"><span class="pre">--rebuild</span></code>)<a class="headerlink" href="#rebuild-models-rebuild" title="Permalink to this headline">¶</a></h3>
 <p>If there are existing models for the specified values of <code class="docutils literal"><span class="pre">-k</span></code>, retrain them
 with <code class="docutils literal"><span class="pre">--iter</span></code> iterations.</p>
+<p><code class="docutils literal"><span class="pre">--rebuild</span></code> cannot be used with <code class="docutils literal"><span class="pre">--continue</span></code>.</p>
 </div>
 <div class="section" id="continue-models-continue">
 <h3>Continue models (<code class="docutils literal"><span class="pre">--continue</span></code>)<a class="headerlink" href="#continue-models-continue" title="Permalink to this headline">¶</a></h3>
 <p>If there are existing models for the specified values of <code class="docutils literal"><span class="pre">-k</span></code>, train them for
 an additional <code class="docutils literal"><span class="pre">--iter</span></code> iterations.</p>
+<p><code class="docutils literal"><span class="pre">--continue</span></code> cannot be used with <code class="docutils literal"><span class="pre">--rebuild</span></code>.</p>
 </div>
 <div class="section" id="quiet-mode-q">
 <h3>Quiet Mode (<code class="docutils literal"><span class="pre">-q</span></code>)<a class="headerlink" href="#quiet-mode-q" title="Permalink to this headline">¶</a></h3>
