@@ -5,13 +5,21 @@ Visualizations
 ================
 Often, a topic is represented by the top 10 highest probability words in the
 topic's word distribution. However, it is important to recognize that these
-words do not fully represent the topic.
+words do not fully represent the topic. The Topic Explorer visualizations
+show topics using the full distributions of the model. The `topic map`_ shows
+topics in relation to other topics through their complete word distributions.
+The `hypershelf`_ shows topics in relation to documents (the `hypershelf`_).
+
+.. _topic map: #topic-map
+.. _hypershelf: #hypershelf
+
 
 Topic Map
 -----------
 The **topic map** places the topics from the all the trained models on
 a two-dimensional map that attempts to place similar topics close to each
-other.
+other. It uses the isomap method to reduce the multi-dimensional topic space to
+two dimensions.
 
 The clusters and colors are determined automatically by an algorithm, and
 provide only a rough guide to groups of topics that have similar themes. The
@@ -27,16 +35,12 @@ model. Larger circles correspond to models with fewer topics. You can control
 which models are included in the map by clicking on the numbers on the left to
 toggle the corresponding models off and on.
 
-You may also enter words in the search box to have the isomap change shading
-to help you find topics related to the words.
+You may also enter words in the search box to have the map change shading to
+help you find topics related to the words.
 
 Clicking on any topic circle will take you to the `hypershelf`_ with the top
 documents for that topic already selected.
 
-The topic map displayed here uses the non-linear isomap method for reducing
-the multi-dimensional topic space to two dimensions.
-
-.. _hypershelf: #hypershelf
 
 Hypershelf
 ------------
