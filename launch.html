@@ -47,12 +47,16 @@
 <h2>Visualizations<a class="headerlink" href="#visualizations" title="Permalink to this headline">¶</a></h2>
 <p>Often, a topic is represented by the top 10 highest probability words in the
 topic’s word distribution. However, it is important to recognize that these
-words do not fully represent the topic.</p>
-<div class="section" id="topic-map">
-<h3>Topic Map<a class="headerlink" href="#topic-map" title="Permalink to this headline">¶</a></h3>
+words do not fully represent the topic. The Topic Explorer visualizations
+show topics using the full distributions of the model. The <a class="reference external" href="#topic-map">topic map</a> shows
+topics in relation to other topics through their complete word distributions.
+The <a class="reference external" href="#hypershelf">hypershelf</a> shows topics in relation to documents (the <a class="reference external" href="#hypershelf">hypershelf</a>).</p>
+<div class="section" id="id1">
+<h3>Topic Map<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <p>The <strong>topic map</strong> places the topics from the all the trained models on
 a two-dimensional map that attempts to place similar topics close to each
-other.</p>
+other. It uses the isomap method to reduce the multi-dimensional topic space to
+two dimensions.</p>
 <p>The clusters and colors are determined automatically by an algorithm, and
 provide only a rough guide to groups of topics that have similar themes. The
 different axes also do not have any intrinsic meaning, but are often
@@ -64,15 +68,13 @@ nodes but distort the underlying similarity relationships.</p>
 model. Larger circles correspond to models with fewer topics. You can control
 which models are included in the map by clicking on the numbers on the left to
 toggle the corresponding models off and on.</p>
-<p>You may also enter words in the search box to have the isomap change shading
-to help you find topics related to the words.</p>
+<p>You may also enter words in the search box to have the map change shading to
+help you find topics related to the words.</p>
 <p>Clicking on any topic circle will take you to the <a class="reference external" href="#hypershelf">hypershelf</a> with the top
 documents for that topic already selected.</p>
-<p>The topic map displayed here uses the non-linear isomap method for reducing
-the multi-dimensional topic space to two dimensions.</p>
 </div>
-<div class="section" id="id1">
-<h3>Hypershelf<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id2">
+<h3>Hypershelf<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <p>The <strong>Hypershelf</strong> shows up to 40 documents that are most similar to the focal
 document. Each document is represented by a bar whose colors show the mixture
 and proportions of topics assigned to each document by the training process.
@@ -153,8 +155,8 @@ pipelines.</p>
   <ul>
 <li><a class="reference internal" href="#"><code class="docutils literal"><span class="pre">topicexplorer</span> <span class="pre">launch</span></code></a><ul>
 <li><a class="reference internal" href="#visualizations">Visualizations</a><ul>
-<li><a class="reference internal" href="#topic-map">Topic Map</a></li>
-<li><a class="reference internal" href="#id1">Hypershelf</a><ul>
+<li><a class="reference internal" href="#id1">Topic Map</a></li>
+<li><a class="reference internal" href="#id2">Hypershelf</a><ul>
 <li><a class="reference internal" href="#focal-document">Focal Document</a></li>
 <li><a class="reference internal" href="#other-options">Other Options</a></li>
 </ul>

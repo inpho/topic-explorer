@@ -85,6 +85,8 @@ The Topic Explorer is run from the Terminal (macOS or Linux) or PowerShell
         More details on topic modeling.
     |topicexplorer launch|_
         More details on the visualization interfaces.
+    |topicexplorer notebook|_
+        More details on the notebook interface.
 
 .. |topicexplorer init| replace:: ``topicexplorer init``
 .. _topicexplorer init: init.html
@@ -94,6 +96,8 @@ The Topic Explorer is run from the Terminal (macOS or Linux) or PowerShell
 .. _topicexplorer train: train.html
 .. |topicexplorer launch| replace:: ``topicexplorer launch``
 .. _topicexplorer launch: launch.html
+.. |topicexplorer notebook| replace:: ``topicexplorer notebook``
+.. _topicexplorer notebook: notebook.html
 
 
 Licensing and Attribution
