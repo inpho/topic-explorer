@@ -1135,11 +1135,16 @@ d3.json(url, function(error, data) {
 
 fingerprint.host = '../';
 
-$('#home-link').attr('href', '../');
-$('#cluster-link').attr('href', '../topics');
-$('.topic-link').each(function(i,elt) {
-    var url = '../' + $(elt).attr('href');
-    if(docid) url += '?doc=' + docid;
-    $(this).attr('href', url);
-  }); 
-
+// Determines how many rows to add to the grids layout
+function applyGrids() {
+  var k = 0;
+  $('#home-link').attr('href', '../');
+  $('#cluster-link').attr('href', '../topics');
+  $('.topic-link').each(function(i,elt) {
+      var url = '../' + $(elt).attr('href');
+      if(docid) url += '?doc=' + docid;
+      $(this).attr('href', url);
+      k++;
+    });
+  document.getElementById('sidebar-container').style.gridTemplateRows = 'repeat(' + (k + 4) + ', ' + (100 / (k + 4)) + 'vh)';
+}

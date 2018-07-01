@@ -20,7 +20,7 @@
   <script src="/lib/inpho/util.js"></script>
   <script src="/fulltext.js"></script>
   <script src="/htrc.js"></script>
-  <!-- <script src="/topicprint.js"></script> -->
+  <script src="/topicprint.js"></script>
   <script src="../icons.js"></script>
   <link rel="stylesheet" type="text/css" href="/lib/bootstrap-3.3.6/css/bootstrap.min.css" />
   <!-- <link rel="stylesheet" type="text/css" href="/lib/bootstrap-2.3.2/css/bootstrap.min.css" /> -->
@@ -32,31 +32,24 @@
 <body>
   <div id="wrapper">
     <div id="sidebar-wrapper">
-      <div class="sidebar-helper">
-        <ul class="sidebar-nav">
-          <li><a id="home-link" class="selected" data-placement="right" title="Home" href="/"><span class="glyphicon glyphicon-home"></span></a></li>
-          <li>
-            <!--<a class="selected" href="javascript:toggleSearch()"><span class="glyphicon glyphicon-search"></span></a>-->
-          </li>
-        </ul>
-      </div>
-      <div class="sidebar-helper" style="vertical-align: middle;">
-        <ul id="sidebar-topics" class="sidebar-nav">
-          <li><a class="selected" id="cluster-link" title="Topic cluster view" data-placement="right" href="topics"><span class="icon-scatter"></span></a></li>
+      <div id="sidebar-container" class="sidebar-helper sidebar-nav">
+        <!--<ul class="sidebar-nav">-->
+          <div id="selected" class="sidebar-elements"><a id="home-link" class="selected" data-placement="right" title="Home" href="/"><span class="glyphicon glyphicon-home"></span></a></div>
+          <!--<div>
+            <a class="selected" href="javascript:toggleSearch()"><span class="glyphicon glyphicon-search"></span></a>
+          </div>-->
+          <div id="selected" class="sidebar-elements"><a class="selected" id="cluster-link" title="Topic cluster view" data-placement="right" href="topics"><span class="icon-scatter"></span></a></div>
           {{#topic_range}}
-          <li><a class="topic-link" href="{{.}}/" title="Launch {{.}}-topic model" data-placement="right">{{.}}</a></li>
+          <div class="sidebar-elements"><a class="topic-link" href="{{.}}/" title="Launch {{.}}-topic model" data-placement="right">{{.}}</a></div>
           {{/topic_range}}
-        </ul>
-      </div>
-      <div class="sidebar-helper" style="bottom: 0;">
-        <ul class="sidebar-nav">
-          <li><a id="helper" href="#" class="selected" data-placement="right" title="Help" data-toggle="modal" data-target="#helpModal"><strong>?</strong></a></li>
-          <li><a href="#" class="selected" data-placement="right" title="Usage" data-toggle="modal" data-target="#rightsModal"><strong class="cc-font">cb</strong></a></li>
-        </ul>
+          <div id="selected" class="sidebar-elements"><a id="helper" href="#" class="selected" data-placement="right" title="Help" data-toggle="modal" data-target="#helpModal"><strong>?</strong></a></div>
+          <div id="selected" class="sidebar-elements"><a href="#" class="selected" data-placement="right" title="Usage" data-toggle="modal" data-target="#rightsModal"><strong class="cc-font">cb</strong></a></div>
+        <!--</ul>-->
       </div>
     </div>
   
     <script>
+    applyGrids();
     var ks = [{{#topic_range}}{{.}}, {{/topic_range}}];
     $('#sidebar-wrapper li a').tooltip();
     </script>
