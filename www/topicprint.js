@@ -690,11 +690,7 @@ d3.json(url, function(error, data) {
     dataset = data;
     original_root = data[0];
     if (roottopic) docid = data[0]['doc'];
-  
-    calculateTopicMap(data, !($('.scale')[0].checked), function(a,b) {return data[0].topics[b] - data[0].topics[a];});
-  
-  
-  
+    
     svg.append("g")
         .attr("class", "x axis")
         .attr("transform", "translate(10,-10)")
@@ -762,10 +758,18 @@ d3.json(url, function(error, data) {
             icons.reduce(function(prev, cur) {
               return prev.next(".{0}Icon".format(cur)).css('opacity', '');
             }, tick);
-          })
-        ;
+          });
 
-  
+    var label2 = document.createElement('label');
+    label2.classList.add("checkbox");
+    label2.innerHTML = "<input class='scale' type='checkbox'>Normalize Topic Bars";i
+    label2.style.left = "20px";
+
+    document.body.append(label2);
+    d3.select(".scale").on("change", scaleTopics);
+
+    calculateTopicMap(data, !($('.scale')[0].checked), function(a,b) {return data[0].topics[b] - data[0].topics[a];});
+
     // Draw topic bars
     doc.selectAll("rect")
         .data(function(d) { return d.topicMap; })
@@ -901,8 +905,36 @@ d3.json(url, function(error, data) {
         .style("overflow-wrap", "normal")
         .text("ordered by proportion of T in " + (docid ? "focal document" : "corpus"));
 
-    d3.select(window).on('resize', resize);
+    var ns = 'http://www.w3.org/2000/svg';
+    var newLegend = document.getElementById('legend');
+
+    var foreignObject = document.createElementNS(ns, 'foreignObject');
+    foreignObject.setAttribute("width", 140);
+    foreignObject.setAttribute("height", 140);
+    foreignObject.setAttribute("transform", "translate(20, " + (((d3.keys(topics).length / 2) + 1) * 20 + 65) + ")");
+    var div = document.createElement('div');
+    div.innerHTML = '<Strong>Display Options</strong>';
+    var label = document.createElement('label');
+    label.classList.add("checkbox");
+    label.innerHTML = "<input class='sort' type='checkbox'>Alphabetical Sort";
+    label.style.left = "20px";
+    div.appendChild(label); 
+    div.appendChild(label2);
   
+    var button = document.createElement('button');
+    $(button).addClass("btn btn-default reset");
+    $(button).attr('disabled', true);
+    var t = document.createTextNode("Reset Topic Sort");
+    button.appendChild(t);
+    div.appendChild(button);
+    div.appendChild(document.createElement('br'));
+    foreignObject.appendChild(div);
+    newLegend.append(foreignObject);
+
+    button.onclick = resetTopicSort;
+
+    d3.select(window).on('resize', resize);
+
     function resize() {
       computeWidth(legendCols);
   
@@ -988,7 +1020,6 @@ d3.json(url, function(error, data) {
       ("Similarity to " + $('.title').first().text()));
   }
 
-  d3.select(".scale").on("change", scaleTopics);
   function sortDataset(sortFn) {
     dataset = dataset.sort(sortFn);
 
@@ -1018,7 +1049,7 @@ d3.json(url, function(error, data) {
     else
       sortDataset(function(a, b) { return b.prob - a.prob; });
   }
-
+  
   function resetTopicSort() {
     $('.reset').attr('disabled',true);
     $('.topicsort').attr('disabled',true);
@@ -1027,9 +1058,10 @@ d3.json(url, function(error, data) {
     $('.topdoc').removeClass('btn-primary');
     $('.topdoc').addClass('btn-default');
     $('.topdoc').attr('disabled', 'disabled');
-    if (!($('.sort')[0].checked))
-      sortDataset(function(a,b) { return b.prob - a.prob; });
-
+    $(document).ready(function() {
+      if (!($('.sort')[0].checked))
+        sortDataset(function(a,b) { return b.prob - a.prob; });
+    });
     redrawBars(function(a,b) { return original_root.topics[b] - original_root.topics[a]; });
   }
 
@@ -1141,5 +1173,26 @@ $('.topic-link').each(function(i,elt) {
     var url = '../' + $(elt).attr('href');
     if(docid) url += '?doc=' + docid;
     $(this).attr('href', url);
-  }); 
+  });
+
+$.fn.followTo = function (pos) {
+    var $this = this,
+        $window = $(window);
+
+    $window.scroll(function (e) {
+        if ($window.scrollTop() > pos) {
+            $this.css({
+                position: 'fixed',
+                top: 120
+            });
+        } else {
+            $this.css({
+                position: 'absolute',
+                top:405
+            });
+        }
+    });
+};
+
+$('#legend').followTo(285);
 

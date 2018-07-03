@@ -767,10 +767,15 @@ class Application(Bottle):
         @self.route('/fulltext/<doc_id:path>')
         @_set_acao_headers
         def get_doc(doc_id):
+            try:
+                doc_id = doc_id.decode('utf-8')
+            except:
+                pass
             pdf_path = os.path.join(corpus_path, re.sub('txt$', 'pdf', doc_id))
             if os.path.exists(pdf_path.encode('utf-8')):
                 doc_id = re.sub('txt$', 'pdf', doc_id)
-            if os.path.exists(os.path.join(corpus_path, doc_id + '.txt')):
+            txt_path = os.path.join(corpus_path, doc_id + '.txt')
+            if os.path.exists(txt_path.encode('utf-8')):
                 doc_id = doc_id + '.txt'
             # here we deal with case where corpus_path and doc_id overlap
             (fdirs, lastdir) = os.path.split(corpus_path)
