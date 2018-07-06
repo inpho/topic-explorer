@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 This module initializes the topicexplorer. It performs tokenization of the
 corpus.
