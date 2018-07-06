@@ -77,7 +77,7 @@ $(document).ready(function() {
 var ext_data;
 
 d3.csv(base_url + "cluster.csv", function(error, data) {
-  var topics = {}; var node;
+  var topics = {}; var colors = {}; var node;
   var ks = data.map(function(d) { return parseInt(d.k); }).filter(function(item, i, ar){ return ar.indexOf(item) === i; });;
 
   // sidebar items
@@ -160,7 +160,12 @@ d3.csv(base_url + "cluster.csv", function(error, data) {
   console.log(ks, k_urls);
   Promise.all(k_urls.map($.getJSON)).then(function (data) {
       data.forEach(function(d,i) {
-        topics[ks[i]] = $.each(d, function(key, val) { d[key] = combineWords(val.words) });
+        colors[ks[i]] = {};
+        $.each(d, function(key, val) { colors[ks[i]][key] = val.color });
+      });
+      data.forEach(function(d,i) {
+        topics[ks[i]] = {};
+        $.each(d, function(key, val) { topics[ks[i]][key] = combineWords(val.words) });
       });
     }).then(function() {
       var words = inpho.util.getValueForURLParam('q');
@@ -197,17 +202,7 @@ d3.csv(base_url + "cluster.csv", function(error, data) {
           .attr("r", function(d) { return d.radius; })
           .attr("cx", function(d) { return x(d[xVar]); })
           .attr("cy", function(d) { return y(d[yVar]); })
-          .attr("visibility", 'hidden')
-          //.attr("style", function(d) { return "fill:" + d.color +"; fill-opacity: "+ opacity(d.opacity) + ";"; })
-          .style("fill", function(d) { 
-            var url = base_url + d.k + '/topics.json';
-            d3.json(url, function(topics) {
-              document.getElementById(d.k + '_' + d.topic).style.fill = topics[d.topic].color;
-              $(document).ready(function(){
-                  document.getElementById(d.k + '_' + d.topic).style.visibility = 'visible';
-              });
-            });
-          })
+          .style("fill", function(d) { return colors[d.k][d.topic]; })
           .style("fill-opacity", function(d) { return opacity(d.opacity) || 0.7; })
           .on("click", function(d) { window.location.href = base_url + d.k + "/?topic=" + d.topic })
           .attr("title", function(d) {
