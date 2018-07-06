@@ -202,7 +202,7 @@ d3.csv(base_url + "cluster.csv", function(error, data) {
           .attr("r", function(d) { return d.radius; })
           .attr("cx", function(d) { return x(d[xVar]); })
           .attr("cy", function(d) { return y(d[yVar]); })
-          .style("fill", function(d) { return colors[d.k][d.topic]; })
+          .style("fill", function(d) { return d.color; })
           .style("fill-opacity", function(d) { return opacity(d.opacity) || 0.7; })
           .on("click", function(d) { window.location.href = base_url + d.k + "/?topic=" + d.topic })
           .attr("title", function(d) {
