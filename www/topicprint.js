@@ -195,7 +195,7 @@ var fingerprint = {
                 $(this).detach().appendTo(parent);
               })
             .on("click", function(d) { window.location = full_explorer_url; })
-            .style("fill", function(d) { return barColors(topics[d.name]['color'], d.name, svg); });
+            .style("fill", function(d) { return barColors(colors[k][d.name], d.name, svg); });
       
         $(".doc rect").tooltip({container:'body', 
                                 animation: false, placement: 'top'});
@@ -264,9 +264,24 @@ var k_urls = ks.map(function(k) { return '../' + k + "/topics.json" });
 var topics = Promise.all(k_urls.map($.getJSON)).then(function (data) {
 	var t = {}; 
 	data.forEach(function(d,i) {
-		t[ks[i]] = $.each(d, function(key, val) { d[key] = combineWords(val.words) });
+		t[ks[i]] = {};
+    $.each(d, function(key, val) { t[ks[i]][key] = combineWords(val.words) });
   });
   return t;
+});
+
+var colors = {};
+var color = d3.scale.category20();
+d3.csv('../cluster.csv', function (error, data) {
+  var prev = data[0].k;
+  var currentTop = 0;
+  data.forEach(function(d) {
+    if (d.k != prev) { prev = d.k; currentTop = 0; }
+    d.topic = currentTop++;
+    d.color = color(d.cluster); 
+    if (colors[d.k] == undefined) colors[d.k] = {};
+    colors[d.k][d.topic] = d.color;
+  })
 });
 
 function gettopics(words) {
@@ -770,6 +785,8 @@ d3.json(url, function(error, data) {
 
     calculateTopicMap(data, !($('.scale')[0].checked), function(a,b) {return data[0].topics[b] - data[0].topics[a];});
 
+    var k = d3.keys(topics).length;
+
     // Draw topic bars
     doc.selectAll("rect")
         .data(function(d) { return d.topicMap; })
@@ -809,7 +826,7 @@ d3.json(url, function(error, data) {
             $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic + " sorted by proportion of topic " + d.name);
           }
           topicSort(d.name); })
-        .style("fill", function(d) { return barColors(topics[d.name]['color'], d.name, svg); });
+        .style("fill", function(d) { return barColors(colors[k][d.name], d.name, svg); });
 
     doc.append("text")
           .text(function(d) { return d.label; })
@@ -839,7 +856,7 @@ d3.json(url, function(error, data) {
         .attr("width", 18)
         .attr("height", 18)
         .attr("class", function(d) { return "top_" + d; })
-        .style("fill", function(d) { return topics[d]['color']; })
+        .style("fill", function(d) { return colors[k][d]; })
         //.attr("data-toggle", "tooltip")
         .attr("data-placement", "right")
         .attr("title", function(d) { 
@@ -995,7 +1012,7 @@ d3.json(url, function(error, data) {
     svg.selectAll(".doc")
       .selectAll("rect")
       .data(function(d) { return d.topicMap; })
-      .style("fill", function(d) { return barColors(tops[d.name]['color'], d.name, svg); })
+      .style("fill", function(d) { return barColors(colors[k][d.name], d.name, svg); })
       /*.on("mouseover", function(d) {
           // SVG element z-index determined by render order, not style sheet
           // so element must be reappended to the end on hover so border 
@@ -1115,7 +1132,7 @@ d3.json(url, function(error, data) {
     svg.selectAll(".doc")
       .selectAll("rect")
       .data(function(d) { return d.topicMap; })
-      .style("fill", function(d) { return barColors(tops[d.name]['color'], d.name, svg); })
+      .style("fill", function(d) { return barColors(colors[k][d.name], d.name, svg); })
       /*
       .on("mouseover", function(d) {
           // SVG element z-index determined by render order, not style sheet

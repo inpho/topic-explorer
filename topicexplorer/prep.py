@@ -1,3 +1,114 @@
+"""
+Prepares a corpus for modeling with stoplist management tools.
+
+
+Stoplisting
+=============
+
+What is stoplisting?
+----------------------
+Extremely common words can be of little value in discriminating between
+documents and can create uninterpretable topics. Terms like ``the``, ``of``,
+``is``, ``and``, ``but``, and ``or`` are thus excluded from modeling. These
+terms are called *stop words*. The process of removing stop words is
+stoplisting.
+
+
+How ``topicexplorer prep`` generates stoplists
+------------------------------------------------
+``topicexplorer prep`` generates stoplists from the frequencies of words in the
+collection being modeled, rather than using the same list of words across
+different collections. Arbitrary lists can still be excluded with the 
+|stopword-file argument|_.
+
+.. |stopword-file argument| replace:: ``--stopword-file`` argument
+.. _stopword-file argument: #custom-stopwords-stopword-file
+
+While most natural language processing (NLP) tools exclude common words,
+``topicexplorer prep`` also provides functionality to remove low-frequency
+words. 
+
+The contribution of low-freuqency words to the probability distribution
+is negligible -- if a word only occurs once in a 1 million word corpus (which
+can easily be hit with only 25-50 volumes), then it has a .000001 probability of
+occurring. The runtime improvements gained from excluding these low frequency
+words from the word-topic matrix far outweigh the marginal improvements to model
+fit.
+
+Another benefit of removing low-frequency words is the removal of spurious
+tokens introduced by optical character recognition (OCR) in scanned documents.
+
+Finally, very small words can be excluded with the |min-word-len argument|_.
+These small words often appear when mathematical formulas are in a text (e.g.,
+``y = mx + b`` would introduce ``y``, ``mx``, and ``b``). Usually, they will be
+caught by the low-frequency filters, but this ensures they are left out.
+
+.. |min-word-len argument| replace:: ``--min-word-len`` argument
+.. _min-word-len argument: #small-words-min-word-len
+
+
+.. seealso::
+    `Introduction to Information Retrieval -- stop words`_
+        Stanford textbook on stop words.
+
+.. _Stop words:
+.. _Introduction to Information Retrieval -- stop words:
+    https://nlp.stanford.edu/IR-book/html/htmledition/dropping-common-terms-stop-words-1.html
+
+
+
+Recommended Settings
+======================
+Each argument has a suggested value. A quick start, assuming your corpus is in
+a folder called "workset" is::
+
+    topicexplorer prep workset --high-percent 50 --low-percent 10 --min-word-len 3 -q
+
+These parameters work well for English-language text. For languages without
+articles (e.g., "a", "the"), we recommend reducing the ``--high-percent``
+argument to ``--high-percent 25``.
+
+
+Command Line Arguments
+========================
+
+High-probability words (``--high-percent``)
+---------------------------------------------
+Remove common words from the corpus, accounting for up to ``HIGH_PERCENT`` of
+the total occurrences in the corpus.
+
+**Recommended, but not default:** ``--high-percent 50``
+
+
+Low-probability words (``--low-percent``)
+-------------------------------------------
+Remove uncommon words from the corpus, accounting for up to ``LOW_PERCENT`` of
+the total occurrences in the corpus.
+
+**Recommended, but not default:** ``--low-percent 10``
+
+
+Small words (``--min-word-len``)
+----------------------------------
+Remove words with few characters from the corpus. Often includes mathematical
+notation and OCR errors. 
+
+**Recommended, but not default:** ``--min-word-len 3``
+
+
+Custom stopwords (``-stopword-file``)
+---------------------------------------
+Remove custom words from the corpus.
+
+
+Quiet mode (``-q``)
+---------------------
+Suppresses all user input requests. Uses default values unless otherwise
+specified by other argument flags. Very useful for scripting automated
+pipelines.
+
+"""
+
 from __future__ import division
 from __future__ import print_function
 from future import standard_library
@@ -43,7 +154,7 @@ def get_item_counts(x):
 
 def get_corpus_counts(c):
     import numpy as np
-    print(len(c), len(c.words), len(c.context_data[0]))
+    #print(len(c), len(c.words), len(c.context_data[0]))
     items = np.arange(len(c.words)) 
     counts = np.zeros(c.words.shape, dtype=np.int32)
     for context in c.view_contexts(c.context_types[0], as_slices=True):
@@ -73,23 +184,6 @@ def stop_language(c, language):
     else:
         words = [word for word in words if word in c.words]
     return words
-
-
-def get_htrc_langs(args):
-    global langs
-    md_langs = []
-
-    metadata_path = os.path.dirname(args.corpus_path)
-    metadata_path = os.path.join(metadata_path, '../metadata.json')
-    if os.path.exists(metadata_path):
-        print("HTRC metadata file found!")
-        with open(metadata_path) as jsonfile:
-            data = json.load(jsonfile)
-
-        md_langs = set([lang for d in data.values() for lang in d.get('language', list())
-            if lang.lower() in langs.values()])
-
-    return md_langs
 
 
 def detect_langs(corpus):
@@ -157,9 +251,6 @@ def get_mask(c, words=None, filter=None):
 def get_small_words(c, min_len):
     return [word for word in c.words if len(word) < min_len]
 
-
-def get_special_chars(c):
-    return [word for word in c.words if re.findall('[^A-Za-z\-\']', word)]
 
 def get_closest_bin(c, thresh, reverse=False, counts=None):
     """
@@ -382,12 +473,6 @@ def main(args):
         print("         topicexplorer train", args.config_file)
         sys.exit(1)
 
-    # check for htrc metadata
-    if args.htrc or config.get("main", "htrc"):
-        htrc_langs = get_htrc_langs(args)
-        if htrc_langs:
-            args.lang.extend(htrc_langs)
-
     # auto-guess a language
     """
     new_langs = [lang for lang in detect_langs(c) if lang in langs and lang not in args.lang]
@@ -435,12 +520,6 @@ def main(args):
                 len(candidates), 's' if len(candidates) > 1 else '', args.min_word_len))
             stoplist.update(candidates)
 
-    if not args.special_chars:
-        candidates = get_special_chars(c)
-        if len(candidates):
-            print("Filtering {} word{} with special characters.".format(
-                len(candidates), 's' if len(candidates) > 1 else ''))
-            stoplist.update(candidates)
 
     # cache item counts
     items, counts = get_corpus_counts(c)
@@ -532,36 +611,39 @@ def main(args):
 
 
 def populate_parser(parser):
-    parser.epilog = ('Available language stoplists (use 2-letter code): \n\t' +
-                     '\n\t'.join(['{k}    {v}'.format(k=k, v=v.capitalize())
-                                  for k, v in sorted(langs.items(),
-                                                     key=lambda x: x[1])]))
+    import argparse
     parser.add_argument("config_file", help="Path to Config",
                         type=lambda x: is_valid_configfile(parser, x))
-    parser.add_argument("--htrc", action="store_true")
-    parser.add_argument("--stopword-file", dest="stopword_file",
-                        help="File with custom stopwords")
 
     group = parser.add_mutually_exclusive_group(required=False)
     group.add_argument("--high", type=int, dest="high_filter",
-                        help="High frequency word filter", default=None)
+                        help=argparse.SUPPRESS, default=None)
     group.add_argument("--high-percent", type=float, dest="high_percent",
                         help="High frequency word filter", default=None)
     
     group = parser.add_mutually_exclusive_group(required=False)
     group.add_argument("--low", type=int, dest="low_filter",
-                        default=None, help="Low frequency word filter")
+                        default=None, help=argparse.SUPPRESS)
     group.add_argument("--low-percent", type=float, dest="low_percent",
                         default=None, help="Low frequency word filter")
 
     parser.add_argument("--min-word-len", type=int, dest="min_word_len",
                         default=0, help="Filter short words [Default: 0]")
-    parser.add_argument("--exclude-special-chars", action="store_false",
-                        dest='special_chars')
-    parser.add_argument("--lang", nargs='+', choices=langs.keys(),
-                        help="Languages to stoplist. See options below.", metavar='xx')
+
+    parser.add_argument("--stopword-file", dest="stopword_file",
+                        help="File with custom stopwords")
+
     parser.add_argument("-q", "--quiet", help="Do not prompt for input",
                         action="store_true")
+
+    parser.add_argument("--lang", nargs='+', choices=langs.keys(),
+                        help=argparse.SUPPRESS, metavar='xx')
+    """
+    parser.epilog = ('Available language stoplists (use 2-letter code): \n\t' +
+                     '\n\t'.join(['{k}    {v}'.format(k=k, v=v.capitalize())
+                                  for k, v in sorted(langs.items(),
+                                                     key=lambda x: x[1])]))
+    """
 
 if __name__ == '__main__':
     import argparse
