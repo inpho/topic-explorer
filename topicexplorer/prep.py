@@ -154,7 +154,7 @@ def get_item_counts(x):
 
 def get_corpus_counts(c):
     import numpy as np
-    print(len(c), len(c.words), len(c.context_data[0]))
+    #print(len(c), len(c.words), len(c.context_data[0]))
     items = np.arange(len(c.words)) 
     counts = np.zeros(c.words.shape, dtype=np.int32)
     for context in c.view_contexts(c.context_types[0], as_slices=True):
