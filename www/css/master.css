@@ -64,3 +64,7 @@ h2 {
 .cc-font {
     font-family: 'CC Icons';
 }
+
+#chart {
+  overflow-x: scroll;
+}

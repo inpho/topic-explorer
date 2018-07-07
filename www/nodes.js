@@ -37,12 +37,15 @@ var margin = {top: 20, right: 80, bottom: 80, left: 40},
   if(height < 600){
     height = 600;
   }
+  if(width < 900){
+    width = 900;
+  }
 
 var x = d3.scale.linear()
-  .range([0, width ]); //width
+  .range([0, width ]);
 
 var y = d3.scale.linear()
-  .range([height, 0]); //height
+  .range([height, 0]);
 
 var color = d3.scale.category20();
 
@@ -201,7 +204,6 @@ d3.csv(base_url + "cluster.csv", function(error, data) {
           .attr("cx", function(d) { return x(d[xVar]); })
           .attr("cy", function(d) { return y(d[yVar]); })
           .attr("visibility", 'hidden')
-          //.attr("viewBox", "0 0 700 500")
           //.attr("style", function(d) { return "fill:" + d.color +"; fill-opacity: "+ opacity(d.opacity) + ";"; })
           .style("fill", function(d) { 
             var url = base_url + d.k + '/topics.json';
