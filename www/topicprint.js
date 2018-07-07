@@ -664,7 +664,6 @@ d3.json(url, function(error, data) {
     $('#status .bar').addClass('progress-bar-danger').text(errormsg);
     return false;
   }
-  console.log(data);
   d3.json("topics.json", function(error_top, topics) {
     $('#status .bar').css('width', '75%').text('Rendering chart...');
     if (error_top) {
