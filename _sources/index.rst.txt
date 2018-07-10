@@ -20,6 +20,7 @@ Contents:
    metadata
    import_export
    htrc
+   cookbook
 
 
 
