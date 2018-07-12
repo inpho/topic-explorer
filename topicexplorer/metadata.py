@@ -90,7 +90,7 @@ from vsm.viewer.wrappers import doc_label_name
 def parse_value(value):
     try:
         return literal_eval(value)
-    except SyntaxError:
+    except (ValueError, SyntaxError):
         return value
 
 def UnicodeDictReader(utf8_data, **kwargs):
@@ -110,7 +110,8 @@ def parse_metadata_from_csvfile(filename, context_type):
     label_name = doc_label_name(context_type)
 
     with open(filename, encoding='utf8') as csvfile:
-        reader = UnicodeDictReader(csvfile, delimiter='\t')
+        reader = UnicodeDictReader(csvfile, delimiter='\t',
+                                   quoting=csv.QUOTE_NONE)
         metadata = SortedDict()
         for row in reader:
             metadata[row[label_name]] = row
@@ -123,7 +124,7 @@ def extract_metadata(corpus, ctx_type, filename, format='tsv'):
     all metadata to.
     """
     with open(filename, 'w') as csvfile:
-        writer = csv.writer(csvfile, delimiter='\t')
+        writer = csv.writer(csvfile, delimiter='\t', quoting=csv.QUOTE_NONE)
         ctx_index = corpus.context_types.index(ctx_type)
 
         ctx_data = corpus.context_data[ctx_index]
@@ -162,16 +163,22 @@ def add_metadata(corpus, ctx_type, new_metadata, force=False, rename=False):
         new_data = new_metadata.values()
     else:
         try:
-            new_data = [new_metadata[id] for id in labels]
+            if force:
+                new_data = [new_metadata.get(id, {}) for id in labels]
+            else:
+                new_data = [new_metadata[id] for id in labels]
+
             if not new_data:
                 print("No metadata labels match existing labels.")
                 print("If you changed labels, run with the `--rename` flag.")
                 sys.exit(0)
-            elif len(new_data) != len(labels):
+            elif not force and len(new_data) != len(labels):
                 raise KeyError
         except KeyError:
             print("New metadata does not span all documents in corpus.")
             print("If you changed labels, run with the `--rename` flag.")
+            print("If you wish to force insertion of blank metadata,")
+            print("run with the `--force` flag.")
             import sys
             sys.exit(1)
 
