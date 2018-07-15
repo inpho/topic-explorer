@@ -1213,9 +1213,11 @@ $.fn.followTo = function (pos) {
 
 $('#legend').followTo(285);
 
-// Determines how many rows to add to grid
+// Determines size of the grid rows based off div heights
 function applyGrids() {
-  var k = 0;
-  $('.topic-link').each(function(i, elt) { k++; });
-  document.getElementById('sidebar-container').style.gridTemplateRows = 'repeat(' + (k + 4) + ', ' + (100 / (k + 4)) + 'vh)';
+  var container = document.getElementById('sidebar-container').clientHeight;
+  var div1 = document.getElementById('top-btns').clientHeight / 900 * 100;
+  var div3 = document.getElementById('bottom-btns').clientHeight / 900 * 100;
+  var div2 = 100 - div1 - div3;
+  document.getElementById('sidebar-container').style.gridTemplateRows = div1 + 'vh ' + div2 + 'vh ' + div3 + 'vh';
 }

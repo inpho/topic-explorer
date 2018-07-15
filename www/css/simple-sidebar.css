@@ -72,37 +72,37 @@
     list-style: none;
 }
 
-.sidebar-nav div {
-    line-height: 90%;
+.sidebar-nav div div {
+    line-height: 30px;
     font-size: 25px;
     text-align: center;
 }
 
-.sidebar-nav div a {
+.sidebar-nav div div a {
     display: block;
     text-decoration: none;
     color: #999999;
-    padding: 8px 0;
+    padding: 6px 0;
 }
 
-.sidebar-nav div a:hover,
-.sidebar-nav div a.selected{
+.sidebar-nav div div a:hover,
+.sidebar-nav div div a.selected{
     height: 100%;
     width: 100%;
     text-decoration: none;
     color: #fff;
     background: rgba(255,255,255,0.2);
 }
-.sidebar-nav div a.selected{
+.sidebar-nav div div a.selected{
     color: #999999;
 }
 
-.sidebar-nav div a.selected:hover {
+.sidebar-nav div div a.selected:hover {
     color: #fff;
 }
 
-.sidebar-nav div a:active,
-.sidebar-nav div a:focus {
+.sidebar-nav div div a:active,
+.sidebar-nav div div a:focus {
     text-decoration: none;
 }
 
@@ -147,4 +147,13 @@
         position: relative;
         margin-right: 0;
     }
+}
+#top-btns {
+  align-self: baseline;
+}
+#center-btns {
+  align-self: center;
+}
+#bottom-btns {
+  align-self: end;
 }

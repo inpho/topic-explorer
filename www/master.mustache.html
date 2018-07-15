@@ -34,31 +34,37 @@
     <div id="sidebar-wrapper">
       <div id="sidebar-container" class="sidebar-helper sidebar-nav">
         <!--<ul class="sidebar-nav">-->
-          <div id="selected" class="sidebar-elements"><a id="home-link" class="selected" data-placement="right" title="Home" href="/"><span class="glyphicon glyphicon-home"></span></a></div>
-          <!--<div>
-            <a class="selected" href="javascript:toggleSearch()"><span class="glyphicon glyphicon-search"></span></a>
-          </div>-->
-          <div id="selected" class="sidebar-elements"><a class="selected" id="cluster-link" title="Topic cluster view" data-placement="right" href="topics"><span class="icon-scatter"></span></a></div>
-          {{#topic_range}}
-          <div class="sidebar-elements"><a class="topic-link" href="{{.}}/" title="Launch {{.}}-topic model" data-placement="right">{{.}}</a></div>
-          {{/topic_range}}
-          <div id="selected" class="sidebar-elements"><a id="helper" href="#" class="selected" data-placement="right" title="Help" data-toggle="modal" data-target="#helpModal"><strong>?</strong></a></div>
-          <div id="selected" class="sidebar-elements"><a href="#" class="selected" data-placement="right" title="Usage" data-toggle="modal" data-target="#rightsModal"><strong class="cc-font">cb</strong></a></div>
+          <div id="top-btns">
+            <div id="selected" class="sidebar-elements"><a id="home-link" class="selected" data-placement="right" title="Home" href="/"><span class="glyphicon glyphicon-home"></span></a></div>
+            <!--<div>
+              <a class="selected" href="javascript:toggleSearch()"><span class="glyphicon glyphicon-search"></span></a>
+            </div>-->
+            <div id="selected" class="sidebar-elements"><a class="selected" id="cluster-link" title="Topic cluster view" data-placement="right" href="topics"><span class="icon-scatter"></span></a></div>
+          </div>
+          <div id="center-btns">
+            {{#topic_range}}
+            <div class="sidebar-elements"><a class="topic-link" href="{{.}}/" title="Launch {{.}}-topic model" data-placement="right">{{.}}</a></div>
+            {{/topic_range}}
+          </div>
+          <div id="bottom-btns">
+            <div id="selected" class="sidebar-elements"><a id="helper" href="#" class="selected" data-placement="right" title="Help" data-toggle="modal" data-target="#helpModal"><strong>?</strong></a></div>
+            <div id="selected" class="sidebar-elements"><a href="#" class="selected" data-placement="right" title="Usage" data-toggle="modal" data-target="#rightsModal"><strong class="cc-font">cb</strong></a></div>
+          </div>
         <!--</ul>-->
       </div>
     </div>
   
     <script>
-    applyGrids();
     var ks = [{{#topic_range}}{{.}}, {{/topic_range}}];
     $('#sidebar-wrapper li a').tooltip();
+    applyGrids();
     </script>
     
     <div id="page-content-wrapper">
       {{body}}
+      <script>applyGrids();</script>
     </div>
   </div>
-  
   <div class="modal fade" tabindex="-1" role="dialog" id="rightsModal">
     <div class="modal-dialog" role="document copyright">
       <div class="modal-content">
@@ -179,7 +185,6 @@
     }
     console.log(path.match(/\/\d+\//));
     if (path.match(/\/\d+\//)) {
-      console.log("hello");
       $("#helper").removeAttr("data-target");
       $("#helper").attr("data-target", "#hypershelfHelp");
     }
