@@ -1,3 +1,20 @@
+"""
+Launches a web server with the Jupyter Notebook server.
+
+Populates a directory with a tutorial notebook, prepopulated with commands to
+load the current dataset.
+
+
+Command Line Arguments
+------------------------
+
+No Launch (``--no-launch``)
+'''''''''''''''''''''''''''''
+Starts the notebook server without opening the notebook interface in the
+default browser.  
+
+"""
+
 from __future__ import print_function
 from builtins import str
 from glob import glob
@@ -10,7 +27,8 @@ from string import Template
 import sys
 import time
 
-from topicexplorer.lib.util import (overwrite_prompt, is_valid_configfile, get_static_resource_path)
+from topicexplorer.lib.util import (overwrite_prompt, is_valid_configfile,
+    get_static_resource_path)
 
 if platform.system() == 'Windows':
     import topicexplorer.lib.win32
