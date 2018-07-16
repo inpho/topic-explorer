@@ -36,7 +36,7 @@ var margin = {top: 20, right: 80, bottom: 80, left: 40},
   radius = 30;
 
 var x = d3.scale.linear()
-  .range([0, width]);
+  .range([0, width ]);
 
 var y = d3.scale.linear()
   .range([height, 0]);
@@ -312,3 +312,4 @@ var toggleDisplay = function(k) {
         .removeClass('bg-info');
   }
 }
+
