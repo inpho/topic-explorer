@@ -32,7 +32,7 @@
 <body>
   <div id="wrapper">
     <div id="sidebar-wrapper">
-      <div id="sidebar-container" class="sidebar-helper sidebar-nav">
+      <div id="sidebar-container" class="sidebar-helper sidebar-nav" style="grid-template-rows: 15% 70% 15%; height: 100vh;">
         <!--<ul class="sidebar-nav">-->
           <div id="top-btns">
             <div id="selected" class="sidebar-elements"><a id="home-link" class="selected" data-placement="right" title="Home" href="/"><span class="glyphicon glyphicon-home"></span></a></div>
@@ -57,12 +57,10 @@
     <script>
     var ks = [{{#topic_range}}{{.}}, {{/topic_range}}];
     $('#sidebar-wrapper li a').tooltip();
-    applyGrids();
     </script>
     
     <div id="page-content-wrapper">
       {{body}}
-      <script>applyGrids();</script>
     </div>
   </div>
   <div class="modal fade" tabindex="-1" role="dialog" id="rightsModal">

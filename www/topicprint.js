@@ -1213,11 +1213,3 @@ $.fn.followTo = function (pos) {
 
 $('#legend').followTo(285);
 
-// Determines size of the grid rows based off div heights
-function applyGrids() {
-  var container = document.getElementById('sidebar-container').clientHeight;
-  var div1 = document.getElementById('top-btns').clientHeight / 900 * 100;
-  var div3 = document.getElementById('bottom-btns').clientHeight / 900 * 100;
-  var div2 = 100 - div1 - div3;
-  document.getElementById('sidebar-container').style.gridTemplateRows = div1 + 'vh ' + div2 + 'vh ' + div3 + 'vh';
-}
