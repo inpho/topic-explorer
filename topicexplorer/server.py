@@ -595,7 +595,7 @@ class Application(Bottle):
             # abort if there are no terms in the query
             if not query and stopped_words:
                 response.status = 410  # Gone
-                return "Search terms removed using stoplist: " + ' '.join(query)
+                return "Search terms removed using stoplist: " + ' '.join(stopped_words)
             elif not query:
                 response.status = 404  # Not Found
                 return "Search terms not in corpus"
