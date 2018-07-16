@@ -24,6 +24,9 @@ def download_vols(ids, output_dir=None):
     if output_dir is None:
         output_dir = tempfile.mkdtemp()
 
+    if 'volume_id' in ids:
+        ids.remove('volume_id')
+
     # Download extracted features
     paths = {id: '{}/{}.json.bz2'.format(output_dir, id) for id in ids}
     try:
