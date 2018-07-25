@@ -40,5 +40,15 @@ Command Line Arguments
 
 Output Path (``--o``)
 """""""""""""""""""""""
-**Default:** Current direcotry
+**Default:** Current directory
+
+Examples
+-------------------
+This example shows how to use export and import.
+
+::
+
+    topicexplorer export workset.ini -o workset.tez
+    topicexplorer import workset.tez
+
 
