@@ -36,3 +36,21 @@ def text_to_text(viewer: LdaCgsViewer, ids):
     tops = viewer.doc_topic_matrix(ids)
     return np.array([KL_div(tops[t+1], tops[t])
                          for t in range(len(ids) -1)])
+
+def novelty(viewer: LdaCgsViewer, id, ids, scale: int):
+    """
+    Barron et al. (2018) https://doi.org/10.1073/pnas.1717729115
+    """
+    tops = viewer.doc_topic_matrix(ids)
+    idx = ids.index(id)
+
+    return np.mean([KL_div(tops[idx], tops[idx-d]) for d in range(scale)])
+
+def resonance(viewer: LdaCgsViewer, id, ids, scale: int):
+    """
+    Barron et al. (2018) https://doi.org/10.1073/pnas.1717729115
+    """
+    tops = viewer.doc_topic_matrix(ids)
+    idx = ids.index(id)
+
+    return np.mean([KL_div(tops[idx], tops[idx-d]) - KL_div(tops[idx], tops[idx+d]) for d in range(scale)])
