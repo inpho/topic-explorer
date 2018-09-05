@@ -185,6 +185,8 @@ def _set_acao_headers(f):
             response.headers['Access-Control-Allow-Origin'] = host
         elif host and 'hypershelf.org' in host:
             response.headers['Access-Control-Allow-Origin'] = host
+        elif host and 'tjmind.org' in host:
+            response.headers['Access-Control-Allow-Origin'] = host
         return f(*args, **kwargs)
     return set_header
 
