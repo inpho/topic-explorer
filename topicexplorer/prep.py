@@ -417,21 +417,17 @@ class PrepData(Frame):
     def __init__(self):
         self.stoplist = set()
         self.label = Label("change this")
-        self.summaryHigh = Text(label="Number of word frequency:", name="summaryHighFreq", on_change=self.summaryHighNumFocus)
-        self.summaryHighPercent = Text("Percent of words:", "summaryHighPercent", on_change=self.summaryHighPercentFocus)
-        self.summaryHighFocus = False
-        self.high = Text("High frequency word filter (#):", "highFreq", on_change=self.highNumFocus)
-        self.highPercent = Text("High ferquency word filter (%):", "highPercent", on_change=self.highPercentFocus)
+        self.summaryHigh = Text(label="Number of word frequency:", name="summaryHighFreq")
+        self.summaryHighPercent = Text("Percent of words:", "summaryHighPercent")
+        self.high = Text("High frequency word filter (#):", "highFreq")
+        self.highPercent = Text("High ferquency word filter (%):", "highPercent")
         self.highLabel = Label("high label", height=35)
-        self.highFocus = False
         self.highCandidates = []
-        self.summaryLow = Text("Number of word frequency:", "summaryLowFreq", on_change=self.summaryLowNumFocus)
-        self.summaryLowPercent = Text("Percent of words:", "summaryLowPercent", on_change=self.summaryLowPercentFocus)
-        self.summaryLowFocus = False
-        self.low = Text("Low frequency word filter (#):", "lowFreq", on_change=self.lowNumFocus)
-        self.lowPercent = Text("Low frequency word filter (%):", "lowPercent", on_change=self.lowPercentFocus)
+        self.summaryLow = Text("Number of word frequency:", "summaryLowFreq")
+        self.summaryLowPercent = Text("Percent of words:", "summaryLowPercent")
+        self.low = Text("Low frequency word filter (#):", "lowFreq")
+        self.lowPercent = Text("Low frequency word filter (%):", "lowPercent")
         self.lowLabel = Label("low label", height=35)
-        self.lowFocus = False
         self.lowCandidates = []
         self.minWord = Text("Minimum word length: ", "length")
         self.counter = 0
@@ -441,61 +437,6 @@ class PrepData(Frame):
         self.english = CheckBox("Yes", label="Apply English stopwords")
         self.englishCandidates = []
         self.prepSize = Label("need to update length", align="^")
-
-    def summaryHighPercentFocus(self):
-        if self.summaryHighFocus:
-            self.summaryHighFocus = False
-            self.summaryHigh.blur()
-        if self.summaryLowFocus:
-            self.summaryLowFocus = False
-            self.summaryLow.blur()
-            self.summaryLowPercent.blur()
-    
-    def summaryHighNumFocus(self):
-        if self.summaryHighFocus:
-            self.summaryHighFocus = False
-            self.summaryHighPercent.blur()
-        if self.summaryLowFocus:
-            self.summaryLowFocus = False
-            self.summaryLow.blur()
-            self.summaryLowPercent.blur()
-
-    def highPercentFocus(self):
-        if self.highFocus:
-            self.highFocus = False
-            self.high.blur()
-    
-    def highNumFocus(self):
-        if self.highFocus:
-            self.highFocus = False
-            self.highPercent.blur()
-    
-    def summaryLowPercentFocus(self):
-        if self.summaryLowFocus:
-            self.summaryLowFocus = False
-            self.summaryLow.blur()
-        if self.summaryHighFocus:
-            self.summaryHighFocus = False
-            self.summaryHigh.blur()
-            self.summaryHighPercent.blur()
-
-    def summaryLowNumFocus(self):
-        if self.summaryLowFocus:
-            self.summaryLowFocus = False
-            self.summaryLowPercent.blur()
-        if self.summaryHighFocus:
-            self.summaryHigh.blur()
-            self.summaryHighPercent.blur()
-
-    def lowPercentFocus(self):
-        if self.lowFocus:
-            self.lowFocus = False
-            self.low.blur()
-    
-    def lowNumFocus(self):
-        if self.lowFocus:
-            self.lowFocus = False
-            self.highPercent.blur()
 
 class Summary(Frame):
     def __init__(self, screen):
@@ -588,7 +529,6 @@ class Summary(Frame):
         else:
             data.summaryHighPercent.focus()
             data.summaryHigh.focus()
-            data.summaryHighFocus = True
             confirm()
 
     @staticmethod
@@ -601,7 +541,6 @@ class Summary(Frame):
         else:
             data.summaryLowPercent.focus()
             data.summaryLow.focus()
-            data.summaryLowFocus = True
             confirm()
 
     def _high(self):
@@ -635,7 +574,6 @@ class Summary(Frame):
         else:
             data.summaryHighPercent.focus()
             data.summaryHigh.focus()
-            data.summaryHighFocus = True
             confirm()
             return
         high = test(data.summaryHigh, data.summaryHighPercent, data.high, data.highPercent, "high", False)
@@ -680,7 +618,6 @@ class Summary(Frame):
         else:
             data.summaryLowPercent.focus()
             data.summaryLow.focus()
-            data.summaryLowFocus = True
             confirm()
             return
         low = test(data.summaryLow, data.summaryLowPercent, data.low, data.lowPercent, "low", True)
@@ -750,7 +687,6 @@ class HighFreq(Frame):
         else:
             data.highPercent.focus()
             data.high.focus()
-            data.highFocus = True
             confirm()
             return
         high = test(data.high, data.highPercent, data.summaryHigh, data.summaryHighPercent, "high", False)
@@ -795,7 +731,6 @@ class HighFreq(Frame):
         else:
             data.highPercent.focus()
             data.high.focus()
-            data.highFocus = True
             confirm()
             return
         high = test(data.high, data.highPercent, data.summaryHigh, data.summaryHighPercent, "high", False)
@@ -857,7 +792,6 @@ class LowFreq(Frame):
         else:
             data.lowPercent.focus()
             data.low.focus()
-            data.lowFocus = True
             confirm()
             return
         low = test(data.low, data.lowPercent, data.summaryLow, data.summaryLowPercent, "low", True)
@@ -902,7 +836,6 @@ class LowFreq(Frame):
         else:
             data.lowPercent.focus()
             data.low.focus()
-            data.lowFocus = True
             confirm()
             return
         low = test(data.low, data.lowPercent, data.summaryLow, data.summaryLowPercent, "low", True)
