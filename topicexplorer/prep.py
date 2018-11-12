@@ -291,8 +291,6 @@ def get_closest_bin(c, thresh, reverse=False, counts=None):
 
 def get_high_filter_chart(c, words=None, items=None, counts=None, num=None):
     import numpy as np
-    header = "FILTER HIGH FREQUENCY WORDS"
-    stars = old_div((80 - len(header) - 2), 2)
 
     # Get frequency bins
     if items is None or counts is None:
@@ -304,7 +302,6 @@ def get_high_filter_chart(c, words=None, items=None, counts=None, num=None):
 
     ret = ""
 
-    high_filter = False
     bin_counts, bins = np.histogram(counts, bins=bins)
     ret += "{0:>8s} {1:>8s} {2:<36s} {3:>14s} {4:>8s}".format("Rate", 'Top', '% of corpus', "# words", "Rate") + "\n"
     last_row = 0
@@ -327,7 +324,6 @@ def get_high_filter_chart(c, words=None, items=None, counts=None, num=None):
 def get_high_filter_stops(c, words=None, items=None, counts=None, num=None):
     import numpy as np
     input_filter = num
-    accept = None
     try:
         candidates = get_candidate_words(c, input_filter, words=words, items=items, counts=counts)
         places = np.in1d(c.words, candidates)
@@ -351,8 +347,6 @@ def get_high_filter_stops(c, words=None, items=None, counts=None, num=None):
 
 def get_low_filter_chart(c, words=None, items=None, counts=None, num=None):
     import numpy as np
-    header = "FILTER LOW FREQUENCY WORDS"
-    stars = old_div((80 - len(header) - 2), 2)
 
     # Get frequency bins
     if items is None or counts is None:
@@ -364,7 +358,6 @@ def get_low_filter_chart(c, words=None, items=None, counts=None, num=None):
 
     ret = ""
 
-    low_filter = False
     bin_counts, bins = np.histogram(counts[counts.argsort()[::-1]], bins=bins)
     ret += "{0:>8s} {1:>8s} {2:<36s} {3:>14s} {4:>8s}".format("Rate", 'Bottom', '% of corpus', "# words", "Rate") + "\n"
     last_row = 0
@@ -388,7 +381,6 @@ def get_low_filter_chart(c, words=None, items=None, counts=None, num=None):
 def get_low_filter_stops(c, words=None, items=None, counts=None, num=None):
     import numpy as np
     input_filter = num
-    accept = None
     try:
 
         candidates = get_candidate_words(c, -input_filter, words=words, items=items, counts=counts)
