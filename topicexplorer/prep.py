@@ -293,10 +293,6 @@ def get_high_filter_chart(c, words=None, items=None, counts=None, num=None):
     import numpy as np
     header = "FILTER HIGH FREQUENCY WORDS"
     stars = old_div((80 - len(header) - 2), 2)
-    # print("\n\n{0} {1} {0}".format('*' * stars, header))
-    # print("    This will remove all words occurring N or more times.")
-    # print("    The histogram below shows how many words will be removed")
-    # print("    by selecting each maximum frequency threshold.\n")
 
     # Get frequency bins
     if items is None or counts is None:
@@ -306,32 +302,16 @@ def get_high_filter_chart(c, words=None, items=None, counts=None, num=None):
     bins = sorted(set(bins))
     bins.append(max(counts))
 
-    # try:
-    #     num = int(num)
-    # except:
-    #     # TODO: show invalid num screen
-    #     num = "str"
-
     ret = ""
 
-    # do input validation here
-
     high_filter = False
-    # while not high_filter:
     bin_counts, bins = np.histogram(counts, bins=bins)
-    # print("{0:>8s} {1:>8s} {2:<36s} {3:>14s} {4:>8s}".format("Rate", 'Top', '% of corpus',
-    #                                                          "# words", "Rate"))
     ret += "{0:>8s} {1:>8s} {2:<36s} {3:>14s} {4:>8s}".format("Rate", 'Top', '% of corpus', "# words", "Rate") + "\n"
     last_row = 0
     for bin, count in zip(bins[-2::-1], np.cumsum(bin_counts[::-1])):
         filtered_counts = counts[get_mask(c, words)]
         if (filtered_counts >= bin).sum() > last_row:
             percentage = 1. - (old_div(counts[counts < bin].sum(), float(c.original_length)))
-            # print("{0:>5.0f}x".format(bin).rjust(8), end=' ')
-            # print('{0:2.1f}%'.format(percentage * 100).rjust(8), end=' ')
-            # print((u'\u2588' * int(percentage * 36)).ljust(36), end=' ')
-            # print("  {0:0.0f} words".format((filtered_counts >= bin).sum()).rjust(14), end=' ')
-            # print(">= {0:>5.0f}x".format(bin).ljust(8))
             ret += "{0:>5.0f}x".format(bin).rjust(8)
             ret += '{0:2.1f}% '.format(percentage * 100).rjust(10)
             ret += (u'\u2588' * int(percentage * 36)).ljust(36)
@@ -340,70 +320,29 @@ def get_high_filter_chart(c, words=None, items=None, counts=None, num=None):
 
         last_row = (filtered_counts >= bin).sum()
 
-    # return ret
-    # print(' ' * 17, "{} total occurrences".format(counts.sum()).ljust(36), end=' ')
-    # print('{} words total'.format(get_mask(c, words).sum()).rjust(20))
-    # print('')
     ret += (' ' * 18) + "{} total occurrences".format(counts.sum()).ljust(37)
     ret += '{} words total'.format(get_mask(c, words).sum()).rjust(20) + '\n'
-    # ret += str(type(num)) + " " + str(num)
     return ret
 
 def get_high_filter_stops(c, words=None, items=None, counts=None, num=None):
     import numpy as np
-    # try:
-    #     num = int(num)
-    # except:
-    #     # TODO: show invalid num screen
-    #     num = "str"
-    #     return
     input_filter = num
     accept = None
-    # while not input_filter or input_filter <= 0:
     try:
-        # if high_filter:
-        #     input_filter = high_filter
-        # else:
-        #     input_filter = int(input("Enter the maximum rate: ").replace('x', ''))
         candidates = get_candidate_words(c, input_filter, words=words, items=items, counts=counts)
         places = np.in1d(c.words, candidates)
         places = dict(zip(candidates, np.where(places)[0]))
         candidates = sorted(candidates, key=lambda x: counts[places[x]], reverse=True)
         filtered_counts = counts[get_mask(c, words)]
 
-        # print("Filter will remove", filtered_counts[filtered_counts >= input_filter].sum(), end=' ')
-        # print("occurrences", "of these", len(filtered_counts[filtered_counts >= input_filter]), "words:")
-        # print(u' '.join(candidates))
         filtered = ""
         filtered += "Filter will remove " + str(filtered_counts[filtered_counts >= input_filter].sum())
         filtered += " occurrences " + "of these " + str(len(filtered_counts[filtered_counts >= input_filter])) + " words: "
         filtered += u' '.join(candidates)
 
-        # print("\nFilter will remove", filtered_counts[filtered_counts >= input_filter].sum(), end=' ')
-        # print("occurrences", "of these", len(filtered_counts[filtered_counts >= input_filter]), "words.", end=' ')
-
-        # filtered += "\nFilter will remove " + str(filtered_counts[filtered_counts >= input_filter].sum())
-        # filtered += " occurrences " + " of these " + str(len(filtered_counts[filtered_counts >= input_filter])) + " words."
-
         if len(candidates) == len(c.words):
-            # print("\n\nChoice of", input_filter, "will remove ALL words from the corpus.")
-            # print("Please choose a different filter.")
             filtered += "\n\nChoice of" + str(input_filter) + "will remove ALL words from the corpus."
             filtered += "Please choose a different filter."
-            # high_filter = 0
-            # input_filter = 0
-        # else:
-        #     accept = None
-        #     while accept not in ['y', 'n']:
-        #         accept = input("\nAccept filter? [y/n/[different max number]] ")
-        #         if isint(accept):
-        #             high_filter = int(accept)
-        #             input_filter = 0
-        #             accept = 'n'
-        #         elif accept == 'y':
-        #             high_filter = input_filter
-        #         elif accept == 'n':
-        #             high_filter = 0
 
     except ValueError:
         input_filter = 0
@@ -414,10 +353,6 @@ def get_low_filter_chart(c, words=None, items=None, counts=None, num=None):
     import numpy as np
     header = "FILTER LOW FREQUENCY WORDS"
     stars = old_div((80 - len(header) - 2), 2)
-    # print("\n\n{0} {1} {0}".format('*' * stars, header))
-    # print("    This will remove all words occurring less than N times.")
-    # print("    The histogram below shows how many words will be removed")
-    # print("    by selecting each minimum frequency threshold.\n")
 
     # Get frequency bins
     if items is None or counts is None:
@@ -427,31 +362,16 @@ def get_low_filter_chart(c, words=None, items=None, counts=None, num=None):
     bins = sorted(set(bins))
     bins.append(max(counts))
 
-    # try:
-    #     num = int(num)
-    # except:
-    #     # TODO: show invalid num screen
-    #     num = "str"
-
     ret = ""
 
     low_filter = False
-    # while low_filter is False:
     bin_counts, bins = np.histogram(counts[counts.argsort()[::-1]], bins=bins)
-    # print "{0:>10s} {1:>10s}".format("# Tokens", "# Words")
-    # print("{0:>8s} {1:>8s} {2:<36s} {3:>14s} {4:>8s}".format("Rate", 'Bottom', '% of corpus',
-    #                                                             "# words", "Rate"))
     ret += "{0:>8s} {1:>8s} {2:<36s} {3:>14s} {4:>8s}".format("Rate", 'Bottom', '% of corpus', "# words", "Rate") + "\n"
     last_row = 0
     for bin, count in zip(bins, np.cumsum(bin_counts)):
         filtered_counts = counts[get_mask(c, words)]
         if last_row < (filtered_counts < bin).sum() <= len(filtered_counts):
             percentage = (old_div(counts[counts <= bin].sum(), float(c.original_length)))
-            # print("{0:>5.0f}x".format(bin).rjust(8), end=' ')
-            # print('{0:2.1f}%'.format(percentage * 100).rjust(8), end=' ')
-            # print((u'\u2588' * int(percentage * 36)).ljust(36), end=' ')
-            # print("  {0:0.0f} words".format((filtered_counts <= bin).sum()).rjust(14), end=' ')
-            # print("<= {0:>5.0f}x".format(bin).ljust(8))
             ret += "{0:>5.0f}x".format(bin).rjust(8)
             ret += '{0:2.1f}%'.format(percentage * 100).rjust(9)
             ret += " " + (u'\u2588' * int(percentage * 36)).ljust(36)
@@ -461,30 +381,15 @@ def get_low_filter_chart(c, words=None, items=None, counts=None, num=None):
                 break
         last_row = (filtered_counts >= bin).sum()
 
-
-    # print(' ' * 17, "{} total occurrences".format(counts.sum()).ljust(36), end=' ')
-    # print('{} words total'.format(get_mask(c, words).sum()).rjust(20))
-    # print('')
     ret += (' ' * 18) + "{} total occurrences".format(counts.sum()).ljust(37)
     ret += '{} words total'.format(get_mask(c, words).sum()).rjust(20) + '\n'
     return ret
 
 def get_low_filter_stops(c, words=None, items=None, counts=None, num=None):
     import numpy as np
-    # try:
-    #     num = int(num)
-    # except:
-    #     # TODO: show invalid num screen
-    #     num = "str"
-    #     return
     input_filter = num
     accept = None
-    # while not input_filter or input_filter <= 0:
     try:
-        # if low_filter:
-        #     input_filter = low_filter
-        # else:
-        #     input_filter = int(input("Enter the minimum rate: ").replace('x', ''))
 
         candidates = get_candidate_words(c, -input_filter, words=words, items=items, counts=counts)
         places = np.in1d(c.words, candidates)
@@ -492,51 +397,26 @@ def get_low_filter_stops(c, words=None, items=None, counts=None, num=None):
         candidates = sorted(candidates, key=lambda x: counts[places[x]])
         filtered_counts = counts[get_mask(c, words)]
 
-        # print("Filter will remove", filtered_counts[filtered_counts <= input_filter].sum(), "tokens", end=' ')
-        # print("of these", len(filtered_counts[filtered_counts <= input_filter]), "words:")
-        # print(u' '.join(candidates))
         filtered = ""
         filtered += "Filter will remove " + str(filtered_counts[filtered_counts <= input_filter].sum()) + " tokens"
         filtered += "of these " + str(len(filtered_counts[filtered_counts <= input_filter])) + " words: "
         filtered += u' '.join(candidates)
 
-        # print("\nFilter will remove", filtered_counts[filtered_counts <= input_filter].sum(), "tokens", end=' ')
-        # print("of these", len(filtered_counts[filtered_counts <= input_filter]), "words.", end=' ')
 
         if len(candidates) == len(c.words):
-            # print("\n\nChoice of", input_filter, "will remove ALL words from the corpus.")
-            # print("Please choose a different filter.")
             filtered += "\n\nChoice of" + str(input_filter) + "will remove ALL words from the corpus."
             filtered += "Please choose a different filter."
-            # low_filter = 0
-            # input_filter = 0
-        # else:
-        #     accept = None
-        #     while accept not in ['y', 'n']:
-        #         accept = input("\nAccept filter? [y/n/[different min. number] ")
-        #         if isint(accept):
-        #             low_filter = int(accept)
-        #             input_filter = 0
-        #             accept = 'n'
-        #         elif accept == 'y':
-        #             low_filter = input_filter
-        #         elif accept == 'n':
-        #             low_filter = False
 
     except ValueError:
         input_filter = 0
 
     return (candidates, filtered)
 
+# Stores all of the variables for the labels
 class PrepData(Frame):
     def __init__(self):
         self.stoplist = set()
-        # super(PrepData, self).__init__(screen, screen.height * 2 // 3, screen.width * 2 // 3, hover_focus=True,
-        #                                 title="null", reduce_cpu=True)
         self.label = Label("change this")
-        # self.lang = Label("haha")
-        # self.summaryHigh = Text("High frequency word filter (#):", "summaryHighFreq")
-        # self.summaryHighPercent = Text("High frequency word filter (%):", "summaryHighPercent")
         self.summaryHigh = Text(label="Number of word frequency:", name="summaryHighFreq", on_change=self.summaryHighNumFocus)
         self.summaryHighPercent = Text("Percent of words:", "summaryHighPercent", on_change=self.summaryHighPercentFocus)
         self.summaryHighFocus = False
@@ -545,9 +425,6 @@ class PrepData(Frame):
         self.highLabel = Label("high label", height=35)
         self.highFocus = False
         self.highCandidates = []
-        # self.highFiltered = Label("filtered", height = 10)
-        # self.summaryLow = Text("Low frequency word filter (#):", "summaryLowFreq")
-        # self.summaryLowPercent = Text("Low frequency word filter (%):", "summaryLowPercent")
         self.summaryLow = Text("Number of word frequency:", "summaryLowFreq", on_change=self.summaryLowNumFocus)
         self.summaryLowPercent = Text("Percent of words:", "summaryLowPercent", on_change=self.summaryLowPercentFocus)
         self.summaryLowFocus = False
@@ -564,10 +441,6 @@ class PrepData(Frame):
         self.english = CheckBox("Yes", label="Apply English stopwords")
         self.englishCandidates = []
         self.prepSize = Label("need to update length", align="^")
-        # self.high.value("hello")
-    
-    # def update_lang(self, l):
-    #     self.lang = l
 
     def summaryHighPercentFocus(self):
         if self.summaryHighFocus:
@@ -631,8 +504,6 @@ class Summary(Frame):
 
         global data
 
-        # f = open("prep.txt", "a")
-        # f.write("Summary init")
         highTitle = Layout([100])
         highOptions = Layout([1, 1])
         self.add_layout(highTitle)
@@ -643,22 +514,15 @@ class Summary(Frame):
         self.add_layout(lowOptions)
         layout = Layout([100], fill_frame=True)
         self.add_layout(layout)
-        # layout.add_widget(Text("High frequency word filter (%):", "highFreq"))
 
         highTitle.add_widget(Divider(height=1, line_char=" "))
         highTitle.add_widget(Label("High Frequency Word Filter", align="^"))
-        # layout.add_widget(data.summaryHigh)
-        # layout.add_widget(data.summaryHighPercent)
         highOptions.add_widget(data.summaryHigh, 0)
         highOptions.add_widget(data.summaryHighPercent, 1)
         highOptions.add_widget(Divider(height=1, line_char="-"), 0)
         highOptions.add_widget(Divider(height=1, line_char="-"), 1)
 
-        # layout.add_widget(Text("Low frequency word filter (%): ", "lowFreq"))
         lowTitle.add_widget(Label("Low Frequency Word Filter", align="^"))
-        # layout.add_widget(data.summaryLow)
-        # layout.add_widget(data.summaryLowPercent)
-        # layout.add_widget(Text("Language-specific stopwords: ", "lang"))
         lowOptions.add_widget(data.summaryLow, 0)
         lowOptions.add_widget(data.summaryLowPercent, 1)
         lowOptions.add_widget(Divider(height=1, line_char="-"), 0)
@@ -667,7 +531,6 @@ class Summary(Frame):
         lowOptions.add_widget(Divider(height=1, line_char=" "), 1)
 
         layout.add_widget(data.english)
-        # layout.add_widget(Text("Minimum word length: ", "length"))
         layout.add_widget(data.minWord)
         layout.add_widget(Label("Original corpus unique words: " + str(data.c.original_length), align="^"))
         layout.add_widget(data.prepSize)
@@ -676,7 +539,6 @@ class Summary(Frame):
         layout2.add_widget(Button("prep", self._prep), 0)
         layout2.add_widget(Button("high", self._high), 1)
         layout2.add_widget(Button("low", self._low), 2)
-        # layout2.add_widget(Button("lang", self._lang), 3)
         layout2.add_widget(Button("exit", self._exit), 3)
         self.fix()
     
@@ -684,24 +546,6 @@ class Summary(Frame):
     def _prep(self):
         self.save()
         global data
-        # try:
-        #     high = int(data.summaryHigh.value)
-        # except:
-        #     # switch to error screen for high
-        #     data.error._value = "Please enter a valid high value"
-        #     data.switch = "Summary"
-        #     raise NextScene("Error")
-        # try:
-        #     low = int(data.summaryLow.value)
-        # except:
-        #     # switch to error screen for low
-        #     data.error._value = "Please enter a valid low value"
-        #     data.switch = "Summary"
-        #     raise NextScene("Error")
-        # data.highCandidates, data.highFiltered = get_high_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
-        #                                                         num=high)
-        # data.lowCandidates, data.lowFiltered = get_low_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
-        #                                                         num=low)
         minNum = 3
         try:
             high = test(data.summaryHigh, data.summaryHighPercent, data.high, data.highPercent, "high", False)
@@ -763,27 +607,6 @@ class Summary(Frame):
     def _high(self):
         self.save()
         global data
-        # if data.summaryHigh.value is None and data.summaryHighPercent.value is None:
-        #     data.error.text = "Please enter a value for either the number of occurrences or percent"
-        #     data.switch = "Summary"
-        #     raise NextScene("Error")
-        # if data.summaryHigh.value is not None and data.summaryHighPercent.value is not None:
-        #     data.error.text = "Please enter a value for only one field"
-        #     data.switch = "Summary"
-        #     raise NextScene("Error")
-        # try:
-        #     if data.summaryHigh.value is not None:
-        #         data.error.text = "Please enter a valid high value (int)"
-        #         high = int(data.summaryHigh.value)
-        #     if data.summaryHighPercent.value is not None:
-        #         data.error.text = "Please enter a valid high percent value (float or int)"
-        #         high = float(data.summaryHighPercent.value)
-        # except Exception as e:
-            # data.error.text = e.__str__()
-            # data.switch = "Summary"
-            # raise NextScene("Error")
-            # self._scene.add_effect(PopUpDialog(self._screen, "hellldoafaisdjfa", ["OK"]))
-            # return
         try:
             high = test(data.summaryHigh, data.summaryHighPercent, data.high, data.highPercent, "high", False)
         except Exception as e:
@@ -792,23 +615,14 @@ class Summary(Frame):
             else:
                 self._scene.add_effect(PopUpDialog(self._screen, e.args[0], e.args[1]))
             return
-        # data.high._value = str(high) TODO: do this in test() or here?
         data.highCandidates, filtered = get_high_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
                                                                 num=high)
-        # args.high_filter, candidates, data.highLabel.text, data.highFiltered.text = get_high_filter(data.c,
-        #                                 words=data.stoplist, items=data.items, counts=data.counts, num=data.summaryHigh.value)
         
-        # TODO dont stoplist yet (do it at the end)
         temp = deepcopy(data.stoplist)
         temp.update(data.highCandidates)
-        # temp.update(data.lowCandidates) # should I do this?
         data.highLabel.text = get_high_filter_chart(data.c, words=temp, items=data.items, counts=data.counts,
                                                                 num=high)
         data.highLabel.text += filtered
-        # data.highLabel.text = get_high_filter(data.c, words=data.stoplist, items=data.items, counts=data.counts,
-        #                                                         num=data.summaryHigh.value)
-        # data.highLabel.text += str(data.counter)
-        # data.counter = data.counter + 1
         raise NextScene("High Freq")
 
     @staticmethod
@@ -849,15 +663,11 @@ class Summary(Frame):
         data.lowCandidates, filtered = get_low_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
                                                                 num=low)
 
-        # TODO dont stoplist yet (do it at the end)
         temp = deepcopy(data.stoplist)
-        # temp.update(data.highCandidates)
         temp.update(data.lowCandidates)
         data.lowLabel.text = get_low_filter_chart(data.c, words=temp, items=data.items, counts=data.counts,
                                                             num=low)
         data.lowLabel.text += filtered
-        # data.lowLabel.text += str(data.counter)
-        # data.counter = data.counter + 1
         raise NextScene("Low Freq")
     
     @staticmethod
@@ -883,22 +693,9 @@ class Summary(Frame):
         data.lowLabel.text += filtered
         raise NextScene("Low Freq")
 
-    # def _lang(self):
-    #     self.save()
-    #     options = [("Danish", self._updateLang), ("Dutch", self._updateLang), ("English", self._updateLang), ("Finnish", self._updateLang),
-    #                 ("French", self._updateLang), ("German", self._updateLang), ("Hungarian", self._updateLang), ("Italian", self._updateLang),
-    #                 ("Norwegian", self._updateLang), ("Portuguese", self._updateLang), ("Russian", self._updateLang), ("Spanish", self._updateLang),
-    #                 ("Swedish", self._updateLang), ("Turkish", self._updateLang)]
-    #     self._scene.add_effect(PopupMenu(self.screen, options, 0, 0))
-
-    # def _updateLang(self):
-    #     self.save()
-    #     raise NextScene("Lang")
-
     # exits without prepping
     @staticmethod
     def _exit():
-        # self._screen.close()
         sys.exit(0)
         raise StopApplication("Quitting")
 
@@ -907,7 +704,6 @@ class HighFreq(Frame):
         super(HighFreq, self).__init__(screen, screen.height * 2 // 3, screen.width * 2 // 3, hover_focus=True,
                                         title="High Frequency Word Filter", reduce_cpu=True)
 
-        # self._data = data
         global data
         
         layout = Layout([100], fill_frame=True)
@@ -936,20 +732,12 @@ class HighFreq(Frame):
 
         data.highCandidates, filtered = get_high_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
                                                                 num=high)
-        # args.high_filter, candidates, data.highLabel.text, data.highFiltered.text = get_high_filter(data.c,
-        #                                 words=data.stoplist, items=data.items, counts=data.counts, num=data.summaryHigh.value)
         
-        # TODO dont stoplist yet (do it at the end)
         temp = deepcopy(data.stoplist)
         temp.update(data.highCandidates)
-        # temp.update(data.lowCandidates) # should I do this?
         data.highLabel.text = get_high_filter_chart(data.c, words=temp, items=data.items, counts=data.counts,
                                                                 num=high)
         data.highLabel.text += filtered
-        # data.highLabel.text = get_high_filter(data.c, words=data.stoplist, items=data.items, counts=data.counts,
-        #                                                         num=data.summaryHigh.value)
-        # data.highLabel.text += str(data.counter)
-        # data.counter = data.counter + 1
         updatePreppedLength()
         raise NextScene("Summary")
 
@@ -970,7 +758,6 @@ class HighFreq(Frame):
                                                                 num=high)
         temp = deepcopy(data.stoplist)
         temp.update(data.highCandidates)
-        # temp.update(data.lowCandidates) # should I do this?
         data.highLabel.text = get_high_filter_chart(data.c, words=temp, items=data.items, counts=data.counts,
                                                                 num=high)
         data.highLabel.text += filtered
@@ -992,20 +779,12 @@ class HighFreq(Frame):
 
         data.highCandidates, filtered = get_high_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
                                                                 num=high)
-        # args.high_filter, candidates, data.highLabel.text, data.highFiltered.text = get_high_filter(data.c,
-        #                                 words=data.stoplist, items=data.items, counts=data.counts, num=data.summaryHigh.value)
         
-        # TODO dont stoplist yet (do it at the end)
         temp = deepcopy(data.stoplist)
         temp.update(data.highCandidates)
-        # temp.update(data.lowCandidates) # should I do this?
         data.highLabel.text = get_high_filter_chart(data.c, words=temp, items=data.items, counts=data.counts,
                                                                 num=high)
         data.highLabel.text += filtered
-        # data.highLabel.text = get_high_filter(data.c, words=data.stoplist, items=data.items, counts=data.counts,
-        #                                                         num=data.summaryHigh.value)
-        # data.highLabel.text += str(data.counter)
-        # data.counter = data.counter + 1
     
     @staticmethod
     def _popupChange(selection):
@@ -1024,7 +803,6 @@ class HighFreq(Frame):
                                                                 num=high)
         temp = deepcopy(data.stoplist)
         temp.update(data.highCandidates)
-        # temp.update(data.lowCandidates) # should I do this?
         data.highLabel.text = get_high_filter_chart(data.c, words=temp, items=data.items, counts=data.counts,
                                                                 num=high)
         data.highLabel.text += filtered
@@ -1034,13 +812,11 @@ class LowFreq(Frame):
         super(LowFreq, self).__init__(screen, screen.height * 2 // 3, screen.width * 2 // 3, hover_focus=True,
                                         title="Low Frequency Word Filter", reduce_cpu=True)
 
-        # self._data = data
         global data
         
         layout = Layout([100], fill_frame=True)
         self.add_layout(layout)
         layout.add_widget(data.lowLabel)
-        # layout.add_widget(Text("Low Freq Filter (%)", "lowFreq"))
         layout.add_widget(data.low)
         layout.add_widget(data.lowPercent)
         layout2 = Layout([1, 1])
@@ -1064,15 +840,11 @@ class LowFreq(Frame):
         data.lowCandidates, filtered = get_low_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
                                                                 num=low)
 
-        # TODO dont stoplist yet (do it at the end)
         temp = deepcopy(data.stoplist)
-        # temp.update(data.highCandidates)
         temp.update(data.lowCandidates)
         data.lowLabel.text = get_low_filter_chart(data.c, words=temp, items=data.items, counts=data.counts,
                                                             num=low)
         data.lowLabel.text += filtered
-        # data.lowLabel.text += str(data.counter)
-        # data.counter = data.counter + 1
         updatePreppedLength()
         raise NextScene("Summary")
     
@@ -1093,7 +865,6 @@ class LowFreq(Frame):
         data.lowCandidates, filtered = get_low_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
                                                                 num=low)
         temp = deepcopy(data.stoplist)
-        # temp.update(data.highCandidates)
         temp.update(data.lowCandidates)
         data.lowLabel.text = get_low_filter_chart(data.c, words=temp, items=data.items, counts=data.counts,
                                                             num=low)
@@ -1116,15 +887,11 @@ class LowFreq(Frame):
         data.lowCandidates, filtered = get_low_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
                                                                 num=low)
 
-        # TODO dont stoplist yet (do it at the end)
         temp = deepcopy(data.stoplist)
-        # temp.update(data.highCandidates)
         temp.update(data.lowCandidates)
         data.lowLabel.text = get_low_filter_chart(data.c, words=temp, items=data.items, counts=data.counts,
                                                             num=low)
         data.lowLabel.text += filtered
-        # data.lowLabel.text += str(data.counter)
-        # data.counter = data.counter + 1
 
     @staticmethod
     def _popupChange(selection):
@@ -1143,56 +910,13 @@ class LowFreq(Frame):
                                                                 num=low)
         temp = deepcopy(data.stoplist)
         temp.update(data.lowCandidates)
-        # temp.update(data.lowCandidates) # should I do this?
         data.lowLabel.text = get_low_filter_chart(data.c, words=temp, items=data.items, counts=data.counts,
                                                                 num=low)
         data.lowLabel.text += filtered
 
-# class Lang(Frame):
-#     def __init__(self, screen):
-#         super(Lang, self).__init__(screen, screen.height * 2 // 3, screen.width * 2 // 3, hover_focus=True,
-#                                         title="Lang", reduce_cpu=True)
-
-#         # f = open("prep.txt", "a")
-#         # f.write("Lang init")
-#         layout = Layout([100], fill_frame=True)
-#         self.add_layout(layout)
-#         layout.add_widget(Text(label="Language-specific stopwords: ", name="lang"))
-#         layout.add_widget(Label("hello"))
-#         layout2 = Layout([1, 1, 1])
-#         self.add_layout(layout2)
-#         layout2.add_widget(Button("Ok", self._ok), 0)
-#         self.fix()
-    
-#     # proceeds to scene with chart that displays with current settings
-#     def _ok(self):
-#         self.save()
-#         raise NextScene("Summary")
-
-# class Error(Frame):
-#     def __init__(self, screen):
-#         super(Error, self).__init__(screen, screen.height * 2 // 3, screen.width * 2 //3, hover_focus=True,
-#                                             title="Error", reduce_cpu=True)
-
-#         global data
-        
-#         layout = Layout([100], fill_frame=True)
-#         self.add_layout(layout)
-#         layout.add_widget(data.error)
-#         layout2 = Layout([1])
-#         self.add_layout(layout2)
-#         layout2.add_widget(Button("Ok", self._ok), 0)
-#         self.fix()
-    
-#     def _ok(self):
-#         self.save()
-#         global data
-#         raise NextScene(data.switch)
-
 def test(num, percent, numPair, percentPair, iden, rev):
     defaults = {"high": "30%", "low": "20%"}
     if num.value == "" and percent.value == "":
-        # raise Exception("Please enter a value for either the number of occurrences or percent")
         raise Exception("Apply default of " + str(defaults[iden]) + " for the " + iden + " frequency, don't stop list, or edit value?", ["Yes", "Don't stop list", "Edit value"], True)
     if num.value != "" and percent.value != "":
         raise Exception("Pleae enter a value for only one " + iden + " field", ["Ok"], False)
@@ -1245,7 +969,6 @@ def reset(selection):
 def main(args):
     global data
     data = PrepData()
-    # print("IN MAINNNNNNNNNNNNNNNNN")
 
     config = topicexplorer.config.read(args.config_file)
 
@@ -1297,8 +1020,6 @@ def main(args):
     #     candidates = stop_language(data.c, langs[lang])
     #     if len(candidates):
     #         data.stoplist.update(candidates)
-
-    # DO THIS AUTOMATICALLY, NOT NEED FOR SCENE, MAYBE HAVE SOME SORT OF INFO SCENE TO DISPLAY THIS INFO IN
     
     # Apply custom stopwords file
     if args.stopword_file:
@@ -1310,8 +1031,6 @@ def main(args):
                 print("Applying custom stopword file to remove {} word{}.".format(
                     len(candidates), 's' if len(candidates) > 1 else ''))
                 data.stoplist.update(candidates)
-    
-    # DO THIS AUTOMATICALLY BASED OFF ARGS
 
     if args.min_word_len:
         candidates = get_small_words(data.c, args.min_word_len)
@@ -1320,63 +1039,35 @@ def main(args):
                 len(candidates), 's' if len(candidates) > 1 else '', args.min_word_len))
             data.stoplist.update(candidates)
 
-    # DO THIS AUTOMATICALLY BASED OFF ARGS, NOT THE FIRST IF
-    # TODO TEST USUAL BEHAVIOR
-
     # cache item counts
     data.items, data.counts = get_corpus_counts(data.c)
-    # if args.high_filter is None and args.high_percent is None and not args.quiet:
-    #     args.high_filter, candidates = get_high_filter(c, words=stoplist, items=items, counts=counts)
-    #     if len(candidates):
-    #         print("Filtering {} high frequency word{}.".format(len(candidates),
-    #                                                            's' if len(candidates) > 1 else ''))
-    #         stoplist.update(candidates)
-    # elif args.high_filter is None and args.high_percent is None and args.quiet:
     if args.high_filter is None and args.high_percent is None and args.quiet:
         pass
     elif args.high_filter:
         candidates = get_candidate_words(data.c, args.high_filter, sort=False, items=data.items, counts=data.counts)
         if len(candidates):
-            # print("Filtering {} high frequency word{}.".format(len(candidates),
-            #                                                    's' if len(candidates) > 1 else ''))
             data.highCandidates = candidates
             data.highLabel._value = args.high_filter
-            # data.stoplist.update(candidates)
     elif args.high_percent:
         args.high_filter = get_closest_bin(data.c, 1 - (args.high_percent / 100.), counts=data.counts)
         print(args.high_filter)
         candidates = get_candidate_words(data.c, args.high_filter, sort=False, items=data.items, counts=data.counts)
         if len(candidates):
-            print("Filtering {} high frequency word{}.".format(len(candidates),
-                                                               's' if len(candidates) > 1 else ''))
             data.stoplist.update(candidates)
-
-    # DO THIS AUTOMATICALLY BASE OFF ARGS, NOT THE FIRST IF
-    # TODO TEST USUAL BEHAVIOR
     
-    # if args.low_filter is None and args.low_percent is None and not args.quiet:
-    #     args.low_filter, candidates = get_low_filter(c, words=stoplist, items=items, counts=counts)
-    #     if len(candidates):
-    #         print("Filtering {} low frequency word{}.".format(len(candidates),
-    #                                                           's' if len(candidates) > 1 else ''))
-    #         stoplist.update(candidates)
-    # elif args.low_filter is None and args.low_percent is None and args.quiet:
+
     if args.low_filter is None and args.low_percent is None and args.quiet:
         pass
     elif args.low_filter:
         candidates = get_candidate_words(data.c, -1 * args.low_filter, sort=False, items=data.items, counts=data.counts)
         if len(candidates):
-            # print("Filtering {} low frequency words.".format(len(candidates)))
             data.lowCandidates = candidates
             data.lowLabel._value = args.low_filter
-            # data.stoplist.update(candidates)
     elif args.low_percent:
         args.low_filter = get_closest_bin(data.c, 1 - (args.low_percent / 100.), reverse=True, counts=data.counts)
         print(args.low_filter)
         candidates = get_candidate_words(data.c, -1 * args.low_filter, sort=False, items=data.items, counts=data.counts)
         if len(candidates):
-            print("Filtering {} low frequency word{}.".format(len(candidates),
-                                                               's' if len(candidates) > 1 else ''))
             data.stoplist.update(candidates)
 
     def gui(screen, scene):
@@ -1384,17 +1075,14 @@ def main(args):
             Scene([Summary(screen)], -1, name="Summary"),
             Scene([HighFreq(screen)], -1, name="High Freq"),
             Scene([LowFreq(screen)], -1, name="Low Freq")
-            # Scene([Lang(screen)], -1, name="Lang")
         ]
         global data
         data.wholeScreen = screen
         screen.play(scenes, stop_on_resize=True, start_scene=scene)
 
-    # global data
     data.prepSize.text = str("Prepared corpus unique words: " + str(len(data.c)))
 
     last_scene = None
-    # global data = PrepData()
     while True:
         try:
             Screen.wrapper(gui, catch_interrupt=True, arguments=[last_scene])
@@ -1403,19 +1091,9 @@ def main(args):
         except ResizeScreenError as e:
             last_scene = e.scene
 
-    # DO THIS WHEN PREPPING MAYBE? THE EXIT PORTION
-    # TODO TEST WHEN THIS HAPPENS, PUT IN SCREEN AFTER PREP
-
-    print("out of the loop")
-
     data.stoplist.update(data.highCandidates)
     data.stoplist.update(data.lowCandidates)
     data.stoplist.update(data.stopCandidates)
-    print(data.highCandidates)
-    # print(data.highFiltered)
-    print(data.lowCandidates)
-    # print(data.lowFiltered)
-    print(data.stopCandidates)
 
     if not data.stoplist:
         print("No stopwords applied.\n\n")
@@ -1427,8 +1105,6 @@ def main(args):
         data.c.in_place_stoplist(data.stoplist)
         print(len(data.c))
         print("\n")
-
-    # LEAVE THE REST, TILL THE END OF THIS METHOD AS IS
 
     def name_corpus(dirname, languages, lowfreq=None, highfreq=None):
         corpus_name = [dirname]
