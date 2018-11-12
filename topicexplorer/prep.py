@@ -438,7 +438,9 @@ class PrepData(Frame):
         self.englishCandidates = []
         self.prepSize = Label("need to update length", align="^")
 
+# Initial landing scene
 class Summary(Frame):
+    # Makes the layout of the scene
     def __init__(self, screen):
         super(Summary, self).__init__(screen, screen.height * 2 // 3, screen.width * 2 // 3, hover_focus=True,
                                         title="Summary", reduce_cpu=True)
@@ -483,27 +485,31 @@ class Summary(Frame):
         layout2.add_widget(Button("exit", self._exit), 3)
         self.fix()
     
-    # proceeds to scene with chart that displays with current settings
+    # Preps the corpus
     def _prep(self):
         self.save()
         global data
         minNum = 3
+        # Ensure that there is a valid value for one of the high fields
         try:
-            high = test(data.summaryHigh, data.summaryHighPercent, data.high, data.highPercent, "high", False)
+            high = validate(data.summaryHigh, data.summaryHighPercent, data.high, data.highPercent, "high", False)
         except Exception as e:
             self._scene.add_effect(PopUpDialog(self._screen, e.args[0], e.args[1], on_close=self._prepHigh))
             return
+        # Ensure that there is a valid value for one of the low fields
         try:
-            low = test(data.summaryLow, data.summaryLowPercent, data.low, data.lowPercent, "low", True)
+            low = validate(data.summaryLow, data.summaryLowPercent, data.low, data.lowPercent, "low", True)
         except Exception as e:
             self._scene.add_effect(PopUpDialog(self._screen, e.args[0], e.args[1], on_close=self._prepLow))
             return
+        # Ensure there is a valid calue for the min word field
         if data.minWord.value != "":
             try:
                 minNum = int(data.minWord.value)
             except Exception as e:
                 self._scene.add_effect(PopUpDialog(self._screen, "Please enter a valid value for Minimum Word Length", ["OK"]))
                 return
+        # Apply English stopwords if the checkbox is selected
         if data.english.value:
             data.englishCandidates = stop_language(data.c, "english")
         data.highCandidates, filtered = get_high_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
@@ -513,12 +519,14 @@ class Summary(Frame):
         data.stopCandidates = get_small_words(data.c, minNum)
         raise StopApplication("Quitting")
 
+    # Reset highlighting of fields
     @staticmethod
     def _fix(selection):
         global data
         data.summaryHighPercent.blur()
         data.summaryHigh.blur()
 
+    # Handle button clicks for high value popup
     @staticmethod
     def _prepHigh(selection):
         global data
@@ -531,6 +539,7 @@ class Summary(Frame):
             data.summaryHigh.focus()
             confirm()
 
+    # Handle button clicks for low value popup
     @staticmethod
     def _prepLow(selection):
         global data
@@ -543,11 +552,13 @@ class Summary(Frame):
             data.summaryLow.focus()
             confirm()
 
+    # Handle button click of the <high> button on the Summary scene
     def _high(self):
         self.save()
         global data
+        # Determine if one of the high values are valid
         try:
-            high = test(data.summaryHigh, data.summaryHighPercent, data.high, data.highPercent, "high", False)
+            high = validate(data.summaryHigh, data.summaryHighPercent, data.high, data.highPercent, "high", False)
         except Exception as e:
             if e.args[2]:
                 self._scene.add_effect(PopUpDialog(self._screen, e.args[0], e.args[1], on_close=self._popupHigh))
@@ -564,6 +575,7 @@ class Summary(Frame):
         data.highLabel.text += filtered
         raise NextScene("High Freq")
 
+    # Handle button clicks for high popup
     @staticmethod
     def _popupHigh(selection):
         global data
@@ -576,7 +588,7 @@ class Summary(Frame):
             data.summaryHigh.focus()
             confirm()
             return
-        high = test(data.summaryHigh, data.summaryHighPercent, data.high, data.highPercent, "high", False)
+        high = validate(data.summaryHigh, data.summaryHighPercent, data.high, data.highPercent, "high", False)
         data.highCandidates, filtered = get_high_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
                                                                 num=high)
         temp = deepcopy(data.stoplist)
@@ -586,11 +598,13 @@ class Summary(Frame):
         data.highLabel.text += filtered
         raise NextScene("High Freq")
     
+    # Handle button click of the <low> button on the Summary scene
     def _low(self):
         self.save()
         global data
+        # Determine if one of the low values are valid
         try:
-            low = test(data.summaryLow, data.summaryLowPercent, data.low, data.lowPercent, "low", True)
+            low = validate(data.summaryLow, data.summaryLowPercent, data.low, data.lowPercent, "low", True)
         except Exception as e:
             if e.args[2]:
                 self._scene.add_effect(PopUpDialog(self._screen, e.args[0], e.args[1], on_close=self._popupLow))
@@ -608,6 +622,7 @@ class Summary(Frame):
         data.lowLabel.text += filtered
         raise NextScene("Low Freq")
     
+    # Handle button clicks for low popup
     @staticmethod
     def _popupLow(selection):
         global data
@@ -620,7 +635,7 @@ class Summary(Frame):
             data.summaryLow.focus()
             confirm()
             return
-        low = test(data.summaryLow, data.summaryLowPercent, data.low, data.lowPercent, "low", True)
+        low = validate(data.summaryLow, data.summaryLowPercent, data.low, data.lowPercent, "low", True)
         data.lowCandidates, filtered = get_low_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
                                                                 num=low)
         temp = deepcopy(data.stoplist)
@@ -630,13 +645,15 @@ class Summary(Frame):
         data.lowLabel.text += filtered
         raise NextScene("Low Freq")
 
-    # exits without prepping
+    # Exits without prepping
     @staticmethod
     def _exit():
         sys.exit(0)
         raise StopApplication("Quitting")
 
+# High frequency scene
 class HighFreq(Frame):
+    # Loads in the scene layout
     def __init__(self, screen):
         super(HighFreq, self).__init__(screen, screen.height * 2 // 3, screen.width * 2 // 3, hover_focus=True,
                                         title="High Frequency Word Filter", reduce_cpu=True)
@@ -654,12 +671,14 @@ class HighFreq(Frame):
         layout2.add_widget(Button("Update", self._change), 1)
         self.fix()
 
+    # Handle button click of Ok
     def _ok(self):
         self.save()
         global data
 
+        # Determines if one of the high values are valid
         try:
-            high = test(data.high, data.highPercent, data.summaryHigh, data.summaryHighPercent, "high", False)
+            high = validate(data.high, data.highPercent, data.summaryHigh, data.summaryHighPercent, "high", False)
         except Exception as e:
             if e.args[2]:
                 self._scene.add_effect(PopUpDialog(self._screen, e.args[0], e.args[1], on_close=self._popup))
@@ -678,8 +697,10 @@ class HighFreq(Frame):
         updatePreppedLength()
         raise NextScene("Summary")
 
+    # Handle button clicks for high popup
     @staticmethod
     def _popup(selection):
+        # Handle the selections
         if str(selection) == "0":
             data.highPercent._value = "30.0"
         elif str(selection) == "1":
@@ -689,7 +710,7 @@ class HighFreq(Frame):
             data.high.focus()
             confirm()
             return
-        high = test(data.high, data.highPercent, data.summaryHigh, data.summaryHighPercent, "high", False)
+        high = validate(data.high, data.highPercent, data.summaryHigh, data.summaryHighPercent, "high", False)
         data.highCandidates, filtered = get_high_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
                                                                 num=high)
         temp = deepcopy(data.stoplist)
@@ -700,12 +721,14 @@ class HighFreq(Frame):
 
         raise NextScene("Summary")
     
+    # Handle button click for Update
     def _change(self):
         self.save()
         global data
 
+        # Determine if one of the high values are valid
         try:
-            high = test(data.high, data.highPercent, data.summaryHigh, data.summaryHighPercent, "high", False)
+            high = validate(data.high, data.highPercent, data.summaryHigh, data.summaryHighPercent, "high", False)
         except Exception as e:
             if e.args[2]:
                 self._scene.add_effect(PopUpDialog(self._screen, e.args[0], e.args[1], on_close=self._popupChange))
@@ -722,8 +745,10 @@ class HighFreq(Frame):
                                                                 num=high)
         data.highLabel.text += filtered
     
+    # Handle button click for popup after clicking change
     @staticmethod
     def _popupChange(selection):
+        # Handle the selections
         if str(selection) == "0":
             data.highPercent._value = "30.0"
         elif str(selection) == "1":
@@ -733,7 +758,7 @@ class HighFreq(Frame):
             data.high.focus()
             confirm()
             return
-        high = test(data.high, data.highPercent, data.summaryHigh, data.summaryHighPercent, "high", False)
+        high = validate(data.high, data.highPercent, data.summaryHigh, data.summaryHighPercent, "high", False)
         data.highCandidates, filtered = get_high_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
                                                                 num=high)
         temp = deepcopy(data.stoplist)
@@ -742,7 +767,9 @@ class HighFreq(Frame):
                                                                 num=high)
         data.highLabel.text += filtered
 
+# Low frequency scene
 class LowFreq(Frame):
+    # Loads in the scene layout
     def __init__(self, screen):
         super(LowFreq, self).__init__(screen, screen.height * 2 // 3, screen.width * 2 // 3, hover_focus=True,
                                         title="Low Frequency Word Filter", reduce_cpu=True)
@@ -760,11 +787,14 @@ class LowFreq(Frame):
         layout2.add_widget(Button("Update", self._change), 1)
         self.fix()
 
+    # Handle button click of Ok
     def _ok(self):
         self.save()
         global data
+        
+        # Determines if one of the low values are valid
         try:
-            low = test(data.low, data.lowPercent, data.summaryLow, data.summaryLowPercent, "low", True)
+            low = validate(data.low, data.lowPercent, data.summaryLow, data.summaryLowPercent, "low", True)
         except Exception as e:
             if e.args[2]:
                 self._scene.add_effect(PopUpDialog(self._screen, e.args[0], e.args[1], on_close=self._popup))
@@ -783,8 +813,10 @@ class LowFreq(Frame):
         updatePreppedLength()
         raise NextScene("Summary")
     
+    # Handle button clicks for low popup
     @staticmethod
     def _popup(selection):
+        # Handle the selections
         if str(selection) == "0":
             data.lowPercent._value = "20.0"
         elif str(selection) == "1":
@@ -794,7 +826,7 @@ class LowFreq(Frame):
             data.low.focus()
             confirm()
             return
-        low = test(data.low, data.lowPercent, data.summaryLow, data.summaryLowPercent, "low", True)
+        low = validate(data.low, data.lowPercent, data.summaryLow, data.summaryLowPercent, "low", True)
 
         data.lowCandidates, filtered = get_low_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
                                                                 num=low)
@@ -806,11 +838,14 @@ class LowFreq(Frame):
         
         raise NextScene("Summary")
     
+    # Handle button click for Update
     def _change(self):
         self.save()
         global data
+        
+        # Determine if one of the low values are valid
         try:
-            low = test(data.low, data.lowPercent, data.summaryLow, data.summaryLowPercent, "low", True)
+            low = validate(data.low, data.lowPercent, data.summaryLow, data.summaryLowPercent, "low", True)
         except Exception as e:
             if e.args[2]:
                 self._scene.add_effect(PopUpDialog(self._screen, e.args[0], e.args[1], on_close=self._popupChange))
@@ -827,8 +862,11 @@ class LowFreq(Frame):
                                                             num=low)
         data.lowLabel.text += filtered
 
+    
+    # Handle button click for popup after clicking change
     @staticmethod
     def _popupChange(selection):
+        # Handle the selections
         if str(selection) == "0":
             data.lowPercent._value = "20.0"
         elif str(selection) == "1":
@@ -838,7 +876,7 @@ class LowFreq(Frame):
             data.low.focus()
             confirm()
             return
-        low = test(data.low, data.lowPercent, data.summaryLow, data.summaryLowPercent, "low", True)
+        low = validate(data.low, data.lowPercent, data.summaryLow, data.summaryLowPercent, "low", True)
         data.lowCandidates, filtered = get_low_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
                                                                 num=low)
         temp = deepcopy(data.stoplist)
@@ -847,7 +885,8 @@ class LowFreq(Frame):
                                                                 num=low)
         data.lowLabel.text += filtered
 
-def test(num, percent, numPair, percentPair, iden, rev):
+# Determin if the values for the num and percent fields are valid
+def validate(num, percent, numPair, percentPair, iden, rev):
     defaults = {"high": "30%", "low": "20%"}
     if num.value == "" and percent.value == "":
         raise Exception("Apply default of " + str(defaults[iden]) + " for the " + iden + " frequency, don't stop list, or edit value?", ["Yes", "Don't stop list", "Edit value"], True)
@@ -870,6 +909,8 @@ def test(num, percent, numPair, percentPair, iden, rev):
         raise Exception(msg, ["Ok"], False)
     return ret
 
+# Update the prepped length by storing c and stoplist in temp varibles,
+# then updaing the originals, and then restoring the originals
 def updatePreppedLength():
     global data
     temp = deepcopy(data.stoplist)
@@ -882,12 +923,14 @@ def updatePreppedLength():
     tempC.in_place_stoplist(temp)
     data.prepSize.text = str("Prepared corpus unique words: " + str(len(tempC)))
 
+# Highlight the necessary fields
 def confirm():
     global data
     tempScreen = data.wholeScreen.current_scene._effects[0]._screen
     tempScene = data.wholeScreen.current_scene
     tempScene.add_effect(PopUpDialog(tempScreen, "Please input a value in one of the highlighted fields", ["OK"], on_close=reset))
 
+# Reset all highlighted fields
 def reset(selection):
     global data
     data.summaryHigh.blur()
