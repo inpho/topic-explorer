@@ -131,7 +131,7 @@ import topicexplorer.config
 from topicexplorer.lib.util import isint, is_valid_configfile, bool_prompt
 
 from asciimatics.widgets import Frame, ListBox, Layout, Divider, Text, \
-    Button, TextBox, Widget, Label, PopUpDialog, PopupMenu, CheckBox
+    Button, TextBox, Widget, Label, PopUpDialog, PopupMenu, CheckBox, FileBrowser, KeyboardEvent
 from asciimatics.scene import Scene
 from asciimatics.screen import Screen
 from asciimatics.exceptions import ResizeScreenError, NextScene, StopApplication
@@ -409,27 +409,27 @@ class PrepData(Frame):
     def __init__(self):
         self.stoplist = set()
         self.label = Label("change this")
-        # self.summaryHigh = Text(label="Words:", name="summaryHighFreq")
-        self.summaryHighText = Label("Words:", align=">")
-        self.summaryHigh = Text(label="")
-        # self.summaryHighPercent = Text("Percent of words:", "summaryHighPercent")
-        self.summaryHighPercentText = Label("Percent:", align=">")
-        self.summaryHighPercent = Text(label="")
-        self.high = Text("High frequency word filter (#):", "highFreq")
-        self.highPercent = Text("High ferquency word filter (%):", "highPercent")
+        self.summaryHigh = Text(label="  Words:", name="summaryHighFreq", max_length=5)
+        # self.summaryHighText = Label("Words:", align=">")
+        # self.summaryHigh = Text(label="")
+        self.summaryHighPercent = Text("Percent:", "summaryHighPercent", max_length=5)
+        # self.summaryHighPercentText = Label("Percent:", align=">")
+        # self.summaryHighPercent = Text(label="")
+        self.high = Text("High frequency word filter (#):", "highFreq", max_length=5)
+        self.highPercent = Text("High ferquency word filter (%):", "highPercent", max_length=5)
         self.highLabel = Label("high label", height=35)
         self.highCandidates = []
-        # self.summaryLow = Text("Number of word frequency:", "summaryLowFreq")
-        self.summaryLowText = Label("Words:", align=">")
-        self.summaryLow = Text(label="")
-        # self.summaryLowPercent = Text("Percent of words:", "summaryLowPercent")
-        self.summaryLowPercentText = Label("Percent:", align=">")
-        self.summaryLowPercent = Text(label="")
-        self.low = Text("Low frequency word filter (#):", "lowFreq")
-        self.lowPercent = Text("Low frequency word filter (%):", "lowPercent")
+        self.summaryLow = Text("  Words:", "summaryLowFreq", max_length=5)
+        # self.summaryLowText = Label("Words:", align=">")
+        # self.summaryLow = Text(label="")
+        self.summaryLowPercent = Text("Percent:", "summaryLowPercent", max_length=5)
+        # self.summaryLowPercentText = Label("Percent:", align=">")
+        # self.summaryLowPercent = Text(label="")
+        self.low = Text("Low frequency word filter (#):", "lowFreq", max_length=5)
+        self.lowPercent = Text("Low frequency word filter (%):", "lowPercent", max_length=5)
         self.lowLabel = Label("low label", height=35)
         self.lowCandidates = []
-        self.minWord = Text("Minimum word length: ", "length")
+        self.minWord = Text("Minimum word length:", "length", max_length=5)
         self.counter = 0
         self.error = Label("Error message")
         self.switch = 0
@@ -437,65 +437,91 @@ class PrepData(Frame):
         self.english = CheckBox("Yes", label="Apply English stopwords")
         self.englishCandidates = []
         self.prepSize = Label("need to update length", align="^")
+        self.stopwordFile = Label("Current stopworded file: <None>", align="^")
 
 # Initial landing scene
 class Summary(Frame):
     # Makes the layout of the scene
     def __init__(self, screen):
-        super(Summary, self).__init__(screen, screen.height * 2 // 3, screen.width * 2 // 3, hover_focus=True,
+        super(Summary, self).__init__(screen, screen.height, screen.width, hover_focus=True,
                                         title="Summary", reduce_cpu=True)
 
         global data
 
+        # super().set_theme("green")
+
         highTitle = Layout([100])
         self.add_layout(highTitle)
         highTitle.add_widget(Divider(height=1, line_char=" "))
-        highTitle.add_widget(Label("High Frequency Word Filter", align="^"))
+        highTitle.add_widget(Label("High Frequency Word Filter\n--------------------------", align="^", height=2))
 
-        highOptions = Layout([10, 1, 9])
+        highOptions = Layout([7, 2, 6])
         self.add_layout(highOptions)
-        highOptions.add_widget(data.summaryHighText, 0)
+        # highOptions.add_widget(data.summaryHighText, 0)
+        # highOptions.add_widget(data.summaryHigh, 1)
         highOptions.add_widget(data.summaryHigh, 1)
-        highOptions.add_widget(Label(""), 2)
-        highOptions.add_widget(data.summaryHighPercentText, 0)
+        # highOptions.add_widget(Label(""), 2)
+        # highOptions.add_widget(data.summaryHighPercentText, 0)
+        # highOptions.add_widget(data.summaryHighPercent, 1)
         highOptions.add_widget(data.summaryHighPercent, 1)
-        highOptions.add_widget(Label(""), 2)
-        highOptions.add_widget(Divider(height=1, line_char="-"), 0)
-        highOptions.add_widget(Divider(height=1, line_char="-"), 1)
-        highOptions.add_widget(Divider(height=1, line_char="-"), 2)
+        # highOptions.add_widget(Label(""), 2)
+
+        highButton = Layout([1])
+        self.add_layout(highButton)
+        highButton.add_widget(Divider(height=1, line_char=" "), 0)
+        highButton.add_widget(Button("High frequency wizard", self._high), 0)
+        highButton.add_widget(Divider(height=2, line_char="-"), 0)
+        highButton.add_widget(Divider(height=1, line_char=" "), 0)
         
         lowTitle = Layout([100])
         self.add_layout(lowTitle)
-        lowTitle.add_widget(Label("Low Frequency Word Filter", align="^"))
+        lowTitle.add_widget(Label("Low Frequency Word Filter\n-------------------------", align="^", height=2))
 
-        lowOptions = Layout([10, 1, 9])
+        lowOptions = Layout([7, 2, 6])
         self.add_layout(lowOptions)
-        lowOptions.add_widget(data.summaryLowText, 0)
+        # lowOptions.add_widget(data.summaryLowText, 0)
+        # lowOptions.add_widget(data.summaryLow, 1)
         lowOptions.add_widget(data.summaryLow, 1)
-        lowOptions.add_widget(Label(""), 2)
-        lowOptions.add_widget(data.summaryLowPercentText, 0)
+        # lowOptions.add_widget(Label(""), 2)
+        # lowOptions.add_widget(data.summaryLowPercentText, 0)
+        # lowOptions.add_widget(data.summaryLowPercent, 1)
         lowOptions.add_widget(data.summaryLowPercent, 1)
-        lowOptions.add_widget(Label(""), 2)
-        lowOptions.add_widget(Divider(height=1, line_char="-"), 0)
-        lowOptions.add_widget(Divider(height=1, line_char="-"), 1)
-        lowOptions.add_widget(Divider(height=1, line_char="-"), 2)
-        lowOptions.add_widget(Divider(height=1, line_char=" "), 0)
-        lowOptions.add_widget(Divider(height=1, line_char=" "), 1)
-        lowOptions.add_widget(Divider(height=1, line_char=" "), 2)
+        # lowOptions.add_widget(Label(""), 2)
 
-        layout = Layout([100], fill_frame=True)
-        self.add_layout(layout)
-        layout.add_widget(data.english)
-        layout.add_widget(data.minWord)
-        layout.add_widget(Label("Original corpus unique words: " + str(data.c.original_length), align="^"))
-        layout.add_widget(data.prepSize)
+        lowButton = Layout([1])
+        self.add_layout(lowButton)
+        lowButton.add_widget(Divider(height=1, line_char=" "), 0)
+        lowButton.add_widget(Button("Low frequency wizard", self._low), 0)
+        lowButton.add_widget(Divider(height=2, line_char="-"), 0)
+        lowButton.add_widget(Divider(height=1, line_char=" "), 0)
 
-        layout2 = Layout([1, 1, 1, 1])
+        stopwordHeader = Layout([1])
+        self.add_layout(stopwordHeader)
+        stopwordHeader.add_widget(Label("Stopwords\n---------", align="^", height=2), 0)
+
+        stopwords = Layout([8, 6, 4])
+        self.add_layout(stopwords)
+        stopwords.add_widget(data.english, 1)
+        
+        stopMinWords = Layout([8, 5, 5])
+        self.add_layout(stopMinWords)
+        stopMinWords.add_widget(data.minWord, 1)
+
+        stopwordFileLayout = Layout([1])
+        self.add_layout(stopwordFileLayout)
+        stopwordFileLayout.add_widget(data.stopwordFile, 0)
+        stopwordFileLayout.add_widget(Divider(height=1, line_char=" "), 0)
+        stopwordFileLayout.add_widget(Button("Select new file", self._chooseFile), 0)
+        stopwordFileLayout.add_widget(Divider(height=2, line_char=" "), 0)
+        # layout.add_widget(Label("Original corpus unique words: " + str(data.c.original_length), align="^"))
+        # layout.add_widget(data.prepSize)
+
+        layout2 = Layout([1, 1])
         self.add_layout(layout2)
         layout2.add_widget(Button("prep", self._prep), 0)
-        layout2.add_widget(Button("high", self._high), 1)
-        layout2.add_widget(Button("low", self._low), 2)
-        layout2.add_widget(Button("exit", self._exit), 3)
+        # layout2.add_widget(Button("high", self._high), 1)
+        # layout2.add_widget(Button("low", self._low), 2)
+        layout2.add_widget(Button("exit", self._exit), 1)
         self.fix()
     
     # Preps the corpus
@@ -657,6 +683,9 @@ class Summary(Frame):
                                                                 num=low)
         data.lowLabel.text += filtered
         raise NextScene("Low Freq")
+
+    def _chooseFile(self):
+        raise NextScene("File Browser")
 
     # Exits without prepping
     @staticmethod
@@ -898,7 +927,73 @@ class LowFreq(Frame):
                                                                 num=low)
         data.lowLabel.text += filtered
 
-# Determin if the values for the num and percent fields are valid
+# Taken from: https://github.com/peterbrittain/asciimatics/blob/master/samples/treeview.py
+class Files(Frame):
+    def __init__(self, screen):
+        super(Files, self).__init__(
+            screen, screen.height, screen.width, has_border=False)
+
+        # Create the (very simple) form layout...
+        layout = Layout([1], fill_frame=True)
+        self.add_layout(layout)
+
+        # Now populate it with the widgets we want to use.
+        self._details = Text()
+        self._details.disabled = True
+        self._details.custom_colour = "field"
+        regex = "((?:\w+)(?:.)?(?:txt))|(\w+)$"
+        self._list = FileBrowser(Widget.FILL_FRAME,
+                                 os.path.abspath("."),
+                                 name="mc_list",
+                                 on_select=self.popup,
+                                 on_change=self.details,
+                                 file_filter=regex)
+        layout.add_widget(Label("Local disk browser sample"))
+        layout.add_widget(Divider())
+        layout.add_widget(self._list)
+        layout.add_widget(Divider())
+        layout.add_widget(self._details)
+        layout.add_widget(Label("Press Enter to select or `q` to quit."))
+
+        # Prepare the Frame for use.
+        self.fix()
+
+    def popup(self):
+        # Just confirm whenever the user actually selects something.
+        if not self._list.value.endswith(".txt") and "." in self._list.value:
+            self._scene.add_effect(PopUpDialog(self._screen, "Please pick a valid file (a .txt file or a file with no extension)", ["OK"]))
+        else:
+            data.stopwordFile.text = "Current stopworded file: " + self._list.value
+            raise NextScene("Summary")
+            # self._scene.add_effect(PopUpDialog(self._screen, "You selected: {}".format(self._list.value), ["OK"]))
+
+    def details(self):
+        # If python magic is installed, provide a little more detail of the current file.
+        if self._list.value:
+            if os.path.isdir(self._list.value):
+                self._details.value = "Directory"
+            elif os.path.isfile(self._list.value):
+                try:
+                    self._details.value = magic.from_file(self._list.value)
+                except NameError:
+                    self._details.value = "File (run 'pip install python-magic' for more details)"
+        else:
+            self._details.value = "--"
+
+    def process_event(self, event):
+        # Do the key handling for this Frame.
+        global data
+        if isinstance(event, KeyboardEvent):
+            if event.key_code in [ord('q'), ord('Q'), Screen.ctrl("c")]:
+                raise NextScene("Summary")
+            elif event.key_code in [ord('c'), ord('C')]:
+                data.stopwordFile.text = "hello"
+                raise NextScene("Summary")
+
+        # Now pass on to lower levels for normal handling of the event.
+        return super(Files, self).process_event(event)
+
+# Determine if the values for the num and percent fields are valid
 def validate(num, percent, numPair, percentPair, iden, rev):
     defaults = {"high": "30%", "low": "20%"}
     if num.value == "" and percent.value == "":
@@ -1063,7 +1158,8 @@ def main(args):
         scenes = [
             Scene([Summary(screen)], -1, name="Summary"),
             Scene([HighFreq(screen)], -1, name="High Freq"),
-            Scene([LowFreq(screen)], -1, name="Low Freq")
+            Scene([LowFreq(screen)], -1, name="Low Freq"),
+            Scene([Files(screen)], -1, name="File Browser")
         ]
         global data
         data.wholeScreen = screen
