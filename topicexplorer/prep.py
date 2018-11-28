@@ -580,11 +580,13 @@ class Summary(Frame):
             data.fileCandidates = []
         data.highCandidates, filtered, valid = get_high_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
                                                                 num=high)
+        # Checks to see if the value entered with filter the whole corpus out
         if not valid:
             self._scene.add_effect(PopUpDialog(self._screen, "Current filter for high will remove all values, please choose a different filter", ["OK"]))
             return
         data.lowCandidates, filtered, valid = get_low_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
                                                                 num=low)
+        # Checks to see if the value entered with filter the whole corpus out
         if not valid:
             self._scene.add_effect(PopUpDialog(self._screen, "Current filter for low will remove all values, please choose a different filter", ["OK"]))
             return
@@ -641,6 +643,7 @@ class Summary(Frame):
         
         data.highCandidates, filtered, valid = get_high_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
                                                                 num=high)
+        # Checks to see if the value entered with filter the whole corpus out
         if not valid:
             self._scene.add_effect(PopUpDialog(self._screen, "Current filter for high will remove all values, please choose a different filter", ["OK"]))
             return
@@ -692,6 +695,7 @@ class Summary(Frame):
             
         data.lowCandidates, filtered, valid = get_low_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
                                                                 num=low)
+        # Checks to see if the value entered with filter the whole corpus out
         if not valid:
             self._scene.add_effect(PopUpDialog(self._screen, "Current filter for low will remove all values, please choose a different filter", ["OK"]))
             return
@@ -772,6 +776,7 @@ class HighFreq(Frame):
 
         data.highCandidates, filtered, valid = get_high_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
                                                                 num=high)
+        # Checks to see if the value entered with filter the whole corpus out
         if not valid:
             self._scene.add_effect(PopUpDialog(self._screen, "Current filter for high will remove all values, please choose a different filter", ["OK"]))
             return
@@ -798,7 +803,7 @@ class HighFreq(Frame):
             confirm()
             return
         high = validate(data.high, data.highPercent, data.summaryHigh, data.summaryHighPercent, "high", False)
-        data.highCandidates, filtered, value = get_high_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
+        data.highCandidates, filtered, valid = get_high_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
                                                                 num=high)
         temp = deepcopy(data.stoplist)
         temp.update(data.highCandidates)
@@ -825,6 +830,7 @@ class HighFreq(Frame):
 
         data.highCandidates, filtered, valid = get_high_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
                                                                 num=high)
+        # Checks to see if the value entered with filter the whole corpus out
         if not valid:
             self._scene.add_effect(PopUpDialog(self._screen, "Current filter for high will remove all values, please choose a different filter", ["OK"]))
             return
@@ -894,6 +900,7 @@ class LowFreq(Frame):
             
         data.lowCandidates, filtered, valid = get_low_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
                                                                 num=low)
+        # Checks to see if the value entered with filter the whole corpus out
         if not valid:
             self._scene.add_effect(PopUpDialog(self._screen, "Current filter for low will remove all values, please choose a different filter", ["OK"]))
             return
@@ -948,6 +955,7 @@ class LowFreq(Frame):
             
         data.lowCandidates, filtered, valid = get_low_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
                                                                 num=low)
+        # Checks to see if the value entered with filter the whole corpus out
         if not valid:
             self._scene.add_effect(PopUpDialog(self._screen, "Current filter for low will remove all values, please choose a different filter", ["OK"]))
             return
@@ -1019,6 +1027,7 @@ class Files(Frame):
         else:
             data.stopwordFile.text = "Current stopworded file: " + self._list.value
             data.fileName = self._list.value
+            updatePreppedLength()
             raise NextScene("Summary")
             # self._scene.add_effect(PopUpDialog(self._screen, "You selected: {}".format(self._list.value), ["OK"]))
 
@@ -1040,10 +1049,12 @@ class Files(Frame):
         global data
         if isinstance(event, KeyboardEvent):
             if event.key_code in [ord('q'), ord('Q'), Screen.ctrl("c")]:
+                updatePreppedLength()
                 raise NextScene("Summary")
             elif event.key_code in [ord('c'), ord('C')]:
                 data.stopwordFile.text = "Current stopword file: <None>"
                 data.fileName = "<None>"
+                updatePreppedLength()
                 raise NextScene("Summary")
 
         # Now pass on to lower levels for normal handling of the event.
@@ -1085,7 +1096,6 @@ def updatePreppedLength():
     if data.fileName != "<None>":
         with open(data.fileName, encoding='utf8') as swf:
                 data.fileCandidates = [word.strip() for word in swf]
-
                 if len(data.fileCandidates):
                     print("Applying custom stopword file to remove {} word{}.".format(
                         len(data.fileCandidates), 's' if len(data.fileCandidates) > 1 else ''))
