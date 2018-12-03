@@ -300,26 +300,26 @@ def get_high_filter_chart(c, words=None, items=None, counts=None, num=None):
     bins = sorted(set(bins))
     bins.append(max(counts))
 
-    ret = ""
+    chart = ""
 
     bin_counts, bins = np.histogram(counts, bins=bins)
-    ret += "{0:>8s} {1:>8s} {2:<36s} {3:>14s} {4:>8s}".format("Rate", 'Top', '% of corpus', "# words", "Rate") + "\n"
+    chart += "{0:>8s} {1:>8s} {2:<36s} {3:>14s} {4:>8s}".format("Rate", 'Top', '% of corpus', "# words", "Rate") + "\n"
     last_row = 0
     for bin, count in zip(bins[-2::-1], np.cumsum(bin_counts[::-1])):
         filtered_counts = counts[get_mask(c, words)]
         if (filtered_counts >= bin).sum() > last_row:
             percentage = 1. - (old_div(counts[counts < bin].sum(), float(c.original_length)))
-            ret += "{0:>5.0f}x".format(bin).rjust(8)
-            ret += '{0:2.1f}% '.format(percentage * 100).rjust(10)
-            ret += (u'\u2588' * int(percentage * 36)).ljust(36)
-            ret += "{0:0.0f} words".format((filtered_counts >= bin).sum()).rjust(15)
-            ret += " >={0:>5.0f}x".format(bin).ljust(8) + "\n"
+            chart += "{0:>5.0f}x".format(bin).rjust(8)
+            chart += '{0:2.1f}% '.format(percentage * 100).rjust(10)
+            chart += (u'\u2588' * int(percentage * 36)).ljust(36)
+            chart += "{0:0.0f} words".format((filtered_counts >= bin).sum()).rjust(15)
+            chart += " >={0:>5.0f}x".format(bin).ljust(8) + "\n"
 
         last_row = (filtered_counts >= bin).sum()
 
-    ret += (' ' * 18) + "{} total occurrences".format(counts.sum()).ljust(37)
-    ret += '{} words total'.format(get_mask(c, words).sum()).rjust(20) + '\n'
-    return ret
+    chart += (' ' * 18) + "{} total occurrences".format(counts.sum()).ljust(34)
+    chart += '{} words total'.format(get_mask(c, words).sum()).rjust(20)
+    return chart
 
 def get_high_filter_stops(c, words=None, items=None, counts=None, num=None):
     import numpy as np
@@ -358,27 +358,27 @@ def get_low_filter_chart(c, words=None, items=None, counts=None, num=None):
     bins = sorted(set(bins))
     bins.append(max(counts))
 
-    ret = ""
+    chart = ""
 
     bin_counts, bins = np.histogram(counts[counts.argsort()[::-1]], bins=bins)
-    ret += "{0:>8s} {1:>8s} {2:<36s} {3:>14s} {4:>8s}".format("Rate", 'Bottom', '% of corpus', "# words", "Rate") + "\n"
+    chart += "{0:>8s} {1:>8s} {2:<36s} {3:>14s} {4:>8s}".format("Rate", 'Bottom', '% of corpus', "# words", "Rate") + "\n"
     last_row = 0
     for bin, count in zip(bins, np.cumsum(bin_counts)):
         filtered_counts = counts[get_mask(c, words)]
         if last_row < (filtered_counts < bin).sum() <= len(filtered_counts):
             percentage = (old_div(counts[counts <= bin].sum(), float(c.original_length)))
-            ret += "{0:>5.0f}x".format(bin).rjust(8)
-            ret += '{0:2.1f}%'.format(percentage * 100).rjust(9)
-            ret += " " + (u'\u2588' * int(percentage * 36)).ljust(36)
-            ret += "{0:0.0f} words".format((filtered_counts <= bin).sum()).rjust(15)
-            ret += " <={0:>5.0f}x".format(bin).ljust(8) + "\n"
+            chart += "{0:>5.0f}x".format(bin).rjust(8)
+            chart += '{0:2.1f}%'.format(percentage * 100).rjust(9)
+            chart += " " + (u'\u2588' * int(percentage * 36)).ljust(36)
+            chart += "{0:0.0f} words".format((filtered_counts <= bin).sum()).rjust(15)
+            chart += " <={0:>5.0f}x".format(bin).ljust(8) + "\n"
             if (filtered_counts < bin).sum() == len(filtered_counts):
                 break
         last_row = (filtered_counts >= bin).sum()
 
-    ret += (' ' * 18) + "{} total occurrences".format(counts.sum()).ljust(37)
-    ret += '{} words total'.format(get_mask(c, words).sum()).rjust(20) + '\n'
-    return ret
+    chart += (' ' * 18) + "{} total occurrences".format(counts.sum()).ljust(34)
+    chart += '{} words total'.format(get_mask(c, words).sum()).rjust(20)
+    return chart
 
 def get_low_filter_stops(c, words=None, items=None, counts=None, num=None):
     import numpy as np
@@ -413,24 +413,19 @@ class PrepData(Frame):
         self.stoplist = set()
         self.label = Label("change this")
         self.summaryHigh = Text(label="  Words:", name="summaryHighFreq", max_length=5)
-        # self.summaryHighText = Label("Words:", align=">")
-        # self.summaryHigh = Text(label="")
         self.summaryHighPercent = Text("Percent:", "summaryHighPercent", max_length=5)
-        # self.summaryHighPercentText = Label("Percent:", align=">")
-        # self.summaryHighPercent = Text(label="")
-        self.high = Text("High frequency word filter (#):", "highFreq", max_length=5)
-        self.highPercent = Text("High ferquency word filter (%):", "highPercent", max_length=5)
-        self.highLabel = Label("high label", height=58)
+        self.high = Text("  Words:", "highFreq", max_length=5)
+        self.highPercent = Text("Percent:", "highPercent", max_length=5)
+        self.highChart = Label("high label", align="^")
+        self.highStop = Label("high stop", align="^")
+        self.highStop.text = "hello"
         self.highCandidates = []
         self.summaryLow = Text("  Words:", "summaryLowFreq", max_length=5)
-        # self.summaryLowText = Label("Words:", align=">")
-        # self.summaryLow = Text(label="")
         self.summaryLowPercent = Text("Percent:", "summaryLowPercent", max_length=5)
-        # self.summaryLowPercentText = Label("Percent:", align=">")
-        # self.summaryLowPercent = Text(label="")
-        self.low = Text("Low frequency word filter (#):", "lowFreq", max_length=5)
-        self.lowPercent = Text("Low frequency word filter (%):", "lowPercent", max_length=5)
-        self.lowLabel = Label("low label", height=58)
+        self.low = Text("  Words:", "lowFreq", max_length=5)
+        self.lowPercent = Text("Percent:", "lowPercent", max_length=5)
+        self.lowChart = Label("low label", align="^")
+        self.lowStop = Label("low stop", align="^")
         self.lowCandidates = []
         self.minWord = Text("Minimum word length:", "length", max_length=5)
         self.counter = 0
@@ -462,14 +457,8 @@ class Summary(Frame):
 
         highOptions = Layout([7, 2, 6])
         self.add_layout(highOptions)
-        # highOptions.add_widget(data.summaryHighText, 0)
-        # highOptions.add_widget(data.summaryHigh, 1)
         highOptions.add_widget(data.summaryHigh, 1)
-        # highOptions.add_widget(Label(""), 2)
-        # highOptions.add_widget(data.summaryHighPercentText, 0)
-        # highOptions.add_widget(data.summaryHighPercent, 1)
         highOptions.add_widget(data.summaryHighPercent, 1)
-        # highOptions.add_widget(Label(""), 2)
 
         highButton = Layout([1])
         self.add_layout(highButton)
@@ -484,14 +473,8 @@ class Summary(Frame):
 
         lowOptions = Layout([7, 2, 6])
         self.add_layout(lowOptions)
-        # lowOptions.add_widget(data.summaryLowText, 0)
-        # lowOptions.add_widget(data.summaryLow, 1)
         lowOptions.add_widget(data.summaryLow, 1)
-        # lowOptions.add_widget(Label(""), 2)
-        # lowOptions.add_widget(data.summaryLowPercentText, 0)
-        # lowOptions.add_widget(data.summaryLowPercent, 1)
         lowOptions.add_widget(data.summaryLowPercent, 1)
-        # lowOptions.add_widget(Label(""), 2)
 
         lowButton = Layout([1])
         self.add_layout(lowButton)
@@ -519,24 +502,18 @@ class Summary(Frame):
         stopwordFileLayout.add_widget(Button("Select new file", self._chooseFile), 0)
         stopwordFileLayout.add_widget(Divider(height=2, line_char="-"), 0)
         stopwordFileLayout.add_widget(Divider(height=1, line_char=" "), 0)
-        # layout.add_widget(Label("Original corpus unique words: " + str(data.c.original_length), align="^"))
-        # layout.add_widget(data.prepSize)
 
         corpusLenLayout = Layout([1])
         self.add_layout(corpusLenLayout)
         corpusLenLayout.add_widget(Label("Corpus Length\n-------------", align="^", height=2), 0)
-        corpusLenLayout.add_widget(Label("Original corpus unique works: " + str(data.c.original_length), align="^"))
+        corpusLenLayout.add_widget(Label("Original corpus length: " + str(data.c.original_length), align="^"))
         corpusLenLayout.add_widget(data.prepSize)
         corpusLenLayout.add_widget(Divider(height=1, line_char=" "), 0)
 
         layout2 = Layout([1, 1])
         self.add_layout(layout2)
         layout2.add_widget(Button("prep", self._prep), 0)
-        # layout2.add_widget(Divider(height=1, line_char="-"), 4)
-        # layout2.add_widget(Button("high", self._high), 1)
-        # layout2.add_widget(Button("low", self._low), 2)
         layout2.add_widget(Button("exit", self._exit), 1)
-        # layout2.add_widget(Divider(height=1, line_char="-"), 5)
         self.fix()
     
     # Preps the corpus
@@ -650,9 +627,14 @@ class Summary(Frame):
         
         temp = deepcopy(data.stoplist)
         temp.update(data.highCandidates)
-        data.highLabel.text = get_high_filter_chart(data.c, words=temp, items=data.items, counts=data.counts,
+        chart = get_high_filter_chart(data.c, words=temp, items=data.items, counts=data.counts,
                                                                 num=high)
-        data.highLabel.text += filtered
+        (columns, line) = os.get_terminal_size()
+        data.highChart.text = chart
+        data.highChart._required_height = chart.count('\n') + 1
+        data.highStop.text = filtered
+        data.highStop._required_height = line - data.highChart._required_height - 5
+        data.highFreqScene.fix()
         raise NextScene("High Freq")
 
     # Handle button clicks for high popup
@@ -673,9 +655,14 @@ class Summary(Frame):
                                                                 num=high)
         temp = deepcopy(data.stoplist)
         temp.update(data.highCandidates)
-        data.highLabel.text = get_high_filter_chart(data.c, words=temp, items=data.items, counts=data.counts,
+        chart = get_high_filter_chart(data.c, words=temp, items=data.items, counts=data.counts,
                                                                 num=high)
-        data.highLabel.text += filtered
+        (columns, line) = os.get_terminal_size()
+        data.highChart.text = chart
+        data.highChart._required_height = chart.count('\n') + 1
+        data.highStop.text = filtered
+        data.highStop._required_height = line - data.highChart._required_height - 5
+        data.highFreqScene.fix()
         raise NextScene("High Freq")
     
     # Handle button click of the <low> button on the Summary scene
@@ -699,12 +686,16 @@ class Summary(Frame):
         if not valid:
             self._scene.add_effect(PopUpDialog(self._screen, "Current filter for low will remove all values, please choose a different filter", ["OK"]))
             return
-
+        (columns, line) = os.get_terminal_size()
         temp = deepcopy(data.stoplist)
         temp.update(data.lowCandidates)
-        data.lowLabel.text = get_low_filter_chart(data.c, words=temp, items=data.items, counts=data.counts,
+        chart = get_low_filter_chart(data.c, words=temp, items=data.items, counts=data.counts,
                                                             num=low)
-        data.lowLabel.text += filtered
+        data.lowChart.text = chart
+        data.lowChart._required_height = chart.count('\n') + 1
+        data.lowStop.text = filtered
+        data.lowStop._required_height = line - data.lowChart._required_height - 5
+        data.lowFreqScene.fix()
         raise NextScene("Low Freq")
     
     # Handle button clicks for low popup
@@ -725,9 +716,14 @@ class Summary(Frame):
                                                                 num=low)
         temp = deepcopy(data.stoplist)
         temp.update(data.lowCandidates)
-        data.lowLabel.text = get_low_filter_chart(data.c, words=temp, items=data.items, counts=data.counts,
+        chart = get_low_filter_chart(data.c, words=temp, items=data.items, counts=data.counts,
                                                                 num=low)
-        data.lowLabel.text += filtered
+        (columns, line) = os.get_terminal_size()
+        data.lowChart.text = chart
+        data.lowChart._required_height = chart.count('\n') + 1
+        data.lowStop.text = filtered
+        data.lowStop._required_height = line - data.lowChart._required_height - 5
+        data.lowFreqScene.fix()
         raise NextScene("Low Freq")
 
     def _chooseFile(self):
@@ -747,12 +743,18 @@ class HighFreq(Frame):
                                         title="High Frequency Word Filter", reduce_cpu=True)
 
         global data
+        data.highFreqScene = self
         
-        layout = Layout([100], fill_frame=True)
-        self.add_layout(layout)
-        layout.add_widget(data.highLabel)
-        layout.add_widget(data.high)
-        layout.add_widget(data.highPercent)
+        chartLayout = Layout([1])
+        self.add_layout(chartLayout)
+        chartLayout.add_widget(data.highChart, 0)
+        fieldsLayout = Layout([7, 2, 6])
+        self.add_layout(fieldsLayout)
+        fieldsLayout.add_widget(data.high, 1)
+        fieldsLayout.add_widget(data.highPercent, 1)
+        stopLayout = Layout([1])
+        self.add_layout(stopLayout)
+        stopLayout.add_widget(data.highStop)
         layout2 = Layout([1, 1])
         self.add_layout(layout2)
         layout2.add_widget(Button("Ok", self._ok), 0)
@@ -780,12 +782,16 @@ class HighFreq(Frame):
         if not valid:
             self._scene.add_effect(PopUpDialog(self._screen, "Current filter for high will remove all values, please choose a different filter", ["OK"]))
             return
-        
+        (columns, line) = os.get_terminal_size()
         temp = deepcopy(data.stoplist)
         temp.update(data.highCandidates)
-        data.highLabel.text = get_high_filter_chart(data.c, words=temp, items=data.items, counts=data.counts,
+        chart = get_high_filter_chart(data.c, words=temp, items=data.items, counts=data.counts,
                                                                 num=high)
-        data.highLabel.text += filtered
+        data.highChart.text = chart
+        data.highChart._required_height = chart.count('\n') + 1
+        data.highStop.text = filtered
+        data.highStop._required_height = line - data.highChart._required_height - 5
+        data.highFreqScene.fix()
         updatePreppedLength()
         raise NextScene("Summary")
 
@@ -805,12 +811,16 @@ class HighFreq(Frame):
         high = validate(data.high, data.highPercent, data.summaryHigh, data.summaryHighPercent, "high", False)
         data.highCandidates, filtered, valid = get_high_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
                                                                 num=high)
+        (columns, line) = os.get_terminal_size()
         temp = deepcopy(data.stoplist)
         temp.update(data.highCandidates)
-        data.highLabel.text = get_high_filter_chart(data.c, words=temp, items=data.items, counts=data.counts,
+        chart = get_high_filter_chart(data.c, words=temp, items=data.items, counts=data.counts,
                                                                 num=high)
-        data.highLabel.text += filtered
-
+        data.highChart.text = chart
+        data.highChart._required_height = chart.count('\n') + 1
+        data.highStop.text = filtered
+        data.highStop._required_height = line - data.highChart._required_height - 5
+        data.highFreqScene.fix()
         raise NextScene("Summary")
     
     # Handle button click for Update
@@ -835,11 +845,16 @@ class HighFreq(Frame):
             self._scene.add_effect(PopUpDialog(self._screen, "Current filter for high will remove all values, please choose a different filter", ["OK"]))
             return
         
+        (columns, line) = os.get_terminal_size()
         temp = deepcopy(data.stoplist)
         temp.update(data.highCandidates)
-        data.highLabel.text = get_high_filter_chart(data.c, words=temp, items=data.items, counts=data.counts,
+        chart = get_high_filter_chart(data.c, words=temp, items=data.items, counts=data.counts,
                                                                 num=high)
-        data.highLabel.text += filtered
+        data.highChart.text = chart
+        data.highChart._required_height = chart.count('\n') + 1
+        data.highStop.text = filtered
+        data.highStop._required_height = line - data.highChart._required_height - 5
+        data.highFreqScene.fix()
     
     # Handle button click for popup after clicking change
     @staticmethod
@@ -857,11 +872,16 @@ class HighFreq(Frame):
         high = validate(data.high, data.highPercent, data.summaryHigh, data.summaryHighPercent, "high", False)
         data.highCandidates, filtered, valid = get_high_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
                                                                 num=high)
+        (columns, line) = os.get_terminal_size()
         temp = deepcopy(data.stoplist)
         temp.update(data.highCandidates)
-        data.highLabel.text = get_high_filter_chart(data.c, words=temp, items=data.items, counts=data.counts,
+        chart = get_high_filter_chart(data.c, words=temp, items=data.items, counts=data.counts,
                                                                 num=high)
-        data.highLabel.text += filtered
+        data.highChart.text = chart
+        data.highChart._required_height = chart.count('\n') + 1
+        data.highStop.text = filtered
+        data.highStop._required_height = line - data.highChart._required_height - 5
+        data.highFreqScene.fix()
 
 # Low frequency scene
 class LowFreq(Frame):
@@ -871,12 +891,18 @@ class LowFreq(Frame):
                                         title="Low Frequency Word Filter", reduce_cpu=True)
 
         global data
+        data.lowFreqScene = self
         
-        layout = Layout([100], fill_frame=True)
-        self.add_layout(layout)
-        layout.add_widget(data.lowLabel)
-        layout.add_widget(data.low)
-        layout.add_widget(data.lowPercent)
+        chartLayout = Layout([1])
+        self.add_layout(chartLayout)
+        chartLayout.add_widget(data.lowChart, 0)
+        fieldsLayout = Layout([7, 2, 6])
+        self.add_layout(fieldsLayout)
+        fieldsLayout.add_widget(data.low, 1)
+        fieldsLayout.add_widget(data.lowPercent, 1)
+        stopLayout = Layout([1])
+        self.add_layout(stopLayout)
+        stopLayout.add_widget(data.lowStop)
         layout2 = Layout([1, 1])
         self.add_layout(layout2)
         layout2.add_widget(Button("Ok", self._ok), 0)
@@ -904,12 +930,16 @@ class LowFreq(Frame):
         if not valid:
             self._scene.add_effect(PopUpDialog(self._screen, "Current filter for low will remove all values, please choose a different filter", ["OK"]))
             return
-
+        (columns, line) = os.get_terminal_size()
         temp = deepcopy(data.stoplist)
         temp.update(data.lowCandidates)
-        data.lowLabel.text = get_low_filter_chart(data.c, words=temp, items=data.items, counts=data.counts,
+        chart = get_low_filter_chart(data.c, words=temp, items=data.items, counts=data.counts,
                                                             num=low)
-        data.lowLabel.text += filtered
+        data.lowChart.text = chart
+        data.lowChart._required_height = chart.count('\n') + 1
+        data.lowStop.text = filtered
+        data.lowStop._required_height = line - data.lowChart._required_height - 5
+        data.lowFreqScene.fix()
         updatePreppedLength()
         raise NextScene("Summary")
     
@@ -930,12 +960,16 @@ class LowFreq(Frame):
 
         data.lowCandidates, filtered, valid = get_low_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
                                                                 num=low)
+        (columns, line) = os.get_terminal_size()
         temp = deepcopy(data.stoplist)
         temp.update(data.lowCandidates)
-        data.lowLabel.text = get_low_filter_chart(data.c, words=temp, items=data.items, counts=data.counts,
+        (chart, text) = get_low_filter_chart(data.c, words=temp, items=data.items, counts=data.counts,
                                                             num=low)
-        data.lowLabel.text += filtered
-        
+        data.lowChart.text = chart
+        data.lowChart._required_height = chart.count('\n') + 1
+        data.lowStop.text = filtered
+        data.lowStop._required_height = line - data.lowChart._required_height - 5
+        data.lowFreqScene.fix()
         raise NextScene("Summary")
     
     # Handle button click for Update
@@ -959,13 +993,16 @@ class LowFreq(Frame):
         if not valid:
             self._scene.add_effect(PopUpDialog(self._screen, "Current filter for low will remove all values, please choose a different filter", ["OK"]))
             return
-
+        (columns, line) = os.get_terminal_size()
         temp = deepcopy(data.stoplist)
         temp.update(data.lowCandidates)
-        data.lowLabel.text = get_low_filter_chart(data.c, words=temp, items=data.items, counts=data.counts,
+        chart = get_low_filter_chart(data.c, words=temp, items=data.items, counts=data.counts,
                                                             num=low)
-        data.lowLabel.text += filtered
-
+        data.lowChart.text = chart
+        data.lowChart._required_height = chart.count('\n') + 1
+        data.lowStop.text = filtered
+        data.lowStop._required_height = line - data.lowChart._required_height - 5
+        data.lowFreqScene.fix()
     
     # Handle button click for popup after clicking change
     @staticmethod
@@ -983,11 +1020,16 @@ class LowFreq(Frame):
         low = validate(data.low, data.lowPercent, data.summaryLow, data.summaryLowPercent, "low", True)
         data.lowCandidates, filtered, valid = get_low_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
                                                                 num=low)
+        (columns, line) = os.get_terminal_size()
         temp = deepcopy(data.stoplist)
         temp.update(data.lowCandidates)
-        data.lowLabel.text = get_low_filter_chart(data.c, words=temp, items=data.items, counts=data.counts,
+        chart = get_low_filter_chart(data.c, words=temp, items=data.items, counts=data.counts,
                                                                 num=low)
-        data.lowLabel.text += filtered
+        data.lowChart.text = chart
+        data.lowChart._required_height = chart.count('\n') + 1
+        data.lowStop.text = filtered
+        data.lowStop._required_height = line - data.lowChart._required_height - 5
+        data.lowFreqScene.fix()
 
 # Taken from: https://github.com/peterbrittain/asciimatics/blob/master/samples/treeview.py
 class Files(Frame):
@@ -1025,11 +1067,20 @@ class Files(Frame):
         if not self._list.value.endswith(".txt") and "." in self._list.value:
             self._scene.add_effect(PopUpDialog(self._screen, "Please pick a valid file (a .txt file or a file with no extension)", ["OK"]))
         else:
-            data.stopwordFile.text = "Current stopworded file: " + self._list.value
-            data.fileName = self._list.value
+            global data
+            f = open(self._list.value, "r")
+            text = f.read()
+            data.tempFileName = self._list.value
+            self._scene.add_effect(PopUpDialog(self._screen, "Use the selected file with the following text?\n" + text, ["Yes", "No"], on_close=self.handlePopup))
+
+    @staticmethod
+    def handlePopup(selection):
+        if str(selection) == "0":
+            global data
+            data.stopwordFile.text = "Current stopworded file: " + data.tempFileName
+            data.fileName = data.tempFileName
             updatePreppedLength()
             raise NextScene("Summary")
-            # self._scene.add_effect(PopUpDialog(self._screen, "You selected: {}".format(self._list.value), ["OK"]))
 
     def details(self):
         # If python magic is installed, provide a little more detail of the current file.
@@ -1111,7 +1162,7 @@ def updatePreppedLength():
     temp.update(data.lowCandidates)
     temp.update(data.highCandidates)
     tempC.in_place_stoplist(temp)
-    data.prepSize.text = str("Prepared corpus unique words: " + str(len(tempC)))
+    data.prepSize.text = str("Prepared corpus length: " + str(len(tempC)))
 
 # Highlight the necessary fields
 def confirm():
@@ -1203,8 +1254,10 @@ def main(args):
     if args.min_word_len:
         candidates = get_small_words(data.c, args.min_word_len)
         if len(candidates):
-            print("Filtering {} small word{} with less than {} characters.".format(
-                len(candidates), 's' if len(candidates) > 1 else '', args.min_word_len))
+            data.lowCandidates = candidates
+            data.minWord._value = args.min_word_len
+            # print("Filtering {} small word{} with less than {} characters.".format(
+            #     len(candidates), 's' if len(candidates) > 1 else '', args.min_word_len))
             # data.stoplist.update(candidates)
 
     # cache item counts
@@ -1215,13 +1268,14 @@ def main(args):
         candidates = get_candidate_words(data.c, args.high_filter, sort=False, items=data.items, counts=data.counts)
         if len(candidates):
             data.highCandidates = candidates
-            data.highLabel._value = args.high_filter
+            data.summaryHigh._value = args.high_filter
     elif args.high_percent:
         args.high_filter = get_closest_bin(data.c, 1 - (args.high_percent / 100.), counts=data.counts)
         print(args.high_filter)
         candidates = get_candidate_words(data.c, args.high_filter, sort=False, items=data.items, counts=data.counts)
         if len(candidates):
-            data.stoplist.update(candidates)
+            data.highCandidates = candidates
+            data.summaryHighPercent._value = args.high_percent
     
 
     if args.low_filter is None and args.low_percent is None and args.quiet:
@@ -1230,13 +1284,14 @@ def main(args):
         candidates = get_candidate_words(data.c, -1 * args.low_filter, sort=False, items=data.items, counts=data.counts)
         if len(candidates):
             data.lowCandidates = candidates
-            data.lowLabel._value = args.low_filter
+            data.summaryLow._value = args.low_filter
     elif args.low_percent:
         args.low_filter = get_closest_bin(data.c, 1 - (args.low_percent / 100.), reverse=True, counts=data.counts)
         print(args.low_filter)
         candidates = get_candidate_words(data.c, -1 * args.low_filter, sort=False, items=data.items, counts=data.counts)
         if len(candidates):
-            data.stoplist.update(candidates)
+            data.lowCandidates = candidates
+            data.summaryLowPercent._value = args.low_percent
 
     def gui(screen, scene):
         scenes = [
@@ -1249,7 +1304,9 @@ def main(args):
         data.wholeScreen = screen
         screen.play(scenes, stop_on_resize=True, start_scene=scene)
 
-    data.prepSize.text = str("Prepared corpus unique words: " + str(len(data.c)))
+    data.prepSize.text = str("Prepared corpus length: " + str(len(data.c)))
+
+    updatePreppedLength()
 
     last_scene = None
     while True:
