@@ -325,6 +325,21 @@ def get_high_filter_stops(c, words=None, items=None, counts=None, num=None):
     import numpy as np
     input_filter = num
     valid = True
+    f = open("test.txt", "w+")
+    f.write("c" + "\n")
+    f.write(str(c) + "\n")
+    f.write("c words" + "\n")
+    f.write(str(c.words) + "\n")
+    f.write("words" + "\n")
+    f.write(str(words) + "\n")
+    f.write("items" + "\n")
+    f.write(str(items) + "\n")
+    f.write("counts" + "\n")
+    f.write(str(counts) + "\n")
+    f.write("num" + "\n")
+    f.write(str(num) + "\n")
+    f.write("lengths" + "\n")
+    f.write(str(len(c.words)) + " " + str(len(items)) + " " + str(len(counts)))
     try:
         candidates = get_candidate_words(c, input_filter, words=words, items=items, counts=counts)
         places = np.in1d(c.words, candidates)

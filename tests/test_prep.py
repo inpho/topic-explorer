@@ -20,6 +20,7 @@ ctx_data = [np.array([(2, 'Veni'), (4, 'Vidi'), (6, 'Vici')],
                     dtype=[('idx', '<i8'), ('sentence_label', '|S6')])]
 
 corpus = Corpus(text, context_data=ctx_data, context_types=['sentence'])
+print(str(corpus.words))
 
 def test_get_corpus_counts():
     items, counts = topicexplorer.prep.get_corpus_counts(corpus)
@@ -31,6 +32,7 @@ def test_get_small_words():
     assert topicexplorer.prep.get_small_words(corpus, 1) == []
 
 def test_get_closest_bin():
+    print(str(topicexplorer.prep.get_closest_bin(corpus, 0)))
     assert topicexplorer.prep.get_closest_bin(corpus, 0) == 0 
     assert topicexplorer.prep.get_closest_bin(corpus, 0.2) == 1 
     assert topicexplorer.prep.get_closest_bin(corpus, 0.5) == 1 
@@ -59,8 +61,8 @@ def test_get_candidate_words():
 @patch('topicexplorer.prep.input')
 def test_get_high_filter(input_mock):
     input_mock.side_effect = ['3', 'y']
-    high_filter, candidates = topicexplorer.prep.get_high_filter(corpus)
-    assert high_filter == 3
+    candidates, filtered, valid = topicexplorer.prep.get_high_filter_stops(corpus)
+    assert high_filter == len(corpus.words) - len(candidates)
     assert candidates == ['I']
     
     # Test selection of all words
@@ -105,3 +107,10 @@ def test_get_low_filter(input_mock):
     low_filter, candidates = topicexplorer.prep.get_low_filter(corpus)
     assert low_filter == 1
     assert all(w in candidates for w in ['came', 'saw', 'conquered'])
+
+test_get_corpus_counts()
+test_get_small_words()
+# test_get_closest_bin()
+test_get_candidate_words()
+test_get_high_filter()
+test_get_low_filter()
