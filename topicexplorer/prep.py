@@ -339,8 +339,6 @@ def get_high_filter_stops(c, words=None, items=None, counts=None, num=None):
 
         if len(candidates) == len(c.words):
             valid = False
-            # filtered += "\n\nChoice of" + str(input_filter) + "will remove ALL words from the corpus."
-            # filtered += "Please choose a different filter."
 
     except ValueError:
         input_filter = 0
@@ -1309,7 +1307,7 @@ def main(args):
     updatePreppedLength()
 
     last_scene = None
-    while True:
+    while not args.quiet:
         try:
             Screen.wrapper(gui, catch_interrupt=True, arguments=[last_scene])
             break
