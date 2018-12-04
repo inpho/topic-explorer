@@ -277,7 +277,7 @@ def get_closest_bin(c, thresh, reverse=False, counts=None):
     if thresh == 0 and reverse:
         return max(counts) + 1
     elif thresh == 0 and not reverse:
-        return 1
+        return 0
     else:
         # sort counts
         counts = counts[counts.argsort()]
