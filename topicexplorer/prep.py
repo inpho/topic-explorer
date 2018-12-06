@@ -646,7 +646,7 @@ class Summary(Frame):
         data.highChart.text = chart
         data.highChart._required_height = chart.count('\n') + 1
         data.highStop.text = filtered
-        data.highStop._required_height = line - data.highChart._required_height - 5
+        data.highStop._required_height = line - data.highChart._required_height - 7
         data.highFreqScene.fix()
         raise NextScene("High Freq")
 
@@ -674,7 +674,7 @@ class Summary(Frame):
         data.highChart.text = chart
         data.highChart._required_height = chart.count('\n') + 1
         data.highStop.text = filtered
-        data.highStop._required_height = line - data.highChart._required_height - 5
+        data.highStop._required_height = line - data.highChart._required_height - 7
         data.highFreqScene.fix()
         raise NextScene("High Freq")
     
@@ -707,7 +707,7 @@ class Summary(Frame):
         data.lowChart.text = chart
         data.lowChart._required_height = chart.count('\n') + 1
         data.lowStop.text = filtered
-        data.lowStop._required_height = line - data.lowChart._required_height - 5
+        data.lowStop._required_height = line - data.lowChart._required_height - 7
         data.lowFreqScene.fix()
         raise NextScene("Low Freq")
     
@@ -735,7 +735,7 @@ class Summary(Frame):
         data.lowChart.text = chart
         data.lowChart._required_height = chart.count('\n') + 1
         data.lowStop.text = filtered
-        data.lowStop._required_height = line - data.lowChart._required_height - 5
+        data.lowStop._required_height = line - data.lowChart._required_height - 7
         data.lowFreqScene.fix()
         raise NextScene("Low Freq")
 
@@ -761,12 +761,14 @@ class HighFreq(Frame):
         chartLayout = Layout([1])
         self.add_layout(chartLayout)
         chartLayout.add_widget(data.highChart, 0)
+        chartLayout.add_widget(Divider())
         fieldsLayout = Layout([7, 2, 6])
         self.add_layout(fieldsLayout)
         fieldsLayout.add_widget(data.high, 1)
         fieldsLayout.add_widget(data.highPercent, 1)
         stopLayout = Layout([1])
         self.add_layout(stopLayout)
+        stopLayout.add_widget(Divider())
         stopLayout.add_widget(data.highStop)
         layout2 = Layout([1, 1])
         self.add_layout(layout2)
@@ -803,7 +805,7 @@ class HighFreq(Frame):
         data.highChart.text = chart
         data.highChart._required_height = chart.count('\n') + 1
         data.highStop.text = filtered
-        data.highStop._required_height = line - data.highChart._required_height - 5
+        data.highStop._required_height = line - data.highChart._required_height - 7
         data.highFreqScene.fix()
         updatePreppedLength()
         raise NextScene("Summary")
@@ -832,7 +834,7 @@ class HighFreq(Frame):
         data.highChart.text = chart
         data.highChart._required_height = chart.count('\n') + 1
         data.highStop.text = filtered
-        data.highStop._required_height = line - data.highChart._required_height - 5
+        data.highStop._required_height = line - data.highChart._required_height - 7
         data.highFreqScene.fix()
         raise NextScene("Summary")
     
@@ -866,7 +868,7 @@ class HighFreq(Frame):
         data.highChart.text = chart
         data.highChart._required_height = chart.count('\n') + 1
         data.highStop.text = filtered
-        data.highStop._required_height = line - data.highChart._required_height - 5
+        data.highStop._required_height = line - data.highChart._required_height - 7
         data.highFreqScene.fix()
     
     # Handle button click for popup after clicking change
@@ -893,7 +895,7 @@ class HighFreq(Frame):
         data.highChart.text = chart
         data.highChart._required_height = chart.count('\n') + 1
         data.highStop.text = filtered
-        data.highStop._required_height = line - data.highChart._required_height - 5
+        data.highStop._required_height = line - data.highChart._required_height - 7
         data.highFreqScene.fix()
 
 # Low frequency scene
@@ -909,12 +911,14 @@ class LowFreq(Frame):
         chartLayout = Layout([1])
         self.add_layout(chartLayout)
         chartLayout.add_widget(data.lowChart, 0)
+        chartLayout.add_widget(Divider())
         fieldsLayout = Layout([7, 2, 6])
         self.add_layout(fieldsLayout)
         fieldsLayout.add_widget(data.low, 1)
         fieldsLayout.add_widget(data.lowPercent, 1)
         stopLayout = Layout([1])
         self.add_layout(stopLayout)
+        stopLayout.add_widget(Divider())
         stopLayout.add_widget(data.lowStop)
         layout2 = Layout([1, 1])
         self.add_layout(layout2)
@@ -951,7 +955,7 @@ class LowFreq(Frame):
         data.lowChart.text = chart
         data.lowChart._required_height = chart.count('\n') + 1
         data.lowStop.text = filtered
-        data.lowStop._required_height = line - data.lowChart._required_height - 5
+        data.lowStop._required_height = line - data.lowChart._required_height - 7
         data.lowFreqScene.fix()
         updatePreppedLength()
         raise NextScene("Summary")
@@ -981,7 +985,7 @@ class LowFreq(Frame):
         data.lowChart.text = chart
         data.lowChart._required_height = chart.count('\n') + 1
         data.lowStop.text = filtered
-        data.lowStop._required_height = line - data.lowChart._required_height - 5
+        data.lowStop._required_height = line - data.lowChart._required_height - 7
         data.lowFreqScene.fix()
         raise NextScene("Summary")
     
@@ -1014,7 +1018,7 @@ class LowFreq(Frame):
         data.lowChart.text = chart
         data.lowChart._required_height = chart.count('\n') + 1
         data.lowStop.text = filtered
-        data.lowStop._required_height = line - data.lowChart._required_height - 5
+        data.lowStop._required_height = line - data.lowChart._required_height - 7
         data.lowFreqScene.fix()
     
     # Handle button click for popup after clicking change
@@ -1041,7 +1045,7 @@ class LowFreq(Frame):
         data.lowChart.text = chart
         data.lowChart._required_height = chart.count('\n') + 1
         data.lowStop.text = filtered
-        data.lowStop._required_height = line - data.lowChart._required_height - 5
+        data.lowStop._required_height = line - data.lowChart._required_height - 7
         data.lowFreqScene.fix()
 
 # Taken from: https://github.com/peterbrittain/asciimatics/blob/master/samples/treeview.py
