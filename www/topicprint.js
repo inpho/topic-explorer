@@ -1096,19 +1096,9 @@ if (url)
       for (var i = 0; i < icons.length; i++) {
         $(".{0}Icon".format(icons[i])).tooltip({ placement: 'top', title: icon_tooltips[icons[i]], container: 'body', html: true, animation: false });
       }
-      $("#tutorial").removeAttr("data-step");
-      $("#tutorial").removeAttr("data-intro");
-      //$("#chart").attr("data-step", "2");
-      //$("#chart").attr("data-intro", "The Hypershelf shows up to 40 documents that are most similar to the focal document. Each document is represented by a bar whose colors show the mixture and proportions of topics assigned to each document by the training process. The relative lengths of the bars indicate the degree of similarity to the focal document according to the topic mixtures.");
-      $("#legend").attr("data-step", "3");
-      $("#legend").attr("data-intro", "Rolling over a colored segment shows the highest probability words associated with the topic. The key on the right shows all the topics identified by the model. If you click on a topic in the bar or the key, the display will sort the current documents ranked according to that topic. In this topic-sorted mode, a Top Documents button appears at the top that lets you retrieve the documents from the entire corpus that are most similar to that topic.");
-      document.querySelector(".form-group").removeAttribute("data-step");
-      document.querySelector(".form-group").removeAttribute("data-intro");
       document.querySelector(".doc").setAttribute("id", "docDemonstration");
       document.querySelector(".doc").setAttribute("data-intro", "The Hypershelf shows up to 40 documents that are most similar to the focal document. Each document is represented by a bar whose colors show the mixture and proportions of topics assigned to each document by the training process. The relative lengths of the bars indicate the degree of similarity to the focal document according to the topic mixtures.")
       $("#doc").attr("data-intro", "To select a NEW document, you can type here or select random document");
-      $("#randomDoc").removeAttr("data-step");
-      $("#randomDoc").removeAttr("data-intro");
     });
   });
 
