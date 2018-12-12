@@ -1,17 +1,23 @@
 <link rel="stylesheet" type="text/css" href="/css/bars.css" />
+<link href="bootstrap-tour/build/css/bootstrap-tour-standalone.min.css" rel="stylesheet">
 <div id="main" class="container">
   <div class="row">
     <div class="col-xs-12">
-      <h1><a href="{{home_link}}"><span class="logo-word">InPhO</span> Topic Explorer</a></h1>
+      <h1 id="home-page" data-step="5" data-intro="Click on this to return to the home page"><a href="{{home_link}}"><span class="logo-word">InPhO</span> Topic Explorer</a></h1>
       <!--<h2 class="title non-null"></h2>-->
       <h2 class="text-center">
         {{#corpus_link}}<a href="{{corpus_link}}">{{corpus_name}}</a>{{/corpus_link}} 
         {{^corpus_link}}{{corpus_name}}{{/corpus_link}} <br />
         <small><a id="aboutLink" href="#about">About this corpus <span class="glyphicon glyphicon-arrow-down"></span></a></small><br />
         <small>Click ? button at bottom left for help with the topic explorer interface.</small></h2>
+        <div style="text-align: center">
+            <h2><button type="button" style="text-align: center" id="tour-button">Getting Started</button></h2>
+        </div>
+      </div>
     </div>
-  </div>
   <div class="row">
+  
+  <br>
   <div class="col-xs-12">
 
   
@@ -20,20 +26,20 @@
       <script>
         $('#autocompleteDoc').tooltip({title: 'Toggle Word/Document Search', placement: 'bottom'});
       </script>
-    <div class="form-group">
+    <div class="form-group" id="visualize_button" data-step="4" data-intro="To view the rest of the tutorial, exit below, select a document and click the 'Visualize' button. Then click 'Getting Started' again.">
 
       <label for="doc" class="col-sm-2 control-label" id="search-label">Focal document</label>
       <div class="col-sm-8">
         <div class="input-group">
-          <input type="text" id="doc" class="typeahead form-control" placeholder="Click button on right to select random document →" autocomplete="off">
+          <input type="text" id="doc" class="typeahead form-control" data-step="1" data-intro="There are a few ways to select a new focal document. One is by typing in a few letters in the focal document entry area." placeholder="Click button on right to select random document →" autocomplete="off">
           <!-- TODO: find out why this can't be a <button> --> 
           <div disabled class="btn btn-default input-group-addon hide" type="button" id="autocompleteDoc"><span class="glyphicon glyphicon-font"></span></div>
-          <div class="btn btn-default input-group-addon" type="button" id="randomDoc"><span class="glyphicon glyphicon-random"></span></div>
+          <div class="btn btn-default input-group-addon" type="button" id="randomDoc" data-step="2" data-intro = "You can also click the crossed arrows button to the right of the focal document entry area for a random document."><span class="glyphicon glyphicon-random"></span></div>
         </div>
       </div>
       <div class="col-sm-2">
-        <div class="btn-group">
-          <button type="submit" id="submit" class="btn btn-default">Visualize</button>
+        <div class="btn-group" id="tutorial" data-step="3" data-intro="You may use this button to visualize the focal document and you may use the dropdown menu attached to the button to switch to a model with a different number of topics.">
+          <button type="submit" id="submit" class="btn btn-default" >Visualize</a></button>
           <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
           <ul class="dropdown-menu">
             {{#topic_range}}
@@ -98,7 +104,7 @@
               <input type="hidden" name="doc" id="hidden_id">
               <input type="text" id="doc" class="form-control typeahead" placeholder="Click button on right to select random document →" autocomplete="off">
               <div class="input-group-btn">
-                <button class="btn btn-default" type="button" id="randomDoc" data-original-title="" title=""><span class="glyphicon glyphicon-random"></span></button>
+                <button class="btn btn-default" type="button" data-original-title="" title=""><span class="glyphicon glyphicon-random"></span></button>
               </div>
             </div>
           </div>
@@ -122,4 +128,7 @@
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+
+<script src="/bootstrap-tour/build/js/bootstrap-tour.js"></script>
 <script src="/topicprint.js"></script>
+    
