@@ -7,7 +7,7 @@ $('#cluster-link').attr('href', '#');
 <div id="main" class="container">
   <div class="row">
     <div class="col-xs-12">
-    <h1><a href="{{home_link}}" id="home-page" data-step="5" data-intro="Click here to return to the home page."><span class="logo-word">InPhO</span> Topic Explorer</a></h1>
+    <h1><a href="{{home_link}}" id="home-page" ><span class="logo-word">InPhO</span> Topic Explorer</a></h1>
     <!--<h2 class="title non-null"></h2>-->
     <h2>
     {{#corpus_link}}<a href="{{corpus_link}}">{{corpus_name}}</a>{{/corpus_link}} 
@@ -23,7 +23,7 @@ $('#cluster-link').attr('href', '#');
   <div class="row">
     <div class="col-xs-12">
       <form method="GET" class="form-horizontal" id="searchForm">
-        <div id="form-group-tour" class="form-group" data-step="2" data-intro="To limit your topic search, type in your desired topic and then click 'View Topic Clusters.' This will only color in the relevant nodes.">
+        <div id="form-group-tour" class="form-group"></div>
           <label for="words" class="col-sm-2 control-label">Words</label>
           <div class="col-sm-8">
               <input type="text" id="words" name="q" class="form-control" placeholder="Enter search terms to highlight relevant topics ..." autocomplete="off">
@@ -37,7 +37,7 @@ $('#cluster-link').attr('href', '#');
   </div>
 </div>
 <div class="container-fluid">
-  <div id="chart" data-step="1" data-intro="This is the topic map. It places the topics from the all the trained models on a two-dimensional map that attempts to place similar topics close to each other.">
+  <div id="chart" >
     <div id="loading" class="text-center">
       <button class="btn btn-lg btn-info">
         <span class="glyphicon glyphicon-refresh spinning"></span> Loading...    

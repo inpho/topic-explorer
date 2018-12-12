@@ -24,10 +24,10 @@ $('#introJs-button').on('click', function() {
 })
 </script>
 -->
-<div id="main" class="container" data-step="1" data-intro="This is the InPhO Topic Explorer. It allows you to explore a collection of documents using pre-trained topic models. <br/> From this page you can explore the topic models in various ways using the large buttons in the middle of the page and the menu items on the left. On this page, you may also find some information about the specific corpus used to train the models, if the person who trained the models has provided it.">
+<div id="main" class="container">
   <div class="row" id="top">
     <div class="col-md-12">
-      <h1><a href="{{home_link}}" id="step-4" data-step="4" data-intro="Click on this to return to this page."><span
+      <h1><a href="{{home_link}}" id="step-4" ><span
             class="logo-word">InPhO</span>
           Topic Explorer</a></h1>
       <h2>
@@ -44,16 +44,11 @@ $('#introJs-button').on('click', function() {
           following methods:</strong></p>
     </div>
     <div class="col-sm-4 col-xs-12 entry">
-      <a id="step-1" class="btn btn-primary col-xs-12" data-toggle="modal" data-target="#fingerprintModal" data-step="2"
-        data-intro="The most effective way to start exploring via the documents in the corpus.
-
-          Once you click on the document icon a panel will appear in which you can either click the crossed arrows button for a random document or select a focal document for your exploration by typing a few letters to match the title.
-          
-          You will be shown a “fingerprint” for the selected document, and you can navigate from this to the Hypershelf focused on that document.">
+      <a id="step-1" class="btn btn-primary col-xs-12" data-toggle="modal" data-target="#fingerprintModal">
         <span class="glyphicon glyphicon-file" style="font-size: 10vw; padding-left: 1vw;"></span><br />Document
       </a>
     </div>
-    <div id="step-2" class="col-sm-4 col-xs-12 entry" data-step="3" data-intro="Clicking here will bring up a panel where you can enter a few words to identify related topics. From there you can go to the topic map that lays out and groups the topics from all the models according to their similarity. There is also additional help once you reach that page.">
+    <div id="step-2" class="col-sm-4 col-xs-12 entry">
       <a class="btn btn-primary col-xs-12" data-toggle="modal" data-target="#topicModal"><span class="icon-scatter"
           style="font-size: 10vw; line-height: 0.9"></span><br />Topic</a>
     </div>

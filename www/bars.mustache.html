@@ -3,7 +3,7 @@
 <div id="main" class="container">
   <div class="row">
     <div class="col-xs-12">
-      <h1 id="home-page" data-step="5" data-intro="Click on this to return to the home page"><a href="{{home_link}}"><span class="logo-word">InPhO</span> Topic Explorer</a></h1>
+      <h1 id="home-page"><a href="{{home_link}}"><span class="logo-word">InPhO</span> Topic Explorer</a></h1>
       <!--<h2 class="title non-null"></h2>-->
       <h2 class="text-center">
         {{#corpus_link}}<a href="{{corpus_link}}">{{corpus_name}}</a>{{/corpus_link}} 
@@ -26,19 +26,19 @@
       <script>
         $('#autocompleteDoc').tooltip({title: 'Toggle Word/Document Search', placement: 'bottom'});
       </script>
-    <div class="form-group" id="visualize_button" data-step="4" data-intro="To view the rest of the tutorial, exit below, select a document and click the 'Visualize' button. Then click 'Getting Started' again.">
+    <div class="form-group" id="visualize_button">
 
       <label for="doc" class="col-sm-2 control-label" id="search-label">Focal document</label>
       <div class="col-sm-8">
         <div class="input-group">
-          <input type="text" id="doc" class="typeahead form-control" data-step="1" data-intro="There are a few ways to select a new focal document. One is by typing in a few letters in the focal document entry area." placeholder="Click button on right to select random document →" autocomplete="off">
+          <input type="text" id="doc" class="typeahead form-control" placeholder="Click button on right to select random document →" autocomplete="off">
           <!-- TODO: find out why this can't be a <button> --> 
           <div disabled class="btn btn-default input-group-addon hide" type="button" id="autocompleteDoc"><span class="glyphicon glyphicon-font"></span></div>
-          <div class="btn btn-default input-group-addon" type="button" id="randomDoc" data-step="2" data-intro = "You can also click the crossed arrows button to the right of the focal document entry area for a random document."><span class="glyphicon glyphicon-random"></span></div>
+          <div class="btn btn-default input-group-addon" type="button" id="randomDoc"><span class="glyphicon glyphicon-random"></span></div>
         </div>
       </div>
       <div class="col-sm-2">
-        <div class="btn-group" id="tutorial" data-step="3" data-intro="You may use this button to visualize the focal document and you may use the dropdown menu attached to the button to switch to a model with a different number of topics.">
+        <div class="btn-group" id="tutorial">
           <button type="submit" id="submit" class="btn btn-default" >Visualize</a></button>
           <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
           <ul class="dropdown-menu">
