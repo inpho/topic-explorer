@@ -1,6 +1,4 @@
 <link rel="stylesheet" type="text/css" href="/css/splash.css">
-<link href="introjs/introjs.css" rel="stylesheet">
-<link href="bootstrap-tour/build/css/bootstrap-tour-standalone.min.css">
 <script src="/lib/jquery-2.2.4.min.js"></script>
 <script src="/lib/bootstrap-3.3.6/js/bootstrap.min.js"></script>
 <script src="/lib/bootstrap-2.3.2/js/bootstrap.min.js"></script>
@@ -17,7 +15,7 @@
         <small><a href="#about">About this corpus <span class="glyphicon glyphicon-arrow-down"></span></a></small><br />
         <br>
         <div style="text-align: center">
-          <button id="tour-button"> Getting Started </button>
+          <button id="tour-button" class="btn btn-lg btn-primary"> Getting Started </button>
         </div>
       </h2>
       <p style="font-size: 28px; text-align: center;">Topic models are about contexts, rather than individual words.<br />
@@ -85,7 +83,7 @@
         <p>The topic bars below show the composition of the selected document in different models. Scroll over the bars
           to see the most likely words in each topic. Click on a bar to open the Topic Explorer for that model focused
           on this document.</p>
-        <h2><a id="introJs-button" onclick="javascript:introJs().start();">Getting Started</h2></a></h2>
+        <h2><a>Getting Started</h2></a></h2>
         <div id="loading" class="text-center" style="display: none;">
           <button class="btn btn-lg btn-info">
             <span class="glyphicon glyphicon-refresh spinning"></span> Loading...
@@ -142,8 +140,7 @@
 
 
 <script src="/topicprint.js"></script>
-<script src="/introjs/intro.js"></script>
-<script src="bootstrap-tour/build/js/bootstrap-tour-standalone.js"></script>
+<script src="bootstrap-tour.js"></script>
 <script>
   jQuery(document).ready(function ($) {
 
@@ -152,11 +149,11 @@
         {
           element: "#step-1",
           title: "Document",
-          content: "The most effective way to start exploring via the documents in the corpus.\n Once you click on the document icon a panel will appear in which you can either click the crossed arrows button for a random document or select a focal document for your exploration by typing a few letters to match the title.\nYou will be shown a “fingerprint” for the selected document, and you can navigate from this to the Hypershelf focused on that document."
+          content: "The most effective way to start exploring via the documents in the corpus.\n Once you click on the document icon a panel will appear in which you can either click the <span class='glyphicon glyphicon-random'></span> for a random document or select a focal document for your exploration by typing a few letters to match the title.\nYou will be shown a “fingerprint” for the selected document, and you can navigate from this to the Hypershelf focused on that document."
         }, {
           element: "#step-2",
           title: "Topic",
-          content: "The most effective way to start exploring via the documents in the corpus. Once you click on the document icon a panel will appear in which you can either click the crossed arrows button for a random document or select a focal document for your exploration by typing a few letters to match the title. You will be shown a “fingerprint” for the selected document, and you can navigate from this to the Hypershelf focused on that document."
+          content: "Clicking here will bring up a panel where you can enter a few words to identify related topics. From there you can go to the topic map that lays out and groups the topics from all the models according to their similarity. There is also additional help once you reach that page."
         }, {
           element: "#step-3",
           title: "Document Upload",
@@ -166,7 +163,7 @@
           element: "#step-4",
           title: "Home Button",
           content: "Click on this to return to this page."
-        }
+        },
       ]});
     tour.init();
 
@@ -177,22 +174,3 @@
 
   });
 </script>
-<!---
-<script>
-$('#introJs-button').on('click', function() {
-  console.log("lkasjdlkadsgsd");
-  var intro = introJs();
-  intro.onchange(function (targetElement){
-  if (targetElement.attributes["data-step"].value === "3" && targetElement.attributes["data-step"].value === "4") {
-      var closestContainer = $('#fingerprintModal');
-      $('.introjs-overlay, .introjs-helperLayer, .introjs-tooltipReferenceLayer, .introjs-fixedTooltip').appendTo('#' + closestContainer);
-      console.log("plays!");
-    }
-  else {              
-      $('.introjs-overlay, .introjs-helperLayer, .introjs-tooltipReferenceLayer, .introjs-fixedTooltip').appendTo('body');
-      console.log("playing or not");
-    }
-  });
-})
-</script>
--->

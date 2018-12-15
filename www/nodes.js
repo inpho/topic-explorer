@@ -96,7 +96,7 @@ controls.append("span")
 nodeTour.addStep({
   element: "#controls",
   title: "Collision Detection",
-  content: "Checking the collision detection checkbox will minimize overlap among the nodes but distort the underlying similarity relationships.",
+  content: "Checking the 'Collision detection' checkbox will minimize overlap among the nodes but distort the underlying similarity relationships.",
   placement: "top"
 });
 

@@ -61,7 +61,7 @@ var tour = new Tour({
     }, {
       element: "#randomDoc",
       title: "Random Document Selection",
-      content: "You can also click the crossed arrows button to the right of the focal document entry area for a random document.",
+      content: "You can also click the   <span class='glyphicon glyphicon-random'></span>    button to the right of the focal document entry area for a random document.",
       placement: "top"
     }, {
       element: "#tutorial",
@@ -71,7 +71,7 @@ var tour = new Tour({
     }, {
       element: "#visualize_button",
       title: "Continuation of Tutorial",
-      content: "From this point onwards, you can either exit the tutorial, type in a document yourself and click the visualize button, or you can click 'next' and allow the tutorial to pick a document for you.",
+      content: "From this point onwards, you can either exit the tutorial, type in a document yourself and click the 'Visualize' button, or you can click 'Next' and allow the tutorial to pick a document for you.",
       placement: "bottom",
       onNext: function(tour) {
         $("#randomDoc").click();
@@ -94,18 +94,17 @@ var tour = new Tour({
     }, {
       element:"#chart",
       title: "Hypershelf",
-      content: "The Hypershelf shows up to 40 documents that are most similar to the focal document. Each document is represented by a bar whose colors show the mixture and proportions of topics assigned to each document by the training process. The relative lengths of the bars indicate the degree of similarity to the focal document according to the topic mixtures. \n\nThis is a legend designed to navigate and manipulate data on the Hypershelf easier. You can click on any of the colored squares to focus on a particular topic, alphabetize the papers, and normalize the topic bars.",
+      content: "The Hypershelf shows up to 40 documents that are most similar to the focal document. Each document is represented by a bar whose colors show the mixture and proportions of topics assigned to each document by the training process. The relative lengths of the bars indicate the degree of similarity to the focal document according to the topic mixtures.",
       placement: "top",
-      delay: 1000
+      //delay: 1000
       //autoscroll: false,
       //smartPlacement: false
 
     },
-    
     {
       element:"#legend",
       title: "Legend",
-      content: "On the right is a legend designed to navigate and manipulate data on the Hypershelf easier. You can click on any of the colored squares to focus on a particular topic, alphabetize the papers, and normalize the topic bars.",
+      content: "This is a legend designed to navigate and manipulate data on the Hypershelf easier. You can click on any of the colored squares to focus on a particular topic, alphabetize the papers, and normalize the topic bars.",
       placement:"left"
     },
     {
