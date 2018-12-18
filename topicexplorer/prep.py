@@ -324,40 +324,22 @@ def get_high_filter_chart(c, words=None, items=None, counts=None, num=None):
 def get_high_filter_stops(c, words=None, items=None, counts=None, num=None):
     import numpy as np
     input_filter = num
-    valid = True
-    f = open("test.txt", "w+")
-    f.write("c" + "\n")
-    f.write(str(c) + "\n")
-    f.write("c words" + "\n")
-    f.write(str(c.words) + "\n")
-    f.write("words" + "\n")
-    f.write(str(words) + "\n")
-    f.write("items" + "\n")
-    f.write(str(items) + "\n")
-    f.write("counts" + "\n")
-    f.write(str(counts) + "\n")
-    f.write("num" + "\n")
-    f.write(str(num) + "\n")
-    f.write("lengths" + "\n")
-    f.write(str(len(c.words)) + " " + str(len(items)) + " " + str(len(counts)))
-    try:
-        candidates = get_candidate_words(c, input_filter, words=words, items=items, counts=counts)
-        places = np.in1d(c.words, candidates)
-        places = dict(zip(candidates, np.where(places)[0]))
-        candidates = sorted(candidates, key=lambda x: counts[places[x]], reverse=True)
-        filtered_counts = counts[get_mask(c, words)]
 
-        filtered = ""
-        filtered += "Filter will remove " + str(filtered_counts[filtered_counts >= input_filter].sum())
-        filtered += " occurrences " + "of these " + str(len(filtered_counts[filtered_counts >= input_filter])) + " words: "
-        filtered += u' '.join(candidates)
+    candidates = get_candidate_words(c, input_filter, words=words, items=items, counts=counts)
+    places = np.in1d(c.words, candidates)
+    places = dict(zip(candidates, np.where(places)[0]))
+    candidates = sorted(candidates, key=lambda x: counts[places[x]], reverse=True)
+    filtered_counts = counts[get_mask(c, words)]
 
-        if len(candidates) == len(c.words):
-            valid = False
+    filtered = ""
+    filtered += "Filter will remove " + str(filtered_counts[filtered_counts >= input_filter].sum())
+    filtered += " occurrences " + "of these " + str(len(filtered_counts[filtered_counts >= input_filter])) + " words: "
+    filtered += u' '.join(candidates)
 
-    except ValueError:
-        input_filter = 0
-    return (candidates, filtered, valid)
+    if len(candidates) == len(c.words):
+        raise ValueError
+
+    return (candidates, filtered)
 
 
 def get_low_filter_chart(c, words=None, items=None, counts=None, num=None):
@@ -396,29 +378,21 @@ def get_low_filter_chart(c, words=None, items=None, counts=None, num=None):
 def get_low_filter_stops(c, words=None, items=None, counts=None, num=None):
     import numpy as np
     input_filter = num
-    valid = True
-    try:
-        candidates = get_candidate_words(c, -input_filter, words=words, items=items, counts=counts)
-        places = np.in1d(c.words, candidates)
-        places = dict(zip(candidates, np.where(places)[0]))
-        candidates = sorted(candidates, key=lambda x: counts[places[x]])
-        filtered_counts = counts[get_mask(c, words)]
+    candidates = get_candidate_words(c, -input_filter, words=words, items=items, counts=counts)
+    places = np.in1d(c.words, candidates)
+    places = dict(zip(candidates, np.where(places)[0]))
+    candidates = sorted(candidates, key=lambda x: counts[places[x]])
+    filtered_counts = counts[get_mask(c, words)]
 
-        filtered = ""
-        filtered += "Filter will remove " + str(filtered_counts[filtered_counts <= input_filter].sum()) + " tokens"
-        filtered += "of these " + str(len(filtered_counts[filtered_counts <= input_filter])) + " words: "
-        filtered += u' '.join(candidates)
+    filtered = ""
+    filtered += "Filter will remove " + str(filtered_counts[filtered_counts <= input_filter].sum()) + " tokens"
+    filtered += "of these " + str(len(filtered_counts[filtered_counts <= input_filter])) + " words: "
+    filtered += u' '.join(candidates)
 
+    if len(candidates) == len(c.words):
+        raise ValueError
 
-        if len(candidates) == len(c.words):
-            valid = False
-            # filtered += "\n\nChoice of" + str(input_filter) + "will remove ALL words from the corpus."
-            # filtered += "Please choose a different filter."
-
-    except ValueError:
-        input_filter = 0
-
-    return (candidates, filtered, valid)
+    return (candidates, filtered)
 
 # Stores all of the variables for the labels
 class PrepData(Frame):
@@ -568,16 +542,16 @@ class Summary(Frame):
                             len(data.fileCandidates), 's' if len(data.fileCandidates) > 1 else ''))
         else:
             data.fileCandidates = []
-        data.highCandidates, filtered, valid = get_high_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
-                                                                num=high)
-        # Checks to see if the value entered with filter the whole corpus out
-        if not valid:
+        try:
+            data.highCandidates, filtered = get_high_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
+                                                                    num=high)
+        except ValueError:
             self._scene.add_effect(PopUpDialog(self._screen, "Current filter for high will remove all values, please choose a different filter", ["OK"]))
             return
-        data.lowCandidates, filtered, valid = get_low_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
-                                                                num=low)
-        # Checks to see if the value entered with filter the whole corpus out
-        if not valid:
+        try:
+            data.lowCandidates, filtered = get_low_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
+                                                                    num=low)
+        except ValueError:
             self._scene.add_effect(PopUpDialog(self._screen, "Current filter for low will remove all values, please choose a different filter", ["OK"]))
             return
         data.stopCandidates = get_small_words(data.c, minNum)
@@ -631,10 +605,10 @@ class Summary(Frame):
                 self._scene.add_effect(PopUpDialog(self._screen, e.args[0], e.args[1]))
             return
         
-        data.highCandidates, filtered, valid = get_high_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
-                                                                num=high)
-        # Checks to see if the value entered with filter the whole corpus out
-        if not valid:
+        try:
+            data.highCandidates, filtered = get_high_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
+                                                                    num=high)
+        except ValueError:
             self._scene.add_effect(PopUpDialog(self._screen, "Current filter for high will remove all values, please choose a different filter", ["OK"]))
             return
         
@@ -664,7 +638,7 @@ class Summary(Frame):
             confirm()
             return
         high = validate(data.summaryHigh, data.summaryHighPercent, data.high, data.highPercent, "high", False)
-        data.highCandidates, filtered, valid = get_high_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
+        data.highCandidates, filtered = get_high_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
                                                                 num=high)
         temp = deepcopy(data.stoplist)
         temp.update(data.highCandidates)
@@ -693,10 +667,10 @@ class Summary(Frame):
                 self._scene.add_effect(PopUpDialog(self._screen, e.args[0], e.args[1]))
             return
             
-        data.lowCandidates, filtered, valid = get_low_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
-                                                                num=low)
-        # Checks to see if the value entered with filter the whole corpus out
-        if not valid:
+        try:
+            data.lowCandidates, filtered = get_low_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
+                                                                    num=low)
+        except ValueError:
             self._scene.add_effect(PopUpDialog(self._screen, "Current filter for low will remove all values, please choose a different filter", ["OK"]))
             return
         (columns, line) = os.get_terminal_size()
@@ -725,7 +699,7 @@ class Summary(Frame):
             confirm()
             return
         low = validate(data.summaryLow, data.summaryLowPercent, data.low, data.lowPercent, "low", True)
-        data.lowCandidates, filtered, valid = get_low_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
+        data.lowCandidates, filtered = get_low_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
                                                                 num=low)
         temp = deepcopy(data.stoplist)
         temp.update(data.lowCandidates)
@@ -791,10 +765,10 @@ class HighFreq(Frame):
                 self._scene.add_effect(PopUpDialog(self._screen, e.args[0], e.args[1]))
             return
 
-        data.highCandidates, filtered, valid = get_high_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
-                                                                num=high)
-        # Checks to see if the value entered with filter the whole corpus out
-        if not valid:
+        try:
+            data.highCandidates, filtered = get_high_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
+                                                                    num=high)
+        except ValueError:
             self._scene.add_effect(PopUpDialog(self._screen, "Current filter for high will remove all values, please choose a different filter", ["OK"]))
             return
         (columns, line) = os.get_terminal_size()
@@ -824,7 +798,7 @@ class HighFreq(Frame):
             confirm()
             return
         high = validate(data.high, data.highPercent, data.summaryHigh, data.summaryHighPercent, "high", False)
-        data.highCandidates, filtered, valid = get_high_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
+        data.highCandidates, filtered = get_high_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
                                                                 num=high)
         (columns, line) = os.get_terminal_size()
         temp = deepcopy(data.stoplist)
@@ -853,10 +827,10 @@ class HighFreq(Frame):
                 self._scene.add_effect(PopUpDialog(self._screen, e.args[0], e.args[1]))
             return
 
-        data.highCandidates, filtered, valid = get_high_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
-                                                                num=high)
-        # Checks to see if the value entered with filter the whole corpus out
-        if not valid:
+        try:
+            data.highCandidates, filtered = get_high_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
+                                                                    num=high)
+        except ValueError:
             self._scene.add_effect(PopUpDialog(self._screen, "Current filter for high will remove all values, please choose a different filter", ["OK"]))
             return
         
@@ -885,7 +859,7 @@ class HighFreq(Frame):
             confirm()
             return
         high = validate(data.high, data.highPercent, data.summaryHigh, data.summaryHighPercent, "high", False)
-        data.highCandidates, filtered, valid = get_high_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
+        data.highCandidates, filtered = get_high_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
                                                                 num=high)
         (columns, line) = os.get_terminal_size()
         temp = deepcopy(data.stoplist)
@@ -940,11 +914,11 @@ class LowFreq(Frame):
             else:
                 self._scene.add_effect(PopUpDialog(self._screen, e.args[0], e.args[1]))
             return
-            
-        data.lowCandidates, filtered, valid = get_low_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
-                                                                num=low)
-        # Checks to see if the value entered with filter the whole corpus out
-        if not valid:
+
+        try:    
+            data.lowCandidates, filtered = get_low_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
+                                                                    num=low)
+        except ValueError:
             self._scene.add_effect(PopUpDialog(self._screen, "Current filter for low will remove all values, please choose a different filter", ["OK"]))
             return
         (columns, line) = os.get_terminal_size()
@@ -975,7 +949,7 @@ class LowFreq(Frame):
             return
         low = validate(data.low, data.lowPercent, data.summaryLow, data.summaryLowPercent, "low", True)
 
-        data.lowCandidates, filtered, valid = get_low_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
+        data.lowCandidates, filtered = get_low_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
                                                                 num=low)
         (columns, line) = os.get_terminal_size()
         temp = deepcopy(data.stoplist)
@@ -1003,11 +977,11 @@ class LowFreq(Frame):
             else:
                 self._scene.add_effect(PopUpDialog(self._screen, e.args[0], e.args[1]))
             return
-            
-        data.lowCandidates, filtered, valid = get_low_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
-                                                                num=low)
-        # Checks to see if the value entered with filter the whole corpus out
-        if not valid:
+
+        try:   
+            data.lowCandidates, filtered = get_low_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
+                                                                    num=low)
+        except ValueError:
             self._scene.add_effect(PopUpDialog(self._screen, "Current filter for low will remove all values, please choose a different filter", ["OK"]))
             return
         (columns, line) = os.get_terminal_size()
@@ -1035,7 +1009,7 @@ class LowFreq(Frame):
             confirm()
             return
         low = validate(data.low, data.lowPercent, data.summaryLow, data.summaryLowPercent, "low", True)
-        data.lowCandidates, filtered, valid = get_low_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
+        data.lowCandidates, filtered = get_low_filter_stops(data.c, words=data.stoplist, items=data.items, counts=data.counts,
                                                                 num=low)
         (columns, line) = os.get_terminal_size()
         temp = deepcopy(data.stoplist)
