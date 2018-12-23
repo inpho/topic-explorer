@@ -56,8 +56,7 @@ def test_get_candidate_words():
         corpus, -low_freq, words=low_words)
     assert len(mask_words) == 0
 
-@patch('topicexplorer.prep.input')
-def test_get_high_filter(input_mock):
+def test_get_high_filter():
     # Test with high filter of 3
     items, counts = topicexplorer.prep.get_corpus_counts(corpus)
     candidates, filtered = topicexplorer.prep.get_high_filter_stops(corpus, words=set(), items=items, counts=counts, num=3)
@@ -68,9 +67,10 @@ def test_get_high_filter(input_mock):
     candidates, filtered = topicexplorer.prep.get_high_filter_stops(corpus, words=set(), items=items, counts=counts, num=0)
     assert len(corpus.words) - len(candidates) == 4
     assert candidates == []
-    
+
     # Test with high filter of 1, should return invalid
-    with unittest.TestCase.assertRaises(unittest.TestCase, ValueError):
+    t = unittest.TestCase('run')
+    with t.assertRaises(ValueError):
         candidates, filtered = topicexplorer.prep.get_high_filter_stops(corpus, words=set(), items=items, counts=counts, num=1)
         assert len(corpus.words) - len(candidates) == 0
         assert candidates == ['I', 'came', 'conquered', 'saw']
@@ -80,8 +80,7 @@ def test_get_high_filter(input_mock):
     assert len(corpus.words) - len(candidates) == 4
     assert candidates == []
 
-@patch('topicexplorer.prep.input')
-def test_get_low_filter(input_mock):
+def test_get_low_filter():
     # Test with low filter of 1
     items, counts = topicexplorer.prep.get_corpus_counts(corpus)
     candidates, filtered = topicexplorer.prep.get_low_filter_stops(corpus, words=set(), items=items, counts=counts, num=1)
@@ -89,7 +88,8 @@ def test_get_low_filter(input_mock):
     assert all(w in candidates for w in ['came', 'saw', 'conquered'])
    
     # Test with low filter of 3
-    with unittest.TestCase.assertRaises(unittest.TestCase, ValueError):
+    t = unittest.TestCase('run')
+    with t.assertRaises(ValueError):
         candidates, filtered = topicexplorer.prep.get_low_filter_stops(corpus, words=set(), items=items, counts=counts, num=3)
         assert len(corpus.words) - len(candidates) == 0
         assert all(w in candidates for w in ['came', 'saw', 'conquered', 'I'])  
@@ -100,7 +100,7 @@ def test_get_low_filter(input_mock):
     assert all(w in candidates for w in [])
 
     # Test with low filter of 100
-    with unittest.TestCase.assertRaises(unittest.TestCase, ValueError):
+    with t.assertRaises(ValueError):
         candidates, filtered = topicexplorer.prep.get_low_filter_stops(corpus, words=set(), items=items, counts=counts, num=100)
         assert len(corpus.words) - len(candidates) == 0
         assert all(w in candidates for w in ['came', 'saw', 'conquered', 'I'])
