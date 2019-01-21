@@ -52,18 +52,7 @@ def init(_app, config_file):
 
 
 def label(doc):
-    if app.context_type == 'book':
-        try:
-            md = metadata[doc]
-            titles = md.get('titles')
-            if not titles:
-                titles = md.get('title')
-
-            return titles[0]
-
-        except (TypeError, KeyError, IndexError):
-            return doc
-    elif app.context_type == 'page':
+    if app.context_type == 'page':
         context_md = ctx_md['page']
         where = np.squeeze(np.where(np.in1d(context_md['page_label'], [doc])))
         page_no = context_md['file'][where]
@@ -85,4 +74,15 @@ def label(doc):
         try:
             return "p%s of %s" % (page_no, md['titles'][0])
         except:
+            return doc
+    else: # app.context_type == 'book':
+        try:
+            md = metadata[doc]
+            titles = md.get('titles')
+            if not titles:
+                titles = md.get('title')
+
+            return titles[0]
+
+        except (TypeError, KeyError, IndexError):
             return doc

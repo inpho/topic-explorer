@@ -1,3 +1,111 @@
+"""
+Train topic models on a corpus using Latent Dirichlet Allocation.
+
+Topic Modeling
+----------------
+
+Topic models represent documents as mixtures of topics, which correspond to
+common themes in the collection. The topic model is trained by an algorithm that
+finds latent (hidden) relationships among the documents. Topic modeling is an
+*unsupervised* learning process: there is no human specification of the content
+of the topics. 
+
+The number of topics is specified manually. With the Topic Explorer, we train 
+multiple models with different numbers of topics. Each model shows different
+levels of detail in the documents. A model with more topics will, in general,
+show finer details. These models can be compared using the |topic map
+visualization|_.
+
+Each topic is a probability distribution over all the words in a corpus. Each
+document is represented as a probability distribution over all the topics
+inferred from the corpus. These two matrices (*word-topic* and
+*topic-document*) represent the results of a topic model.
+
+Running the topic model on the same text with the same parameters does not
+guarantee the same results due to the probabilistic nature of the inference
+process. In order to guarantee the same results across different runs over the
+same text, the |seed parameter| must be set to the same number.
+
+.. seealso::
+    `Probabilistic Topic Models`_ (Blei 2012)
+        Review of topic modeling.
+    `InPhO Topic Explorer - The HTRC 1315 Hypershelf`_
+        Video demonstrating topic modeling using the Topic Explorer.
+
+.. |topic map visualization| replace::
+    *topic map visualization* in ``topicexplorer launch``
+.. _topic map visualization:
+    launch.html#topic-map
+.. |seed parameter| replace:: ``--seed`` parameter
+.. _seed parameter: #random-seed-seed
+
+.. _Probabilistic Topic Models:
+    http://www.cs.columbia.edu/~blei/papers/Blei2012.pdf
+.. _InPhO Topic Explorer - The HTRC 1315 Hypershelf:
+    https://www.youtube.com/watch?v=QAPKCyA4uOc
+
+Command Line Arguments 
+------------------------
+
+Number of Topics (``-k``)
+'''''''''''''''''''''''''''
+Select the number of topics in the model. Multiple numbers can be chosen to
+train multiple models for comparison.
+
+**Default:** ``-k 20 40 60 80``
+
+
+Number of Iterations (``--iter``)
+'''''''''''''''''''''''''''''''''''
+Select the number of iterations to train each model.
+
+**Default:** ``--iter 200``
+
+
+Number of Processes (``-p``)
+''''''''''''''''''''''''''''''
+Select the number of processes to use. Defaults to using a single process.
+Multi-core machines can use more processes to accelerate training.
+
+**Default:** ``-p 1``
+
+
+Random Seed (``--seed``)
+''''''''''''''''''''''''''
+Select the random seed to initialize the model.
+
+The topic model is trained using a *pseudo-random number generator*. These
+number generators appear random, but use long patterns. The seed tells the
+pattern where to start. Using the same seed will cause the generator to use the
+same numbers, and therefore generate the same topic models.
+
+**Default:** a random integer is generated.
+
+
+Rebuild models (``--rebuild``)
+''''''''''''''''''''''''''''''''
+If there are existing models for the specified values of ``-k``, retrain them
+with ``--iter`` iterations.
+
+``--rebuild`` cannot be used with ``--continue``.
+
+
+Continue models (``--continue``)
+''''''''''''''''''''''''''''''''''
+If there are existing models for the specified values of ``-k``, train them for
+an additional ``--iter`` iterations.
+
+``--continue`` cannot be used with ``--rebuild``.
+
+
+
+Quiet Mode (``-q``)
+'''''''''''''''''''''
+Suppresses all user input requests. Uses default values unless otherwise
+specified by other argument flags. Very useful for scripting automated
+pipelines.
+
+"""
 from __future__ import print_function
 from __future__ import absolute_import
 from future import standard_library
@@ -116,7 +224,7 @@ def main(args):
                 if args.quiet:
                     args.k = [int(n) for n in default.split()]
             else:
-                raise NoOptionError
+                raise NoOptionError('main', 'topics')
         except NoOptionError:
             default = ' '.join(map(str, range(20, 100, 20)))
 
@@ -252,25 +360,26 @@ Do you want to continue training your existing models? """, default=True))):
 
 
 def populate_parser(parser):
+    import argparse
     parser.add_argument("config_file", help="Path to Config",
                         type=lambda x: is_valid_configfile(parser, x))
-    parser.add_argument("--context-type", dest='context_type',
-                        help="Level of corpus modeling, prompts if not set")
-    parser.add_argument("-p", "--processes", default=1, type=int,
-                        help="Number of CPU cores for training [Default: 1]")
-    parser.add_argument("--seed", default=None, type=int,
-                        help="Random seed for topic modeling [Default: None]")
     parser.add_argument("-k", nargs='+',
                         help="K values to train upon", type=int)
     parser.add_argument('--iter', type=int,
                         help="Number of training iterations")
+    parser.add_argument("-p", "--processes", default=1, type=int,
+                        help="Number of CPU cores for training [Default: 1]")
+    parser.add_argument("--context-type", dest='context_type',
+                        help=argparse.SUPPRESS)
+    parser.add_argument("--seed", default=None, type=int,
+                        help="Random seed for topic modeling [Default: None]")
     parser.add_argument('--dry-run', dest='dry_run', action='store_true',
                         help="Run code without training models")
     parser.add_argument('--rebuild', action='store_true')
     parser.add_argument('--continue', dest='cont', action='store_true')
     parser.add_argument('-q', '--quiet', action='store_true')
     parser.add_argument('--cluster', type=int,
-                        help="Cluster an existing model")
+                        help=argparse.SUPPRESS)
 
 
 if __name__ == '__main__':

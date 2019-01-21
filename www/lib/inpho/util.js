@@ -37,6 +37,7 @@ inpho.util.getCookieValueForName = function(cookieName) {
 inpho.util.getURLParamsAndValues = function() {
     var paramsAndValues = [];
     var queryString = window.location.href.slice(window.location.href.indexOf('?') + 1);
+    queryString = queryString.split("#")[0];
     var keyValPairs = queryString.split('&');
 
     console.log("Parsing query string: " + queryString);

@@ -1,3 +1,128 @@
+"""
+Starts a web server and displays the Topic Explorer visualizations.
+
+Visualizations
+================
+Often, a topic is represented by the top 10 highest probability words in the
+topic's word distribution. However, it is important to recognize that these
+words do not fully represent the topic. The Topic Explorer visualizations
+show topics using the full distributions of the model. The `topic map`_ shows
+topics in relation to other topics through their complete word distributions.
+The `hypershelf`_ shows topics in relation to documents (the `hypershelf`_).
+
+.. _topic map: #topic-map
+.. _hypershelf: #hypershelf
+
+
+Topic Map
+-----------
+The **topic map** places the topics from the all the trained models on
+a two-dimensional map that attempts to place similar topics close to each
+other. It uses the isomap method to reduce the multi-dimensional topic space to
+two dimensions.
+
+The clusters and colors are determined automatically by an algorithm, and
+provide only a rough guide to groups of topics that have similar themes. The
+different axes also do not have any intrinsic meaning, but are often
+interpretable as representing historical or thematic dimensions in the
+underlying corpus.
+
+Checking the *collision detection* checkbox will minimize overlap among the
+nodes but distort the underlying similarity relationships.
+
+The nodes are scaled according to the number of topics in the corresponding
+model. Larger circles correspond to models with fewer topics. You can control
+which models are included in the map by clicking on the numbers on the left to
+toggle the corresponding models off and on.
+
+You may also enter words in the search box to have the map change shading to
+help you find topics related to the words.
+
+Clicking on any topic circle will take you to the `hypershelf`_ with the top
+documents for that topic already selected.
+
+
+Hypershelf
+------------
+The **Hypershelf** shows up to 40 documents that are most similar to the focal
+document. Each document is represented by a bar whose colors show the mixture
+and proportions of topics assigned to each document by the training process.
+The relative lengths of the bars indicate the degree of similarity to the focal
+document according to the topic mixtures.
+
+Rolling over a colored segment shows the highest probability words associated
+with the topic. The key on the right shows all the topics identified by the
+model. If you click on a topic in the bar or the key, the display will sort the
+current documents ranked according to that topic. In this topic-sorted mode, a
+Top Documents button appears at the top that lets you retrieve the documents
+from the entire corpus that are most similar to that topic.
+
+Focal Document
+''''''''''''''''
+To select a new focal document you can:
+
+-   Start typing a few letters in the focal document entry area;
+-   Click the crossed arrows button to the right of the focal document entry
+    area for a random document;
+-   Refocus on one of the already-displayed documents by moving the cursor 
+    just to the left of the topic bar and clicking on the arrow that appears.
+
+You may use the button to the right of the random document button to visualize
+the focal document and you may use the dropdown menu attached to the button to
+switch to a model with a different number of topics.  
+
+Other Options
+'''''''''''''''
+Below the key are some additional display options that let you sort the
+displayed documents alphabetically, or to normalize the bar lengths so that you
+can compare the document mixtures more directly.
+
+Other icons to the left of each topic bar allow you to view the document
+contents, or see a "fingerprint" of the topic mixtures for that document in all
+the available models with different numbers of topics. Clicking on a bar in the
+fingerprint will take you to a hypershelf focused on the selected document with
+that given model.
+
+The numbers in the menu on the left can be used to navigate directly to a model
+with that number of topics.
+
+Above the numbers on the left, the topic cluster button will take you to a
+different interface that lets you explore topic similarity across the models.
+
+The home button at the top left will take you to a general information page
+about the corpus and models.
+
+
+Command Line Arguments 
+========================
+
+Hostname (``--host``)
+-----------------------
+Hostname for the server instance. Set to ``0.0.0.0`` to listen on all names.
+
+**Default:** ``127.0.0.1`` (``localhost``)
+
+Port (``--port``)
+-------------------
+Port number for the server instance.
+
+**Default:** 8000 
+
+
+No browser launch (``--no-browser``)
+--------------------------------------
+By default, ``topicexplorer launch`` will open the server instance in the
+default browser. With ``--no-browser``, only the server daemon will run.
+
+
+Quiet Mode (``-q``)
+---------------------
+Suppresses all user input requests. Uses default values unless otherwise
+specified by other argument flags. Very useful for scripting automated
+pipelines.
+
+"""
+
 from __future__ import print_function
 from future import standard_library
 standard_library.install_aliases()
@@ -28,7 +153,6 @@ from bottle import (abort, redirect, request, response, route, run,
                     static_file, Bottle, ServerAdapter)
 import topicexplorer.config
 from topicexplorer.lib.color import get_topic_colors, rgb2hex
-from topicexplorer.lib.ssl import SSLWSGIRefServer
 from topicexplorer.lib.util import (int_prompt, bool_prompt, is_valid_filepath,
     is_valid_configfile, get_static_resource_path)
 
@@ -60,6 +184,8 @@ def _set_acao_headers(f):
         elif host and 'inphoproject.org' in host:
             response.headers['Access-Control-Allow-Origin'] = host
         elif host and 'hypershelf.org' in host:
+            response.headers['Access-Control-Allow-Origin'] = host
+        elif host and 'tjmind.org' in host:
             response.headers['Access-Control-Allow-Origin'] = host
         return f(*args, **kwargs)
     return set_header
@@ -443,6 +569,9 @@ class Application(Bottle):
             if tokenizer == 'default':
                 from vsm.extensions.corpusbuilders.util import word_tokenize
                 tokenizer = word_tokenize
+            elif tokenizer == 'simple':
+                from topicexplorer.tokenizer import simple_tokenizer
+                tokenizer = simple_tokenizer
             elif tokenizer == 'zh':
                 from topicexplorer.lib.chinese import modern_chinese_tokenizer
                 tokenizer = modern_chinese_tokenizer
@@ -468,7 +597,7 @@ class Application(Bottle):
             # abort if there are no terms in the query
             if not query and stopped_words:
                 response.status = 410  # Gone
-                return "Search terms removed using stoplist: " + ' '.join(query)
+                return "Search terms removed using stoplist: " + ' '.join(stopped_words)
             elif not query:
                 response.status = 404  # Not Found
                 return "Search terms not in corpus"
@@ -641,13 +770,13 @@ class Application(Bottle):
         @_set_acao_headers
         def get_doc(doc_id):
             try:
-                doc_id = doc_id.decode('utf8')
+                doc_id = doc_id.decode('utf-8')
             except:
                 pass
             pdf_path = os.path.join(corpus_path, re.sub('txt$', 'pdf', doc_id))
             if os.path.exists(pdf_path.encode('utf-8')):
                 doc_id = re.sub('txt$', 'pdf', doc_id)
-
+            
             txt_path = os.path.join(corpus_path, doc_id + '.txt')
             if os.path.exists(txt_path.encode('utf-8')):
                 doc_id = doc_id + '.txt'
@@ -861,30 +990,13 @@ def create_app(args):
 def populate_parser(parser):
     parser.add_argument('config', type=lambda x: is_valid_configfile(parser, x),
                         help="Configuration file path")
-    parser.add_argument('-k', type=int, required=False,
-                        help="Number of Topics")
-    parser.add_argument('-p', dest='port', type=int,
-                        help="Port Number", default=None)
     parser.add_argument('--host', default='127.0.0.1', help='Hostname')
+    parser.add_argument('-p', '--port', dest='port', type=int,
+                        help="Port Number", default=8000)
     parser.add_argument('--no-browser', dest='browser', action='store_false')
-    parser.add_argument("-q", "--quiet", action="store_true")
     parser.add_argument('--fulltext', action='store_true',
                         help='Serve raw corpus files.')
-    parser.add_argument('--bibtex', default=None,
-                        type=lambda x: is_valid_filepath(parser, x),
-                        help='BibTeX library location')
-    parser.add_argument('--ssl', action='store_true',
-                        help="Use SSL (must specify certfile, keyfile, and ca_certs in config)")
-    parser.add_argument('--ssl-certfile', dest='certfile', nargs="?",
-                        const='server.pem', default=None,
-                        type=lambda x: is_valid_filepath(parser, x),
-                        help="SSL certificate file")
-    parser.add_argument('--ssl-keyfile', dest='keyfile', default=None,
-                        type=lambda x: is_valid_filepath(parser, x),
-                        help="SSL certificate key file")
-    parser.add_argument('--ssl-ca', dest='ca_certs', default=None,
-                        type=lambda x: is_valid_filepath(parser, x),
-                        help="SSL certificate authority file")
+    parser.add_argument("-q", "--quiet", action="store_true")
 
 if __name__ == '__main__':
     from argparse import ArgumentParser

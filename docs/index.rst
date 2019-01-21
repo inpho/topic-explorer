@@ -11,7 +11,16 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   modules
+   intro
+   init
+   prep
+   train
+   launch
+   notebook
+   metadata
+   import_export
+   htrc
+   cookbook
 
 
 
