@@ -1,4 +1,4 @@
-FROM continuumio/miniconda3:latest
+FROM continuumio/miniconda3:4.3.14
 
 # Add gcc for vsm compilation
 # This should really be removed since we should be testing that the builds on pypi are working...
@@ -7,15 +7,30 @@ RUN apt-get install build-essential -y
 
 # Set up Anaconda environment
 RUN conda config --set always_yes yes --set changeps1 no
-RUN conda install -q --yes pip numpy matplotlib scipy scikit-learn nltk unidecode wget decorator chardet ujson requests cython
+RUN conda install -q --yes pip numpy matplotlib scipy scikit-learn nltk unidecode wget decorator chardet ujson requests cython notebook pandas
 
-WORKDIR /opt/inpho/
+RUN conda update setuptools 
+RUN pip install -U pip setuptools
+RUN pip install wget
 
-ADD topicexplorer /opt/inpho/topicexplorer
-ADD topics.zip /opt/inpho/
-ADD setup.py /opt/inpho/
-ADD setup.cfg /opt/inpho/
-ADD requirements.txt /opt/inpho/
+RUN pip install topicexplorer[htrc]
+RUN python -m nltk.downloader punkt stopwords wordnet
 
-RUN pip install -r requirements.txt .
+#ADD topicexplorer /opt/inpho/topicexplorer
+#ADD topics.zip /opt/inpho/
+#ADD setup.py /opt/inpho/
+#ADD setup.cfg /opt/inpho/
+#ADD requirements.txt /opt/inpho/
 
+#RUN pip install -r requirements.txt .
+
+ADD vsm /opt/inpho/vsm
+WORKDIR /opt/inpho/vsm
+RUN python setup.py develop
+
+WORKDIR /var/inpho/
+
+EXPOSE 5000
+EXPOSE 8888
+RUN export PS1="$ "
+CMD ["/bin/bash"]
