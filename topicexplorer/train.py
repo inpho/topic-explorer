@@ -114,6 +114,9 @@ from builtins import str
 from builtins import input
 from builtins import map
 from builtins import range
+import numpy as np
+import copy
+import itertools
 
 from configparser import RawConfigParser as ConfigWriter
 from configparser import NoOptionError
@@ -122,9 +125,92 @@ import os.path
 import topicexplorer.config
 from topicexplorer.lib.util import bool_prompt, int_prompt, is_valid_configfile
 
+v = topicexplorer.from_config('CS449Labs.ini')._viewers[20]
+
+def deep_subcorpus(labels):
+    print(v.corpus.view_metadata)
+    print(str(v.corpus))
+    print(str(v.corpus.context_types))
+    print(str(v.corpus.view_metadata('document')))
+    print(str(labels))
+    bookssss = v.corpus.view_metadata(v.corpus.context_types[0])
+    print("{} total books".format(len(bookssss)))
+    # if not all(d in bookssss for d in labels):
+    #     raise ValueError("There is a book missing!")
+    for i in range(len(labels)):
+        if any(labels[i] in d for d in bookssss):
+            print("it is here")
+        else:
+            raise ValueError("There is a book missing")
+    # resolve labels to indexes
+    docs_labels = [v._res_doc_type(d) for d in labels]
+    docs, labels = list(zip(*docs_labels))
+
+    # get lengths of all contexts
+    # lens = np.array([len(ctx) for ctx in v.corpus.view_contexts('document')])
+    lens = np.array([len(ctx) for ctx in v.corpus.view_contexts(v.corpus.context_types[0])])
+    
+    # get the context_type index for use with context_data
+    ctx_idx = v.corpus.context_types.index(v.model.context_type)
+    
+    # get original slices
+    # slice_idxs = [list(range(s.start,s.stop)) for i, s in enumerate(v.corpus.view_contexts('book',as_slices=True)) 
+    #                   if i in docs]
+    slice_idxs = [list(range(s.start,s.stop)) for i, s in enumerate(v.corpus.view_contexts(v.corpus.context_types[0],as_slices=True)) 
+                      if i in docs]
+    
+    new_corpus = copy.deepcopy(v.corpus)
+    # reduce corpus to subcorpus    
+    new_corpus.corpus = new_corpus.corpus[list(itertools.chain(*slice_idxs))]
+    
+    # reinitialize index fields
+    for i,d in enumerate(docs):
+        new_corpus.context_data[ctx_idx]['idx'][d] = lens[list(docs[:i+1])].sum()
+    
+    # reduce metadata to only the new subcorpus
+    new_corpus.context_data[ctx_idx] = new_corpus.context_data[ctx_idx][list(docs)]
+    
+    return new_corpus
+
+# def deep_subcorpus(labels):
+#     print(v.corpus.metadata)
+#     # bookssss = v.corpus.metadata['book_label']
+#     bookssss = v.corpus.ids
+#     print("{} total books".format(len(bookssss)))
+#     print(bookssss)
+#     print(labels)
+#     if not all(d in bookssss for d in labels):
+#         raise ValueError("There is a book missing!")
+#     # resolve labels to indexes
+#     docs_labels = v.corpus.metadata
+#     docs, labels = list(zip(*docs_labels))
+    
+#     # get lengths of all contexts
+#     # lens = np.array([len(ctx) for ctx in v.corpus.view_contexts('book')])
+#     lens = np.array([len(ctx) for ctx in v.corpus.__getitem__('ids')])
+    
+#     # get the context_type index for use with context_data
+#     ctx_idx = v.corpus.context_types.index(v.corpus.context_type)
+    
+#     # get original slices
+#     slice_idxs = [list(range(s.start,s.stop)) for i, s in enumerate(v.corpus.view_contexts('book',as_slices=True)) 
+#                       if i in docs]
+    
+#     new_corpus = copy.deepcopy(v.corpus)
+#     # reduce corpus to subcorpus    
+#     new_corpus.corpus = new_corpus.corpus[list(itertools.chain(*slice_idxs))]
+    
+#     # reinitialize index fields
+#     for i,d in enumerate(docs):
+#         new_corpus.context_data[ctx_idx]['idx'][d] = lens[list(docs[:i+1])].sum()
+    
+#     # reduce metadata to only the new subcorpus
+#     new_corpus.context_data[ctx_idx] = new_corpus.context_data[ctx_idx][list(docs)]
+    
+#     return new_corpus
 
 def build_models(corpus, corpus_filename, model_path, context_type, krange,
-                 n_iterations=200, n_proc=1, seed=None, dry_run=False):
+                 n_iterations=200, n_proc=1, seed=None, dry_run=False, filtered=[]):
     basefilename = os.path.basename(corpus_filename).replace('.npz', '')
     basefilename += "-LDA-K%s-%s-%d.npz" % ('{0}', context_type, n_iterations)
     basefilename = os.path.join(model_path, basefilename)
@@ -141,6 +227,16 @@ def build_models(corpus, corpus_filename, model_path, context_type, krange,
         basefilename = '-'.join(fileparts)
     else:
         seeds = None
+
+    print("\norig corpus")
+    print(str(v.corpus.view_metadata(v.corpus.context_types[0])))
+
+    filtered_arr = [v.corpus.view_metadata(v.corpus.context_types[0])[i][1] for i in range(len(v.corpus.view_metadata(v.corpus.context_types[0]))) if str(i) not in filtered]
+    print(str(filtered_arr))
+    corpus = deep_subcorpus(filtered_arr)
+    print("\nnew corpus")
+    print(str(len(corpus.corpus)))
+    print()
 
     if not dry_run:
         from vsm.model.lda import LDA
@@ -204,6 +300,10 @@ def cluster(n_clusters, config_file):
     
 
 def main(args):
+    filtered = []
+    if args.filter:
+        filtered = args.filter.rstrip(',').split(',')
+
     if args.cluster:
         cluster(args.cluster, args.config_file)
         return
@@ -286,7 +386,7 @@ Do you want to continue training your existing models? """, default=True))):
                          config.get("main", "context_type"),
                          new_models, n_iterations=args.iter,
                          n_proc=args.processes, seed=args.seed,
-                         dry_run=args.dry_run)
+                         dry_run=args.dry_run, filtered=filtered)
 
             model_pattern = continue_training(model_pattern, continuing_models,
                                               args.iter, n_proc=args.processes,
@@ -335,7 +435,7 @@ Do you want to continue training your existing models? """, default=True))):
                                      args.context_type, args.k,
                                      n_iterations=args.iter,
                                      n_proc=args.processes, seed=args.seed,
-                                     dry_run=args.dry_run)
+                                     dry_run=args.dry_run, filtered=filtered)
     config.set("main", "model_pattern", model_pattern)
     if args.context_type:
         # test for presence, since continuing doesn't require context_type
@@ -380,6 +480,7 @@ def populate_parser(parser):
     parser.add_argument('-q', '--quiet', action='store_true')
     parser.add_argument('--cluster', type=int,
                         help=argparse.SUPPRESS)
+    parser.add_argument('--filter')
 
 
 if __name__ == '__main__':
