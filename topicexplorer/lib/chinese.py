@@ -1,80 +1,11 @@
 # -*- coding: utf-8 -*-
-from builtins import chr
 import os
 
 import platform
-from topicexplorer.lib.util import get_static_resource_path 
+#updated to use pymmseg function calls instead of plain mmseg
 
-chinese_punctuation = [
-                       u'\xb7',
-                       u'\u203b',
-                       u'\u25a1',
-                       u'\u25c7',
-                       u'\u25cb',
-                       u'\u25ce',
-                       u'\u25cf',
-                       u'\u3016',
-                       u'\u3017',
-                       u'\u25a1',
-                       u'\uff3b',
-                       u'\u2013',
-                       u'\u2014',
-                       u'\u2018',
-                       u'\u2019',
-                       u'\u201C',
-                       u'\u201D',
-                       u'\u2026',
-                       u'\u3000',
-                       u'\u3001',
-                       u'\u3002',
-                       u'\u3008',
-                       u'\u3009',
-                       u'\u300A',
-                       u'\u300B',
-                       u'\u300C',
-                       u'\u300D',
-                       u'\u300E',
-                       u'\u300F',
-                       u'\u3010',
-                       u'\u3011',
-                       u'\u3014',
-                       u'\u3015',
-                       u'\uFE50',
-                       u'\uFF01',
-                       u'\uFF08',
-                       u'\uFF09',
-                       u'\uFF0C',
-                       u'\uFF0D',
-                       u'\uFF0E',
-                       u'\uFF10',
-                       u'\uFF11',
-                       u'\uFF12',
-                       u'\uFF13',
-                       u'\uFF14',
-                       u'\uFF15',
-                       u'\uFF16',
-                       u'\uFF17',
-                       u'\uFF18',
-                       u'\uFF19',
-                       u'\uFF1A',
-                       u'\uFF1B',
-                       u'\uFF1F',
-                       u'\uFF3B',
-                       u'\uFF3C',
-                       u'\uFF3D',
-                       u'\u250B']
-
-import string 
-for a in string.ascii_lowercase[:],string.ascii_uppercase[:],range(0,10):
-    for b in a:        
-        chinese_punctuation.append(str(b))
-
-# escape ASCII in the chinese range
-for n in range(32,91):
-    chinese_punctuation.append(chr(n+65280))
-
-chinese_punctuation.append('\n')
-chinese_punctuation.append('\r')
+import string
+from topicexplorer.lib.util import get_static_resource_path
 
 import os.path
 import topicexplorer.lib.mmseg as mmseg
@@ -84,18 +15,69 @@ chrs = mmseg.CharFreqs(get_static_resource_path("mmseg/chars.dic"))
 ancient_mmseg = mmseg.MMSeg(ancient_dic, chrs)
 modern_mmseg = mmseg.MMSeg(modern_dic, chrs)
 
+def is_flagged(toke_number):
+             # '基本汉字'(Basic Chinese Character),20902 characters,'4E00-9FA5'
+    return ((toke_number > ord(u'\u4E00') - 1 and toke_number < ord(u'\u9FEF') + 1) or \
+            # '扩展A'(Expansion A),6582 characters,'3400-4DB5'
+                (toke_number > ord(u'\u3400') - 1 and toke_number < ord(u'\u4DB5') + 1) or \
+            # '扩展B'(Expansion B),42711 characters,'20000-2A6D6'
+                (toke_number > int('20000', 16) - 1 and toke_number < int('2A6D6', 16) + 1) or \
+            # '扩展C'(Expansion C),4149 characters,'2A700-2B734'
+                (toke_number > int('2A700', 16) - 1 and toke_number < int('2B734', 16) + 1) or \
+            # '扩展D'(Expansion D),222 characters,'2B740-2B81D'
+                (toke_number > int('2B740', 16) - 1 and toke_number < int('2B81D', 16) + 1) or \
+            # '扩展E'(Expansion E),5762 characters,'2B320-2CEA1'
+                (toke_number > int('2B820', 16) - 1 and toke_number < int('2CEA1', 16) + 1) or \
+            # '扩展F'(Expansion F),7473 characters,'2CEB0-2EBE0'
+                (toke_number > int('2CEB0', 16) - 1 and toke_number < int('2EBE0', 16) + 1) or \
+            # '康熙部首'(Kangxi Radical),214 characters,'2F00-2FD5'
+                (toke_number > int('2F00', 16) - 1 and toke_number < int('2FD5', 16) + 1) or \
+            # '部首扩展'(Radical Extension),115 characters,'2E80-2EF3'
+                (toke_number > int('2E80', 16) - 1 and toke_number < int('2EF3', 16) + 1) or \
+            # '兼容汉字'(Compatible Chinese characters),477 characters,'F900-FAD9'
+                (toke_number > int('F900', 16) - 1 and toke_number < int('FAD9', 16) + 1) or \
+            # '兼容扩展'(Compatible Extension),542 characters,'2F800-2FA1D'
+                (toke_number > int('2F800', 16) - 1 and toke_number < int('2FA1D', 16) + 1) or \
+            # 'PUA(GBK)部件'(PUA(GBK)Component),81 characters,'E815-E86F'
+                (toke_number > int('E815', 16) - 1 and toke_number < int('E86F', 16) + 1) or \
+            # '部件扩展'(Component Extension),452 characters,'E400-E5E8'
+                (toke_number > int('E400', 16) - 1 and toke_number < int('E5E8', 16) + 1) or \
+            # 'PUA增补'(PUA Supplement),207 characters,'E600-E6CF'
+                (toke_number > int('E600', 16) - 1 and toke_number < int('E6CF', 16) + 1) or \
+            # '汉字笔画'(Chinese Character Storks),36 characters,'31C0-31E3'
+                (toke_number > int('31C0', 16) - 1 and toke_number < int('31E3', 16) + 1) or \
+            # '汉字结构'(Chinese Character Structure),12 characters,'2FF0-2FFB'
+                (toke_number > int('2FF0', 16) - 1 and toke_number < int('2FFB', 16) + 1) or \
+            # '汉语注音'(Chinese Phonetic Notation),43 characters,'3105-312F'
+                (toke_number > int('3105', 16) - 1 and toke_number < int('312F', 16) + 1) or \
+            # '注音扩展'(Phonetic Notation Extension),22 characters,'31A0-31BA'
+                (toke_number > int('31A0', 16) - 1 and toke_number < int('31BA', 16) + 1))
+
 def ancient_chinese_tokenizer(raw_text):
     tokens = []
     for token in ancient_mmseg.segment(raw_text):
-        if token not in chinese_punctuation:
+        flag = 1
+        for toke in token:
+            toke_number = ord(toke)
+            if is_flagged(toke_number) == False:
+                flag = 0
+                break
+        if flag:
             tokens.append(token)
+
 
     return tokens
 
 def modern_chinese_tokenizer(raw_text):
     tokens = []
     for token in modern_mmseg.segment(raw_text):
-        if token not in chinese_punctuation:
+        flag = 1
+        for toke in token:
+            toke_number = ord(toke)
+            if is_flagged(toke_number) == False:
+                flag = 0
+                break
+        if flag:
             tokens.append(token)
 
     return tokens
