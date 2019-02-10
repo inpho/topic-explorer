@@ -1102,7 +1102,10 @@ if (url)
   });
 
 function scaleTopics() {
-  var numTopics = dataset[0].topics.length;
+  var numTopics = Object.keys(dataset[0].topics).length;
+  var k = numTopics;
+  console.log(k);
+  console.log(numTopics);
   var delay = function (d, i) { return i * (500 / numTopics); },
     negdelay = function (d, i) { return (numTopics - i) * (500 / numTopics); };
 
@@ -1232,7 +1235,8 @@ function topicSort(topic) {
 
 function redrawBars(sortFn) {
   $("#legend .hover").removeClass("hover");
-  var numTopics = dataset[0].topics.length;
+  var numTopics = Object.keys(dataset[0].topics).length;
+  var k = numTopics;
   var delay = function (d, i) { return i * (1000 / numTopics); },
     negdelay = function (d, i) { return (numTopics - i) * (1000 / numTopics); };
   calculateTopicMap(dataset, !($('.scale')[0].checked), sortFn);
