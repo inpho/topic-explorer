@@ -528,7 +528,7 @@ def write_config(args, config_file=None):
     config.set("logging", "path", "logs/%s/{0}.log" % args.corpus_name)
 
     if args.htrc:
-        config = add_htrc_metadata(config)
+        config = add_htrc_metadata(config, corpus_filename=os.path.abspath(args.corpus_filename))
         if not args.corpus_print_name:
             config.set("www", "corpus_name", "HTRC Data Capsule")
 
