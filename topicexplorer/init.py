@@ -435,7 +435,7 @@ def main(args):
         else:
             import topicexplorer.extensions.htrc_features as htrc_features
             with open(args.corpus_path) as idfile:
-                ids = [row.strip() for row in idfile]
+                ids = [row.strip() for row in idfile if row.strip()]
 
             c = htrc_features.create_corpus(ids, nltk_stop=args.nltk,freq=args.stop_freq)
             c.save(args.corpus_filename)
