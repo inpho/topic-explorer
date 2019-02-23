@@ -435,7 +435,7 @@ def main(args):
         else:
             import topicexplorer.extensions.htrc_features as htrc_features
             with open(args.corpus_path) as idfile:
-                ids = [row.strip() for row in idfile]
+                ids = [row.strip() for row in idfile if row.strip()]
 
             c = htrc_features.create_corpus(ids, nltk_stop=args.nltk,freq=args.stop_freq)
             c.save(args.corpus_filename)
@@ -528,7 +528,7 @@ def write_config(args, config_file=None):
     config.set("logging", "path", "logs/%s/{0}.log" % args.corpus_name)
 
     if args.htrc:
-        config = add_htrc_metadata(config)
+        config = add_htrc_metadata(config, corpus_filename=os.path.abspath(args.corpus_filename))
         if not args.corpus_print_name:
             config.set("www", "corpus_name", "HTRC Data Capsule")
 

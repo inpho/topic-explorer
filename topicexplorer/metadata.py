@@ -86,7 +86,9 @@ from topicexplorer.lib.util import isint, is_valid_configfile, bool_prompt
 from sortedcontainers import SortedDict
 from unidecode import unidecode
 
+from vsm import Corpus
 from vsm.viewer.wrappers import doc_label_name
+
 def parse_value(value):
     try:
         return literal_eval(value)
@@ -215,7 +217,7 @@ def add_metadata(corpus, ctx_type, new_metadata, force=False, rename=False):
     return corpus
 
 
-def add_htrc_metadata(config, corpus=None):
+def add_htrc_metadata(config, corpus=None, corpus_filename=None):
     import htrc.metadata
 
     config.set("main", "label_module", "topicexplorer.extensions.htrc")
@@ -223,6 +225,10 @@ def add_htrc_metadata(config, corpus=None):
     config.set("www", "doc_url_format", 'http://hdl.handle.net/2027/{0}')
     config.set("www", "icons", "htrcbook,link")
     config.set("main", "htrc", True)
+    
+    if corpus_filename:
+        corpus = Corpus.load(corpus_filename)
+        config.set("main", "context_type", corpus.context_types[0])
     
     if corpus:
         ctx_type = config.get("main", "context_type")

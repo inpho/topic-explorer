@@ -970,7 +970,7 @@ def create_app(args):
                       lang=lang,
                       icons=config_icons,
                       corpus_name=corpus_name,
-                      corpus_link=corpus_link,
+                      corpus_link=corpus_link if corpus_link != 'None' else '',
                       doc_title_format=doc_title_format,
                       doc_url_format=doc_url_format,
                       cluster_path=cluster_path,
