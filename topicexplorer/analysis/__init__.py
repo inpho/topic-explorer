@@ -1,41 +1,60 @@
+from typing import Iterable
+
 import numpy as np
 
 from vsm.viewer.ldacgsviewer import LdaCgsViewer
 from vsm.spatial import KL_div
 
-def past_to_text(viewer: LdaCgsViewer, ids):
-    """
-    Performs a past-to-text analysis.
+if __name__ != '__main__':
+    import warnings
+    warnings.warn("topicexplorer.analysis is a provisional extension. APIs change in a future release.", FutureWarning)
 
-    Parameters
-    ------------
-    viewer: LdaCgsViewer
-    ids: List[str]
 
-    Returns
-    ---------
-    numpy.array
-    """
-    tops = viewer.doc_topic_matrix(ids)
-    return np.array([KL_div(tops[t], tops[0:t].sum(axis=0) / t ) 
-                         for t in range(1, len(ids) -1)])
-
-def text_to_text(viewer: LdaCgsViewer, ids):
+def text_to_text(tops: np.array=None, viewer: LdaCgsViewer=None, ids: Iterable[str]=None):
     """
     Performs a text-to-text analysis.
 
     Parameters
     ------------
     viewer: LdaCgsViewer
-    ids: List[str]
+    ids: Iterable[str]
+    tops: numpy.array
+        pre-computed document_topic_matrix
 
     Returns
     ---------
     numpy.array
     """
-    tops = viewer.doc_topic_matrix(ids)
+    if tops is None:
+        tops = viewer.doc_topic_matrix(ids)
+
     return np.array([KL_div(tops[t+1], tops[t])
-                         for t in range(len(ids) -1)])
+                         for t in range(tops.shape[0]-1)])
+
+
+def past_to_text(tops: np.array=None, viewer: LdaCgsViewer=None, ids: Iterable[str]=None):
+    """
+    Performs a past-to-text analysis.
+
+    Must either pass `tops`, a pre-computed document-topic matrix, or both a `viewer` and `ids` object.
+
+    Parameters
+    ------------
+    tops: numpy.array
+        pre-computed document_topic_matrix
+    viewer: LdaCgsViewer
+    ids: Iterable[str]
+
+    Returns
+    ---------
+    numpy.array
+    """
+    if tops is None:
+        tops = viewer.doc_topic_matrix(ids)
+
+    return np.array([KL_div(tops[t], tops[0:t].sum(axis=0) / t ) 
+                         for t in range(1, tops.shape[0] -1)])
+
 
 def novelty(viewer: LdaCgsViewer, id, ids, scale: int):
     """
@@ -45,6 +64,7 @@ def novelty(viewer: LdaCgsViewer, id, ids, scale: int):
     idx = ids.index(id)
 
     return np.mean([KL_div(tops[idx], tops[idx-d]) for d in range(scale)])
+
 
 def resonance(viewer: LdaCgsViewer, id, ids, scale: int):
     """
