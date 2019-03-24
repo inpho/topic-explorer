@@ -1,6 +1,7 @@
 import logging
 import pickle
-from typing import Iterable
+import random
+from typing import Any, Dict, List, Iterable, Sequence
 
 import numpy as np
 from vsm.viewer.ldacgsviewer import LdaCgsViewer
@@ -26,6 +27,7 @@ def text_to_text(te: TopicExplorer, k: int, ids: Iterable[str]=None,
 
     else:
         return t2t
+
 
 def raw_null_text_to_text(te: TopicExplorer, k: int, ids: Iterable[str],
                           nulls_ids: Iterable[Iterable[str]],
@@ -66,6 +68,7 @@ def past_to_text(te: TopicExplorer, k: int, ids: Iterable[str]=None,
     else:
         return p2t
 
+
 def raw_null_past_to_text(te: TopicExplorer, k: int, ids: Iterable[str],
                           nulls_ids: Iterable[Iterable[str]],
                           topics: np.array=None) -> np.array:
@@ -85,11 +88,52 @@ def raw_null_past_to_text(te: TopicExplorer, k: int, ids: Iterable[str],
 
     return null_p2t
 
+
 def load_null(filename: str):
     with open(filename, 'rb') as nullfile:
         null_ids = pickle.load(nullfile)
     
     return null_ids
+
+
+def possible_choices(ids: List[str], date, possible_dates: Dict[str, Any]):
+    return [id for id, vol_date in possible_dates.items() if vol_date <= date and id in ids]
+
+
+def generate_null(ids: List[str], dates: Sequence,
+                  population_ids: List[str]=None, population_dates: Sequence=None):
+    if population_ids is None:
+        population_ids = ids[:]
+    if population_dates is None:
+        population_dates = dates[:]
+
+    possible_dates = dict(zip(population_ids, population_dates))
+
+    null = []
+    for date in sorted(dates):
+        if date > 0:
+            choices = possible_choices(population_ids, date, possible_dates)
+        
+            if len(choices) < 1:
+                raise Exception("No choices left, invalid null")
+        
+            selected = random.choice(choices)
+            population_ids.remove(selected)
+            null.append(selected)
+
+    return null
+
+
+def build_nulls(N: int, ids: List[str], dates: Sequence, 
+                population_ids: List[str]=None, population_dates=None):
+    nulls = []
+    for i in range(N):
+        if i % 10 == 0:
+            logging.info(f'Constructed {i} nulls.')
+        nulls.append(generate_null(ids, dates, population_ids, population_dates))
+
+    return nulls
+
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
