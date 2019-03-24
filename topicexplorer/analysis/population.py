@@ -44,7 +44,8 @@ def population_past_to_text(v: LdaCgsViewer, population: List[str], dates: Itera
         ids_at_date[date].append(id)
 
     # calculate the averages for all possible past-to-text-orderings
-    p2t = []    
+    p2t = []
+    date_keys = sorted(ids_at_date.keys())
     for i in range(len(date_keys)-1):
         prev = sum(len(ids_at_date[t]) for t in date_keys[:i+1])
 
