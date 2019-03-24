@@ -65,7 +65,7 @@ if __name__ == '__main__':
     parser.add_argument('-k', type=int)
     args = parser.parse_args()
 
-    import topicexplorers
+    import topicexplorer
     te = topicexplorer.from_config(args.config_file)
     nulls_ids = load_null(args.null_file)
     t2t = text_to_text(te, args.k, nulls_ids=nulls_ids)
