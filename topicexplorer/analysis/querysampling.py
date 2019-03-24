@@ -1,4 +1,5 @@
 from codecs import open
+import numpy as np
 
 from vsm.corpus import align_corpora
 from vsm.model.ldacgsseq import LdaCgsQuerySampler
@@ -20,7 +21,7 @@ def build_sample(filename: str, v: LdaCgsViewer, n_iterations: int=200):
     return q
 
 def get_topics(query_sample):
-    return query_sample.top_doc / sum(query_sample.top_doc)
+    return np.squeeze(query_sample.top_doc / sum(query_sample.top_doc))
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
