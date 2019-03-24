@@ -22,19 +22,16 @@ def text_to_text(te: TopicExplorer, k: int, ids: Iterable[str]=None,
     logging.debug("Generating t2t and null_t2t")
     t2t = topicexplorer.analysis.text_to_text(tops[idxs])
     if nulls_ids:
-        null_t2t = raw_null_text_to_text(te, k, ids, nulls_ids, tops)
+        null_t2t = raw_null_text_to_text(te, k, nulls_ids, tops)
         return t2t - null_t2t
 
     else:
         return t2t
 
 
-def raw_null_text_to_text(te: TopicExplorer, k: int, ids: Iterable[str],
+def raw_null_text_to_text(te: TopicExplorer, k: int,
                           nulls_ids: Iterable[Iterable[str]],
                           topics: np.array=None) -> np.array:
-    if ids is None:
-        ids = te.corpus.ids
-    
     v = te[k]
 
     logging.debug("Building topic matrix")
@@ -61,7 +58,7 @@ def past_to_text(te: TopicExplorer, k: int, ids: Iterable[str]=None,
     logging.debug("Generating p2t and null_p2t")
     p2t = topicexplorer.analysis.past_to_text(tops[idxs])
     if nulls_ids:
-        null_p2t = raw_null_past_to_text(te, k, ids, nulls_ids, tops)
+        null_p2t = raw_null_past_to_text(te, k, nulls_ids, tops)
 
         return p2t - null_p2t
 
@@ -69,12 +66,9 @@ def past_to_text(te: TopicExplorer, k: int, ids: Iterable[str]=None,
         return p2t
 
 
-def raw_null_past_to_text(te: TopicExplorer, k: int, ids: Iterable[str],
+def raw_null_past_to_text(te: TopicExplorer, k: int,
                           nulls_ids: Iterable[Iterable[str]],
                           topics: np.array=None) -> np.array:
-    if ids is None:
-        ids = te.corpus.ids
-    
     v = te[k]
 
     logging.debug("Building topic matrix")
