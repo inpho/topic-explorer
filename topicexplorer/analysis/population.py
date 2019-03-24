@@ -18,9 +18,12 @@ def population_text_to_text(v: LdaCgsViewer, population: List[str], dates: Itera
     # calculate averages for all pairs from one date to the next
     t2t = []
     date_keys = sorted(ids_at_date.keys())
-    for i in range(len(date_keys)-1):
+    print(sum(map(len, ids_at_date.values())))
+    for i in range(len(date_keys)):
         potential_jumps = ids_at_date[date_keys[i]][:]
-        potential_jumps.extend(ids_at_date[date_keys[i+1]])
+        if (i + 1) < len(date_keys):
+            potential_jumps.extend(ids_at_date[date_keys[i+1]])
+
         KLs = []
         for id1 in ids_at_date[date_keys[i]]:
             for id2 in potential_jumps:
@@ -31,6 +34,9 @@ def population_text_to_text(v: LdaCgsViewer, population: List[str], dates: Itera
         avg = np.average(KLs)
         for i in range(len(ids_at_date[date_keys[i]])):
             t2t.append(avg)
+
+    # remove a last-jump
+    del t2t[-1]
 
     return t2t
 
@@ -46,13 +52,14 @@ def population_past_to_text(v: LdaCgsViewer, population: List[str], dates: Itera
     # calculate the averages for all possible past-to-text-orderings
     p2t = []
     date_keys = sorted(ids_at_date.keys())
-    for i in range(len(date_keys)-1):
+    for i in range(len(date_keys)):
         prev = sum(len(ids_at_date[t]) for t in date_keys[:i+1])
 
         potential_jumps = ids_at_date[date_keys[i]][:]
-        potential_jumps.extend(ids_at_date[date_keys[i+1]])
-        KLs = []
+        if (i + 1) < len(date_keys):
+            potential_jumps.extend(ids_at_date[date_keys[i+1]])
 
+        KLs = []
         for id1 in ids_at_date[date_keys[i]]:
             for id2 in potential_jumps:
                 if id1 != id2:
@@ -62,5 +69,8 @@ def population_past_to_text(v: LdaCgsViewer, population: List[str], dates: Itera
         avg = np.average(KLs)
         for i in range(len(ids_at_date[date_keys[i]])):
             p2t.append(avg)
+
+    # remove a last-jump
+    del p2t[-1]
 
     return p2t
