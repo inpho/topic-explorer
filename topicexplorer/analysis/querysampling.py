@@ -32,7 +32,7 @@ def load_samples(sample_file):
     with open(sample_file) as csvfile:
         reader = csv.reader(csvfile)
         for row in reader:
-            rows.append(map(float, row[2:]))
+            rows.append(list(map(float, row[2:])))
 
     return np.array(rows)
 
