@@ -1,4 +1,5 @@
 from codecs import open
+import csv
 import numpy as np
 import random
 
@@ -24,6 +25,16 @@ def build_sample(filename: str, v: LdaCgsViewer, seed: int=None, n_iterations: i
 
 def get_topics(query_sample):
     return np.squeeze(query_sample.top_doc / sum(query_sample.top_doc))
+
+def load_samples(sample_file):
+    rows = []
+
+    with open(sample_file) as csvfile:
+        reader = csv.reader(csvfile)
+        for row in reader:
+            rows.append(map(float, row[2:]))
+
+    return np.array(rows)
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
