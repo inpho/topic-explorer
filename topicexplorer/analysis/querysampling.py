@@ -46,7 +46,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     import topicexplorer
-    te = topicexplorer.from_config(args.config_file)
+    te = topicexplorer.from_config(args.configfile)
 
     for i in range(args.N):
         seed = random.randint(0, (2 ** 32) - 1)
