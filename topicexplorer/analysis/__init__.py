@@ -53,7 +53,7 @@ def past_to_text(tops: np.array=None, viewer: LdaCgsViewer=None, ids: Iterable[s
         tops = viewer.doc_topic_matrix(ids)
 
     return np.array([KL_div(tops[t], tops[0:t].sum(axis=0) / t ) 
-                         for t in range(1, tops.shape[0] -1)])
+                         for t in range(1, tops.shape[0])])
 
 
 def novelty(viewer: LdaCgsViewer, id, ids, scale: int):
