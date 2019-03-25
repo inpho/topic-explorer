@@ -42,6 +42,18 @@ def mle(e, values):
     
     return np.sum(temp)
 
+def aic(k, L):
+    return 2*k - 2*L
+
+def relative_mle(L, values):
+    base = mle([0, len(values)], values)
+    return np.exp((aic(2, base) - aic(8, L)) / 2)
+
+def relative_joint_mle(L, t2t, p2t):
+    base_t2t = mle([0, len(t2t)], t2t)
+    base_p2t = mle([0, len(p2t)], p2t)
+    return np.exp((aic(4, base_t2t+base_p2t) - aic(14, L))/2)
+
 def get_all_data(epochs: List[int], t2t: Sequence, p2t: Sequence):
     data = [(e[1], e[2], mle(e, t2t) + mle(e, p2t)) for e in epochs]
     a = np.zeros(shape=(len(t2t), len(t2t)))
