@@ -7,13 +7,15 @@ from vsm.spatial import KL_div
 from vsm.viewer.ldacgsviewer import LdaCgsViewer
 
 def population_text_to_text(v: LdaCgsViewer, population: List[str], dates: Iterable):
-    # get the topics for the population
-    topics = v.doc_topic_matrix(population)
-
     # build dictionary of ids at each date
     ids_at_date = defaultdict(list) # type: Dict[Any, List[str]]
     for id, date in zip(population, dates):
         ids_at_date[date].append(id)
+
+    # sort the population by dates
+    population = np.array(population)[np.array(dates).argsort()].tolist()
+    # get the topics for the population
+    topics = v.doc_topic_matrix(population)
 
     # calculate averages for all pairs from one date to the next
     t2t = []
@@ -41,13 +43,15 @@ def population_text_to_text(v: LdaCgsViewer, population: List[str], dates: Itera
     return t2t
 
 def population_past_to_text(v: LdaCgsViewer, population: List[str], dates: Iterable):
-    # get the topics for the population
-    topics = v.doc_topic_matrix(population)
-
     # build dictionary of ids at each date
     ids_at_date = defaultdict(list) # type: Dict[Any, List[str]]
     for id, date in zip(population, dates):
         ids_at_date[date].append(id)
+
+    # sort the population by dates
+    population = np.array(population)[np.array(dates).argsort()].tolist()
+    # get the topics for the population
+    topics = v.doc_topic_matrix(population)
 
     # calculate the averages for all possible past-to-text-orderings
     p2t = []
