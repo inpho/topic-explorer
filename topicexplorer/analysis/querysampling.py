@@ -1,12 +1,13 @@
 from codecs import open
 import numpy as np
+import random
 
 from vsm.corpus import align_corpora
 from vsm.model.ldacgsseq import LdaCgsQuerySampler
 from vsm.viewer.ldacgsviewer import LdaCgsViewer
 from vsm.extensions.corpusbuilders import toy_corpus, corpus_from_strings
 
-def build_sample(filename: str, v: LdaCgsViewer, n_iterations: int=200):
+def build_sample(filename: str, v: LdaCgsViewer, seed: int=None, n_iterations: int=200):
     with open(filename, encoding='utf8') as textfile:
         text = [textfile.read()]
 
@@ -16,8 +17,9 @@ def build_sample(filename: str, v: LdaCgsViewer, n_iterations: int=200):
     
     c = align_corpora(v.corpus, origin)
     q = LdaCgsQuerySampler(v.model, old_corpus=v.corpus, new_corpus=c,
-                           context_type=v.model.context_type, align_corpora=False)
-    q.train(n_iterations=n_iterations)
+                           context_type=v.model.context_type, align_corpora=False,
+                           seed=seed)
+    q.train(n_iterations=n_iterations, verbose=0)
     return q
 
 def get_topics(query_sample):
@@ -36,7 +38,7 @@ if __name__ == '__main__':
     te = topicexplorer.from_config(args.config_file)
 
     for i in range(args.N):
-        sample = build_sample(args.textfile, te[args.k])
+        seed = random.randint(0, (2 ** 32) - 1)
+        sample = build_sample(args.textfile, te[args.k], seed=seed)
         topics = get_topics(sample)
-        print(*topics)
-
+        print(args.textfile +  ',' + str(seed) + ',' + ','.join(map(str, topics)))
