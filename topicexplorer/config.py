@@ -30,7 +30,7 @@ def read(filename):
         'home_link' : '/',
         'lang' : None, 
         'tokenizer': 'default'
-    })
+    }, allow_no_value=True)
 
     with open(filename, encoding='utf8') as configfile:
         config.read_file(configfile)
