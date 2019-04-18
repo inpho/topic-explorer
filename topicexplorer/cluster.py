@@ -119,7 +119,7 @@ class moduleLoad(object):
         #self.config_file = r"C:/Users/adi/Anaconda/topicexplorer/data23.ini" 
         self.config = ConfigParser({
             'topic_range': None,
-            'topics': None})
+            'topics': None}, allow_no_value=True)
         self.config.read(self.config_file)
         self.lda_m = keydefaultdict(self.load_model)
         self.lda_v = keydefaultdict(self.load_viewer)

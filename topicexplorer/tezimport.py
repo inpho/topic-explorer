@@ -4,18 +4,17 @@ standard_library.install_aliases()
 from builtins import input
 from builtins import range
 
-from configparser import RawConfigParser as ConfigParser
 from codecs import open
 import os
 import os.path
 from zipfile import ZipFile
 
+import topicexplorer.config
+
 def absolutize_config_file(config_file, output_dir):
     config_file = os.path.join(output_dir, config_file)
 
-    config = ConfigParser({'cluster': None, 'htrc_metadata': None }) 
-    with open(config_file, encoding='utf8') as configfile:
-        config.read_file(configfile)
+    config = topicexplorer.config.read(configfile)
 
     # path variables
     corpus_file = config.get('main', 'corpus_file')

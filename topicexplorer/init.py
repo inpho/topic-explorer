@@ -188,7 +188,7 @@ standard_library.install_aliases()
 from builtins import str
 from builtins import filter
 from builtins import input
-from configparser import RawConfigParser as ConfigParser
+from configparser import RawConfigParser as ConfigParser # used to write a new config file
 from collections import defaultdict
 import os
 import os.path

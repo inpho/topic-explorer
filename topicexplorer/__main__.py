@@ -24,7 +24,6 @@ standard_library.install_aliases()
 # Import the standard library modules
 import argparse
 from argparse import ArgumentParser
-from configparser import RawConfigParser as ConfigParser
 import os.path
 import platform
 import warnings

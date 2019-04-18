@@ -2,21 +2,21 @@ from __future__ import print_function
 from future import standard_library
 standard_library.install_aliases()
 from collections import defaultdict
-from configparser import (RawConfigParser as ConfigParser,
-    NoOptionError, Error as ConfigParserError)
+from configparser import Error as ConfigParserError
 import os.path
 
 import pybtex
 from pybtex.database import parse_file
 from pybtex.exceptions import PybtexError
 
+import topicexplorer.config
+
 metadata = None
 
 
 def init(app, config_file):
     global metadata
-    config = ConfigParser()
-    config.read(config_file)
+    config = topicexplorer.config.read(config_file)
 
     try:
         filename = config.get('bibtex', 'path')
