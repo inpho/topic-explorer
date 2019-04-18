@@ -2,14 +2,14 @@ from __future__ import print_function
 from future import standard_library
 standard_library.install_aliases()
 from collections import defaultdict
-from configparser import (RawConfigParser as ConfigParser, NoOptionError, 
-    NoSectionError)
+from configparser import NoSectionError
 import json
 import os.path
 import numpy as np
 
-from vsm.viewer.wrappers import doc_label_name, def_label_fn
+import topicexplorer.config
 from topicexplorer.lib.hathitrust import parse_marc, get_volume_from_marc
+from vsm.viewer.wrappers import doc_label_name, def_label_fn
 
 app = None
 metadata = None
@@ -34,8 +34,7 @@ def init(_app, config_file):
     global app, metadata
     app = _app
 
-    config = ConfigParser({'metadata': None})
-    config.read(config_file)
+    config = topicexplorer.config.read(config_file)
 
     model_path = config.get('main', 'path')
 
