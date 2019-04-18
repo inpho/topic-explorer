@@ -118,7 +118,6 @@ from builtins import zip
 from builtins import str
 from past.utils import old_div
 
-from configparser import RawConfigParser as ConfigParser
 import json
 import os.path
 import re
