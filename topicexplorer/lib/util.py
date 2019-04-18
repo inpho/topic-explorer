@@ -60,11 +60,9 @@ def is_valid_configfile(parser, arg):
         arg = arg + '.ini'
 
     if os.path.exists(arg):
-        from configparser import RawConfigParser as ConfigParser
-        config = ConfigParser()
+        import topicexplorer.config
         try:
-            with open(arg, encoding='utf-8') as configfile:
-                config.read_file(configfile)
+            topicexplorer.config.read(arg)
             return arg
         except:
             parser.error("Invalid config file {0}".format(arg))
