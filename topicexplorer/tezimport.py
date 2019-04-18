@@ -14,7 +14,7 @@ import topicexplorer.config
 def absolutize_config_file(config_file, output_dir):
     config_file = os.path.join(output_dir, config_file)
 
-    config = topicexplorer.config.read(configfile)
+    config = topicexplorer.config.read(config_file)
 
     # path variables
     corpus_file = config.get('main', 'corpus_file')
