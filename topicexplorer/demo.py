@@ -90,9 +90,8 @@ def main(args=None, launch=True):
     args = train_parser.parse_args("ap.ini -k 20 40 60 --context-type article --iter 20".split())
     train.main(args)
 
-    from configparser import RawConfigParser as ConfigParser
-    config = ConfigParser()
-    config.read('ap.ini')
+    import topicexplorer.config
+    config = topicexplorer.config.read('ap.ini')
     config.set("main", "label_module", "topicexplorer.extensions.ap")
     config.set("main", "corpus_desc", "ap.md")
     config.set("www", "icons", "ap,fingerprint,link")

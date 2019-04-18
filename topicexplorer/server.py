@@ -831,9 +831,8 @@ def get_host_port(args):
     """
     Returns the hostname and port number
     """
-    config = ConfigParser({'port': '8000', 'host': '127.0.0.1'})
-    with open(args.config, encoding='utf8') as configfile:
-        config.read_file(configfile)
+    import topicexplorer.config
+    config = topicexplorer.config.read(args.config)
 
     # automatic port assignment
     def test_port(port):
