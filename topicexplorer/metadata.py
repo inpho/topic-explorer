@@ -224,7 +224,7 @@ def add_htrc_metadata(config, corpus=None, corpus_filename=None):
     config.set("www", "doc_title_format", '<a href="{1}">{0}</a>')
     config.set("www", "doc_url_format", 'http://hdl.handle.net/2027/{0}')
     config.set("www", "icons", "htrcbook,link")
-    config.set("main", "htrc", True)
+    config.set("main", "htrc", "True")
     
     if corpus_filename:
         corpus = Corpus.load(corpus_filename)
