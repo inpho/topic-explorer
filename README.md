@@ -20,7 +20,7 @@ There are two types of install: Default and Developer. Currently we are debuggin
 **Note:** If you attempt to install this while connected to the Internet by way of a restricted network (such as eduroam) you may experience difficulty.  Our pypi server requires port 8080 to be accessible, and this is sometimes blocked on public networks.
 
 ### Default Install (Windows users should use Developer Install until further notice)
-1.  Go to the [Anaconda website](http://continuum.io/downloads) and choose the Python 3.6 Distribution. (Windows users: during installation, during "Advanced Options" choose "Add Anaconda to my PATH environment variable" and don't worry about the warning.)
+1.  Go to the [Anaconda website](http://continuum.io/downloads) and choose the Python 3.7 Distribution. (Windows users: during installation, during "Advanced Options" choose "Add Anaconda to my PATH environment variable" and don't worry about the warning.)
 2.  Open a Terminal (Mac and Linux) or PowerShell (Windows).
 3.  Run `pip install --pre topicexplorer`.
     
@@ -29,7 +29,7 @@ There are two types of install: Default and Developer. Currently we are debuggin
 
 ### Developer Install
 1.  [Set up Git](https://help.github.com/articles/set-up-git/)
-2.  Install the [Anaconda Python 3.6 Distribution](http://continuum.io/downloads).
+2.  Install the [Anaconda Python 3.7 Distribution](https://www.anaconda.com/distribution/#download-section).
 3.  Open a terminal and run `pip install --src . -e git+https://github.com/inpho/topic-explorer#egg=topicexplorer`
 4.  Test installation by typing `topicexplorer -h` to print usage instructions.
 
@@ -72,18 +72,18 @@ In your report, please include the error message, the command you ran, your oper
 * The optional `-dirty` flag indicates that the local repository has uncommitted changes.
 
 ## Alternate Installs
-We highly recommend using the Anaconda Python 3.6 Distribution using the straightforward instructions provided above. While we continue to support Python 2.7 installations for the time being, this will not continue indefinitely.
+We highly recommend using the Anaconda Python 3.7 Distribution using the straightforward instructions provided above. While we continue to support Python 2.7 installations for the time being, this will not continue indefinitely.
 
 Below we offer guidance for installing the Python 2.7 version alongside Python 3 using Anaconda, and for installing without Anaconda, with notes on dependencies.
 
 ### Python 2 alongside Python 3
-The InPhO Topic Explorer is compatible with Python 2.7. Anaconda for Python 3.6 makes it possible to set up a side-by-side install of Python 2.7 so you can use both Python 3.6 and Python 2.7.
+The InPhO Topic Explorer is compatible with Python 2.7. Anaconda for Python 3.6 makes it possible to set up a side-by-side install of Python 2.7 so you can use both Python 3.7 and Python 2.7.
 
-1.  Install the [Anaconda Python 3.6 Distribution](http://continuum.io/downloads).
+1.  Install the [Anaconda Python 3.7 Distribution](https://www.anaconda.com/distribution/#download-section).
 2.  Open a terminal and run `conda create -n py27 python=2.7 anaconda`. This will create a Python 2.7 Anaconda environment.
 3.  Run `source activate py27` to activate the Python 2.7 bindings. You should see `(py27)` before your prompt.
 4.  Use either the Default or Developer [install instructions](#installation), skipping the step to install Anaconda Python 2.7.
-5.  Run `source deactivate` to deactivate Python 2.7 bindings and reactivate Python 3.5 bindings. Note that the `topicexplorer` command will only work when the Python 2.7 bindings are activated.
+5.  Run `source deactivate` to deactivate Python 2.7 bindings and reactivate Python 3.7 bindings. Note that the `topicexplorer` command will only work when the Python 2.7 bindings are activated.
 
 ### Non-Anaconda Install
  - **Miniconda**
@@ -123,7 +123,7 @@ If you have deployed InPhO-TE using another infrastructure, please submit a pull
     	CustomLog /var/www/topicexplorer/log/access.log combined
     
     	WSGIDaemonProcess topicexplorer user=www-data group=www-data \
-    	  python-path=[fill in; e.g. /home/jaimie/anaconda2/lib/python2.7/site-packages/]
+    	  python-path=[fill in; e.g. /home/jaimie/anaconda3/lib/python3.7/site-packages/]
     	WSGIScriptAlias /ap /var/www/topicexplorer/app.wsgi
     	
     	<Directory /var/www/topicexplorer>
@@ -197,7 +197,7 @@ The project is released under an [Open-Source Initiative-approved MIT License](h
 
 The InPhO Topic Explorer may be cited as:
 
- -  Jaimie Murdock and Colin Allen. (2015) *Visualization Techniques for Topic Model Checking* in Proceedings of the 29th AAAI Conference on Artificial Intelligence (AAAI-15). Austin, Texas, USA, January 25-29, 2015. [http://inphodata.cogs.indiana.edu/](http://inphodata.cogs.indiana.edu/)
+ -  Jaimie Murdock and Colin Allen. (2015) *Visualization Techniques for Topic Model Checking* in Proceedings of the 29th AAAI Conference on Artificial Intelligence (AAAI-15). Austin, Texas, USA, January 25-29, 2015. [http://inphoproject.org/papers/](http://inphoproject.org/papers/)
 
 A [BibTeX file](https://github.com/inpho/topic-explorer/blob/master/citation.bib) is included in the repository for easier attribution.
 
