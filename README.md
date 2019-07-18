@@ -72,14 +72,14 @@ In your report, please include the error message, the command you ran, your oper
 * The optional `-dirty` flag indicates that the local repository has uncommitted changes.
 
 ## Alternate Installs
-We highly recommend using the Anaconda Python 2.7 Distribution. Straightforward instructions are provided above for Anaconda Python 2.7 for both end users and developers. Both of these installs are officially supported.
+We highly recommend using the Anaconda Python 3.6 Distribution using the straightforward instructions provided above. While we continue to support Python 2.7 installations for the time being, this will not continue indefinitely.
 
-Below we offer guidance for installing side-by-side with an Anaconda Python 3.5 install or for installing it without Anaconda, with notes on dependencies.
+Below we offer guidance for installing the Python 2.7 version alongside Python 3 using Anaconda, and for installing without Anaconda, with notes on dependencies.
 
-### Python 3 Install
-The InPhO Topic Explorer is **only** compatible with Python 2.7. However, Anaconda for Python 3.5 makes it easy to set up a side-by-side install of Python 2.7 so you can use both Python 3.5 and Python 2.7.
+### Python 2 alongside Python 3
+The InPhO Topic Explorer is compatible with Python 2.7. Anaconda for Python 3.6 makes it possible to set up a side-by-side install of Python 2.7 so you can use both Python 3.6 and Python 2.7.
 
-1.  Install the [Anaconda Python 3.5 Distribution](http://continuum.io/downloads).
+1.  Install the [Anaconda Python 3.6 Distribution](http://continuum.io/downloads).
 2.  Open a terminal and run `conda create -n py27 python=2.7 anaconda`. This will create a Python 2.7 Anaconda environment.
 3.  Run `source activate py27` to activate the Python 2.7 bindings. You should see `(py27)` before your prompt.
 4.  Use either the Default or Developer [install instructions](#installation), skipping the step to install Anaconda Python 2.7.
@@ -113,7 +113,7 @@ If you have deployed InPhO-TE using another infrastructure, please submit a pull
 ### mod_wsgi
 
 1.  Install apache2 with mod_wsgi: `apt-get install apache2 libapache2-mod-wsgi`
-2.  Create `/etc/apache2/sites-available/topicexplorer.conf`:
+2.  Create `/etc/apache2/sites-available/topicexplorer.conf` \[you will need to fill in your local paths where specified\]:
     ```
     <VirtualHost *:80>
     	ServerName localhost
@@ -123,7 +123,7 @@ If you have deployed InPhO-TE using another infrastructure, please submit a pull
     	CustomLog /var/www/topicexplorer/log/access.log combined
     
     	WSGIDaemonProcess topicexplorer user=www-data group=www-data \
-    	  python-path=/home/jaimie/anaconda2/lib/python2.7/site-packages/
+    	  python-path=[fill in; e.g. /home/jaimie/anaconda2/lib/python2.7/site-packages/]
     	WSGIScriptAlias /ap /var/www/topicexplorer/app.wsgi
     	
     	<Directory /var/www/topicexplorer>
@@ -139,7 +139,7 @@ If you have deployed InPhO-TE using another infrastructure, please submit a pull
 4.  Create the log directory: `sudo mkdir -p /var/www/topicexplorer/log`
 5.  Create the www directory: `sudo mkdir -p /var/www/topicexplorer/www`
 6.  Create the config directory: `sudo mkdir -p /var/www/topicexplorer/config`
-7.  Add a symlink from `/var/www/topicexplorer/` to `app.wsgi`. For example: `ln -s /home/jaimie/workspace/topic-explorer/app.wsgi /var/www/topicexplorer/app.wsgi`
+7.  Add a symlink from `/var/www/topicexplorer/` to your local installation of `app.wsgi`. For example: `ln -s /home/jaimie/workspace/topic-explorer/app.wsgi /var/www/topicexplorer/app.wsgi`
 8.  Add a symlink to your `.ini` files in the `/var/www/topicexplorer/config` directory. For example, if working with the AP corpus trained in my home directory: `ln -s /home/jaimie/ap.ini /var/www/topicexplorer/config/ap.ini`
 9.  Enable the site: `sudo a2ensite topicexplorer`
 10.  Restart apache: `sudo apache2ctl restart`
@@ -204,7 +204,7 @@ A [BibTeX file](https://github.com/inpho/topic-explorer/blob/master/citation.bib
 ## Collaboration and Maintenance
 The InPhO Topic Explorer is maintained by [Jaimie Murdock](http://jamram.net/):
 
- -  E-mail: jammurdo@indiana.edu
+ -  E-mail: jaimie.murdock@gmail.com
  -  Twitter: [@JaimieMurdock](http://twitter.com/JaimieMurdock)
  -  GitHub: [@JaimieMurdock](http://github.com/JaimieMurdock)
  -  Homepage: [http://jamram.net/](http://jamram.net/)
