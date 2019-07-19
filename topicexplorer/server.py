@@ -220,7 +220,8 @@ class Application(Bottle):
 
     def __init__(self, corpus_file='', model_pattern='', topic_range=None,
                  context_type='', label_module=None, config_file='',
-                 fulltext=False, corpus_path='', tokenizer='default', **kwargs):
+                 fulltext=False, corpus_path='', tokenizer='default',
+                 label_file=None, **kwargs):
         super(Application, self).__init__()
 
         self.config_file = config_file
@@ -244,6 +245,8 @@ class Application(Bottle):
         self.topic_range = topic_range
         self.colors = dict()
         self._load_viewers(model_pattern)
+        
+        self.label_file = label_file
 
         token[0] = tokenizer
 
@@ -548,12 +551,23 @@ class Application(Bottle):
             data['Word'] = self.c.words[idxs]
             data['Prob'] = phi[idx_hack, idxs]
 
+            labels = []
+            if self.label_file:
+                with open(self.label_file) as labels_in:
+                    for label in labels_in:
+                        label = label.strip()
+                        labels.append(label)
+            else:
+                for i, _ in enumerate(data):
+                    labels.append('Topic {}'.format(i))
+
             js = {}
             for i, topic in enumerate(data):
                 js[text(i)] = {
                     "color": rgb2hex(self.colors[k][i]),
                     'words': dict([(text(w), float(p))
-                                       for w, p in topic[:wordmax]])
+                                       for w, p in topic[:wordmax]]),
+                    'label' : labels[i]
                     }
 
             return json.dumps(js)
@@ -957,6 +971,7 @@ def create_app(args):
     corpus_desc = config.get('main', 'corpus_desc')
     fulltext = args.fulltext or config.getboolean('www', 'fulltext')
     tokenizer = config.get('www', 'tokenizer')
+    label_file = config.get('main', 'label_file')
 
     app = Application(corpus_file=corpus_file,
                       model_pattern=model_pattern,
@@ -975,7 +990,8 @@ def create_app(args):
                       cluster_path=cluster_path,
                       corpus_desc=corpus_desc,
                       home_link=home_link,
-                      tokenizer=tokenizer)
+                      tokenizer=tokenizer,
+                      label_file=label_file)
 
     """
     host, port = get_host_port(args) 
