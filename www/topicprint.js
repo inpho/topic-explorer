@@ -312,10 +312,12 @@ function gettopics(words) {
       $('#words').parents('.form-group').removeClass('has-error');
       $('#words').parents('.form-group').removeClass('has-warning');
       $('#words').parents('.form-group').addClass('has-success');
+      console.log(data);
       Promise.resolve(topics).then(function (val) {
         for (var i = 0; i < 10; i++) {
           var k = data[i]['k'];
           var t = data[i]['t'];
+          var topic_label = (data[i]['label']) ? data[i]['label'] : ('Topic ' + t);
 
           /*$('#wordsDl').append('<dt><a href="' + k + '/?topic=' + t + '">' +
             'Topic ' + t + 
@@ -323,7 +325,7 @@ function gettopics(words) {
           $('#wordsDl').append('<dd>' + 
             val[k][t] + '</dd>'); }*/
           $('#wordsDl').append('<div class="col-xs-4"><h4><a href="' + k + '/?topic=' + t + '">' +
-            'Topic ' + t +
+            topic_label +
             ' <small>(k = ' + k + ')</small></a></h4><p>' +
             val[k][t] + '</p></div>');
         }
@@ -873,7 +875,8 @@ if (url)
         //.attr("data-toggle", "tooltip")
         .attr("data-placement", "right")
         .attr("title", function (d) {
-          return "<strong>Topic {0}:</strong>".format(d) + "<br />"
+          var topic_label = (topics[d].label) ? topics[d].label : ('Topic ' + d);
+          return "<strong>{0}:</strong>".format(topic_label) + "<br />"
             + d3.keys(topics[d].words).sort(function (a, b) {
               if (topics[d].words[a] > topics[d].words[b])
                 return -1;

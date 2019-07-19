@@ -278,7 +278,8 @@ d3.csv(base_url + "cluster.csv", function (error, data) {
         .style("fill-opacity", function (d) { return opacity(d.opacity) || 0.7; })
         .on("click", function (d) { window.location.href = base_url + d.k + "/?topic=" + d.topic })
         .attr("title", function (d) {
-          return "<strong>Topic " + d.topic + "</strong> (k=" + d.k + ")"
+          var topic_label = (d.label) ? d.label : ('Topic ' + d.topic);
+          return "<strong>" + topic_label + "</strong> (k=" + d.k + ")"
             + "<br />" + topics[d.k][d.topic];
         })
         .on("mouseover", function (d) { $(this).tooltip('show') })
