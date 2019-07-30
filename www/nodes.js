@@ -204,7 +204,10 @@ d3.csv(base_url + "cluster.csv", function (error, data) {
     });
     data.forEach(function (d, i) {
       topics[ks[i]] = {};
-      $.each(d, function (key, val) { topics[ks[i]][key] = combineWords(val.words) });
+      $.each(d, function (key, val) { 
+        topics[ks[i]][key] = {};
+        topics[ks[i]][key]['words'] = combineWords(val.words);
+        topics[ks[i]][key]['label'] = val.label; });
     });
   }).then(function () {
     var words = inpho.util.getValueForURLParam('q');
@@ -236,7 +239,8 @@ d3.csv(base_url + "cluster.csv", function (error, data) {
       console.log(data);
       node = svg.selectAll(".dot")
         .data(data, function (d) { return d.k + '-' + d.topic; })
-        .enter().append("circle")
+        .enter();
+      node.append("circle")
         .attr("class", "dot")
         .attr("id", function (d) { return d.k + '_' + d.topic; })
         .attr("r", function (d) { return d.radius; })
@@ -278,12 +282,19 @@ d3.csv(base_url + "cluster.csv", function (error, data) {
         .style("fill-opacity", function (d) { return opacity(d.opacity) || 0.7; })
         .on("click", function (d) { window.location.href = base_url + d.k + "/?topic=" + d.topic })
         .attr("title", function (d) {
-          var topic_label = (d.label) ? d.label : ('Topic ' + d.topic);
+          var topic_label = (topics[d.k][d.topic].label) ? topics[d.k][d.topic].label : ('Topic ' + d.topic);
           return "<strong>" + topic_label + "</strong> (k=" + d.k + ")"
-            + "<br />" + topics[d.k][d.topic];
+            + "<br />" + topics[d.k][d.topic].words;
         })
         .on("mouseover", function (d) { $(this).tooltip('show') })
         .on("mouseout", function (d) { $(this).tooltip('hide') });
+      node.append("text")
+        .attr("x", function (d) { return x(d[xVar]); })
+        .attr("y", function (d) { return y(d[yVar]); })
+        .attr('text-anchor', 'middle')
+        .text(function (d) {
+          return (topics[d.k][d.topic].label) ? topics[d.k][d.topic].label : ('Topic ' + d.topic);
+        });
 
       $(".dot").tooltip({ container: 'body', trigger: 'manual', animation: false, html: true });
 

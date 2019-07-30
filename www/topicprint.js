@@ -352,16 +352,19 @@ $(window).load(function () {
     if (roottopic == null) {
       $("#focalDoc").text("");
     } else {
-      $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic);
+      var roottopic_label = (topics[roottopic].label) ? topics[roottopic].label : ('Topic ' + roottopic);
+      $("#focalDoc").text("Top 40 documents most similar to " + roottopic_label);
     }
     topDoc.style.display = 'none';
   }
   else {
     topDoc.style.display = 'block';
     if (roottopic == null) {
+
       $("#focalDoc").text("Top 40 documents most similar to the focal document");
     } else {
-      $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic);
+      var roottopic_label = (topics[roottopic].label) ? topics[roottopic].label : ('Topic ' + roottopic);
+      $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic_label);
     }
   }
 });
@@ -830,14 +833,16 @@ if (url)
         .on("click", function (d) {
           //Handles when to update the descriptor based off which mode it is in and what topic bar was clicked on.
           //Indicates whether the model is sorted by proportion of a specific topic or not.
+          var roottopic_label = (topics[roottopic].label) ? topics[roottopic].label : ('Topic ' + roottopic);
+          var topic_label = (topics[d.name].label) ? topics[d.name].label : ('Topic ' + d.name);
           if (roottopic == null) {
-            $("#focalDoc").text("Top 40 documents most similar to the focal document sorted by proportion of topic " + d.name);
+            $("#focalDoc").text("Top 40 documents most similar to the focal document sorted by proportion of " + topic_label);
           } else if (roottopic == d.name) {
             topDoc.style.display = 'none';
-            $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic);
+            $("#focalDoc").text("Top 40 documents most similar to " + roottopic_label);
           } else {
             topDoc.style.display = 'block';
-            $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic + " sorted by proportion of topic " + d.name);
+            $("#focalDoc").text("Top 40 documents most similar to " + roottopic_label + " sorted by proportion of " + topic_label);
           }
           topicSort(d.name);
         })
@@ -889,14 +894,17 @@ if (url)
         .on("click", function (d) {
           //Handles when to update the descriptor based off which mode it is in and what topic bar was clicked on.
           //Indicates whether the model is sorted by proportion of a specific topic or not.
+          console.log(d)
+          var topic_label = (topics[d].label) ? topics[d].label : ('Topic ' + d);
+          var roottopic_label = (topics[roottopic].label) ? topics[roottopic].label : ('Topic ' + roottopic);
           if (roottopic == null) {
-            $("#focalDoc").text("Top 40 documents most similar to the focal document sorted by proportion of topic " + d);
+            $("#focalDoc").text("Top 40 documents most similar to the focal document sorted by proportion of " + topic_label);
           } else if (roottopic == d) {
             topDoc.style.display = 'none';
-            $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic);
+            $("#focalDoc").text("Top 40 documents most similar to " + roottopic_label);
           } else {
             topDoc.style.display = 'block';
-            $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic + " sorted by proportion of topic " + d);
+            $("#focalDoc").text("Top 40 documents most similar to " + roottopic_label + " sorted by proportion of " + topic_label);
           }
           topicSort(d);
         })
