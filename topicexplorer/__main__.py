@@ -28,7 +28,7 @@ import os.path
 import platform
 import warnings
 
-from topicexplorer import (init, prep, train, server, notebook,
+from topicexplorer import (init, prep, train, server_flask, notebook,
     demo, update, metadata, export, tezimport, export_html)
 
 from topicexplorer.lib.util import is_valid_filepath
@@ -115,14 +115,14 @@ def main():
 
     # Launch Parser
     parser_launch = parsers.add_parser('launch', help="Serve the trained LDA models")
-    server.populate_parser(parser_launch)
+    server_flask.populate_parser(parser_launch)
     parser_launch.set_defaults(func="launch")
 
     # Serve Parser
     parser_serve = parsers.add_parser('serve', 
         help="Serve a single LDA model, helper for `topicexplorer launch`," +
              "rarely called directly")
-    server.populate_parser(parser_serve)
+    server_flask.populate_parser(parser_serve)
     parser_serve.set_defaults(func="serve")
 
     # Notebook Parser
@@ -250,8 +250,8 @@ def main():
     elif args.func == 'launch' or args.func == 'serve':
         # Note that we are only benchmarking the creation process - obviously
         # benches of the serve process will take longer
-        app = benchmark(server.create_app)(args)
-        server.main(args, app)
+        app = benchmark(server_flask.create_app)(args)
+        server_flask.main(args, app)
 
 
     elif args.func == 'notebook':

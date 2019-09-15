@@ -15,9 +15,9 @@ def init(app, config_file):
 
     raw_corpus_path = config.get('main', 'raw_corpus', fallback='ap/')
 
-    @app.route('/fulltext/<doc_id>')
-    def get_doc(doc_id):
-        return static_file(doc_id, root=raw_corpus_path)
+#     @app.route('/fulltext/<doc_id>')
+#     def get_doc(doc_id):
+#         return static_file(doc_id, root=raw_corpus_path)
 
 
 def label(doc):

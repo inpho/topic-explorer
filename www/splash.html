@@ -1,0 +1,176 @@
+<link rel="stylesheet" type="text/css" href="/css/splash.css">
+<script src="/lib/jquery-2.2.4.min.js"></script>
+<script src="/lib/bootstrap-3.3.6/js/bootstrap.min.js"></script>
+<script src="/lib/bootstrap-2.3.2/js/bootstrap.min.js"></script>
+
+<div id="main" class="container">
+  <div class="row" id="top">
+    <div class="col-md-12">
+      <h1><a href="{{home_link}}" id="step-4" ><span
+            class="logo-word">InPhO</span>
+          Topic Explorer</a></h1>
+      <h2>
+        {{#corpus_link}}<a href="{{corpus_link}}">{{corpus_name}}</a>{{/corpus_link}}
+        {{^corpus_link}}{{corpus_name}}{{/corpus_link}} <br />
+        <small><a href="#about">About this corpus <span class="glyphicon glyphicon-arrow-down"></span></a></small><br />
+        <br>
+        <div style="text-align: center">
+          <button id="tour-button" class="btn btn-lg btn-primary"> Getting Started </button>
+        </div>
+      </h2>
+      <p style="font-size: 28px; text-align: center;">Topic models are about contexts, rather than individual words.<br />
+        We search a topic model using full documents, rather than keywords.<br /><strong>Enter the model by one of the
+          following methods:</strong></p>
+    </div>
+    <div class="col-sm-4 col-xs-12 entry">
+      <a id="step-1" class="btn btn-primary col-xs-12" data-toggle="modal" data-target="#fingerprintModal">
+        <span class="glyphicon glyphicon-file" style="font-size: 10vw; padding-left: 1vw;"></span><br />Document
+      </a>
+    </div>
+    <div id="step-2" class="col-sm-4 col-xs-12 entry">
+      <a class="btn btn-primary col-xs-12" data-toggle="modal" data-target="#topicModal"><span class="icon-scatter"
+          style="font-size: 10vw; line-height: 0.9"></span><br />Topic</a>
+    </div>
+    <div class="col-sm-4 col-xs-12 entry">
+      <button class="btn btn-primary col-xs-12" disabled="">
+        <span id="step-3" class="glyphicon glyphicon-open" style="font-size: 10vw; padding-left: 0.5vw;"></span><br />Upload &beta;
+      </button>
+    </div>
+  </div>
+  <div class="row" id="about">
+    <div class="col-xs-8 col-xs-offset-2">
+      <h2>About this corpus<br />
+        <a href="#top"><small>Back to top <span class="glyphicon glyphicon-arrow-up"> </span></small></a></h2>
+      <div id="aboutText">
+
+      </div>
+      <h2 class="back"><a href="#top"><small>Back to top <span class="glyphicon glyphicon-arrow-up"> </span></small></a></h2>
+    </div>
+  </div>
+  <!-- <div class="row" id="brand">
+         <div class="md-col-12">
+           <h2 style="text-align: center;">Powered by:</h2>
+                <div id="brandWord"><h1 style="text-align: center;"><a href="http://inphodata.cogs.indiana.edu"><span class="logo-word">InPhO</span> Topic Explorer</a></h1></div>
+        </div>
+      </div> -->
+</div>
+</div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="fingerprintModal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h3 class="modal-title">Document search</h3>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal col-sm-12">
+          <div class="form-group">
+            <div class="input-group">
+              <input type="hidden" name="doc" id="hidden_id">
+              <input type="text" id="doc" class="form-control typeahead" placeholder="Click button on right to select random document →"
+                autocomplete="off">
+              <div class="input-group-btn">
+                <button class="btn btn-default" type="button" id="randomDoc" data-original-title="" title=""><span
+                    class="glyphicon glyphicon-random"></span></button>
+              </div>
+            </div>
+          </div>
+        </form>
+        <hr />
+        <h4><img src="/img/icon-fingerprint.png" alt="Fingerprint icon" /> Topic Fingerprint </h4>
+        <p>The topic bars below show the composition of the selected document in different models. Scroll over the bars
+          to see the most likely words in each topic. Click on a bar to open the Topic Explorer for that model focused
+          on this document.</p>
+        <div id="loading" class="text-center" style="display: none;">
+          <button class="btn btn-lg btn-info">
+            <span class="glyphicon glyphicon-refresh spinning"></span> Loading...
+          </button>
+        </div>
+        <div id="topicBars">
+          <dl id="singleBarsDl" class="dl-horizontal">
+          </dl>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+<div class="modal fade" tabindex="-1" role="dialog" id="topicModal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h3 class="modal-title">Topic search</h3>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal col-sm-12">
+          <div class="form-group">
+            <div class="input-group">
+              <input type="text" id="words" class="form-control" placeholder="Type words to select topics."
+                autocomplete="off">
+              <div class="input-group-btn">
+                <a id="wordsBtn2" type="button" class="btn btn-primary" href="topics"><span class="icon-scatter"></span>
+                  View topic clusters</a>
+              </div>
+            </div>
+          </div>
+        </form>
+        <p>After typing words above, the topics most likely to generate that word will appear below. Clicking "View
+          topic clusters" will go to a view of the topic space, weighted by the terms in the box. This makes it easy to
+          find groups of topics related to your interests.</p>
+        <div id="wordsDl">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <a id="wordsBtn" type="button" class="btn btn-primary" href="topics"><span class="icon-scatter"></span> View
+          topic clusters</a>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
+<script src="/bootstrap-tour.js"></script>
+<script src="/topicprint.js"></script>
+
+<script>
+  jQuery(document).ready(function ($) {
+
+    var tour = new Tour({
+      steps: [
+        {
+          element: "#step-1",
+          title: "Document",
+          content: "The most effective way to start exploring via the documents in the corpus.\n Once you click on the document icon a panel will appear in which you can either click the <span class='glyphicon glyphicon-random'></span> for a random document or select a focal document for your exploration by typing a few letters to match the title.\nYou will be shown a “fingerprint” for the selected document, and you can navigate from this to the Hypershelf focused on that document."
+        }, {
+          element: "#step-2",
+          title: "Topic",
+          content: "Clicking here will bring up a panel where you can enter a few words to identify related topics. From there you can go to the topic map that lays out and groups the topics from all the models according to their similarity. There is also additional help once you reach that page."
+        }, {
+          element: "#step-3",
+          title: "Document Upload",
+          content: "This feature has not been implemented yet. However, when it is, you should be able to upload your own document and see its relationship to the current topic model.",
+          placement: "bottom"
+        }, {
+          element: "#step-4",
+          title: "Home Button",
+          content: "Click on this to return to this page."
+        },
+      ]});
+    tour.init();
+
+    // start tour
+    $('#tour-button').click(function () {
+      tour.restart();
+    });
+
+  });
+</script>
