@@ -217,6 +217,7 @@ def main(args):
         from vsm.corpus import Corpus
 
     if args.k is None:
+        #TODO: Clean up default topic numbers
         try:
             if config.get("main", "topics"):
                 default = ' '.join(map(str, eval(config.get("main", "topics"))))

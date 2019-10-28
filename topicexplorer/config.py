@@ -24,7 +24,7 @@ def read(filename):
         'label_module': None,
         'fulltext': False,
         'pdf' : False,
-        'topics': [],
+        'topics': '[20, 40, 60, 80]',
         'cluster': None,
         'corpus_desc' : None,
         'home_link' : '/',
