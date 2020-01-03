@@ -25,6 +25,7 @@ def read(filename):
         'fulltext': False,
         'pdf' : False,
         'topics': [],
+        'topic_range': None,
         'cluster': None,
         'corpus_desc' : None,
         'home_link' : '/',

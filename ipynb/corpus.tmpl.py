@@ -10,13 +10,9 @@ import os.path
 from collections import defaultdict
 
 # load in the configuration file
-from configparser import ConfigParser as ConfigParser
+import topicexplorer.config
 config_file = r"$config_file" 
-config = ConfigParser({
-        'topic_range': None,
-        'topics': None,
-        'sentences' : 'false'})
-config.read(config_file)
+config = topicexplorer.config.read(config_file)
 
 # load the corpus
 if config.getboolean('main','sentences'):
