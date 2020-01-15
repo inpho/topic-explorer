@@ -1,9 +1,9 @@
 from future import standard_library
 standard_library.install_aliases()
-from configparser import RawConfigParser as ConfigParser, NoOptionError
 from collections import defaultdict
 import numpy as np
 
+import topicexplorer.config
 from vsm.viewer.wrappers import doc_label_name, def_label_fn
 
 app = None
@@ -24,8 +24,7 @@ def init(_app, config_file):
     global app, metadata
     app = _app
 
-    config = ConfigParser()
-    config.read(config_file)
+    config = topicexplorer.config.read(config_file)
 
     model_path = config.get('main', 'path')
 

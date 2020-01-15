@@ -2,15 +2,16 @@ from __future__ import print_function
 from future import standard_library
 standard_library.install_aliases()
 from collections import defaultdict
-from configparser import RawConfigParser as ConfigParser, NoOptionError
 import json
 import os.path
-import numpy as np
 import string
 
-from vsm.viewer.wrappers import doc_label_name, def_label_fn
-from topicexplorer.lib.hathitrust import parse_marc, get_volume_from_marc
 from bottle import route, static_file
+import numpy as np
+
+import topicexplorer.config
+from topicexplorer.lib.hathitrust import parse_marc, get_volume_from_marc
+from vsm.viewer.wrappers import doc_label_name, def_label_fn
 
 
 @route('/fulltext/<doc_id>')
@@ -39,8 +40,7 @@ def init(_app, config_file):
     global app
     app = _app
 
-    config = ConfigParser()
-    config.read(config_file)
+    config = topicexplorer.config.read(config_file)
 
     model_path = config.get('main', 'path')
 

@@ -115,7 +115,6 @@ from builtins import input
 from builtins import map
 from builtins import range
 
-from configparser import RawConfigParser as ConfigWriter
 from configparser import NoOptionError
 import os.path
 

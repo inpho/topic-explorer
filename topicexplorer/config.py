@@ -25,12 +25,13 @@ def read(filename):
         'fulltext': False,
         'pdf' : False,
         'topics': [],
+        'topic_range': None,
         'cluster': None,
         'corpus_desc' : None,
         'home_link' : '/',
         'lang' : None, 
         'tokenizer': 'default'
-    })
+    }, allow_no_value=True)
 
     with open(filename, encoding='utf8') as configfile:
         config.read_file(configfile)

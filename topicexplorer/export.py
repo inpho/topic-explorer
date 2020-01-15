@@ -4,7 +4,6 @@ standard_library.install_aliases()
 from builtins import input
 from builtins import range
 
-from configparser import RawConfigParser as ConfigParser
 from codecs import open
 import os
 import os.path
@@ -12,6 +11,7 @@ import sys
 from tempfile import NamedTemporaryFile
 from zipfile import ZipFile
 
+import topicexplorer.config
 from topicexplorer.lib.util import is_valid_configfile
 
 def build_manifest(config_file, corpus_file, model_pattern, topic_range,
@@ -43,16 +43,7 @@ def create_relative_config_file(config_file, manifest, include_corpus=False):
     else:
         root = os.path.commonprefix(map(os.path.abspath, manifest))
     
-    config = ConfigParser({
-        'cluster': None, 
-        'corpus_desc' : None,
-        'raw_corpus': None,
-        'cluster_path' : None,
-        'path' : None,
-        'htrc_metadata' : None
-        }) 
-    with open(config_file, encoding='utf8') as configfile:
-        config.read_file(configfile)
+    config = topicexplorer.config.read(config_file)
 
     # path variables
     corpus_file = config.get('main', 'corpus_file')
@@ -123,29 +114,8 @@ def populate_parser(parser):
 
 
 def main(args=None):
-    # load in the configuration file
-    config = ConfigParser({
-        'certfile': None,
-        'keyfile': None,
-        'ca_certs': None,
-        'ssl': False,
-        'port': '8000',
-        'host': '0.0.0.0',
-        'icons': 'link',
-        'corpus_link': None,
-        'doc_title_format': '{0}',
-        'doc_url_format': '',
-        'raw_corpus': None,
-        'label_module': None,
-        'fulltext': 'false',
-        'topics': None,
-        'cluster': None,
-        'corpus_desc' : None,
-        'home_link' : '/',
-        'lang': None})
     #open config for reading
-    with open(args.config, encoding='utf8') as configfile:
-        config.read_file(configfile)
+    config = topicexplorer.config.read(args.config)
 
     # clean up output file path
     if args.output is None:

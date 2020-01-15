@@ -75,13 +75,13 @@ from __future__ import print_function
 from future import standard_library
 standard_library.install_aliases()
 from builtins import str
-from configparser import RawConfigParser as ConfigParser
 
 from ast import literal_eval
 from codecs import open 
 import csv
 import os.path
 
+import topicexplorer.config
 from topicexplorer.lib.util import isint, is_valid_configfile, bool_prompt
 from sortedcontainers import SortedDict
 from unidecode import unidecode
@@ -224,7 +224,7 @@ def add_htrc_metadata(config, corpus=None, corpus_filename=None):
     config.set("www", "doc_title_format", '<a href="{1}">{0}</a>')
     config.set("www", "doc_url_format", 'http://hdl.handle.net/2027/{0}')
     config.set("www", "icons", "htrcbook,link")
-    config.set("main", "htrc", True)
+    config.set("main", "htrc", "True")
     
     if corpus_filename:
         corpus = Corpus.load(corpus_filename)
@@ -250,9 +250,7 @@ def add_htrc_metadata(config, corpus=None, corpus_filename=None):
 def main(args):
     from vsm.corpus import Corpus
 
-    config = ConfigParser({"htrc": False,
-        "sentences": "False"})
-    config.read(args.config_file)
+    config = topicexplorer.config.read(args.config_file)
     
     args.corpus_path = config.get("main", "corpus_file")
     c = Corpus.load(args.corpus_path)
