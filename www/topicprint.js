@@ -943,7 +943,7 @@ if (url)
       var foreignObject = document.createElementNS(ns, 'foreignObject');
       foreignObject.setAttribute("width", 140);
       foreignObject.setAttribute("height", 140);
-      foreignObject.setAttribute("transform", "translate(20, " + (((d3.keys(topics).length / 2) + 1) * 20 + 65) + ")");
+      foreignObject.setAttribute("transform", "translate(20, " + (((d3.keys(topics).length / legendCols) + 1) * 20 + 65) + ")");
       var div = document.createElement('div');
       div.innerHTML = '<Strong>Display Options</strong>';
       var label = document.createElement('label');
@@ -986,24 +986,6 @@ if (url)
         $('#status').hide(500);
         setTimeout(function () { $('#controls').css({ 'top': $('#legend').height() + $('#legend').position().top }).show(); }, 500);
       }, 500);
-
-      $(window).on("scroll", scrollLegend);
-      scrollLegend = function () {
-        var scrollPos = $(window).scrollTop();
-        var chartHeight = $('#chart').position().top;
-        var legendHeight = $('#legend').height();
-        var heightFac = -60;
-        if ((scrollPos - chartHeight - margin.top - heightFac) <= 0) {
-          $('#legend').css({ 'position': 'absolute', 'top': chartHeight });
-          $('#controls').css({ 'position': 'absolute', 'top': legendHeight + chartHeight });
-        } else if ((scrollPos - chartHeight - heightFac) < (margin.top)) {
-          $('#legend').css({ 'position': 'absolute', 'top': scrollPos + heightFac });
-          $('#controls').css({ 'position': 'absolute', 'top': legendHeight + scrollPos + heightFac });
-        } else {
-          $('#legend').css({ 'position': 'fixed', 'top': heightFac });
-          $('#controls').css({ 'position': 'fixed', 'top': legendHeight + heightFac });
-        }
-      }
 
       for (var i = 0; i < icons.length; i++) {
         $(".{0}Icon".format(icons[i])).tooltip({ placement: 'top', title: icon_tooltips[icons[i]], container: 'body', html: true, animation: false });
@@ -1225,16 +1207,17 @@ $.fn.followTo = function (pos) {
     if ($window.scrollTop() > pos) {
       $this.css({
         position: 'fixed',
-        top: 120
+        top: '10px'
       });
     } else {
       $this.css({
         position: 'absolute',
-        top: 405
+        top: pos
       });
     }
   });
 };
 
-$('#legend').followTo(285);
-
+console.log(document.getElementById('chart').offsetTop);
+// $('#legend').followTo(496);
+$('#legend').followTo(document.getElementById('chart').offsetTop);
