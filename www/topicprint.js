@@ -1204,7 +1204,25 @@ $.fn.followTo = function (pos) {
     $window = $(window);
 
   $window.scroll(function (e) {
-    if ($window.scrollTop() > pos) {
+    // var height = $this.height();
+    var chartHeight = document.getElementById('chart').offsetHeight;
+    console.log(chartHeight);
+    console.log($window.scrollTop());
+    console.log(pos);
+    var height = document.getElementById('legend').children[0].getBBox().height + document.getElementById('legend').children[1].getBBox().height + 100;
+    console.log(height);
+    // console.log($this.top());
+    console.log("\n");
+    // if ($window.scrollTop() > pos && ($window.scrollTop() - pos + height)
+    if ($window.scrollTop() > (chartHeight + pos - height)) {
+      console.log('yay');
+      console.log(chartHeight + pos - height);
+      console.log($window.scrollTop() - chartHeight);
+      $this.css({
+        position: 'fixed',
+        top: (chartHeight + pos - height - $window.scrollTop()) + 'px'
+      });
+    } else if ($window.scrollTop() > pos) {
       $this.css({
         position: 'fixed',
         top: '10px'
