@@ -30,7 +30,7 @@ rect:hover {
   shape-rendering: crispEdges;
 }
 .logo-word {
-  background-image: url('/img/inpho_logo.png');
+  background-image: url('inpho_logo.png');
   background-size: 172px 92px;
   width: 172px;
   height: 92px;
@@ -245,7 +245,7 @@ h1 {
   display:none;
 }
 .logo-word {
-  background-image: url('/img/inpho_logo.png');
+  background-image: url('inpho_logo.png');
   background-size: 172px 92px;
   width: 172px;
   height: 84px;

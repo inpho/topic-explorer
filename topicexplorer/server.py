@@ -149,8 +149,13 @@ import threading
 from urllib.parse import unquote
 import webbrowser
 
-from bottle import (abort, redirect, request, response, route, run, 
-                    static_file, Bottle, ServerAdapter)
+# from bottle import (abort, redirect, request, response, route, run, 
+#                     static_file, Bottle, ServerAdapter)
+# from flask import (render_template as template, redirect, request, abort,
+#                       make_response, jsonify, render_template, Flask)
+from flask import (redirect, request, abort, make_response, jsonify, send_from_directory, Flask)
+from flask_stache import render_view, render_template
+from flask_cors import CORS
 import topicexplorer.config
 from topicexplorer.lib.color import get_topic_colors, rgb2hex
 from topicexplorer.lib.util import (int_prompt, bool_prompt, is_valid_filepath,
@@ -211,7 +216,7 @@ def _cache_date(days=0, seconds=120):
     return time.strftime("%a, %d %b %Y %I:%M:%S GMT")
 
 
-class Application(Bottle):
+class Application(Flask):
     """
     This is the primary Bottle application for the Topic Explorer.
     Each Application corresponds to a single Corpus object, but may
@@ -221,7 +226,9 @@ class Application(Bottle):
     def __init__(self, corpus_file='', model_pattern='', topic_range=None,
                  context_type='', label_module=None, config_file='',
                  fulltext=False, corpus_path='', tokenizer='default', **kwargs):
-        super(Application, self).__init__()
+        # super(Application, self).__init__(import_name="app", static_url_path="/www")
+        super(Application, self).__init__(import_name="app", static_url_path="/static",
+            template_folder="/templates", static_folder="/static")
 
         self.config_file = config_file
 
@@ -285,11 +292,13 @@ class Application(Bottle):
                 self.v[k].dist_top_doc, label_fn=self.id_fn)
 
     def _setup_routes(self, **kwargs):
-        @self.route('/<k:int>/doc_topics/<doc_id>')
+        @self.route('/<k>/doc_topics/<doc_id>')
         @_set_acao_headers
         def doc_topic_csv(k, doc_id):
 
             etag = _generate_etag(self.v[k])
+
+            response = make_response()
             
             # Check for an "If-None-Match" tag in the header
             if request.get_header('If-None-Match', '') == etag:
@@ -307,7 +316,7 @@ class Application(Bottle):
 
             try:
                 data = self.v[k].doc_topics(doc_id)
-            except KeyErrror:
+            except KeyError:
                 data = self.v[k].doc_topics(doc_id.decode('utf-8'))
 
             if sys.version_info[0] == 3:
@@ -321,9 +330,15 @@ class Application(Bottle):
 
             return output.getvalue()
 
-        @self.route('/<k:int>/docs/<doc_id>')
-        @_set_acao_headers
+        @self.route('/favicon.ico')
+        def favicon():
+            print('favicon')
+            return 'hi'
+
+        @self.route('/<k>/docs/<doc_id>')
+        # @_set_acao_headers
         def doc_csv(k, doc_id, threshold=0.2):
+            print('doc_csv')
             etag = _generate_etag(self.v[k])
 
             if request.get_header('If-None-Match', '') == etag:
@@ -353,23 +368,25 @@ class Application(Bottle):
 
             return output.getvalue()
 
-        @self.route('/<k:int>/topics/<topic_no:int>.json')
-        @_set_acao_headers
+        @self.route('/<k>/topics/<topic_no>.json')
+        # @_set_acao_headers
         def topic_json(k, topic_no, N=40):
-            
-            etag = _generate_etag(self.v[k])
+            print('topic_json')
+            etag = _generate_etag(self.v[int(k)])
+            response = make_response()
             
             #Check for an "If-None-Match" in the request
-            if request.get_header('If-None-Match', '') == etag:
+            if request.headers.get('If-None-Match') == etag:
                 response.status = 304
                 return "Not Modified"
 
-            if k not in self.topic_range:
+            if int(k) not in self.topic_range:
                 response.status = 400  # Not Found
                 return "No model for k = {}".format(k)
 
             #response.set_header('Cache-Control', 'max-age=120')
-            response.set_header('Etag', etag)
+            # response.set_header('Etag', etag)
+            response.headers['Etag'] = etag
 
             response.content_type = 'application/json; charset=UTF8'
             try:
@@ -377,14 +394,17 @@ class Application(Bottle):
             except:
                 pass
 
+            print(type(N))
+            print(type(topic_no))
+            print(self.v[int(k)].dist_top_doc([int(topic_no)]))
             if N > 0:
-                data = self.v[k].dist_top_doc([topic_no])[:N]
+                data = self.v[int(k)].dist_top_doc([int(topic_no)])[:N]
             else:
-                data = self.v[k].dist_top_doc([topic_no])[N:]
+                data = self.v[int(k)].dist_top_doc([int(topic_no)])[N:]
                 data = reversed(data)
 
             docs = [doc for doc, prob in data]
-            doc_topics_mat = self.v[k].doc_topics(docs)
+            doc_topics_mat = self.v[int(k)].doc_topics(docs)
             docs = self.get_docs(docs, id_as_key=True)
 
             js = []
@@ -397,17 +417,20 @@ class Application(Bottle):
 
             return json.dumps(js)
 
-        @self.route('/<k:int>/docs_topics/<doc_id:path>.json')
-        @_set_acao_headers
+        @self.route('/<k>/docs_topics/<doc_id>.json')
+        # @_set_acao_headers
         def doc_topics(k, doc_id, N=40):
-            
-            etag = _generate_etag(self.v[k])
+            print('doc_topics')
+            print(type(k))
+            etag = _generate_etag(self.v[int(k)])
+            response = make_response()
 
-            if request.get_header('If-None-Match', '') == etag:
+            # if request.get_header('If-None-Match', '') == etag:
+            if request.headers.get('If-None-Match') == etag:
                 response.status = 304
                 return "Not Modified"
 
-            if k not in self.topic_range:
+            if int(k) not in self.topic_range:
                 response.status = 400  # Not Found
                 return "No model for k = {}".format(k)
 
@@ -416,25 +439,26 @@ class Application(Bottle):
             except:
                 pass
 
-            response.set_header('Etag', etag)
+            # response.set_header('Etag', etag)
+            response.headers['Etag'] = etag
             response.content_type = 'application/json; charset=UTF8'
 
             try:
                 if N > 0:
-                    data = self.v[k].dist_doc_doc(doc_id)[:N]
+                    data = self.v[int(k)].dist_doc_doc(doc_id)[:N]
                 else:
-                    data = self.v[k].dist_doc_doc(doc_id)[N:]
+                    data = self.v[int(k)].dist_doc_doc(doc_id)[N:]
                     data = reversed(data)
             except KeyError:
                 doc_id = doc_id.decode('utf-8')
                 if N > 0:
-                    data = self.v[k].dist_doc_doc(doc_id)[:N]
+                    data = self.v[int(k)].dist_doc_doc(doc_id)[:N]
                 else:
-                    data = self.v[k].dist_doc_doc(doc_id)[N:]
+                    data = self.v[int(k)].dist_doc_doc(doc_id)[N:]
                     data = reversed(data)
 
             docs = [doc for doc, prob in data]
-            doc_topics_mat = self.v[k].doc_topics(docs)
+            doc_topics_mat = self.v[int(k)].doc_topics(docs)
             docs = self.get_docs(docs, id_as_key=True)
 
             js = []
@@ -447,9 +471,10 @@ class Application(Bottle):
 
             return json.dumps(js)
 
-        @self.route('/<k:int>/word_docs.json')
-        @_set_acao_headers
+        @self.route('/<k>/word_docs.json')
+        # @_set_acao_headers
         def word_docs(k, N=40):
+            print('word_docs')
             import numpy as np
 
             etag = _generate_etag(self.v[k])
@@ -511,26 +536,38 @@ class Application(Bottle):
 
             return json.dumps(js)
 
-        @self.route('/<k:int>/topics.json')
-        @_set_acao_headers
+        @self.route('/<k>/topics.json')
+        # @_set_acao_headers
         def topics(k):
+            print('topics')
             from topicexplorer.lib.color import rgb2hex
             import numpy as np
 
-            etag = _generate_etag(self.v[k])
+            # print(self.v)
+            # print(type(k))
+            # print(self.v[int(k)])
+            etag = _generate_etag(self.v[int(k)])
             # Check if there is a "If-None-Match" ETag in the request
-            if request.get_header('If-None-Match', '') == etag:
+            response = make_response()
+            if request.headers.get('If-None-Match') == etag:
                 response.status = 304
                 return "Not Modified"
 
-            if k not in self.topic_range:
+            print('------------topic range------------')
+            print(self.topic_range)
+            print(type(k))
+            print(type(self.topic_range[0]))
+            if int(k) not in self.topic_range:
                 response.status = 400  # Not Found
                 return "No model for k = {}".format(k)
 
             response.content_type = 'application/json; charset=UTF8'
-            response.set_header('Expires', _cache_date())
-            response.set_header('Cache-Control', 'max-age=120')
-            response.set_header('ETag', etag)
+            # response.set_header('Expires', _cache_date())
+            # response.set_header('Cache-Control', 'max-age=120')
+            # response.set_header('ETag', etag)
+            response.headers['Expires'] = _cache_date()
+            response.headers['Cache-Control'] = 'max-age=120'
+            response.headers['ETag'] = etag
 
             # set a parameter for number of words to return
             wordmax = 10  # for alphabetic languages
@@ -538,7 +575,7 @@ class Application(Bottle):
                 wordmax = 25  # for ideographic languages
 
             # populate word values
-            phi = self.v[k].phi.T
+            phi = self.v[int(k)].phi.T
             idxs = phi.argsort(axis=1)[:,::-1][:,:wordmax]
             # https://github.com/numpy/numpy/issues/4724
             idx_hack = np.arange(np.shape(phi)[0])[:,np.newaxis]
@@ -551,7 +588,7 @@ class Application(Bottle):
             js = {}
             for i, topic in enumerate(data):
                 js[text(i)] = {
-                    "color": rgb2hex(self.colors[k][i]),
+                    "color": rgb2hex(self.colors[int(k)][i]),
                     'words': dict([(text(w), float(p))
                                        for w, p in topic[:wordmax]])
                     }
@@ -559,8 +596,9 @@ class Application(Bottle):
             return json.dumps(js)
 
         @self.route('/topics.json')
-        @_set_acao_headers
+        # @_set_acao_headers
         def word_topic_distance():
+            print('word_topic_distance')
             import numpy as np
             response.content_type = 'application/json; charset=UTF8'
 
@@ -623,9 +661,10 @@ class Application(Bottle):
 
 
         @self.route('/topics')
-        @_set_acao_headers
+        # @_set_acao_headers
         def view_clusters():
-            with open(get_static_resource_path('www/master.mustache.html'),
+            print('view_clusters')
+            with open(get_static_resource_path('templates/master.mustache.html'),
                       encoding='utf-8') as tmpl_file:
                 template = tmpl_file.read()
 
@@ -634,8 +673,9 @@ class Application(Bottle):
             return self.renderer.render(template, tmpl_params)
 
         @self.route('/topics.local.html')
-        @_set_acao_headers
+        # @_set_acao_headers
         def view_clusters_local():
+            print('view_clusters_local')
             with open(get_static_resource_path('www/master.local.mustache.html'),
                       encoding='utf-8') as tmpl_file:
                 template = tmpl_file.read()
@@ -646,18 +686,25 @@ class Application(Bottle):
 
 
         @self.route('/docs.json')
-        @_set_acao_headers
+        # @_set_acao_headers
         def docs(docs=None, q=None, n=None):
+            print('docs')
+            response = make_response()
             response.content_type = 'application/json; charset=UTF8'
-            response.set_header('Expires', _cache_date())
+            # response.set_header('Expires', _cache_date())
+            response.headers['Expires'] = _cache_date()
 
             etag = _docs_etag(self.c)
             #Check for an "If-None-Match" tag in the header
-            if request.get_header('If-None-Match', '') == etag:
+            # if request.get_header('If-None-Match', '') == etag:
+            print(request.headers)
+            # if request.headers.get('If-None-Match') is not None and request.headers['If-None-Match'] == etag:
+            if request.headers.get('If-None-Match') == etag:
               response.status=304
               return "Not Modified"
 
-            response.set_header('Etag', etag)
+            # response.set_header('Etag', etag)
+            response.headers['Etag'] = etag
 
             try:
                 if request.query.q:
@@ -687,15 +734,19 @@ class Application(Bottle):
 
         @self.route('/icons.js')
         def icons():
-            with open(get_static_resource_path('www/icons.js')) as icons:
+            print('icons')
+            with open(get_static_resource_path('static/js/icons.js')) as icons:
                 text = '{0}\n var icons = {1};'\
                     .format(icons.read(), json.dumps(self.icons))
             return text
 
         def _render_template(page):
-            response.set_header('Expires', _cache_date())
+            print('render_template')
+            response = make_response()
+            # response.set_header('Expires', _cache_date())
+            response.headers['Expires'] = _cache_date()
 
-            with open(get_static_resource_path('www/' + page),
+            with open(get_static_resource_path('templates/' + page),
                       encoding='utf-8') as tmpl_file:
                 template = tmpl_file.read()
 
@@ -708,16 +759,20 @@ class Application(Bottle):
                            'home_link': kwargs.get('home_link', '/')}
             return self.renderer.render(template, tmpl_params)
 
-        @self.route('/<k:int>')
+        @self.route('/<int:k>')
         def index_redirect(k):
+            print('index_redirect')
+            print(k)
             redirect('/{}/'.format(k))
 
-        @self.route('/<k:int>/')
+        @self.route('/<int:k>/')
         def index(k):
+            print('index')
             if k not in self.topic_range:
+                print('aborting')
                 abort(400, "No model for k = {}".format(k))
 
-            with open(get_static_resource_path('www/master.mustache.html'),
+            with open(get_static_resource_path('templates/master.mustache.html'),
                       encoding='utf-8') as tmpl_file:
                 template = tmpl_file.read()
 
@@ -726,8 +781,9 @@ class Application(Bottle):
             return self.renderer.render(template, tmpl_params)
 
         @self.route('/cluster.csv')
-        @_set_acao_headers
+        # @_set_acao_headers
         def cluster_csv(second=False):
+            print('cluster_csv')
             filename = kwargs.get('cluster_path')
             print("Retrieving cluster.csv:", filename)
             if not filename or not os.path.exists(filename):
@@ -736,39 +792,215 @@ class Application(Bottle):
                 kwargs['cluster_path'] = filename
 
             root, filename = os.path.split(filename)
-            return static_file(filename, root=root)
+            # return static_file(filename, root=root)
+            return send_from_directory(root, filename)
         
         @self.route('/description.md')
-        @_set_acao_headers
+        # @_set_acao_headers
         def description():
+            print('description')
             filename = kwargs.get('corpus_desc')
             if not filename:
                 response.status = 404
                 return "File not found"
             filename = get_static_resource_path(filename)
             root, filename = os.path.split(filename)
-            return static_file(filename, root=root)
+            # return static_file(filename, root=root)
+            return send_from_directory(root, filename)
         
         @self.route('/')
-        @_set_acao_headers
+        # @_set_acao_headers
         def cluster():
-            with open(get_static_resource_path('www/master.mustache.html'),
+            print('cluster')
+            with open(get_static_resource_path('templates/master.mustache.html'),
                       encoding='utf-8') as tmpl_file:
                 template = tmpl_file.read()
 
             tmpl_params = {'body' : _render_template('splash.mustache.html'),
                            'topic_range': self.topic_range}
+            # return 'hi'
             return self.renderer.render(template, tmpl_params)
 
-        @self.route('/<filename:path>')
-        @_set_acao_headers
+        @self.route('/<filename>')
+        # @_set_acao_headers
         def send_static(filename):
-            return static_file(filename, root=get_static_resource_path('www/'))
+            print('send_static')
+            print("in send_static")
+            # print(get_static_resource_path('static/' + filename))
+            # file_name = get_static_resource_path('static/' + filename)
+            # with open(get_static_resource_path('static/master.mustache.html'),
+            #           encoding='utf-8') as tmpl_file:
+            #     return tmpl_file.read()
+
+            # use send_from_directory
+
+            # arr = file_name.split('/')
+            config = ConfigParser()
+            # print('pre')
+            config.read(get_static_resource_path('templates/paths.ini'))
+            # print(config.sections())
+            # print(config['DEFAULT'][filename])
+            # with open(get_static_resource_path('static/templates/paths.ini')) as f:
+            #     print(f)
+            p = get_static_resource_path(config['DEFAULT'][filename])
+            # print(p)
+            # print(p[0:(len(filename) * -1)])
+
+            return send_from_directory(p[0:(len(filename) * -1)], filename)
+            
+            # return render_template(get_static_resource_path('static/' + filename))
+            # return static_file(filename, root=get_static_resource_path('static/'))
+
+        @self.route('/bootstrap-2.3.2/js/<filename>')
+        def send_bootstrap2(filename):
+            p = get_static_resource_path('static/lib/bootstrap-2.3.2/js/' + filename)
+            print(p[0:(len(filename) * -1)])
+
+            return send_from_directory(p[0:(len(filename) * -1)], filename)
+
+        @self.route('/fonts/<filename>')
+        def send_fonts(filename):
+            print('in send_fonts')
+            p = ''
+            if 'glyphicons' not in filename:
+                p = get_static_resource_path('static/fonts/' + filename)
+            else:
+                p = get_static_resource_path('static/lib/bootstrap-3.3.6/fonts/' + filename)
+            
+            return send_from_directory(p[0:(len(filename) * -1)], filename)
+
+        # @self.route('/static/js/<filename>')
+        # def send_static_js(filename):
+        #     print('in send_static_js')
+        #     print(filename)
+
+        #     # with open(get_static_resource_path('static/js/' + filename)) as f:
+        #     #     # text = '{0}\n var icons = {1};'\
+        #     #     #     .format(f.read(), json.dumps(self.f))
+        #     #     text = f.read()
+        #     # return text
+
+        #     p = get_static_resource_path('static/js/' + filename)
+        #     print(p[0:(len(filename) * -1)])
+
+        #     return send_from_directory(p[0:(len(filename) * -1)], filename)
+
+        #     # return send_from_directory('static/js/', filename)
+
+        # @self.route('/static/css/<filename>')
+        # def send_static_css(filename):
+        #     print('in send_static_css')
+        #     print(filename)
+
+        #     # with open(get_static_resource_path('static/css/' + filename)) as f:
+        #     #     text = f.read()
+
+        #     p = get_static_resource_path('static/css/' + filename)
+        #     print(p[0:(len(filename) * -1)])
+
+        #     return send_from_directory(p[0:(len(filename) * -1)], filename)
+            
+        #     # return text
+
+        # @self.route('/static/lib/<filename>')
+        # def send_lib(filename):
+        #     print('in send_lib')
+        #     print(filename)
+        #     print(get_static_resource_path('static/lib/' + filename))
+
+        #     # with open(get_static_resource_path('static/lib/' + filename)) as f:
+        #     #     # text = '{0}\n var icons = {1};'\
+        #     #     #     .format(f.read(), json.dumps(self.f))
+        #     #     text = f.read()
+        #     # return text
+
+        #     p = get_static_resource_path('static/lib/' + filename)
+        #     print(p[0:(len(filename) * -1)])
+
+        #     return send_from_directory(p[0:(len(filename) * -1)], filename)
+
+        #     # return send_from_directory('static/lib/', filename)
+
+        # @self.route('/static/lib/bootstrap-2.3.2/js/<filename>')
+        # def send_bootstrap2_js(filename):
+        #     print('in send_bootstrap_js')
+        #     print(filename)
+
+        #     # with open(get_static_resource_path('static/lib/bootstrap-2.3.2/js/' + filename)) as f:
+        #     #     # text = '{0}\n var icons = {1};'\
+        #     #     #     .format(f.read(), json.dumps(self.f))
+        #     #     text = f.read()
+        #     # return text
+
+        #     p = get_static_resource_path('static/lib/bootstrap-2.3.2/js/' + filename)
+        #     print(p[0:(len(filename) * -1)])
+
+        #     return send_from_directory(p[0:(len(filename) * -1)], filename)
+
+        # @self.route('/static/lib/bootstrap-3.3.6/css/<filename>')
+        # def send_bootstrap3_css(filename):
+        #     print('in send_bootstrap_css')
+        #     print(filename)
+
+        #     # with open(get_static_resource_path('static/lib/bootstrap-3.3.6/css/' + filename)) as f:
+        #     #     # text = '{0}\n var icons = {1};'\
+        #     #     #     .format(f.read(), json.dumps(self.f))
+        #     #     text = f.read()
+        #     # return text
+
+        #     p = get_static_resource_path('static/lib/bootstrap-3.3.6/css/' + filename)
+        #     print(p[0:(len(filename) * -1)])
+
+        #     return send_from_directory(p[0:(len(filename) * -1)], filename)
+
+        # @self.route('/static/lib/bootstrap-3.3.6/js/<filename>')
+        # def send_bootstrap3_js(filename):
+        #     print('in send_bootstrap_js')
+        #     print(filename)
+
+        #     # with open(get_static_resource_path('static/lib/bootstrap-3.3.6/css/' + filename)) as f:
+        #     #     # text = '{0}\n var icons = {1};'\
+        #     #     #     .format(f.read(), json.dumps(self.f))
+        #     #     text = f.read()
+        #     # return text
+
+        #     p = get_static_resource_path('static/lib/bootstrap-3.3.6/js/' + filename)
+        #     print(p[0:(len(filename) * -1)])
+
+        #     return send_from_directory(p[0:(len(filename) * -1)], filename)
+
+        # @self.route('/static/lib/inpho/<filename>')
+        # def send_inpho(filename):
+        #     print('in send_inpho')
+        #     print(filename)
+
+        #     # with open(get_static_resource_path('static/lib/inpho/' + filename)) as f:
+        #     #     # text = '{0}\n var icons = {1};'\
+        #     #     #     .format(f.read(), json.dumps(self.f))
+        #     #     text = f.read()
+        #     # return text
+
+        #     p = get_static_resource_path('static/lib/inpho/' + filename)
+        #     print(p[0:(len(filename) * -1)])
+
+        #     return send_from_directory(p[0:(len(filename) * -1)], filename)
+
+        # @self.route('/static/img/<filename>')
+        # def send_img(filename):
+        #     p = get_static_resource_path('static/img/' + filename)
+        #     print(p[0:(len(filename) * -1)])
+
+        #     return send_from_directory(p[0:(len(filename) * -1)], filename)
+
+        # @self.route('/static/<path:p>')
+        # def send_static():
+        #     print('hi')
 
     def _serve_fulltext(self, corpus_path):
-        @self.route('/fulltext/<doc_id:path>')
-        @_set_acao_headers
+        @self.route('/fulltext/<doc_id>')
+        # @_set_acao_headers
         def get_doc(doc_id):
+            print('get_doc')
             try:
                 doc_id = doc_id.decode('utf-8')
             except:
@@ -782,9 +1014,11 @@ class Application(Bottle):
             # here we deal with case where corpus_path and doc_id overlap
             (fdirs, lastdir) = os.path.split(corpus_path)
             if re.match('^' + lastdir, doc_id):
-                return static_file(doc_id, root=fdirs)
+                # return static_file(doc_id, root=fdirs)
+                return send_from_directory(fdirs, doc_id)
             else:
-                return static_file(doc_id, root=corpus_path)
+                # return static_file(doc_id, root=corpus_path)
+                return send_from_directory(corpus_path, doc_id)
 
     def get_docs(self, docs=None, id_as_key=False, query=None, n=None):
         ctx_md = self.c.view_metadata(self.context_type)
@@ -888,13 +1122,13 @@ def get_host_port(args):
     host = args.host or config.get('www', 'host')
     return host, port
 
-class WaitressLoggingServer(ServerAdapter):
-    def run(self, handler): # pragma: no cover
-        from waitress import serve
-        if not self.quiet:
-            from paste.translogger import TransLogger
-            handler = TransLogger(handler)
-        serve(handler, host=self.host, port=self.port, **self.options)
+# class WaitressLoggingServer(ServerAdapter):
+#     def run(self, handler): # pragma: no cover
+#         from waitress import serve
+#         if not self.quiet:
+#             from paste.translogger import TransLogger
+#             handler = TransLogger(handler)
+#         serve(handler, host=self.host, port=self.port, **self.options)
 
 def main(args, app=None):
     if app is None:
@@ -916,7 +1150,15 @@ def main(args, app=None):
         print("TIP: Browser launch can be disabled with the '--no-browser' argument:")
         print("topicexplorer serve --no-browser", args.config, "\n")
 
-    app.run(server=WaitressLoggingServer, host=host, port=port)
+    # app.run(server=WaitressLoggingServer, host=host, port=port)
+    print(app.config)
+    print(app.static_url_path)
+    print(app.static_folder)
+    print(app.instance_path)
+    print(app.root_path)
+    print(app._static_url_path)
+    app.run(host=host, port=port)
+    # CORS(app) # host and port?
 
 
 def create_app(args):

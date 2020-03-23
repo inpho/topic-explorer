@@ -1,6 +1,6 @@
 var base_fn = function(ticks,i) {
     return ticks.append("svg:image")
-        .attr("xlink:href","/img/link.png")
+        .attr("xlink:href","/link.png")
         .attr("width", 18)
         .attr("height",18)
         .attr("x", -margin.left + 5 + (i*20))
@@ -31,14 +31,14 @@ var string_escape = function (string) {
 
 var icon_fns = {"link" : function(ticks, i) {
       base_fn(ticks,i)
-        .attr("xlink:href","/img/link.png")
+        .attr("xlink:href","/link.png")
         .attr("class", "linkIcon icon")
         .on("click", function(d) { window.location.href = window.location.origin + window.location.pathname + "?doc=" + encodeURIComponent(d);});
   },
  "fingerprint" : function(ticks, i, docs) {
       base_fn(ticks,i)
         .attr("data-doc-id", function (d) {return d})
-        .attr("xlink:href","/img/icon-fingerprint.png")
+        .attr("xlink:href","/icon-fingerprint.png")
         .attr("class", "fingerprintIcon icon")
         .attr("onclick", function(d) {
           if (d) {      
@@ -60,7 +60,8 @@ var icon_fns = {"link" : function(ticks, i) {
               return d;  
             }; 
           })
-        .attr("xlink:href","/img/ap.jpg")
+        // .attr("xlink:href","/img/ap.jpg")
+        .attr("xlink:href", "/ap.jpg")
         .attr("class", "apIcon icon")
         .attr("onclick", function(d) { return (d) ? "fulltext.popover(this)" : ""; });
   },

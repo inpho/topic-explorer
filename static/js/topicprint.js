@@ -82,12 +82,20 @@ function resetBar(i, k) {
 
 }
 
+function clearBars() {
+  $('#singleBarsDl').html('');
+}
+
+var idGlobal = '';
 function showFingerprint(id, label) {
+  console.log('showFingerprint');
+  idGlobal = id;
   $('#doc', '#fingerprintModal').val(label);
   $('#hidden_id', '#fingerprintModal').val(id);
   $('#fingerprintModal').modal('show');
   $('#fingerprintModal').on('shown.bs.modal',
     function (e) {
+      console.log($('dd', '#singleBarsDl').length);
       if (!$('dd', '#singleBarsDl').length)
         resetBars()
     });
@@ -95,6 +103,8 @@ function showFingerprint(id, label) {
 var fingerprint = {
   'host': '',
   'visualize': function (k) {
+    // console.log('visualize');
+    // console.log(idGlobal);
 
     var maxRows = 25;
     var minCols = 2;
@@ -163,6 +173,21 @@ var fingerprint = {
 
         var k = d3.keys(topics).length;
         var full_explorer_url = host + "/?doc=" + encodeURIComponent(docid);
+
+        // data = data.splice(0,1);
+
+        // var title = document.getElementById('doc').value;
+        // console.log(title);
+        // console.log(idGlobal);
+
+        // for(var i = 0; i < data.length; i++) {
+        //   if (data[i].id === idGlobal) {
+        //     console.log(i);
+        //     data = [data[i]];
+        //     break;
+        //   }
+        // }
+        data = [data[0]];
 
         calculateTopicMap(data, true, function (a, b) { return data[0].topics[b] - data[0].topics[a]; });
 
