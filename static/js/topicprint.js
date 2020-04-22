@@ -389,6 +389,16 @@ $(window).load(function () {
   }
 });
 
+$(document).ready(function() {
+  var topicNum = window.location.pathname.slice(1,window.location.pathname.length - 1);
+  var btns = document.getElementById('center-btns').children;
+  for(var i = 0; i < btns.length; i++) {
+    if (topicNum === btns[i].textContent) {
+      btns[i].style.backgroundColor = 'rgba(153, 153, 153, 0.45)';
+    };
+  }
+});
+
 $(document).ready(function () {
   $('#cite').hide();
   $('#citeBtn').tooltip({ title: "Show citation info", placement: 'bottom' });

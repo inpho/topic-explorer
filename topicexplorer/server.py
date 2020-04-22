@@ -179,7 +179,8 @@ def _set_acao_headers(f):
     embedding of Topic Explorer bars.
     """
     def set_header(*args, **kwargs):
-        host = request.get_header('Origin')
+        host = request.environ['HTTP_HOST']
+        response = make_response()
         if host and 'cogs.indiana.edu' in host: # pragma: no cover
             response.headers['Access-Control-Allow-Origin'] = host
         elif host and '127.0.0.1' in host: # pragma: no cover
@@ -193,6 +194,7 @@ def _set_acao_headers(f):
         elif host and 'tjmind.org' in host:
             response.headers['Access-Control-Allow-Origin'] = host
         return f(*args, **kwargs)
+    set_header.__name__ = f.__name__
     return set_header
 
 def _generate_etag(v):
@@ -335,8 +337,9 @@ class Application(Flask):
             print('favicon')
             return 'hi'
 
+        # Only important for notebook?
         @self.route('/<k>/docs/<doc_id>')
-        # @_set_acao_headers
+        @_set_acao_headers
         def doc_csv(k, doc_id, threshold=0.2):
             print('doc_csv')
             etag = _generate_etag(self.v[k])
@@ -347,7 +350,7 @@ class Application(Flask):
 
             if k not in self.topic_range:
                 response.status = 400  # Not Found
-                return "No model for k = {}".format(k)
+                return "No model here for k = {}".format(k)
 
             response.set_header('Etag', etag)
             response.content_type = 'text/csv; charset=UTF8'
@@ -369,7 +372,7 @@ class Application(Flask):
             return output.getvalue()
 
         @self.route('/<k>/topics/<topic_no>.json')
-        # @_set_acao_headers
+        @_set_acao_headers
         def topic_json(k, topic_no, N=40):
             print('topic_json')
             etag = _generate_etag(self.v[int(k)])
@@ -382,7 +385,7 @@ class Application(Flask):
 
             if int(k) not in self.topic_range:
                 response.status = 400  # Not Found
-                return "No model for k = {}".format(k)
+                return "No model there for k = {}".format(k)
 
             #response.set_header('Cache-Control', 'max-age=120')
             # response.set_header('Etag', etag)
@@ -418,7 +421,7 @@ class Application(Flask):
             return json.dumps(js)
 
         @self.route('/<k>/docs_topics/<doc_id>.json')
-        # @_set_acao_headers
+        @_set_acao_headers
         def doc_topics(k, doc_id, N=40):
             print('doc_topics')
             print(type(k))
@@ -432,7 +435,7 @@ class Application(Flask):
 
             if int(k) not in self.topic_range:
                 response.status = 400  # Not Found
-                return "No model for k = {}".format(k)
+                return "No model found for k = {}".format(k)
 
             try:
                 N = int(request.query.n)
@@ -472,7 +475,7 @@ class Application(Flask):
             return json.dumps(js)
 
         @self.route('/<k>/word_docs.json')
-        # @_set_acao_headers
+        @_set_acao_headers
         def word_docs(k, N=40):
             print('word_docs')
             import numpy as np
@@ -537,7 +540,7 @@ class Application(Flask):
             return json.dumps(js)
 
         @self.route('/<k>/topics.json')
-        # @_set_acao_headers
+        @_set_acao_headers
         def topics(k):
             print('topics')
             from topicexplorer.lib.color import rgb2hex
@@ -596,7 +599,7 @@ class Application(Flask):
             return json.dumps(js)
 
         @self.route('/topics.json')
-        # @_set_acao_headers
+        @_set_acao_headers
         def word_topic_distance():
             print('word_topic_distance')
             import numpy as np
@@ -661,7 +664,7 @@ class Application(Flask):
 
 
         @self.route('/topics')
-        # @_set_acao_headers
+        @_set_acao_headers
         def view_clusters():
             print('view_clusters')
             with open(get_static_resource_path('templates/master.mustache.html'),
@@ -673,7 +676,7 @@ class Application(Flask):
             return self.renderer.render(template, tmpl_params)
 
         @self.route('/topics.local.html')
-        # @_set_acao_headers
+        @_set_acao_headers
         def view_clusters_local():
             print('view_clusters_local')
             with open(get_static_resource_path('www/master.local.mustache.html'),
@@ -686,7 +689,7 @@ class Application(Flask):
 
 
         @self.route('/docs.json')
-        # @_set_acao_headers
+        @_set_acao_headers
         def docs(docs=None, q=None, n=None):
             print('docs')
             response = make_response()
@@ -770,7 +773,7 @@ class Application(Flask):
             print('index')
             if k not in self.topic_range:
                 print('aborting')
-                abort(400, "No model for k = {}".format(k))
+                abort(400, "No model is here for k = {}".format(k))
 
             with open(get_static_resource_path('templates/master.mustache.html'),
                       encoding='utf-8') as tmpl_file:
@@ -781,7 +784,7 @@ class Application(Flask):
             return self.renderer.render(template, tmpl_params)
 
         @self.route('/cluster.csv')
-        # @_set_acao_headers
+        @_set_acao_headers
         def cluster_csv(second=False):
             print('cluster_csv')
             filename = kwargs.get('cluster_path')
@@ -796,7 +799,7 @@ class Application(Flask):
             return send_from_directory(root, filename)
         
         @self.route('/description.md')
-        # @_set_acao_headers
+        @_set_acao_headers
         def description():
             print('description')
             filename = kwargs.get('corpus_desc')
@@ -809,7 +812,7 @@ class Application(Flask):
             return send_from_directory(root, filename)
         
         @self.route('/')
-        # @_set_acao_headers
+        @_set_acao_headers
         def cluster():
             print('cluster')
             with open(get_static_resource_path('templates/master.mustache.html'),
@@ -822,7 +825,7 @@ class Application(Flask):
             return self.renderer.render(template, tmpl_params)
 
         @self.route('/<filename>')
-        # @_set_acao_headers
+        @_set_acao_headers
         def send_static(filename):
             print('send_static')
             print("in send_static")
@@ -998,7 +1001,7 @@ class Application(Flask):
 
     def _serve_fulltext(self, corpus_path):
         @self.route('/fulltext/<doc_id>')
-        # @_set_acao_headers
+        @_set_acao_headers
         def get_doc(doc_id):
             print('get_doc')
             try:
