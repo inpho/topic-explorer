@@ -19,7 +19,6 @@ def init(app, config_file):
     # def get_doc(doc_id):
     #     return static_file(doc_id, root=raw_corpus_path)
 
-
 def label(doc):
     global raw_corpus_path
 
