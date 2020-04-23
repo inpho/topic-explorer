@@ -206,14 +206,13 @@ def _generate_etag(v):
     return x.hexdigest()
 
 def _docs_etag(c):
+    """ Takes a corpus and generates an etag using the corpus attribute. """
     x = hashlib.sha1()
     x.update(repr(c).encode('utf-8'))
     return x.hexdigest()
 
 def _cache_date(days=0, seconds=120):
-    """
-    Helper function to return the date for the cache header.
-    """
+    """ Helper function to return the date for the cache header. """
     time = datetime.now() + timedelta(days=days, seconds=seconds)
     return time.strftime("%a, %d %b %Y %I:%M:%S GMT")
 
@@ -257,6 +256,7 @@ class Application(Flask):
         token[0] = tokenizer
 
     def _load_label_module(self, label_module, config_file):
+        """ This function loads the custom document label functions. """
         try:
             label_module = import_module(label_module)
             print("imported label module")
@@ -279,10 +279,12 @@ class Application(Flask):
             print("using default id function")
 
     def _load_corpus(self, corpus_file):
+        """ Initializes the corpus object and quick cache of labels. """
         self.c = Corpus.load(corpus_file, load_corpus=False)
         self.labels = self.c.view_metadata(self.context_type)[self.label_name]
 
     def _load_viewers(self, model_pattern):
+        """ Initialized the model viewer objects and caches topic color assignments. """
         self.id_fn = lambda md: md[self.label_name]
         for k in self.topic_range:
             m = LDA.load(model_pattern.format(k))
@@ -294,10 +296,12 @@ class Application(Flask):
                 self.v[k].dist_top_doc, label_fn=self.id_fn)
 
     def _setup_routes(self, **kwargs):
+        """ Initializes application route table. """
+
         @self.route('/<k>/doc_topics/<doc_id>')
         @_set_acao_headers
         def doc_topic_csv(k, doc_id):
-
+            """ Returns topic probabilities for single document in CSV format. """
             etag = _generate_etag(self.v[k])
 
             response = make_response()
@@ -334,13 +338,15 @@ class Application(Flask):
 
         @self.route('/favicon.ico')
         def favicon():
+            """ favicon handler. """
+            # TODO: Create a favicon
             print('favicon')
             return 'hi'
 
-        # Only important for notebook?
         @self.route('/<k>/docs/<doc_id>')
         @_set_acao_headers
         def doc_csv(k, doc_id, threshold=0.2):
+            """ Generates a csv file for the most related documents - the rows in the visualization. """
             print('doc_csv')
             etag = _generate_etag(self.v[k])
 
@@ -374,6 +380,7 @@ class Application(Flask):
         @self.route('/<k>/topics/<topic_no>.json')
         @_set_acao_headers
         def topic_json(k, topic_no, N=40):
+            """ Generate the word-topic matrix, enocded as JSON. """
             print('topic_json')
             etag = _generate_etag(self.v[int(k)])
             response = make_response()
@@ -423,6 +430,7 @@ class Application(Flask):
         @self.route('/<k>/docs_topics/<doc_id>.json')
         @_set_acao_headers
         def doc_topics(k, doc_id, N=40):
+            """ Generate the document-topic matrix, encoded as JSON. """
             print('doc_topics')
             print(type(k))
             etag = _generate_etag(self.v[int(k)])
@@ -477,6 +485,7 @@ class Application(Flask):
         @self.route('/<k>/word_docs.json')
         @_set_acao_headers
         def word_docs(k, N=40):
+            """ Generate a list of most related documents for a given word. """
             print('word_docs')
             import numpy as np
 
@@ -542,6 +551,7 @@ class Application(Flask):
         @self.route('/<k>/topics.json')
         @_set_acao_headers
         def topics(k):
+            """ Generate the topic JSON data structure, including top N words and color. """
             print('topics')
             from topicexplorer.lib.color import rgb2hex
             import numpy as np
@@ -601,6 +611,9 @@ class Application(Flask):
         @self.route('/topics.json')
         @_set_acao_headers
         def word_topic_distance():
+            """ Query the model for the most related topics to a given word.
+            
+            Results are formatted as in `topics()`, but results will span all levels of k.""""
             print('word_topic_distance')
             import numpy as np
             response.content_type = 'application/json; charset=UTF8'
@@ -666,7 +679,7 @@ class Application(Flask):
         @self.route('/topics')
         @_set_acao_headers
         def view_clusters():
-            print('view_clusters')
+            """ Cluster visualization. """
             with open(get_static_resource_path('templates/master.mustache.html'),
                       encoding='utf-8') as tmpl_file:
                 template = tmpl_file.read()
@@ -678,6 +691,7 @@ class Application(Flask):
         @self.route('/topics.local.html')
         @_set_acao_headers
         def view_clusters_local():
+            """ Cluster visualization for HTRC Topic Explorer. """
             print('view_clusters_local')
             with open(get_static_resource_path('www/master.local.mustache.html'),
                       encoding='utf-8') as tmpl_file:
@@ -691,7 +705,7 @@ class Application(Flask):
         @self.route('/docs.json')
         @_set_acao_headers
         def docs(docs=None, q=None, n=None):
-            print('docs')
+            """ Returns list of all documents. Allows querying for autocomplete. """
             response = make_response()
             response.content_type = 'application/json; charset=UTF8'
             # response.set_header('Expires', _cache_date())
@@ -737,14 +751,14 @@ class Application(Flask):
 
         @self.route('/icons.js')
         def icons():
-            print('icons')
+            """Returns list of icons for the topic visualization nav buttons."""
             with open(get_static_resource_path('static/js/icons.js')) as icons:
                 text = '{0}\n var icons = {1};'\
                     .format(icons.read(), json.dumps(self.icons))
             return text
 
         def _render_template(page):
-            print('render_template')
+            """Helper function for template rendering."""
             response = make_response()
             # response.set_header('Expires', _cache_date())
             response.headers['Expires'] = _cache_date()
@@ -764,13 +778,13 @@ class Application(Flask):
 
         @self.route('/<int:k>')
         def index_redirect(k):
-            print('index_redirect')
+            """Redirects /<k> to /<k>/. Maybe it should be an apache rule, but it's app-level logic."""
             print(k)
             redirect('/{}/'.format(k))
 
         @self.route('/<int:k>/')
         def index(k):
-            print('index')
+            """The primary visualization."""
             if k not in self.topic_range:
                 print('aborting')
                 abort(400, "No model is here for k = {}".format(k))
@@ -786,7 +800,7 @@ class Application(Flask):
         @self.route('/cluster.csv')
         @_set_acao_headers
         def cluster_csv(second=False):
-            print('cluster_csv')
+            """The cluster file. If it doesn't exist, compute it first."""
             filename = kwargs.get('cluster_path')
             print("Retrieving cluster.csv:", filename)
             if not filename or not os.path.exists(filename):
@@ -801,7 +815,7 @@ class Application(Flask):
         @self.route('/description.md')
         @_set_acao_headers
         def description():
-            print('description')
+            """Corpus description file. Sources from config file."""
             filename = kwargs.get('corpus_desc')
             if not filename:
                 response.status = 404
@@ -813,7 +827,8 @@ class Application(Flask):
         
         @self.route('/')
         @_set_acao_headers
-        def cluster():
+        def splash():
+            """ Main page for the entire site. """
             print('cluster')
             with open(get_static_resource_path('templates/master.mustache.html'),
                       encoding='utf-8') as tmpl_file:
@@ -827,8 +842,7 @@ class Application(Flask):
         @self.route('/<filename>')
         @_set_acao_headers
         def send_static(filename):
-            print('send_static')
-            print("in send_static")
+            """Send static resources."""
             # print(get_static_resource_path('static/' + filename))
             # file_name = get_static_resource_path('static/' + filename)
             # with open(get_static_resource_path('static/master.mustache.html'),
@@ -856,6 +870,7 @@ class Application(Flask):
 
         @self.route('/bootstrap-2.3.2/js/<filename>')
         def send_bootstrap2(filename):
+            """ Send bootstrap resources."""
             p = get_static_resource_path('static/lib/bootstrap-2.3.2/js/' + filename)
             print(p[0:(len(filename) * -1)])
 
@@ -863,7 +878,7 @@ class Application(Flask):
 
         @self.route('/fonts/<filename>')
         def send_fonts(filename):
-            print('in send_fonts')
+            """Send font resources."""
             p = ''
             if 'glyphicons' not in filename:
                 p = get_static_resource_path('static/fonts/' + filename)
@@ -872,134 +887,8 @@ class Application(Flask):
             
             return send_from_directory(p[0:(len(filename) * -1)], filename)
 
-        # @self.route('/static/js/<filename>')
-        # def send_static_js(filename):
-        #     print('in send_static_js')
-        #     print(filename)
-
-        #     # with open(get_static_resource_path('static/js/' + filename)) as f:
-        #     #     # text = '{0}\n var icons = {1};'\
-        #     #     #     .format(f.read(), json.dumps(self.f))
-        #     #     text = f.read()
-        #     # return text
-
-        #     p = get_static_resource_path('static/js/' + filename)
-        #     print(p[0:(len(filename) * -1)])
-
-        #     return send_from_directory(p[0:(len(filename) * -1)], filename)
-
-        #     # return send_from_directory('static/js/', filename)
-
-        # @self.route('/static/css/<filename>')
-        # def send_static_css(filename):
-        #     print('in send_static_css')
-        #     print(filename)
-
-        #     # with open(get_static_resource_path('static/css/' + filename)) as f:
-        #     #     text = f.read()
-
-        #     p = get_static_resource_path('static/css/' + filename)
-        #     print(p[0:(len(filename) * -1)])
-
-        #     return send_from_directory(p[0:(len(filename) * -1)], filename)
-            
-        #     # return text
-
-        # @self.route('/static/lib/<filename>')
-        # def send_lib(filename):
-        #     print('in send_lib')
-        #     print(filename)
-        #     print(get_static_resource_path('static/lib/' + filename))
-
-        #     # with open(get_static_resource_path('static/lib/' + filename)) as f:
-        #     #     # text = '{0}\n var icons = {1};'\
-        #     #     #     .format(f.read(), json.dumps(self.f))
-        #     #     text = f.read()
-        #     # return text
-
-        #     p = get_static_resource_path('static/lib/' + filename)
-        #     print(p[0:(len(filename) * -1)])
-
-        #     return send_from_directory(p[0:(len(filename) * -1)], filename)
-
-        #     # return send_from_directory('static/lib/', filename)
-
-        # @self.route('/static/lib/bootstrap-2.3.2/js/<filename>')
-        # def send_bootstrap2_js(filename):
-        #     print('in send_bootstrap_js')
-        #     print(filename)
-
-        #     # with open(get_static_resource_path('static/lib/bootstrap-2.3.2/js/' + filename)) as f:
-        #     #     # text = '{0}\n var icons = {1};'\
-        #     #     #     .format(f.read(), json.dumps(self.f))
-        #     #     text = f.read()
-        #     # return text
-
-        #     p = get_static_resource_path('static/lib/bootstrap-2.3.2/js/' + filename)
-        #     print(p[0:(len(filename) * -1)])
-
-        #     return send_from_directory(p[0:(len(filename) * -1)], filename)
-
-        # @self.route('/static/lib/bootstrap-3.3.6/css/<filename>')
-        # def send_bootstrap3_css(filename):
-        #     print('in send_bootstrap_css')
-        #     print(filename)
-
-        #     # with open(get_static_resource_path('static/lib/bootstrap-3.3.6/css/' + filename)) as f:
-        #     #     # text = '{0}\n var icons = {1};'\
-        #     #     #     .format(f.read(), json.dumps(self.f))
-        #     #     text = f.read()
-        #     # return text
-
-        #     p = get_static_resource_path('static/lib/bootstrap-3.3.6/css/' + filename)
-        #     print(p[0:(len(filename) * -1)])
-
-        #     return send_from_directory(p[0:(len(filename) * -1)], filename)
-
-        # @self.route('/static/lib/bootstrap-3.3.6/js/<filename>')
-        # def send_bootstrap3_js(filename):
-        #     print('in send_bootstrap_js')
-        #     print(filename)
-
-        #     # with open(get_static_resource_path('static/lib/bootstrap-3.3.6/css/' + filename)) as f:
-        #     #     # text = '{0}\n var icons = {1};'\
-        #     #     #     .format(f.read(), json.dumps(self.f))
-        #     #     text = f.read()
-        #     # return text
-
-        #     p = get_static_resource_path('static/lib/bootstrap-3.3.6/js/' + filename)
-        #     print(p[0:(len(filename) * -1)])
-
-        #     return send_from_directory(p[0:(len(filename) * -1)], filename)
-
-        # @self.route('/static/lib/inpho/<filename>')
-        # def send_inpho(filename):
-        #     print('in send_inpho')
-        #     print(filename)
-
-        #     # with open(get_static_resource_path('static/lib/inpho/' + filename)) as f:
-        #     #     # text = '{0}\n var icons = {1};'\
-        #     #     #     .format(f.read(), json.dumps(self.f))
-        #     #     text = f.read()
-        #     # return text
-
-        #     p = get_static_resource_path('static/lib/inpho/' + filename)
-        #     print(p[0:(len(filename) * -1)])
-
-        #     return send_from_directory(p[0:(len(filename) * -1)], filename)
-
-        # @self.route('/static/img/<filename>')
-        # def send_img(filename):
-        #     p = get_static_resource_path('static/img/' + filename)
-        #     print(p[0:(len(filename) * -1)])
-
-        #     return send_from_directory(p[0:(len(filename) * -1)], filename)
-
-        # @self.route('/static/<path:p>')
-        # def send_static():
-        #     print('hi')
-
     def _serve_fulltext(self, corpus_path):
+        """If fulltext is enabled, send the fulltext from the corpus path."""
         @self.route('/fulltext/<doc_id>')
         @_set_acao_headers
         def get_doc(doc_id):
@@ -1024,6 +913,7 @@ class Application(Flask):
                 return send_from_directory(corpus_path, doc_id)
 
     def get_docs(self, docs=None, id_as_key=False, query=None, n=None):
+        """Get list of documents matching a query, specified in JSON format."""
         ctx_md = self.c.view_metadata(self.context_type)
 
         if docs:
@@ -1125,15 +1015,8 @@ def get_host_port(args):
     host = args.host or config.get('www', 'host')
     return host, port
 
-# class WaitressLoggingServer(ServerAdapter):
-#     def run(self, handler): # pragma: no cover
-#         from waitress import serve
-#         if not self.quiet:
-#             from paste.translogger import TransLogger
-#             handler = TransLogger(handler)
-#         serve(handler, host=self.host, port=self.port, **self.options)
-
 def main(args, app=None):
+    """Create and run server."""
     if app is None:
         app = create_app(args)
 
@@ -1165,6 +1048,7 @@ def main(args, app=None):
 
 
 def create_app(args):
+    """ Create Bottle Application"""
     config = topicexplorer.config.read(args.config)
 
     # path variables
@@ -1230,6 +1114,7 @@ def create_app(args):
 
 
 def populate_parser(parser):
+    """Add server submodule to argparse CLI."""
     parser.add_argument('config', type=lambda x: is_valid_configfile(parser, x),
                         help="Configuration file path")
     parser.add_argument('--host', default='127.0.0.1', help='Hostname')
