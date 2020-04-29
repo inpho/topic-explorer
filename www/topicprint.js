@@ -943,7 +943,11 @@ if (url)
       var foreignObject = document.createElementNS(ns, 'foreignObject');
       foreignObject.setAttribute("width", 140);
       foreignObject.setAttribute("height", 140);
-      foreignObject.setAttribute("transform", "translate(20, " + (((d3.keys(topics).length / legendCols) + 1) * 20 + 65) + ")");
+
+      var topicLength = d3.keys(topics).length;
+      var legendCols = Math.max(Math.ceil(d3.keys(topics).length / Math.min(data.length, maxRows)), minCols);
+      foreignObject.setAttribute("transform", "translate(20, " + (((topicLength / legendCols) + 1) * 20 + 65) + ")");
+
       var div = document.createElement('div');
       div.innerHTML = '<Strong>Display Options</strong>';
       var label = document.createElement('label');
