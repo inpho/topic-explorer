@@ -943,9 +943,11 @@ if (url)
       var foreignObject = document.createElementNS(ns, 'foreignObject');
       foreignObject.setAttribute("width", 140);
       foreignObject.setAttribute("height", 140);
+
       var topicLength = d3.keys(topics).length;
       var legendCols = Math.max(Math.ceil(d3.keys(topics).length / Math.min(data.length, maxRows)), minCols);
       foreignObject.setAttribute("transform", "translate(20, " + (((topicLength / legendCols) + 1) * 20 + 65) + ")");
+
       var div = document.createElement('div');
       div.innerHTML = '<Strong>Display Options</strong>';
       var label = document.createElement('label');
@@ -988,24 +990,6 @@ if (url)
         $('#status').hide(500);
         setTimeout(function () { $('#controls').css({ 'top': $('#legend').height() + $('#legend').position().top }).show(); }, 500);
       }, 500);
-
-      $(window).on("scroll", scrollLegend);
-      scrollLegend = function () {
-        var scrollPos = $(window).scrollTop();
-        var chartHeight = $('#chart').position().top;
-        var legendHeight = $('#legend').height();
-        var heightFac = -60;
-        if ((scrollPos - chartHeight - margin.top - heightFac) <= 0) {
-          $('#legend').css({ 'position': 'absolute', 'top': chartHeight });
-          $('#controls').css({ 'position': 'absolute', 'top': legendHeight + chartHeight });
-        } else if ((scrollPos - chartHeight - heightFac) < (margin.top)) {
-          $('#legend').css({ 'position': 'absolute', 'top': scrollPos + heightFac });
-          $('#controls').css({ 'position': 'absolute', 'top': legendHeight + scrollPos + heightFac });
-        } else {
-          $('#legend').css({ 'position': 'fixed', 'top': heightFac });
-          $('#controls').css({ 'position': 'fixed', 'top': legendHeight + heightFac });
-        }
-      }
 
       for (var i = 0; i < icons.length; i++) {
         $(".{0}Icon".format(icons[i])).tooltip({ placement: 'top', title: icon_tooltips[icons[i]], container: 'body', html: true, animation: false });
@@ -1224,19 +1208,38 @@ $.fn.followTo = function (pos) {
     $window = $(window);
 
   $window.scroll(function (e) {
-    if ($window.scrollTop() > pos) {
+    // var height = $this.height();
+    var chartHeight = document.getElementById('chart').offsetHeight;
+    console.log(chartHeight);
+    console.log($window.scrollTop());
+    console.log(pos);
+    var height = document.getElementById('legend').children[0].getBBox().height + document.getElementById('legend').children[1].getBBox().height + 100;
+    console.log(height);
+    // console.log($this.top());
+    console.log("\n");
+    // if ($window.scrollTop() > pos && ($window.scrollTop() - pos + height)
+    if ($window.scrollTop() > (chartHeight + pos - height)) {
+      console.log('yay');
+      console.log(chartHeight + pos - height);
+      console.log($window.scrollTop() - chartHeight);
       $this.css({
         position: 'fixed',
-        top: 120
+        top: (chartHeight + pos - height - $window.scrollTop()) + 'px'
+      });
+    } else if ($window.scrollTop() > pos) {
+      $this.css({
+        position: 'fixed',
+        top: '10px'
       });
     } else {
       $this.css({
         position: 'absolute',
-        top: 405
+        top: pos
       });
     }
   });
 };
 
-$('#legend').followTo(285);
-
+console.log(document.getElementById('chart').offsetTop);
+// $('#legend').followTo(496);
+$('#legend').followTo(document.getElementById('chart').offsetTop);
