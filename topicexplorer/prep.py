@@ -1301,7 +1301,7 @@ def main(args):
     last_scene = None
     while not args.quiet:
         try:
-            Screen.wrapper(gui, catch_interrupt=True, arguments=[last_scene])
+            Screen.wrapper(gui, catch_interrupt=False, arguments=[last_scene])
             break
             # sys.exit(0)
         except ResizeScreenError as e:
