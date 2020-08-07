@@ -282,7 +282,7 @@ d3.csv(base_url + "cluster.csv", function (error, data) {
         .style("fill-opacity", function (d) { return opacity(d.opacity) || 0.7; })
         .on("click", function (d) { window.location.href = base_url + d.k + "/?topic=" + d.topic })
         .attr("title", function (d) {
-          var topic_label = (topics[d.k][d.topic].label) ? topics[d.k][d.topic].label : ('Topic ' + d.topic);
+          var topic_label = (!topics[d.k][d.topic].label) ?  ('Topic ' + d.topic) : topics[d.k][d.topic].label ;
           return "<strong>" + topic_label + "</strong> (k=" + d.k + ")"
             + "<br />" + topics[d.k][d.topic].words;
         })
@@ -292,8 +292,9 @@ d3.csv(base_url + "cluster.csv", function (error, data) {
         .attr("x", function (d) { return x(d[xVar]); })
         .attr("y", function (d) { return y(d[yVar]); })
         .attr('text-anchor', 'middle')
+        .attr('dominant-baseline', 'middle')
         .text(function (d) {
-          return (topics[d.k][d.topic].label) ? topics[d.k][d.topic].label : ('Topic ' + d.topic);
+          return (topics[d.k][d.topic].label) ? topics[d.k][d.topic].label : '';
         });
 
       $(".dot").tooltip({ container: 'body', trigger: 'manual', animation: false, html: true });
