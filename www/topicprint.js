@@ -840,7 +840,7 @@ if (url)
         .on("click", function (d) {
           //Handles when to update the descriptor based off which mode it is in and what topic bar was clicked on.
           //Indicates whether the model is sorted by proportion of a specific topic or not.
-          var roottopic_label = (!topics[roottopic].label) ?  ('Topic ' + roottopic) : topics[roottopic].label;
+          var roottopic_label = (!topics[roottopic] || !topics[roottopic].label) ?  ('Topic ' + roottopic) : topics[roottopic].label;
           var topic_label = (!topics[d.name].label) ? ('Topic ' + d.name) : topics[d.name].label;
           if (roottopic == null) {
             $("#focalDoc").text("Top 40 documents most similar to the focal document sorted by proportion of " + topic_label);
@@ -901,7 +901,7 @@ if (url)
         .on("click", function (d) {
           //Handles when to update the descriptor based off which mode it is in and what topic bar was clicked on.
           //Indicates whether the model is sorted by proportion of a specific topic or not.
-          var roottopic_label = (!topics[roottopic].label) ?  ('Topic ' + roottopic) : topics[roottopic].label;
+          var roottopic_label = (!topics[roottopic] || !topics[roottopic].label) ?  ('Topic ' + roottopic) : topics[roottopic].label;
           var topic_label = (!topics[d].label) ? ('Topic ' + d) : topics[d].label;
           if (roottopic == null) {
             $("#focalDoc").text("Top 40 documents most similar to the focal document sorted by proportion of " + topic_label);
