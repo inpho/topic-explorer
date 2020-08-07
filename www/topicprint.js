@@ -620,7 +620,7 @@ var yAxis = d3.svg.axis()
 
 function computeWidth(numCols) {
   $('#legend').attr("width", margin.right + (numCols * 55) + 20 + margin.right);
-  $('#chart #main').attr("width", Math.max($(window).width() - $('#legend').width() - 200 + margin.right, 750));
+  $('#chart #mainChart').attr("width", Math.max($(window).width() - $('#legend').width() - 200 + margin.right, 750));
   $('#controls').css("left", Math.max($(window).width() - $('#legend').width() - 200 + margin.right, 750) + 40);
   width = Math.max($(window).width() - $('#legend').width() - 200 + margin.right, 750) - margin.left - margin.right;
   x = d3.scale.linear()
@@ -649,7 +649,7 @@ var original_root;
 var svg = d3.select("#chart").append("svg")
   .attr("width", width + margin.left + margin.right)
   .attr("height", height + margin.top + margin.bottom)
-  .attr("id", "main")
+  .attr("id", "mainChart")
   .attr("class", "main")
   .append("g")
   .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
@@ -1257,6 +1257,6 @@ $.fn.followTo = function (pos) {
   });
 };
 
-console.log(document.getElementById('chart').offsetTop);
+//console.log(document.getElementById('chart').offsetTop);
 // $('#legend').followTo(496);
-$('#legend').followTo(document.getElementById('chart').offsetTop);
+//$('#legend').followTo(document.getElementById('chart').offsetTop);
