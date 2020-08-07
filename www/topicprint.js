@@ -359,7 +359,7 @@ $(window).load(function () {
     if (roottopic == null) {
       $("#focalDoc").text("");
     } else {
-      var roottopic_label = (topics[roottopic].label) ? topics[roottopic].label : ('Topic ' + roottopic);
+      var roottopic_label = (!topics[roottopic].label) ? ('Topic ' + roottopic) : topics[roottopic].label;
       $("#focalDoc").text("Top 40 documents most similar to " + roottopic_label);
     }
     topDoc.style.display = 'none';
@@ -370,7 +370,7 @@ $(window).load(function () {
 
       $("#focalDoc").text("Top 40 documents most similar to the focal document");
     } else {
-      var roottopic_label = (topics[roottopic].label) ? topics[roottopic].label : ('Topic ' + roottopic);
+      var roottopic_label = (!topics[roottopic].label) ? ('Topic ' + roottopic) : topics[roottopic].label;
       $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic_label);
     }
   }
