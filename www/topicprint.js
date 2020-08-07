@@ -269,7 +269,8 @@ $('#words').on('input', function () {
   }, 500);
 });
 
-var k_urls = ks.map(function (k) { return '../' + k + "/topics.json" });
+var k_urls = ks.map(function (k) { return '../' + k + "/topics.json" })
+               .concat(ks.map(function (k) { return '' + k + "/topics.json" }));
 var topics = Promise.all(k_urls.map($.getJSON)).then(function (data) {
   var t = {};
   data.forEach(function (d, i) {
@@ -281,7 +282,8 @@ var topics = Promise.all(k_urls.map($.getJSON)).then(function (data) {
 
 var colors = {};
 var color = d3.scale.category20();
-d3.csv('../cluster.csv', function (error, data) {
+
+var process_colors = function (error, data) {
   var prev = data[0].k;
   var currentTop = 0;
   data.forEach(function (d) {
@@ -291,6 +293,11 @@ d3.csv('../cluster.csv', function (error, data) {
     if (colors[d.k] == undefined) colors[d.k] = {};
     colors[d.k][d.topic] = d.color;
   })
+};
+
+d3.csv('../cluster.csv', function (error, data) {
+  if (error) d3.csv('cluster.csv', process_colors);
+  else process_colors(error, data);
 });
 
 function gettopics(words) {
@@ -895,7 +902,7 @@ if (url)
           //Handles when to update the descriptor based off which mode it is in and what topic bar was clicked on.
           //Indicates whether the model is sorted by proportion of a specific topic or not.
           var roottopic_label = (!topics[roottopic].label) ?  ('Topic ' + roottopic) : topics[roottopic].label;
-          var topic_label = (!topics[d.name].label) ? ('Topic ' + d.name) : topics[d.name].label;
+          var topic_label = (!topics[d].label) ? ('Topic ' + d) : topics[d].label;
           if (roottopic == null) {
             $("#focalDoc").text("Top 40 documents most similar to the focal document sorted by proportion of " + topic_label);
           } else if (roottopic == d) {

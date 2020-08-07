@@ -7,6 +7,8 @@
   // redirect for error introduced by CAS
   if (window.location.href.includes('%3d'))
     window.location.href = window.location.href.replace('%3d','=');
+  
+  var ks = [{{#topic_range}}{{.}}, {{/topic_range}}];
   </script>
 
   <script src="/lib/jquery-2.2.4.min.js"></script>
@@ -20,8 +22,9 @@
   <script src="/lib/inpho/util.js"></script>
   <script src="/fulltext.js"></script>
   <script src="/htrc.js"></script>
-  <script src="/topicprint.js"></script>
   <script src="../icons.js"></script>
+  <script src="icons.js"></script>
+  <script src="/topicprint.js"></script>
   <link rel="stylesheet" type="text/css" href="/lib/bootstrap-3.3.6/css/bootstrap.min.css" />
   <!-- <link rel="stylesheet" type="text/css" href="/lib/bootstrap-2.3.2/css/bootstrap.min.css" /> -->
   <link rel='stylesheet prefetch' href='/css/simple-sidebar.css'>
@@ -55,7 +58,6 @@
     </div>
   
     <script>
-    var ks = [{{#topic_range}}{{.}}, {{/topic_range}}];
     $('#sidebar-wrapper li a').tooltip();
     </script>
     
