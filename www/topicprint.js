@@ -312,10 +312,12 @@ function gettopics(words) {
       $('#words').parents('.form-group').removeClass('has-error');
       $('#words').parents('.form-group').removeClass('has-warning');
       $('#words').parents('.form-group').addClass('has-success');
+      console.log(data);
       Promise.resolve(topics).then(function (val) {
         for (var i = 0; i < 10; i++) {
           var k = data[i]['k'];
           var t = data[i]['t'];
+          var topic_label = (data[i]['label']) ? data[i]['label'] : ('Topic ' + t);
 
           /*$('#wordsDl').append('<dt><a href="' + k + '/?topic=' + t + '">' +
             'Topic ' + t + 
@@ -323,7 +325,7 @@ function gettopics(words) {
           $('#wordsDl').append('<dd>' + 
             val[k][t] + '</dd>'); }*/
           $('#wordsDl').append('<div class="col-xs-4"><h4><a href="' + k + '/?topic=' + t + '">' +
-            'Topic ' + t +
+            topic_label +
             ' <small>(k = ' + k + ')</small></a></h4><p>' +
             val[k][t] + '</p></div>');
         }
@@ -350,16 +352,19 @@ $(window).load(function () {
     if (roottopic == null) {
       $("#focalDoc").text("");
     } else {
-      $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic);
+      var roottopic_label = (topics[roottopic].label) ? topics[roottopic].label : ('Topic ' + roottopic);
+      $("#focalDoc").text("Top 40 documents most similar to " + roottopic_label);
     }
     topDoc.style.display = 'none';
   }
   else {
     topDoc.style.display = 'block';
     if (roottopic == null) {
+
       $("#focalDoc").text("Top 40 documents most similar to the focal document");
     } else {
-      $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic);
+      var roottopic_label = (topics[roottopic].label) ? topics[roottopic].label : ('Topic ' + roottopic);
+      $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic_label);
     }
   }
 });
@@ -828,14 +833,16 @@ if (url)
         .on("click", function (d) {
           //Handles when to update the descriptor based off which mode it is in and what topic bar was clicked on.
           //Indicates whether the model is sorted by proportion of a specific topic or not.
+          var roottopic_label = (!topics[roottopic].label) ?  ('Topic ' + roottopic) : topics[roottopic].label;
+          var topic_label = (!topics[d.name].label) ? ('Topic ' + d.name) : topics[d.name].label;
           if (roottopic == null) {
-            $("#focalDoc").text("Top 40 documents most similar to the focal document sorted by proportion of topic " + d.name);
+            $("#focalDoc").text("Top 40 documents most similar to the focal document sorted by proportion of " + topic_label);
           } else if (roottopic == d.name) {
             topDoc.style.display = 'none';
-            $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic);
+            $("#focalDoc").text("Top 40 documents most similar to " + roottopic_label);
           } else {
             topDoc.style.display = 'block';
-            $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic + " sorted by proportion of topic " + d.name);
+            $("#focalDoc").text("Top 40 documents most similar to " + roottopic_label + " sorted by proportion of " + topic_label);
           }
           topicSort(d.name);
         })
@@ -873,7 +880,8 @@ if (url)
         //.attr("data-toggle", "tooltip")
         .attr("data-placement", "right")
         .attr("title", function (d) {
-          return "<strong>Topic {0}:</strong>".format(d) + "<br />"
+          var topic_label = (topics[d].label) ? topics[d].label : ('Topic ' + d);
+          return "<strong>{0}:</strong>".format(topic_label) + "<br />"
             + d3.keys(topics[d].words).sort(function (a, b) {
               if (topics[d].words[a] > topics[d].words[b])
                 return -1;
@@ -886,14 +894,16 @@ if (url)
         .on("click", function (d) {
           //Handles when to update the descriptor based off which mode it is in and what topic bar was clicked on.
           //Indicates whether the model is sorted by proportion of a specific topic or not.
+          var roottopic_label = (!topics[roottopic].label) ?  ('Topic ' + roottopic) : topics[roottopic].label;
+          var topic_label = (!topics[d.name].label) ? ('Topic ' + d.name) : topics[d.name].label;
           if (roottopic == null) {
-            $("#focalDoc").text("Top 40 documents most similar to the focal document sorted by proportion of topic " + d);
+            $("#focalDoc").text("Top 40 documents most similar to the focal document sorted by proportion of " + topic_label);
           } else if (roottopic == d) {
             topDoc.style.display = 'none';
-            $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic);
+            $("#focalDoc").text("Top 40 documents most similar to " + roottopic_label);
           } else {
             topDoc.style.display = 'block';
-            $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic + " sorted by proportion of topic " + d);
+            $("#focalDoc").text("Top 40 documents most similar to " + roottopic_label + " sorted by proportion of " + topic_label);
           }
           topicSort(d);
         })

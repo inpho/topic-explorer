@@ -30,7 +30,8 @@ def read(filename):
         'corpus_desc' : None,
         'home_link' : '/',
         'lang' : None, 
-        'tokenizer': 'default'
+        'tokenizer': 'default',
+        'label_file' : None
     }, allow_no_value=True)
 
     with open(filename, encoding='utf8') as configfile:
