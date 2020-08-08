@@ -147,7 +147,7 @@ var fingerprint = {
         }
         return false;
       }
-      d3.json(host + "/topics.json", function (error_top, topics) {
+      d3.json(host + "/topics.json", async function (error_top, topics) {
         $('#fingerprintModal #status .bar', '#bar' + k).css('width', '75%').text('Rendering chart...');
         if (error_top) {
           var isError = $('.bar.bar-danger ');
@@ -172,6 +172,8 @@ var fingerprint = {
           .enter().append("g")
           .attr("class", "doc")
           .attr("id",data);
+
+        colors = await colors;
 
         // Draw topic bars
         doc.selectAll("rect")
@@ -280,25 +282,27 @@ var topics = Promise.all(k_urls.map($.getJSON)).then(function (data) {
   return t;
 });
 
-var colors = {};
 var color = d3.scale.category20();
 
-var process_colors = function (error, data) {
+var colors = d3.promise.csv('../cluster.csv').then(function(data) {
+  var c = {};
   var prev = data[0].k;
   var currentTop = 0;
   data.forEach(function (d) {
     if (d.k != prev) { prev = d.k; currentTop = 0; }
     d.topic = currentTop++;
     d.color = color(d.cluster);
-    if (colors[d.k] == undefined) colors[d.k] = {};
-    colors[d.k][d.topic] = d.color;
-  })
-};
+    if (c[d.k] == undefined) c[d.k] = {};
+    c[d.k][d.topic] = d.color;
+  });
+  console.log('Finished processing CLUSTER.CSV');
+  return c;
+});
 
-d3.csv('../cluster.csv', function (error, data) {
+/*d3.csv('../cluster.csv', function (error, data) {
   if (error) d3.csv('cluster.csv', process_colors);
   else process_colors(error, data);
-});
+});*/
 
 function gettopics(words) {
   var query = words.join('|');
@@ -359,6 +363,7 @@ $(window).load(function () {
     if (roottopic == null) {
       $("#focalDoc").text("");
     } else {
+      console.log(topics);
       var roottopic_label = (!topics[roottopic].label) ? ('Topic ' + roottopic) : topics[roottopic].label;
       $("#focalDoc").text("Top 40 documents most similar to " + roottopic_label);
     }
@@ -704,7 +709,7 @@ if (url)
       $('#status .bar').addClass('progress-bar-danger').text(errormsg);
       return false;
     }
-    d3.json("topics.json", function (error_top, topics) {
+    d3.json("topics.json", async function (error_top, topics) {
       $('#status .bar').css('width', '75%').text('Rendering chart...');
       if (error_top) {
         $('#status .progress-bar').removeClass('active progress-bar-striped');
@@ -729,6 +734,7 @@ if (url)
       dataset = data;
       original_root = data[0];
       if (roottopic) docid = data[0]['doc'];
+      colors = (await colors);
 
       svg.append("g")
         .attr("class", "x axis")
@@ -1017,7 +1023,7 @@ if (url)
     });
   });
 
-function scaleTopics() {
+async function scaleTopics() {
   var numTopics = Object.keys(dataset[0].topics).length;
   var k = numTopics;
   console.log(k);
@@ -1026,6 +1032,7 @@ function scaleTopics() {
     negdelay = function (d, i) { return (numTopics - i) * (500 / numTopics); };
 
   calculateTopicMap(dataset, !this.checked);
+  colors = await colors;
 
   $(".doc").each(function (i, elt) {
     $(elt).children()
@@ -1149,13 +1156,14 @@ function topicSort(topic) {
   redrawBars(sortFn);
 }
 
-function redrawBars(sortFn) {
+async function redrawBars(sortFn) {
   $("#legend .hover").removeClass("hover");
   var numTopics = Object.keys(dataset[0].topics).length;
   var k = numTopics;
   var delay = function (d, i) { return i * (1000 / numTopics); },
     negdelay = function (d, i) { return (numTopics - i) * (1000 / numTopics); };
   calculateTopicMap(dataset, !($('.scale')[0].checked), sortFn);
+  colors = await colors;
 
   svg.selectAll(".doc")
     .selectAll("rect")
