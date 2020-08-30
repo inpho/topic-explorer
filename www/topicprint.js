@@ -817,6 +817,22 @@ if (url)
 
       var k = d3.keys(topics).length;
 
+      // create gradients
+      console.log('gradeint creation '+k);
+      console.log(colors);
+      console.log('gradient colors ' + colors[k].length);
+      for (var i = 0; i < k; i++) {
+        var mainGradient = svg.append('linearGradient')
+          .attr('id', 'gradient'+i);
+        mainGradient.append('stop')
+          .attr('stop-color', colors[k][i])
+          .attr('offset', '0');
+        mainGradient.append('stop')
+          .attr('stop-color', hexToRgbA(colors[k][i], .7))
+          .attr('offset', '1');
+        console.log('added gradient'+i+' for ' + colors[k][i]);
+      }
+
       // Draw topic bars
       doc.selectAll("rect")
         .data(function (d) { return d.topicMap; })
@@ -1205,16 +1221,8 @@ function hexToRgbA(hex, a) {
   throw new Error('Bad Hex');
 }
 
-function barColors(myColor, myId, svg) {
-  var mainGradient = svg.append('linearGradient')
-    .attr('id', myId);
-  mainGradient.append('stop')
-    .attr('stop-color', myColor)
-    .attr('offset', '0');
-  mainGradient.append('stop')
-    .attr('stop-color', hexToRgbA(myColor, .7))
-    .attr('offset', '1');
-  return "url(#" + myId + ")";
+function barColors(color, topicId, svg) {
+  return "url(#gradient" + topicId + ")";
 }
 
 
