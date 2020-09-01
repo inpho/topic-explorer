@@ -843,11 +843,7 @@ if (url)
         .attr("width", function (d) { return x(d.x1) - x(d.x0); })
         .attr("class", function (d) { return "top_" + d.name; })
         .on("mouseover", bar_mouseover)
-        .on("mouseout", function (d) {
-          var parent = $(this).parent();
-          $(".docLabel", parent).removeClass("hover");
-          $(".top_" + d.name).removeClass('hover');
-        })
+        .on("mouseout", bar_mouseout)
         .on("click", function (d) {
           //Handles when to update the descriptor based off which mode it is in and what topic bar was clicked on.
           //Indicates whether the model is sorted by proportion of a specific topic or not.
@@ -1041,6 +1037,13 @@ function bar_mouseover(d) {
   $('.legend rect.top_' + d.name).tooltip('show');
 }
 
+function bar_mouseout(d) {
+  var parent = $(this).parent();
+  $(".docLabel", parent).removeClass('hover');
+  $(".top_" + d.name).removeClass('hover');
+}
+
+
 
 async function scaleTopics() {
   var numTopics = Object.keys(dataset[0].topics).length;
@@ -1181,11 +1184,7 @@ async function redrawBars(sortFn) {
     .data(function (d) { return d.topicMap; })
     .style("fill", function (d) { return barColors(colors[k][d.name], d.name, svg); })
     .on("mouseover", bar_mouseover)
-    .on("mouseout", function(d) {
-        var parent = $(this).parent();
-        $(".docLabel", parent).removeClass('hover');
-        $(".top_" + d.name).removeClass('hover');
-      })
+    .on("mouseout", bar_mouseout)
     .transition().duration(1000).ease("linear").delay(this.checked ? delay : negdelay)
     .attr("x", function (d) { return x(d.x0); })
     .attr("width", function (d) { return x(d.x1) - x(d.x0); })
