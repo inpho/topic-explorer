@@ -842,18 +842,7 @@ if (url)
         .attr("y", 10)
         .attr("width", function (d) { return x(d.x1) - x(d.x0); })
         .attr("class", function (d) { return "top_" + d.name; })
-        .on("mouseover", function (d) {
-          // SVG element z-index determined by render order, not style sheet
-          // so element must be reappended to the end on hover so border 
-          // is not occluded
-          var parent = $(this).parent();
-          $(this).detach().appendTo(parent);
-          $(".docLabel", parent).detach().appendTo(parent);
-          $(".docLabel", parent).addClass("hover");
-          $('.legend rect').not('.top_' + d.name).tooltip('hide');
-          $(".top_" + d.name).addClass('hover');
-          $('.legend rect.top_' + d.name).tooltip('show');
-        })
+        .on("mouseover", bar_mouseover)
         .on("mouseout", function (d) {
           var parent = $(this).parent();
           $(".docLabel", parent).removeClass("hover");
@@ -1039,6 +1028,20 @@ if (url)
     });
   });
 
+function bar_mouseover(d) {
+  // SVG element z-index determined by render order, not style sheet
+  // so element must be reappended to the end on hover so border 
+  // is not occluded
+  var parent = $(this).parent();
+  $(this).detach().appendTo(parent);
+  $(".docLabel", parent).detach().appendTo(parent);
+  $(".docLabel", parent).addClass("hover");
+  $('.legend rect').not('.top_' + d.name).tooltip('hide');
+  $(".top_" + d.name).addClass('hover');
+  $('.legend rect.top_' + d.name).tooltip('show');
+}
+
+
 async function scaleTopics() {
   var numTopics = Object.keys(dataset[0].topics).length;
   var k = numTopics;
@@ -1062,18 +1065,7 @@ async function scaleTopics() {
     .selectAll("rect")
     .data(function (d) { return d.topicMap; })
     .style("fill", function (d) { return barColors(colors[k][d.name], d.name, svg); })
-    .on("mouseover", function(d) {
-        // SVG element z-index determined by render order, not style sheet
-        // so element must be reappended to the end on hover so border 
-        // is not occluded
-        var parent = $(this).parent();
-        $(this).detach().appendTo(parent);
-        $(".docLabel", parent).detach().appendTo(parent);
-        $(".docLabel", parent).addClass("hover");
-        $('.legend rect').not('.top_' + d.name).tooltip('hide');
-        $(".top_" + d.name).addClass('hover');
-        $('.legend rect.top_' + d.name).tooltip('show');
-      })
+    .on("mouseover", bar_mouseover)
     .on("mouseout", function(d) {
         var parent = $(this).parent();
         $(".docLabel", parent).removeClass('hover');
