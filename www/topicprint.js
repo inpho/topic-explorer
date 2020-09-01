@@ -1180,18 +1180,7 @@ async function redrawBars(sortFn) {
     .selectAll("rect")
     .data(function (d) { return d.topicMap; })
     .style("fill", function (d) { return barColors(colors[k][d.name], d.name, svg); })
-    .on("mouseover", function(d) {
-        // SVG element z-index determined by render order, not style sheet
-        // so element must be reappended to the end on hover so border 
-        // is not occluded
-        var parent = $(this).parent();
-        $(this).detach().appendTo(parent);
-        $(".docLabel", parent).detach().appendTo(parent);
-        $(".docLabel", parent).addClass("hover");
-        $('.legend rect').not('.top_' + d.name).tooltip('hide');
-        $(".top_" + d.name).addClass('hover');
-        $('.legend rect.top_' + d.name).tooltip('show');
-      })
+    .on("mouseover", bar_mouseover)
     .on("mouseout", function(d) {
         var parent = $(this).parent();
         $(".docLabel", parent).removeClass('hover');
