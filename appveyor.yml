@@ -17,6 +17,7 @@ install:
   - "%PYTHON%\\python.exe -m conda install -q --yes cython scikit-learn pandas" # for vsm 
   - "%PYTHON%\\python.exe -c \"import nltk; nltk.download('stopwords'); nltk.download('punkt')\""
   - "%PYTHON%\\python.exe -m pip install unittest2 nose wget"
+  - "%PYTHON%\\python.exe -m pip install -e git+https://github.com/peterbrittain/asciimatics.git@fcedb4947933de7e1507ec0dee8ca7a3f466928a#egg=asciimatics"
   - "%PYTHON%\\python.exe -m pip install ."
 
 build: off

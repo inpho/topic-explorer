@@ -56,52 +56,51 @@ def test_get_candidate_words():
         corpus, -low_freq, words=low_words)
     assert len(mask_words) == 0
 
-@patch('topicexplorer.prep.input')
-def test_get_high_filter(input_mock):
-    input_mock.side_effect = ['3', 'y']
-    high_filter, candidates = topicexplorer.prep.get_high_filter(corpus)
-    assert high_filter == 3
+def test_get_high_filter():
+    # Test with high filter of 3
+    items, counts = topicexplorer.prep.get_corpus_counts(corpus)
+    candidates, filtered = topicexplorer.prep.get_high_filter_stops(corpus, words=set(), items=items, counts=counts, num=3)
+    assert len(corpus.words) - len(candidates) == 3
     assert candidates == ['I']
     
-    # Test selection of all words
-    input_mock.side_effect = ['3', '1', '3', 'y']
-    high_filter, candidates = topicexplorer.prep.get_high_filter(corpus)
-    assert high_filter == 3
-    assert candidates == ['I']
-    
-    # Test not accept
-    input_mock.side_effect = ['3', 'n', '3', 'y']
-    high_filter, candidates = topicexplorer.prep.get_high_filter(corpus)
-    assert high_filter == 3
-    assert candidates == ['I']
+    # Test with high filter of 0
+    candidates, filtered = topicexplorer.prep.get_high_filter_stops(corpus, words=set(), items=items, counts=counts, num=0)
+    assert len(corpus.words) - len(candidates) == 4
+    assert candidates == []
 
-    # Test invalid action
-    input_mock.side_effect = ['blahhhh', '3', 'y']
-    high_filter, candidates = topicexplorer.prep.get_high_filter(corpus)
-    assert high_filter == 3
-    assert candidates == ['I']
+    # Test with high filter of 1, should return invalid
+    t = unittest.TestCase('run')
+    with t.assertRaises(ValueError):
+        candidates, filtered = topicexplorer.prep.get_high_filter_stops(corpus, words=set(), items=items, counts=counts, num=1)
+        assert len(corpus.words) - len(candidates) == 0
+        assert candidates == ['I', 'came', 'conquered', 'saw']
 
-@patch('topicexplorer.prep.input')
-def test_get_low_filter(input_mock):
-    input_mock.side_effect = ['1', 'y']
-    low_filter, candidates = topicexplorer.prep.get_low_filter(corpus)
-    assert low_filter == 1 
+    # Test with high filter of 100
+    candidates, filtered = topicexplorer.prep.get_high_filter_stops(corpus, words=set(), items=items, counts=counts, num=100)
+    assert len(corpus.words) - len(candidates) == 4
+    assert candidates == []
+
+def test_get_low_filter():
+    # Test with low filter of 1
+    items, counts = topicexplorer.prep.get_corpus_counts(corpus)
+    candidates, filtered = topicexplorer.prep.get_low_filter_stops(corpus, words=set(), items=items, counts=counts, num=1)
+    assert len(corpus.words) - len(candidates) == 1 
     assert all(w in candidates for w in ['came', 'saw', 'conquered'])
    
-    # Test selection of all words
-    input_mock.side_effect = ['1', '3', '1', 'y']
-    low_filter, candidates = topicexplorer.prep.get_low_filter(corpus)
-    assert low_filter == 1
-    assert all(w in candidates for w in ['came', 'saw', 'conquered'])
+    # Test with low filter of 3
+    t = unittest.TestCase('run')
+    with t.assertRaises(ValueError):
+        candidates, filtered = topicexplorer.prep.get_low_filter_stops(corpus, words=set(), items=items, counts=counts, num=3)
+        assert len(corpus.words) - len(candidates) == 0
+        assert all(w in candidates for w in ['came', 'saw', 'conquered', 'I'])  
 
-    # Test not accept
-    input_mock.side_effect = ['1', 'n', '1', 'y']
-    low_filter, candidates = topicexplorer.prep.get_low_filter(corpus)
-    assert low_filter == 1
-    assert all(w in candidates for w in ['came', 'saw', 'conquered'])
+    # Test with low filter of 0
+    candidates, filtered = topicexplorer.prep.get_low_filter_stops(corpus, words=set(), items=items, counts=counts, num=0)
+    assert len(corpus.words) - len(candidates) == 4
+    assert all(w in candidates for w in [])
 
-    # Test invalid action
-    input_mock.side_effect = ['blahhhh', '1', 'y']
-    low_filter, candidates = topicexplorer.prep.get_low_filter(corpus)
-    assert low_filter == 1
-    assert all(w in candidates for w in ['came', 'saw', 'conquered'])
+    # Test with low filter of 100
+    with t.assertRaises(ValueError):
+        candidates, filtered = topicexplorer.prep.get_low_filter_stops(corpus, words=set(), items=items, counts=counts, num=100)
+        assert len(corpus.words) - len(candidates) == 0
+        assert all(w in candidates for w in ['came', 'saw', 'conquered', 'I'])
