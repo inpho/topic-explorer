@@ -19,7 +19,7 @@ scikit_learn>=0.18.1
 scipy>=0.19.0
 snakeviz>=0.4.0
 sortedcontainers>=1.5.7
-ujson==1.35
+ujson==5.4.0
 Unidecode
 vsm>=0.4.15
 waitress>=1.0.0
@@ -32,3 +32,4 @@ importlib==1.0.4; python_version=='2.7'
 
 pywin32>=220; sys_platform=='win32'
 win_unicode_console; sys_platform=='win32'
+mistune>=2.0.3 # not directly required, pinned by Snyk to avoid a vulnerability
