@@ -287,8 +287,8 @@ d3.csv(base_url + "cluster.csv", function (error, data) {
             + "<br />" + topics[d.k][d.topic].words;
         })
         .on("mouseover", function (d) { $(this).tooltip('show') })
-        .on("mouseout", function (d) { $(this).tooltip('hide') });
-      node.append("text")
+        .on("mouseout", function (d) { $(this).tooltip('hide') })
+      .append("text")
         .attr("x", function (d) { return x(d[xVar]); })
         .attr("y", function (d) { return y(d[yVar]); })
         .attr('text-anchor', 'middle')
@@ -338,6 +338,7 @@ d3.csv(base_url + "cluster.csv", function (error, data) {
   });
 
   function tick(e) {
+    node = svg.selectAll(".dot");
     node.each(moveTowardDataPosition(e.alpha));
 
     if (checkbox.node().checked) node.each(collide(e.alpha));
