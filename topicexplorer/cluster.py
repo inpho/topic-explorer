@@ -52,8 +52,8 @@ class dimensionReduce(object):
             raise IndexError("No topic range")
         else:
             keys = list(self.model_v.keys())
-            return np.vstack(self.model_v[keys[i]].phi.T 
-                for i in np.argsort(keys))
+            return np.vstack([self.model_v[keys[i]].phi.T 
+                for i in np.argsort(keys)])
             """
             temp_merge = self.model_v[sorted(self.model_v.keys())[0]].phi.T
             for i in range(1,len(self.topic_range)):
