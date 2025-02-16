@@ -1,6 +1,5 @@
 
-
-.scale, label:has(> .scale), .y.axis text {
+.y.axis text {
   visibility: hidden;
 }
 .y.axis g .icon {
@@ -44,9 +43,10 @@
     stroke: #000;
     shape-rendering: crispEdges;
 }
-/*.docLabel{
+.docLabel{
+  font:11px sans-serif;  
   pointer-events: none;
-}*/
+}
 
 rect {
   opacity: 0.6;
@@ -77,9 +77,6 @@ rect:hover, .legend.hover rect, .legend.selected rect {
 .selected text, .hover text {
   font-weight: bold;
 }
-/*text.hover.docLabel {
-    font-weight: bold;
-}*/
 .doc text {
   font-size: 18px;
   }
@@ -99,7 +96,7 @@ rect:hover, .legend.hover rect, .legend.selected rect {
 .primary {
   text-transform: uppercase;
 }
-.title{ /* text.hover */
+text.hover, .title{ 
   font-weight: bold;
   }
 /*
@@ -164,9 +161,9 @@ h1 a, h1 a:hover {
 .popover {
   z-index: 1100;
 }
-/*h2 {
+h2 {
     margin-top: -25px;    
-}*/
+}
 
 .bar-container {
   height:25px;  
