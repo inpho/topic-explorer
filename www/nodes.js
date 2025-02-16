@@ -288,14 +288,14 @@ d3.csv(base_url + "cluster.csv", function (error, data) {
         })
         .on("mouseover", function (d) { $(this).tooltip('show') })
         .on("mouseout", function (d) { $(this).tooltip('hide') });
-      node.append("text")
+/*      node.append("text")
         .attr("x", function (d) { return x(d[xVar]); })
         .attr("y", function (d) { return y(d[yVar]); })
         .attr('text-anchor', 'middle')
         .attr('dominant-baseline', 'middle')
         .text(function (d) {
           return (topics[d.k][d.topic].label) ? topics[d.k][d.topic].label : '';
-        });
+        }); */
 
       $(".dot").tooltip({ container: 'body', trigger: 'manual', animation: false, html: true });
 
@@ -338,6 +338,7 @@ d3.csv(base_url + "cluster.csv", function (error, data) {
   });
 
   function tick(e) {
+    node = svg.selectAll(".dot");
     node.each(moveTowardDataPosition(e.alpha));
 
     if (checkbox.node().checked) node.each(collide(e.alpha));
