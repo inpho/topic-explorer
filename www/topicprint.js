@@ -810,7 +810,7 @@ if (url)
       label2.style.left = "20px";
 
       document.body.append(label2);
-      d3.select(".scale").on("change", scaleTopics);
+      $(".scale").change(scaleTopics);
 
       calculateTopicMap(data, !($('.scale')[0].checked), function (a, b) { return data[0].topics[b] - data[0].topics[a]; });
 
@@ -1006,7 +1006,7 @@ if (url)
           .attr("width", function (d) { return x(d.x1) - x(d.x0); });
       }
 
-      d3.select(".sort").on("change", alphabetSort);
+      $(".sort").change(alphabetSort);
 
       $('#status .bar').addClass('bar-success').css('width', '100%').text("Complete!");
       setTimeout(function () {
@@ -1103,6 +1103,7 @@ function sortDataset(sortFn) {
 
 function alphabetSort() {
   // Copy-on-write since tweens are evaluated after a delay.
+  console.log("alphabet sorting");
   if (this.checked)
     sortDataset(function (a, b) { return d3.ascending(a.label, b.label); });
   else
