@@ -426,8 +426,8 @@ if (q) {
   q = q.replace(/\|/g, ' ');
 }
 
-$('#doc').css('font-weight', 'bold');
-$('#doc').on('change', function () { $(this).css('font-weight', 'normal') });
+//$('#doc').css('font-weight', 'bold');
+//$('#doc').on('change', function () { $(this).css('font-weight', 'normal') });
 
 var docid = inpho.util.getValueForURLParam('doc') || null;
 if (docid) {
@@ -764,14 +764,13 @@ if (url)
 
       var ticks = svg.select(".y.axis").selectAll("g")
         .on("mouseenter", function (d) {
-          $('text', this).attr('text-decoration', 'underline')
-            .attr('font-weight', 'bold');
+          $('text', this).attr('font-weight', 'bold');
           svg.selectAll(".doc")
             .filter(function (doc, i) { return doc.doc == d })
             .attr("class", function (d) { return ((q == null && d.doc == docid && roottopic == null) ? "doc primary" : "doc") + " hover" });
         })
         .on("mouseleave", function (d) {
-          $('text', this).removeAttr('text-decoration')
+          $('text', this)
             .removeAttr('font-weight');
           svg.selectAll(".doc")
             .filter(function (doc, i) { return doc.doc == d })
