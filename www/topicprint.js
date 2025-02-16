@@ -271,8 +271,10 @@ $('#words').on('input', function () {
   }, 500);
 });
 
-var k_urls = ks.map(function (k) { return '../' + k + "/topics.json" })
-               .concat(ks.map(function (k) { return '' + k + "/topics.json" }));
+//var k_urls = ks.map(function (k) { return '../' + k + "/topics.json" });
+//               .concat(ks.map(function (k) { return '' + k + "/topics.json" }));
+var k_urls = ks.map(function (k) { return '' + k + "/topics.json" });
+console.log(k_urls);
 var topics = Promise.all(k_urls.map($.getJSON)).then(function (data) {
   var t = {};
   data.forEach(function (d, i) {
