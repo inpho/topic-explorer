@@ -1047,33 +1047,34 @@ function bar_mouseout(d) {
 async function scaleTopics() {
   var numTopics = Object.keys(dataset[0].topics).length;
   var k = numTopics;
-  console.log(k);
-  console.log(numTopics);
   var delay = function (d, i) { return i * (500 / numTopics); },
     negdelay = function (d, i) { return (numTopics - i) * (500 / numTopics); };
 
   calculateTopicMap(dataset, !this.checked);
   colors = await colors;
 
-  $(".doc").each(function (i, elt) {
+/*  $(".doc").each(function (i, elt) {
     $(elt).children()
       .sort(function (a, b) { return $(a).attr('x') - $(b).attr('x'); })
       .each(function (j, child) {
         $(child).detach().appendTo($(elt));
       })
-  });
+  });*/
 
-  svg.selectAll(".doc")
-    .selectAll("rect")
-    .data(function (d) { return d.topicMap; })
+  var rects = svg.selectAll(".doc")
+    .selectAll("rect").data(function (d) { console.log(d.topicMap); return d.topicMap; });
+  rects;
+
+  rects
     .style("fill", function (d) { return barColors(colors[k][d.name], d.name, svg); })
-    .on("mouseover", bar_mouseover)
-    .on("mouseout", bar_mouseout)
+    //.on("mouseover", bar_mouseover)
+    //.on("mouseout", bar_mouseout)
     .transition().duration(500).ease("linear").delay(this.checked ? delay : negdelay)
-    .attr("x", function (d) { return x(d.x0); })
     .attr("width", function (d) { return x(d.x1) - x(d.x0); })
-    .attr("class", function (d) { return "top_" + d.name; });
+    .attr("x", function (d) { return x(d.x0); });
+//    .attr("class", function (d) { return "top_" + d.name; });
 
+  rects.exit().remove();
   svg.selectAll(".x.axis text.axis_label").text(this.checked ?
     "Proportion of document assigned to topic" :
     ("Similarity to " + $('.title').first().text()));

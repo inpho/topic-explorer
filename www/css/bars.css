@@ -1,5 +1,6 @@
 
-.y.axis text {
+
+.scale, label:has(> .scale), .y.axis text {
   visibility: hidden;
 }
 .y.axis g .icon {
