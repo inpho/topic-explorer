@@ -1176,11 +1176,11 @@ async function redrawBars(sortFn) {
 
   svg.selectAll(".doc")
     .selectAll("rect")
+    .transition().duration(1000).ease("linear").delay(this.checked ? delay : negdelay)
     .data(function (d) { return d.topicMap; })
     .style("fill", function (d) { return barColors(colors[k][d.name], d.name, svg); })
     .on("mouseover", bar_mouseover)
     .on("mouseout", bar_mouseout)
-    .transition().duration(1000).ease("linear").delay(this.checked ? delay : negdelay)
     .attr("x", function (d) { return x(d.x0); })
     .attr("width", function (d) { return x(d.x1) - x(d.x0); })
     .attr("class", function (d) { return "top_" + d.name; });
