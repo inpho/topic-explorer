@@ -24,13 +24,8 @@ h1 a, h1 a:hover {
 }
 h2 {
   text-align: center;
-/*  margin-top: -25px;    */
-  margin-bottom: 50px;
-}
-
-.logo {
   margin-top: -25px;    
-
+  margin-bottom: 50px;
 }
 
 .glyphicon.spinning {

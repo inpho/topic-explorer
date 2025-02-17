@@ -77,6 +77,9 @@ rect:hover, .legend.hover rect, .legend.selected rect {
 .selected text, .hover text {
   font-weight: bold;
 }
+label {
+    font-weight: normal;
+}
 .doc text {
   font-size: 18px;
   }
