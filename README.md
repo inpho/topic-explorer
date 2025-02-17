@@ -1,10 +1,8 @@
 # InPhO Topic Explorer and Hypershelf
 
-[![Join the chat at https://gitter.im/inpho/topic-explorer](https://badges.gitter.im/inpho/topic-explorer.svg)](https://gitter.im/inpho/topic-explorer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Travis](https://img.shields.io/travis/inpho/topic-explorer.svg)](https://travis-ci.org/inpho/topic-explorer)
-[![AppVeyor Windows build](https://ci.appveyor.com/api/projects/status/ynfvy3y832cquixq/branch/master?svg=true)](https://ci.appveyor.com/project/JaimieMurdock/topic-explorer/branch/master)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/inpho/topic-explorer/blob/master/LICENSE.txt)
 [![PyPI](https://img.shields.io/pypi/v/topicexplorer.svg)](https://pypi.python.org/pypi/topicexplorer)
+
 
 The InPhO Topic Explorer provides an integrated system for text modeling making it simple to go from a set of documents to an interactive visualization of LDA topic models generated using the [InPhO VSM module](http://github.com/inpho/vsm/). More advanced analysis is made possible by a built-in pipeline to Jupyter (iPython) notebooks. 
 
@@ -18,6 +16,8 @@ Display options include topic normalization, alphabetical sort and topic sort. B
 There are two types of install: Default and Developer. Currently we are debugging the Windows Default installation. Before installing, Mac users should install [XCode from Apple](https://developer.apple.com/xcode/downloads/) and Windows users should install a Python compiler such as [Microsoft Visual C__ Compiler](https://www.microsoft.com/en-us/download/details.aspx?id=44266)
 
 **Note:** If you attempt to install this while connected to the Internet by way of a restricted network (such as eduroam) you may experience difficulty.  Our pypi server requires port 8080 to be accessible, and this is sometimes blocked on public networks.
+
+**Note:** This package is currently being upgraded from Python 3.7 as of Version 1.0b228. The most recent build working with Python 2.7 is 1.0b227.
 
 ### Default Install (Windows users should use Developer Install until further notice)
 1.  Go to the [Anaconda website](http://continuum.io/downloads) and choose the Python 3.7 Distribution. (Windows users: during installation, during "Advanced Options" choose "Add Anaconda to my PATH environment variable" and don't worry about the warning.)

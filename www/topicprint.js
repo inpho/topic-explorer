@@ -147,7 +147,7 @@ var fingerprint = {
         }
         return false;
       }
-      d3.json(host + "/topics.json", async function (error_top, topics) {
+      d3.json(host + "/topics.json", function (error_top, topics) {
         $('#fingerprintModal #status .bar', '#bar' + k).css('width', '75%').text('Rendering chart...');
         if (error_top) {
           var isError = $('.bar.bar-danger ');
@@ -172,8 +172,6 @@ var fingerprint = {
           .enter().append("g")
           .attr("class", "doc")
           .attr("id",data);
-
-        colors = await colors;
 
         // Draw topic bars
         doc.selectAll("rect")
@@ -271,8 +269,7 @@ $('#words').on('input', function () {
   }, 500);
 });
 
-var k_urls = ks.map(function (k) { return '../' + k + "/topics.json" })
-               .concat(ks.map(function (k) { return '' + k + "/topics.json" }));
+var k_urls = ks.map(function (k) { return '../' + k + "/topics.json" });
 var topics = Promise.all(k_urls.map($.getJSON)).then(function (data) {
   var t = {};
   data.forEach(function (d, i) {
@@ -282,27 +279,19 @@ var topics = Promise.all(k_urls.map($.getJSON)).then(function (data) {
   return t;
 });
 
+var colors = {};
 var color = d3.scale.category20();
-
-var colors = d3.promise.csv('../cluster.csv').then(function(data) {
-  var c = {};
+d3.csv('../cluster.csv', function (error, data) {
   var prev = data[0].k;
   var currentTop = 0;
   data.forEach(function (d) {
     if (d.k != prev) { prev = d.k; currentTop = 0; }
     d.topic = currentTop++;
     d.color = color(d.cluster);
-    if (c[d.k] == undefined) c[d.k] = {};
-    c[d.k][d.topic] = d.color;
-  });
-  console.log('Finished processing CLUSTER.CSV');
-  return c;
+    if (colors[d.k] == undefined) colors[d.k] = {};
+    colors[d.k][d.topic] = d.color;
+  })
 });
-
-/*d3.csv('../cluster.csv', function (error, data) {
-  if (error) d3.csv('cluster.csv', process_colors);
-  else process_colors(error, data);
-});*/
 
 function gettopics(words) {
   var query = words.join('|');
@@ -323,12 +312,10 @@ function gettopics(words) {
       $('#words').parents('.form-group').removeClass('has-error');
       $('#words').parents('.form-group').removeClass('has-warning');
       $('#words').parents('.form-group').addClass('has-success');
-      console.log(data);
       Promise.resolve(topics).then(function (val) {
         for (var i = 0; i < 10; i++) {
           var k = data[i]['k'];
           var t = data[i]['t'];
-          var topic_label = (data[i]['label']) ? data[i]['label'] : ('Topic ' + t);
 
           /*$('#wordsDl').append('<dt><a href="' + k + '/?topic=' + t + '">' +
             'Topic ' + t + 
@@ -336,7 +323,7 @@ function gettopics(words) {
           $('#wordsDl').append('<dd>' + 
             val[k][t] + '</dd>'); }*/
           $('#wordsDl').append('<div class="col-xs-4"><h4><a href="' + k + '/?topic=' + t + '">' +
-            topic_label +
+            'Topic ' + t +
             ' <small>(k = ' + k + ')</small></a></h4><p>' +
             val[k][t] + '</p></div>');
         }
@@ -363,20 +350,16 @@ $(window).load(function () {
     if (roottopic == null) {
       $("#focalDoc").text("");
     } else {
-      console.log(topics);
-      var roottopic_label = (!topics[roottopic].label) ? ('Topic ' + roottopic) : topics[roottopic].label;
-      $("#focalDoc").text("Top 40 documents most similar to " + roottopic_label);
+      $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic);
     }
     topDoc.style.display = 'none';
   }
   else {
     topDoc.style.display = 'block';
     if (roottopic == null) {
-
       $("#focalDoc").text("Top 40 documents most similar to the focal document");
     } else {
-      var roottopic_label = (!topics[roottopic].label) ? ('Topic ' + roottopic) : topics[roottopic].label;
-      $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic_label);
+      $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic);
     }
   }
 });
@@ -625,7 +608,7 @@ var yAxis = d3.svg.axis()
 
 function computeWidth(numCols) {
   $('#legend').attr("width", margin.right + (numCols * 55) + 20 + margin.right);
-  $('#chart #mainChart').attr("width", Math.max($(window).width() - $('#legend').width() - 200 + margin.right, 750));
+  $('#chart #main').attr("width", Math.max($(window).width() - $('#legend').width() - 200 + margin.right, 750));
   $('#controls').css("left", Math.max($(window).width() - $('#legend').width() - 200 + margin.right, 750) + 40);
   width = Math.max($(window).width() - $('#legend').width() - 200 + margin.right, 750) - margin.left - margin.right;
   x = d3.scale.linear()
@@ -654,7 +637,7 @@ var original_root;
 var svg = d3.select("#chart").append("svg")
   .attr("width", width + margin.left + margin.right)
   .attr("height", height + margin.top + margin.bottom)
-  .attr("id", "mainChart")
+  .attr("id", "main")
   .attr("class", "main")
   .append("g")
   .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
@@ -709,7 +692,7 @@ if (url)
       $('#status .bar').addClass('progress-bar-danger').text(errormsg);
       return false;
     }
-    d3.json("topics.json", async function (error_top, topics) {
+    d3.json("topics.json", function (error_top, topics) {
       $('#status .bar').css('width', '75%').text('Rendering chart...');
       if (error_top) {
         $('#status .progress-bar').removeClass('active progress-bar-striped');
@@ -734,7 +717,6 @@ if (url)
       dataset = data;
       original_root = data[0];
       if (roottopic) docid = data[0]['doc'];
-      colors = (await colors);
 
       svg.append("g")
         .attr("class", "x axis")
@@ -807,7 +789,7 @@ if (url)
 
       var label2 = document.createElement('label');
       label2.classList.add("checkbox");
-      label2.innerHTML = "<input class='scale' type='checkbox'>Normalize Topic Bars"; i
+      label2.innerHTML = "<input class='scale' type='checkbox'>Normalize Bars";
       label2.style.left = "20px";
 
       document.body.append(label2);
@@ -816,22 +798,6 @@ if (url)
       calculateTopicMap(data, !($('.scale')[0].checked), function (a, b) { return data[0].topics[b] - data[0].topics[a]; });
 
       var k = d3.keys(topics).length;
-
-      // create gradients
-      console.log('gradeint creation '+k);
-      console.log(colors);
-      console.log('gradient colors ' + colors[k].length);
-      for (var i = 0; i < k; i++) {
-        var mainGradient = svg.append('linearGradient')
-          .attr('id', 'gradient'+i);
-        mainGradient.append('stop')
-          .attr('stop-color', colors[k][i])
-          .attr('offset', '0');
-        mainGradient.append('stop')
-          .attr('stop-color', hexToRgbA(colors[k][i], .7))
-          .attr('offset', '1');
-        console.log('added gradient'+i+' for ' + colors[k][i]);
-      }
 
       // Draw topic bars
       doc.selectAll("rect")
@@ -842,21 +808,34 @@ if (url)
         .attr("y", 10)
         .attr("width", function (d) { return x(d.x1) - x(d.x0); })
         .attr("class", function (d) { return "top_" + d.name; })
-        .on("mouseover", bar_mouseover)
-        .on("mouseout", bar_mouseout)
+        .on("mouseover", function (d) {
+          // SVG element z-index determined by render order, not style sheet
+          // so element must be reappended to the end on hover so border 
+          // is not occluded
+          var parent = $(this).parent();
+          $(this).detach().appendTo(parent);
+          $(".docLabel", parent).detach().appendTo(parent);
+          $(".docLabel", parent).addClass("hover");
+          $('.legend rect').not('.top_' + d.name).tooltip('hide');
+          $(".top_" + d.name).addClass('hover');
+          $('.legend rect.top_' + d.name).tooltip('show');
+        })
+        .on("mouseout", function (d) {
+          var parent = $(this).parent();
+          $(".docLabel", parent).removeClass("hover");
+          $(".top_" + d.name).removeClass('hover');
+        })
         .on("click", function (d) {
           //Handles when to update the descriptor based off which mode it is in and what topic bar was clicked on.
           //Indicates whether the model is sorted by proportion of a specific topic or not.
-          var roottopic_label = (!topics[roottopic] || !topics[roottopic].label) ?  ('Topic ' + roottopic) : topics[roottopic].label;
-          var topic_label = (!topics[d.name].label) ? ('Topic ' + d.name) : topics[d.name].label;
           if (roottopic == null) {
-            $("#focalDoc").text("Top 40 documents most similar to the focal document sorted by proportion of " + topic_label);
+            $("#focalDoc").text("Top 40 documents most similar to the focal document sorted by proportion of topic " + d.name);
           } else if (roottopic == d.name) {
             topDoc.style.display = 'none';
-            $("#focalDoc").text("Top 40 documents most similar to " + roottopic_label);
+            $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic);
           } else {
             topDoc.style.display = 'block';
-            $("#focalDoc").text("Top 40 documents most similar to " + roottopic_label + " sorted by proportion of " + topic_label);
+            $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic + " sorted by proportion of topic " + d.name);
           }
           topicSort(d.name);
         })
@@ -894,8 +873,7 @@ if (url)
         //.attr("data-toggle", "tooltip")
         .attr("data-placement", "right")
         .attr("title", function (d) {
-          var topic_label = (topics[d].label) ? topics[d].label : ('Topic ' + d);
-          return "<strong>{0}:</strong>".format(topic_label) + "<br />"
+          return "<strong>Topic {0}:</strong>".format(d) + "<br />"
             + d3.keys(topics[d].words).sort(function (a, b) {
               if (topics[d].words[a] > topics[d].words[b])
                 return -1;
@@ -908,16 +886,14 @@ if (url)
         .on("click", function (d) {
           //Handles when to update the descriptor based off which mode it is in and what topic bar was clicked on.
           //Indicates whether the model is sorted by proportion of a specific topic or not.
-          var roottopic_label = (!topics[roottopic] || !topics[roottopic].label) ?  ('Topic ' + roottopic) : topics[roottopic].label;
-          var topic_label = (!topics[d].label) ? ('Topic ' + d) : topics[d].label;
           if (roottopic == null) {
-            $("#focalDoc").text("Top 40 documents most similar to the focal document sorted by proportion of " + topic_label);
+            $("#focalDoc").text("Top 40 documents most similar to the focal document sorted by proportion of topic " + d);
           } else if (roottopic == d) {
             topDoc.style.display = 'none';
-            $("#focalDoc").text("Top 40 documents most similar to " + roottopic_label);
+            $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic);
           } else {
             topDoc.style.display = 'block';
-            $("#focalDoc").text("Top 40 documents most similar to " + roottopic_label + " sorted by proportion of " + topic_label);
+            $("#focalDoc").text("Top 40 documents most similar to topic " + roottopic + " sorted by proportion of topic " + d);
           }
           topicSort(d);
         })
@@ -967,11 +943,7 @@ if (url)
       var foreignObject = document.createElementNS(ns, 'foreignObject');
       foreignObject.setAttribute("width", 140);
       foreignObject.setAttribute("height", 140);
-
-      var topicLength = d3.keys(topics).length;
-      var legendCols = Math.max(Math.ceil(d3.keys(topics).length / Math.min(data.length, maxRows)), minCols);
-      foreignObject.setAttribute("transform", "translate(20, " + (((topicLength / legendCols) + 1) * 20 + 65) + ")");
-
+      foreignObject.setAttribute("transform", "translate(20, " + (((d3.keys(topics).length / 2) + 1) * 20 + 65) + ")");
       var div = document.createElement('div');
       div.innerHTML = '<Strong>Display Options</strong>';
       var label = document.createElement('label');
@@ -1015,6 +987,24 @@ if (url)
         setTimeout(function () { $('#controls').css({ 'top': $('#legend').height() + $('#legend').position().top }).show(); }, 500);
       }, 500);
 
+      $(window).on("scroll", scrollLegend);
+      scrollLegend = function () {
+        var scrollPos = $(window).scrollTop();
+        var chartHeight = $('#chart').position().top;
+        var legendHeight = $('#legend').height();
+        var heightFac = -60;
+        if ((scrollPos - chartHeight - margin.top - heightFac) <= 0) {
+          $('#legend').css({ 'position': 'absolute', 'top': chartHeight });
+          $('#controls').css({ 'position': 'absolute', 'top': legendHeight + chartHeight });
+        } else if ((scrollPos - chartHeight - heightFac) < (margin.top)) {
+          $('#legend').css({ 'position': 'absolute', 'top': scrollPos + heightFac });
+          $('#controls').css({ 'position': 'absolute', 'top': legendHeight + scrollPos + heightFac });
+        } else {
+          $('#legend').css({ 'position': 'fixed', 'top': heightFac });
+          $('#controls').css({ 'position': 'fixed', 'top': legendHeight + heightFac });
+        }
+      }
+
       for (var i = 0; i < icons.length; i++) {
         $(".{0}Icon".format(icons[i])).tooltip({ placement: 'top', title: icon_tooltips[icons[i]], container: 'body', html: true, animation: false });
       }
@@ -1024,28 +1014,7 @@ if (url)
     });
   });
 
-function bar_mouseover(d) {
-  // SVG element z-index determined by render order, not style sheet
-  // so element must be reappended to the end on hover so border 
-  // is not occluded
-  var parent = $(this).parent();
-  $(this).detach().appendTo(parent);
-  $(".docLabel", parent).detach().appendTo(parent);
-  $(".docLabel", parent).addClass("hover");
-  $('.legend rect').not('.top_' + d.name).tooltip('hide');
-  $(".top_" + d.name).addClass('hover');
-  $('.legend rect.top_' + d.name).tooltip('show');
-}
-
-function bar_mouseout(d) {
-  var parent = $(this).parent();
-  $(".docLabel", parent).removeClass('hover');
-  $(".top_" + d.name).removeClass('hover');
-}
-
-
-
-async function scaleTopics() {
+function scaleTopics() {
   var numTopics = Object.keys(dataset[0].topics).length;
   var k = numTopics;
   console.log(k);
@@ -1054,7 +1023,6 @@ async function scaleTopics() {
     negdelay = function (d, i) { return (numTopics - i) * (500 / numTopics); };
 
   calculateTopicMap(dataset, !this.checked);
-  colors = await colors;
 
   $(".doc").each(function (i, elt) {
     $(elt).children()
@@ -1068,8 +1036,20 @@ async function scaleTopics() {
     .selectAll("rect")
     .data(function (d) { return d.topicMap; })
     .style("fill", function (d) { return barColors(colors[k][d.name], d.name, svg); })
-    .on("mouseover", bar_mouseover)
-    .on("mouseout", bar_mouseout)
+    /*.on("mouseover", function(d) {
+        // SVG element z-index determined by render order, not style sheet
+        // so element must be reappended to the end on hover so border 
+        // is not occluded
+        var parent = $(this).parent();
+        $(this).detach().appendTo(parent);
+        $(".docLabel", parent).detach().appendTo(parent);
+        $('.legend rect').not('.top_' + d.name).tooltip('hide');
+        $(".top_" + d.name).addClass('hover');
+        $('.legend rect.top_' + d.name).tooltip('show');
+      })
+    .on("mouseout", function(d) {
+        $(".top_" + d.name).removeClass('hover');
+      })*/
     .transition().duration(500).ease("linear").delay(this.checked ? delay : negdelay)
     .attr("x", function (d) { return x(d.x0); })
     .attr("width", function (d) { return x(d.x1) - x(d.x0); })
@@ -1166,21 +1146,33 @@ function topicSort(topic) {
   redrawBars(sortFn);
 }
 
-async function redrawBars(sortFn) {
+function redrawBars(sortFn) {
   $("#legend .hover").removeClass("hover");
   var numTopics = Object.keys(dataset[0].topics).length;
   var k = numTopics;
   var delay = function (d, i) { return i * (1000 / numTopics); },
     negdelay = function (d, i) { return (numTopics - i) * (1000 / numTopics); };
   calculateTopicMap(dataset, !($('.scale')[0].checked), sortFn);
-  colors = await colors;
 
   svg.selectAll(".doc")
     .selectAll("rect")
     .data(function (d) { return d.topicMap; })
     .style("fill", function (d) { return barColors(colors[k][d.name], d.name, svg); })
-    .on("mouseover", bar_mouseover)
-    .on("mouseout", bar_mouseout)
+    /*
+    .on("mouseover", function(d) {
+        // SVG element z-index determined by render order, not style sheet
+        // so element must be reappended to the end on hover so border 
+        // is not occluded
+        var parent = $(this).parent();
+        $(this).detach().appendTo(parent);
+        $(".docLabel", parent).detach().appendTo(parent);
+        $('.legend rect').not('.top_' + d.name).tooltip('hide');
+        $(".top_" + d.name).addClass('hover');
+        $('.legend rect.top_' + d.name).tooltip('show');
+      })
+    .on("mouseout", function(d) {
+        $(".top_" + d.name).removeClass('hover');
+      })*/
     .transition().duration(1000).ease("linear").delay(this.checked ? delay : negdelay)
     .attr("x", function (d) { return x(d.x0); })
     .attr("width", function (d) { return x(d.x1) - x(d.x0); })
@@ -1202,8 +1194,16 @@ function hexToRgbA(hex, a) {
   throw new Error('Bad Hex');
 }
 
-function barColors(color, topicId, svg) {
-  return "url(#gradient" + topicId + ")";
+function barColors(myColor, myId, svg) {
+  var mainGradient = svg.append('linearGradient')
+    .attr('id', myId);
+  mainGradient.append('stop')
+    .attr('stop-color', myColor)
+    .attr('offset', '0');
+  mainGradient.append('stop')
+    .attr('stop-color', hexToRgbA(myColor, .7))
+    .attr('offset', '1');
+  return "url(#" + myId + ")";
 }
 
 
@@ -1222,38 +1222,19 @@ $.fn.followTo = function (pos) {
     $window = $(window);
 
   $window.scroll(function (e) {
-    // var height = $this.height();
-    var chartHeight = document.getElementById('chart').offsetHeight;
-    console.log(chartHeight);
-    console.log($window.scrollTop());
-    console.log(pos);
-    var height = document.getElementById('legend').children[0].getBBox().height + document.getElementById('legend').children[1].getBBox().height + 100;
-    console.log(height);
-    // console.log($this.top());
-    console.log("\n");
-    // if ($window.scrollTop() > pos && ($window.scrollTop() - pos + height)
-    if ($window.scrollTop() > (chartHeight + pos - height)) {
-      console.log('yay');
-      console.log(chartHeight + pos - height);
-      console.log($window.scrollTop() - chartHeight);
+    if ($window.scrollTop() > pos) {
       $this.css({
         position: 'fixed',
-        top: (chartHeight + pos - height - $window.scrollTop()) + 'px'
-      });
-    } else if ($window.scrollTop() > pos) {
-      $this.css({
-        position: 'fixed',
-        top: '10px'
+        top: 120
       });
     } else {
       $this.css({
         position: 'absolute',
-        top: pos
+        top: 405
       });
     }
   });
 };
 
-//console.log(document.getElementById('chart').offsetTop);
-// $('#legend').followTo(496);
-//$('#legend').followTo(document.getElementById('chart').offsetTop);
+$('#legend').followTo(285);
+

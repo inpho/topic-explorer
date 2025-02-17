@@ -287,15 +287,16 @@ d3.csv(base_url + "cluster.csv", function (error, data) {
             + "<br />" + topics[d.k][d.topic].words;
         })
         .on("mouseover", function (d) { $(this).tooltip('show') })
-        .on("mouseout", function (d) { $(this).tooltip('hide') })
-      .append("text")
+        .on("mouseout", function (d) { $(this).tooltip('hide') });
+/*      node.append("text")
+>>>>>>> 429f38c68840db2e0e792ad18a741476874887f7
         .attr("x", function (d) { return x(d[xVar]); })
         .attr("y", function (d) { return y(d[yVar]); })
         .attr('text-anchor', 'middle')
         .attr('dominant-baseline', 'middle')
         .text(function (d) {
           return (topics[d.k][d.topic].label) ? topics[d.k][d.topic].label : '';
-        });
+        }); */
 
       $(".dot").tooltip({ container: 'body', trigger: 'manual', animation: false, html: true });
 
