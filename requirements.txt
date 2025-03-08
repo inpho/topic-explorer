@@ -1,6 +1,7 @@
 bottle>=0.12.0,<0.13.0
 brewer2mpl>=1.4.0,<1.5.0
 decorator>=4.0.5
+defusedxml>=0.7.1
 future>=0.16.0
 langdetect>=1.0.0
 matplotlib>=2.0.0

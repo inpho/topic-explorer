@@ -14,7 +14,8 @@ from io import StringIO
 import subprocess
 import sys
 import tarfile
-import xml.etree.ElementTree as ET
+
+from defusedxml import ElementTree as ET
 
 import wget
 

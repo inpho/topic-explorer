@@ -17,7 +17,7 @@ There are two types of install: Default and Developer. Currently we are debuggin
 
 **Note:** If you attempt to install this while connected to the Internet by way of a restricted network (such as eduroam) you may experience difficulty.  Our pypi server requires port 8080 to be accessible, and this is sometimes blocked on public networks.
 
-**Note:** This package is currently being upgraded from Python 3.7 as of Version 1.0b228. The most recent build working with Python 2.7 is 1.0b227.
+**Note:** This package is currently tested with Python 3.12. The most recent build working with Python 2.7 is 1.0b227.
 
 ### Default Install (Windows users should use Developer Install until further notice)
 1.  Go to the [Anaconda website](http://continuum.io/downloads) and choose the Python 3.7 Distribution. (Windows users: during installation, during "Advanced Options" choose "Add Anaconda to my PATH environment variable" and don't worry about the warning.)
