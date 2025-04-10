@@ -34,15 +34,6 @@ $(".typeahead").typeahead({
     }
   },
   sorter: function (items) {
-    /*if (items.length == 1) {
-      $('#hidden_id').val(mapped[items[0]].id);
-      console.log("setting hidden_id" + $('#hidden_id').val());
-      if (!$('#autocompleteDoc').hasClass('active')) {
-        $('#autocompleteDoc').addClass('active');
-        $('span.icon-font', '#autocompleteDoc').removeClass('icon-font').addClass('icon-file');
-      }
-      items.length = 0;
-    } else*/
     var query = this.query;
     items = items.sort();
     var start = items.filter(function (item) { return item.lastIndexOf(query, 0) == 0; });
@@ -520,15 +511,6 @@ $(".typeahead").typeahead({
     }
   },
   sorter: function (items) {
-    /*if (items.length == 1) {
-      $('#hidden_id').val(mapped[items[0]].id);
-      console.log("setting hidden_id" + $('#hidden_id').val());
-      if (!$('#autocompleteDoc').hasClass('active')) {
-        $('#autocompleteDoc').addClass('active');
-        $('span.glyphicon-font', '#autocompleteDoc').removeClass('glyphicon-font').addClass('glyphicon-file');
-      }
-      items.length = 0;
-    } else*/
     if (items.length > 0) {
       $('#autocompleteDoc').removeAttr('disabled');
     } else if (items.length == 0) {
