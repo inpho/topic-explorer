@@ -185,7 +185,7 @@ def update(args=None):
                     return
 
             try:
-                cmd = ['pip', 'install', f'topicexplorer=={pypi_version}', '--no-cache-dir']
+                cmd = ['pip', 'install', 'topicexplorer=={pypi_version}', '--no-cache-dir']
                 subprocess.check_call(cmd, shell=False)
             except CalledProcessError:
                 print("ERROR: Update did not comlete installation.\n")
