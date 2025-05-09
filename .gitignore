@@ -3,7 +3,11 @@ sandbox
 .coverage
 mprofile_*
 
+*.csv
 *.ini
+*.ini.md
+*.npz
+data/
 
 start-servers.sh
 logs/*
