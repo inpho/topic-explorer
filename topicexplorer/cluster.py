@@ -12,6 +12,7 @@ from builtins import map
 from builtins import range
 from builtins import object
 
+import ast
 from codecs import open
 from collections import defaultdict
 from configparser import ConfigParser as ConfigParser
@@ -135,7 +136,7 @@ class moduleLoad(object):
     def create_model_pattern(self):
         self.pattern = self.config.get('main', 'model_pattern')
         if self.config.get('main', 'topics'):
-            self.topic_range = eval(self.config.get('main', 'topics'))
+            self.topic_range = ast.literal_eval(self.config.get('main', 'topics'))
 
     def load_model(self,k):
         if k in self.topic_range:
