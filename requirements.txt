@@ -33,3 +33,4 @@ importlib==1.0.4; python_version=='2.7'
 
 pywin32>=220; sys_platform=='win32'
 win_unicode_console; sys_platform=='win32'
+tornado>=6.5 # not directly required, pinned by Snyk to avoid a vulnerability
