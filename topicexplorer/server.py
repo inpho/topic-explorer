@@ -129,6 +129,7 @@ standard_library.install_aliases()
 from builtins import zip
 from builtins import str as text
 
+import ast
 from codecs import open
 from configparser import RawConfigParser as ConfigParser, NoOptionError
 import csv
@@ -193,13 +194,13 @@ def _set_acao_headers(f):
 def _generate_etag(v):
     ''' Takes a model view and generates an etag using the v.phi and v.theta attributes '''
     # TODO: write a function using a hashlib digest
-    x = hashlib.sha1()
+    x = hashlib.sha1(usedforsecurity=False)
     x.update(repr(v.phi).encode('utf-8'))
     x.update(repr(v.theta).encode('utf-8'))
     return x.hexdigest()
 
 def _docs_etag(c):
-    x = hashlib.sha1()
+    x = hashlib.sha1(usedforsecurity=False)
     x.update(repr(c).encode('utf-8'))
     return x.hexdigest()
 
@@ -884,7 +885,7 @@ def get_host_port(args):
     def test_port(port):
         try:
             host = args.host or config.get("www", "host")
-            if host == '0.0.0.0':
+            if host == '0.0.0.0': # nosec B104 # This line actually closes possible hole.
                 host = 'localhost'
             try:
                 s = socket.create_connection((host, port), 2)
@@ -950,7 +951,7 @@ def main(args, app=None):
 
     if args.browser:
 
-        if host == '0.0.0.0':
+        if host == '0.0.0.0': # nosec B104 # This line actually closes possible hole.
             link_host = "localhost"
         else:
             link_host = host
@@ -979,7 +980,7 @@ def create_app(args):
 
     # set topic_range
     if config.get('main', 'topics'):
-        topic_range = eval(config.get('main', 'topics'))
+        topic_range = ast.literal_eval(config.get('main', 'topics'))
 
     # get icons_list
     config_icons = config.get('www', 'icons').split(",")

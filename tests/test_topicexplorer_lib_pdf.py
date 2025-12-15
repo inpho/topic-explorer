@@ -2,7 +2,7 @@ from __future__ import print_function
 from future import standard_library
 standard_library.install_aliases()
 
-import unittest2 as unittest
+import unittest
 
 import sys
 if sys.version_info.major == 2:
