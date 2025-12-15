@@ -450,6 +450,39 @@ class Application(Bottle):
 
             return json.dumps(js)
 
+
+        @self.route('/<k:int>', method='POST')
+        @_set_acao_headers
+        def query_sample(k, threshold=0.8):
+            from vsm.extensions.corpusbuilders import toy_corpus, corpus_from_strings
+            from vsm import align_corpora, LdaCgsQuerySampler
+            import numpy as np
+
+            v = self.v[k]
+            
+            def build_sample(text):
+                origin = corpus_from_strings([text], nltk_stop=True, stop_freq=0)
+                origin.context_types = ['document']
+                
+                print("aligning corpus")
+                c = align_corpora(v.corpus, origin)
+                q = LdaCgsQuerySampler(v.model, old_corpus=v.corpus, new_corpus=c, context_type='document', align_corpora=False)
+                q.train(n_iterations=200)
+                return q
+
+            def get_topics(query_sample):
+                return np.squeeze(query_sample.top_doc / sum(query_sample.top_doc))
+            text = request.forms.get('body')
+            sample_topics = get_topics(build_sample(text))
+
+            # Get related documents
+            data = v.dist_top_doc(np.arange(k), weights=sample_topics)
+
+            js = [{'topics': dict([(str(t), float(p)) for t, p in enumerate(sample_topics)]),
+                   'documents' : [ (d, "%6f" % p) for d, p in data if p < threshold ]}]
+
+            return json.dumps(js)
+
         @self.route('/<k:int>/word_docs.json')
         @_set_acao_headers
         def word_docs(k, N=40):
@@ -634,7 +667,6 @@ class Application(Bottle):
                      't' : int(t['i']),
                      'distance' : float(t['value']) } for t in sorted_topics]
             return json.dumps(data)
-
 
         @self.route('/topics')
         @_set_acao_headers

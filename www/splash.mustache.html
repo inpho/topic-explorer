@@ -32,9 +32,9 @@
           style="font-size: 10vw; line-height: 0.9"></span><br />Topic</a>
     </div>
     <div class="col-sm-4 col-xs-12 entry">
-      <button class="btn btn-primary col-xs-12" disabled="">
-        <span id="step-3" class="glyphicon glyphicon-open" style="font-size: 10vw; padding-left: 0.5vw;"></span><br />Upload &beta;
-      </button>
+      <a class="btn btn-primary col-xs-12" data-toggle="modal" data-target="#sampleModal">
+        <span id="step-3" class="glyphicon glyphicon-open" style="font-size: 10vw; padding-left: 0.5vw;"></span><br />Sample &beta;
+      </a>
     </div>
   </div>
   <div class="row" id="about">
@@ -136,7 +136,34 @@
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
-
+<div class="modal fade" tabindex="-1" role="dialog" id="sampleModal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h3 class="modal-title">Sampling</h3>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal col-sm-12" action="40" method="post">
+          <div class="form-group">
+            <div class="input-group">
+              <textarea id="body" name="body" class="form-control"></textarea>
+              <div class="input-group-btn">
+                <input type="submit">Submit document</input>
+              </div>
+            </div>
+          </div>
+        </form>
+        <p>After copying a document above, a JSON document will return with a topic distribution and the closest documents to the provided terms.</p>
+        <div id="wordsDl">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
 <script src="/bootstrap-tour.js"></script>
 <script src="/topicprint.js"></script>
