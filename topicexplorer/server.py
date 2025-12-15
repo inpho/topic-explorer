@@ -222,7 +222,7 @@ class Application(Bottle):
     def __init__(self, corpus_file='', model_pattern='', topic_range=None,
                  context_type='', label_module=None, config_file='',
                  fulltext=False, corpus_path='', tokenizer='default',
-                 label_file=None, **kwargs):
+                 label_file=None, upload=False, **kwargs):
         super(Application, self).__init__()
 
         self.config_file = config_file
@@ -233,6 +233,9 @@ class Application(Bottle):
         self.icons = kwargs.get('icons', 'link')
         if fulltext:
             self._serve_fulltext(corpus_path)
+        if upload:
+            self._serve_upload()
+        self.upload = upload
         self._setup_routes(**kwargs)
 
         # load corpus
@@ -451,38 +454,6 @@ class Application(Bottle):
 
             return json.dumps(js)
 
-
-        @self.route('/<k:int>', method='POST')
-        @_set_acao_headers
-        def query_sample(k, threshold=0.8):
-            from vsm.extensions.corpusbuilders import toy_corpus, corpus_from_strings
-            from vsm import align_corpora, LdaCgsQuerySampler
-            import numpy as np
-
-            v = self.v[k]
-            
-            def build_sample(text):
-                origin = corpus_from_strings([text], nltk_stop=True, stop_freq=0)
-                origin.context_types = ['document']
-                
-                print("aligning corpus")
-                c = align_corpora(v.corpus, origin)
-                q = LdaCgsQuerySampler(v.model, old_corpus=v.corpus, new_corpus=c, context_type='document', align_corpora=False)
-                q.train(n_iterations=200)
-                return q
-
-            def get_topics(query_sample):
-                return np.squeeze(query_sample.top_doc / sum(query_sample.top_doc))
-            text = request.forms.get('body')
-            sample_topics = get_topics(build_sample(text))
-
-            # Get related documents
-            data = v.dist_top_doc(np.arange(k), weights=sample_topics)
-
-            js = [{'topics': dict([(str(t), float(p)) for t, p in enumerate(sample_topics)]),
-                   'documents' : [ (d, "%6f" % p) for d, p in data if p < threshold ]}]
-
-            return json.dumps(js)
 
         @self.route('/<k:int>/word_docs.json')
         @_set_acao_headers
@@ -804,13 +775,47 @@ class Application(Bottle):
                 template = tmpl_file.read()
 
             tmpl_params = {'body' : _render_template('splash.mustache.html'),
-                           'topic_range': self.topic_range}
+                           'topic_range': self.topic_range,
+                           'upload' : self.upload}
             return self.renderer.render(template, tmpl_params)
 
         @self.route('/<filename:path>')
         @_set_acao_headers
         def send_static(filename):
             return static_file(filename, root=get_static_resource_path('www/'))
+    
+    def _serve_upload(self):
+        @self.route('/<k:int>', method='POST')
+        @_set_acao_headers
+        def query_sample(k, threshold=0.8):
+            from vsm.extensions.corpusbuilders import toy_corpus, corpus_from_strings
+            from vsm import align_corpora, LdaCgsQuerySampler
+            import numpy as np
+
+            v = self.v[k]
+            
+            def build_sample(text):
+                origin = corpus_from_strings([text], nltk_stop=True, stop_freq=0)
+                origin.context_types = ['document']
+                
+                print("aligning corpus")
+                c = align_corpora(v.corpus, origin)
+                q = LdaCgsQuerySampler(v.model, old_corpus=v.corpus, new_corpus=c, context_type='document', align_corpora=False)
+                q.train(n_iterations=200)
+                return q
+
+            def get_topics(query_sample):
+                return np.squeeze(query_sample.top_doc / sum(query_sample.top_doc))
+            text = request.forms.get('body')
+            sample_topics = get_topics(build_sample(text))
+
+            # Get related documents
+            data = v.dist_top_doc(np.arange(k), weights=sample_topics)
+
+            js = [{'topics': dict([(str(t), float(p)) for t, p in enumerate(sample_topics)]),
+                   'documents' : [ (d, "%6f" % p) for d, p in data if p < threshold ]}]
+
+            return json.dumps(js)
 
     def _serve_fulltext(self, corpus_path):
         @self.route('/fulltext/<doc_id:path>')
@@ -1042,6 +1047,8 @@ def populate_parser(parser):
     parser.add_argument('--no-browser', dest='browser', action='store_false')
     parser.add_argument('--fulltext', action='store_true',
                         help='Serve raw corpus files.')
+    parser.add_argument('--upload', action='store_true',
+                        help='Allow upload of files for query sampling.')
     parser.add_argument("-q", "--quiet", action="store_true")
 
 if __name__ == '__main__':
