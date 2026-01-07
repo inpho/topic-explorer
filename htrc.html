@@ -1,26 +1,16 @@
+<!DOCTYPE html>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en" data-content_root="./">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
     <title>HathiTrust Integrations &#8212; InPhO Topic Explorer 1.0b217 documentation</title>
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '1.0b217',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b76e3c8a" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
+    <script src="_static/documentation_options.js?v=3ad1187b"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Cookbook" href="cookbook.html" />
@@ -28,20 +18,22 @@
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body>
+  
+  
+
+  </head><body>
   
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
-  <div class="section" id="hathitrust-integrations">
-<h1>HathiTrust Integrations<a class="headerlink" href="#hathitrust-integrations" title="Permalink to this headline">¶</a></h1>
+  <section id="hathitrust-integrations">
+<h1>HathiTrust Integrations<a class="headerlink" href="#hathitrust-integrations" title="Link to this heading">¶</a></h1>
 <p>The <a class="reference external" href="https://www.hathitrust.org/">HathiTrust</a> is a digital library with over 16 million volumes digitized by
 a partnership of over 120 research institutions and libraries.</p>
 <p>The digitized holdings include both in-copyright and public domain works.
@@ -55,176 +47,188 @@ cannot be reconstructed.</p>
 <p>The HTRC and InPhO Topic Explorer facilitate non-consumptive use through three
 integrations:</p>
 <ol class="arabic simple">
-<li><a class="reference external" href="#working-with-htrc-algorithms">HTRC Algorithms</a> provide a push-button way to run the Topic Explorer on a
+<li><p><a class="reference external" href="#working-with-htrc-algorithms">HTRC Algorithms</a> provide a push-button way to run the Topic Explorer on a
 remote machine and export model files for further analysis on a personal
-computer.</li>
-<li><a class="reference external" href="#working-with-htrc-data-capsules">HTRC Data Capsules</a> provide a secure virtual machine for resarchers
-wanting to derive their own datasets.</li>
-<li><a class="reference external" href="#working-with-htrc0extracted-features">HTRC Extracted Features</a> allow for training of topic models on a personal
-computer through word counts.</li>
+computer.</p></li>
+<li><p><a class="reference external" href="#working-with-htrc-data-capsules">HTRC Data Capsules</a> provide a secure virtual machine for resarchers
+wanting to derive their own datasets.</p></li>
+<li><p><a class="reference external" href="#working-with-htrc0extracted-features">HTRC Extracted Features</a> allow for training of topic models on a personal
+computer through word counts.</p></li>
 </ol>
 <p>Each of these methods relies on <a class="reference external" href="#working-with-collections">collection management</a> for keeping track of
 HathiTrust IDs. The InPhO Topic Explorer also provides <a class="reference external" href="#adding-hathitrust-metadata">metadata management</a> to
 display titles in the browser and links to the fulltext views at HathiTrust.</p>
-<div class="section" id="id1">
-<h2>Non-consumptive Research<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<section id="id1">
+<h2>Non-consumptive Research<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
 <p>Research conducted with in-copyright HathiTrust resources must adhere to the
 principles of <em>non-consumptive research</em>, as defined by the 2010 <em>Authors Guild
 v. Google</em> ammended settlement agreement:</p>
 <blockquote>
-<div>“Non-Consumptive Research” means research in which computational analysis is
+<div><p>“Non-Consumptive Research” means research in which computational analysis is
 performed on one or more Books, but not research in which a researcher reads or
 displays substantial portions of a Book to understand the intellectual content
-presented within the Book.”</div></blockquote>
+presented within the Book.”</p>
+</div></blockquote>
 <p>Non-consumptive research includes image analysis and text extraction, textual
 analysis and information extraction, linguistic analysis, automated translation,
 and indexing and search.</p>
-</div>
-<div class="section" id="working-with-collections">
-<h2>Working with Collections<a class="headerlink" href="#working-with-collections" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="working-with-collections">
+<h2>Working with Collections<a class="headerlink" href="#working-with-collections" title="Link to this heading">¶</a></h2>
 <p>Any work with the HathiTrust requires management of HathiTrust IDs. The simplest
 form of collection management involves a simple text file consisting of
 identifiers:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">mdp</span><span class="o">.</span><span class="mi">49015002517150</span>
-<span class="n">mdp</span><span class="o">.</span><span class="mi">39015045637462</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mdp</span><span class="mf">.49015002517150</span>
+<span class="n">mdp</span><span class="mf">.39015045637462</span>
 </pre></div>
 </div>
 <p>With this list of identifiers, volumes can be downloaded for use in the <a class="reference external" href="#working-with-htrc-data-capsules">HTRC
 Data Capsules</a> or via the <a class="reference external" href="#working-with-htrc0extracted-features">HTRC Extracted Features</a> capacity.</p>
-<div class="section" id="hahtitrust-collection-builder">
-<h3>HahtiTrust Collection Builder<a class="headerlink" href="#hahtitrust-collection-builder" title="Permalink to this headline">¶</a></h3>
+<section id="hahtitrust-collection-builder">
+<h3>HahtiTrust Collection Builder<a class="headerlink" href="#hahtitrust-collection-builder" title="Link to this heading">¶</a></h3>
 <p>Members of HathiTrust partner institutions can login and create curated
 collections of HathiTrust materials using the <a class="reference external" href="https://www.hathitrust.org/help_digital_library#CBBuild">Collection Builder</a>. Non-members
 have access to public collections through the interface. These collections can
 then be modeled using the InPhO Topic Explorer.</p>
-<p>Collections can be exported via the <a class="reference external" href="https://htrc.github.io/HTRC-WorksetToolkit/">HTRC Workset Toolkit</a> to produce a <code class="docutils literal"><span class="pre">txt</span></code>
+<p>Collections can be exported via the <a class="reference external" href="https://htrc.github.io/HTRC-WorksetToolkit/">HTRC Workset Toolkit</a> to produce a <code class="docutils literal notranslate"><span class="pre">txt</span></code>
 file that can then be used with the <a class="reference external" href="#working-with-htrc0extracted-features">HTRC Extracted Features</a> or within the
 <a class="reference external" href="#working-with-htrc-data-capsules">HTRC Data Capsules</a>.</p>
 <ol class="arabic">
-<li><p class="first">Install the HTRC Workset Toolkit: <code class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">htrc</span></code></p>
-</li>
-<li><p class="first">Select a HathiTrust <a class="reference external" href="https://babel.hathitrust.org/cgi/mb?colltype=featured">collection</a>.</p>
-</li>
-<li><p class="first">Copy the collection URL.</p>
-</li>
-<li><p class="first">Run the following command to get a volume list, remembering to put the URL
+<li><p>Install the HTRC Workset Toolkit: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">htrc</span></code></p></li>
+<li><p>Select a HathiTrust <a class="reference external" href="https://babel.hathitrust.org/cgi/mb?colltype=featured">collection</a>.</p></li>
+<li><p>Copy the collection URL.</p></li>
+<li><p>Run the following command to get a volume list, remembering to put the URL
 in quotes:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">htrc</span> <span class="n">export</span> <span class="s2">&quot;https://babel.hathitrust.org/cgi/mb?a=listis;c=2027705310&quot;</span> <span class="o">&gt;</span> <span class="n">volumes</span><span class="o">.</span><span class="n">txt</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">htrc</span> <span class="n">export</span> <span class="s2">&quot;https://babel.hathitrust.org/cgi/mb?a=listis;c=2027705310&quot;</span> <span class="o">&gt;</span> <span class="n">volumes</span><span class="o">.</span><span class="n">txt</span>
 </pre></div>
 </div>
 </li>
 </ol>
-</div>
-</div>
-<div class="section" id="working-with-htrc-algorithms">
-<h2>Working with HTRC Algorithms<a class="headerlink" href="#working-with-htrc-algorithms" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="working-with-htrc-algorithms">
+<h2>Working with HTRC Algorithms<a class="headerlink" href="#working-with-htrc-algorithms" title="Link to this heading">¶</a></h2>
 <p>The InPhO Topic Explorer can be used without locally installing any software
 through the HTRC Algorithms portal. This page will run the Explorer over a
-HathiTrust Collection on a remote machine with a preset <code class="docutils literal"><span class="pre">prep</span></code> phase that
+HathiTrust Collection on a remote machine with a preset <code class="docutils literal notranslate"><span class="pre">prep</span></code> phase that
 guarantees <a class="reference external" href="#non-consumptive-research">non-consumptive use</a>.</p>
 <ol class="arabic simple">
-<li><a class="reference external" href="https://analytics.hathitrust.org/signin">Sign in to HTRC Analytics.</a></li>
-<li><a class="reference external" href="https://analytics.hathitrust.org/staticworksets">Import a collection as a HTRC Workset.</a></li>
-<li><a class="reference external" href="https://analytics.hathitrust.org/statisticalalgorithms">Go to HTRC Algorithms</a> using the top navigation.</li>
-<li>Select the “InPhO Topic Explorer” algorithm.</li>
-<li>Select the newly imported collection.</li>
-<li>Run the algorithm, optionally customizing parameters.</li>
+<li><p><a class="reference external" href="https://analytics.hathitrust.org/signin">Sign in to HTRC Analytics.</a></p></li>
+<li><p><a class="reference external" href="https://analytics.hathitrust.org/staticworksets">Import a collection as a HTRC Workset.</a></p></li>
+<li><p><a class="reference external" href="https://analytics.hathitrust.org/statisticalalgorithms">Go to HTRC Algorithms</a> using the top navigation.</p></li>
+<li><p>Select the “InPhO Topic Explorer” algorithm.</p></li>
+<li><p>Select the newly imported collection.</p></li>
+<li><p>Run the algorithm, optionally customizing parameters.</p></li>
 </ol>
 <p>At the end of execution, an interactive summary visualization will be shown that
 groups similar topics together. Hovering over each circle in the visualization
 will display the top 10 words in the topic.</p>
-<div class="section" id="output">
-<h3>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h3>
+<section id="output">
+<h3>Output<a class="headerlink" href="#output" title="Link to this heading">¶</a></h3>
 <p>Unlike with the <a class="reference external" href="#working-with-htrc-data-capsules">HTRC Data Capsules</a>, output files do not have to undergo
 non-consumptive review and are immediately available.
 Three files are available for download:</p>
-<dl class="docutils">
-<dt><code class="docutils literal"><span class="pre">workset.tez</span></code></dt>
-<dd>This file can be used with the <a class="reference external" href="import_export.html"><code class="docutils literal"><span class="pre">topicexplorer</span> <span class="pre">import</span> <span class="pre">workset.tez</span></code></a> to launch
-the full visualization via <a class="reference external" href="launch.html"><code class="docutils literal"><span class="pre">topicexplorer</span> <span class="pre">launch</span></code></a> or to analyze the models
-further using <a class="reference external" href="notebook.html"><code class="docutils literal"><span class="pre">topicexplorer</span> <span class="pre">notebook</span></code></a></dd>
-<dt><code class="docutils literal"><span class="pre">topics.json</span></code></dt>
-<dd>This file contains the topics for each model trained, the top 10 terms in
-each topic, and their probabilities.</dd>
-<dt><code class="docutils literal"><span class="pre">cluster.csv</span></code></dt>
-<dd>This file contains information that drives</dd>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">workset.tez</span></code></dt><dd><p>This file can be used with the <a class="reference external" href="import_export.html"><code class="docutils literal notranslate"><span class="pre">topicexplorer</span> <span class="pre">import</span> <span class="pre">workset.tez</span></code></a> to launch
+the full visualization via <a class="reference external" href="launch.html"><code class="docutils literal notranslate"><span class="pre">topicexplorer</span> <span class="pre">launch</span></code></a> or to analyze the models
+further using <a class="reference external" href="notebook.html"><code class="docutils literal notranslate"><span class="pre">topicexplorer</span> <span class="pre">notebook</span></code></a></p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">topics.json</span></code></dt><dd><p>This file contains the topics for each model trained, the top 10 terms in
+each topic, and their probabilities.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">cluster.csv</span></code></dt><dd><p>This file contains information that drives</p>
+</dd>
 </dl>
-</div>
-</div>
-<div class="section" id="working-with-htrc-data-capsules">
-<h2>Working with HTRC Data Capsules<a class="headerlink" href="#working-with-htrc-data-capsules" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="working-with-htrc-data-capsules">
+<h2>Working with HTRC Data Capsules<a class="headerlink" href="#working-with-htrc-data-capsules" title="Link to this heading">¶</a></h2>
 <p>The HTRC Data Capsules are virtual machines with secure access to the fulltext
 data files via the Data API. The InPhO Topic Explorer is pre-installed on each
 data capsule, and can be run with any parameter settings, unlike the HTRC
 Algorithms mode.</p>
 <p>Within the Data Capsule, the following command can be used to automate download
-of a workset and guidance through the <code class="docutils literal"><span class="pre">init</span></code>-<code class="docutils literal"><span class="pre">prep</span></code>-<code class="docutils literal"><span class="pre">train</span></code> workflow:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">htrc</span> <span class="n">run</span> <span class="n">topicexplorer</span> <span class="s2">&quot;https://babel.hathitrust.org/cgi/mb?a=listis;c=2027705310&quot;</span>
+of a workset and guidance through the <code class="docutils literal notranslate"><span class="pre">init</span></code>-<code class="docutils literal notranslate"><span class="pre">prep</span></code>-<code class="docutils literal notranslate"><span class="pre">train</span></code> workflow:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">htrc</span> <span class="n">run</span> <span class="n">topicexplorer</span> <span class="s2">&quot;https://babel.hathitrust.org/cgi/mb?a=listis;c=2027705310&quot;</span>
 </pre></div>
 </div>
 <p>Analyses performed in HTRC Data Capsules must be reviewed for compliance with
 <a class="reference external" href="#non-consumptive-research">non-consumptive use</a> before result files can be exported.</p>
 <div class="admonition seealso">
-<p class="first admonition-title">See also</p>
-<dl class="last docutils">
-<dt><a class="reference external" href="https://wiki.htrc.illinois.edu/display/COM/HTRC+Data+Capsule+Tutorial">HTRC Data Capsule Tutorial</a></dt>
-<dd>A tutorial on basic usage of the HTRC Data Capsule.</dd>
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference external" href="https://wiki.htrc.illinois.edu/display/COM/HTRC+Data+Capsule+Tutorial">HTRC Data Capsule Tutorial</a></dt><dd><p>A tutorial on basic usage of the HTRC Data Capsule.</p>
+</dd>
 </dl>
 </div>
-</div>
-<div class="section" id="working-with-htrc-extracted-features">
-<h2>Working with HTRC Extracted Features<a class="headerlink" href="#working-with-htrc-extracted-features" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="working-with-htrc-extracted-features">
+<h2>Working with HTRC Extracted Features<a class="headerlink" href="#working-with-htrc-extracted-features" title="Link to this heading">¶</a></h2>
 <p>The <a class="reference external" href="https://wiki.htrc.illinois.edu/display/COM/Extracted+Features+Dataset">HTRC Extracted Features dataset</a> contains word counts for 15.7 million
 volumes of public domain and in-copyright works. These word counts are already a
 <a class="reference external" href="#non-consumptive-research">non-consumptive use</a>, so the extracted features can be downloaded to any
 computer.</p>
 <p>To use the InPhO Topic Explorer with extracted features:</p>
 <ol class="arabic">
-<li><p class="first">Create a text file with volume IDs, possibly using the <a class="reference external" href="#hathitrust-collection-builder"><code class="docutils literal"><span class="pre">htrc</span> <span class="pre">export</span></code> command</a> on a HathiTrust collection URL.</p>
-</li>
-<li><p class="first">Use the <code class="docutils literal"><span class="pre">--htrc</span></code> flag on the Topic Explorer to download volumes from the
+<li><p>Create a text file with volume IDs, possibly using the <a class="reference external" href="#hathitrust-collection-builder"><code class="docutils literal notranslate"><span class="pre">htrc</span> <span class="pre">export</span></code> command</a> on a HathiTrust collection URL.</p></li>
+<li><p>Use the <code class="docutils literal notranslate"><span class="pre">--htrc</span></code> flag on the Topic Explorer to download volumes from the
 extracted features dataset and construct a corpus object:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">topicexplorer</span> <span class="n">init</span> <span class="o">--</span><span class="n">htrc</span> <span class="n">volumes</span><span class="o">.</span><span class="n">txt</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">topicexplorer</span> <span class="n">init</span> <span class="o">--</span><span class="n">htrc</span> <span class="n">volumes</span><span class="o">.</span><span class="n">txt</span>
 </pre></div>
 </div>
 <p>where volumes.txt is the name of the file containing volume IDs.</p>
 </li>
 </ol>
-</div>
-<div class="section" id="adding-hathitrust-metadata">
-<h2>Adding HathiTrust Metadata<a class="headerlink" href="#adding-hathitrust-metadata" title="Permalink to this headline">¶</a></h2>
-<p>The <code class="docutils literal"><span class="pre">topicexplorer</span> <span class="pre">metadata</span> <span class="pre">--htrc</span></code> command will add volume titles and
+</section>
+<section id="adding-hathitrust-metadata">
+<h2>Adding HathiTrust Metadata<a class="headerlink" href="#adding-hathitrust-metadata" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">topicexplorer</span> <span class="pre">metadata</span> <span class="pre">--htrc</span></code> command will add volume titles and
 links to the HathiTrust Page Turner fulltext view to the InPhO Topic Explorer
 document view.</p>
 <p>The metadata command may be run on datasets computed via HTRC Algorithms, in
 Data Capsules, and using Extracted Features.</p>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>
+          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">HathiTrust Integrations</a><ul>
-<li><a class="reference internal" href="#id1">Non-consumptive Research</a></li>
-<li><a class="reference internal" href="#working-with-collections">Working with Collections</a><ul>
-<li><a class="reference internal" href="#hahtitrust-collection-builder">HahtiTrust Collection Builder</a></li>
+<h1 class="logo"><a href="index.html">InPhO Topic Explorer</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Topic Explorer Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="init.html"><code class="docutils literal notranslate"><span class="pre">topicexplorer</span> <span class="pre">init</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="prep.html"><code class="docutils literal notranslate"><span class="pre">topicexplorer</span> <span class="pre">prep</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="train.html"><code class="docutils literal notranslate"><span class="pre">topicexplorer</span> <span class="pre">train</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="launch.html"><code class="docutils literal notranslate"><span class="pre">topicexplorer</span> <span class="pre">launch</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebook.html"><code class="docutils literal notranslate"><span class="pre">topicexplorer</span> <span class="pre">notebook</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="metadata.html"><code class="docutils literal notranslate"><span class="pre">topicexplorer</span> <span class="pre">metadata</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="import_export.html">Import and Export</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">HathiTrust Integrations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1">Non-consumptive Research</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#working-with-collections">Working with Collections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#working-with-htrc-algorithms">Working with HTRC Algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#working-with-htrc-data-capsules">Working with HTRC Data Capsules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#working-with-htrc-extracted-features">Working with HTRC Extracted Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#adding-hathitrust-metadata">Adding HathiTrust Metadata</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#working-with-htrc-algorithms">Working with HTRC Algorithms</a><ul>
-<li><a class="reference internal" href="#output">Output</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rest_api.html">REST API</a></li>
 </ul>
-</li>
-<li><a class="reference internal" href="#working-with-htrc-data-capsules">Working with HTRC Data Capsules</a></li>
-<li><a class="reference internal" href="#working-with-htrc-extracted-features">Working with HTRC Extracted Features</a></li>
-<li><a class="reference internal" href="#adding-hathitrust-metadata">Adding HathiTrust Metadata</a></li>
-</ul>
-</li>
-</ul>
+
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
@@ -234,33 +238,34 @@ Data Capsules, and using Extracted Features.</p>
   </ul></li>
 </ul>
 </div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/htrc.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
     </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
         </div>
       </div>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2018, InPhO Project.
+      &#169;2018, InPhO Project.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
       |
       <a href="_sources/htrc.rst.txt"

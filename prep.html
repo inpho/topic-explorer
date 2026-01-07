@@ -1,26 +1,16 @@
+<!DOCTYPE html>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en" data-content_root="./">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
     <title>topicexplorer prep &#8212; InPhO Topic Explorer 1.0b217 documentation</title>
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '1.0b217',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b76e3c8a" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
+    <script src="_static/documentation_options.js?v=3ad1187b"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="topicexplorer train" href="train.html" />
@@ -28,39 +18,41 @@
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body>
+  
+  
+
+  </head><body>
   
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
-  <div class="section" id="module-topicexplorer.prep">
-<span id="topicexplorer-prep"></span><h1><code class="docutils literal"><span class="pre">topicexplorer</span> <span class="pre">prep</span></code><a class="headerlink" href="#module-topicexplorer.prep" title="Permalink to this headline">¶</a></h1>
+  <section id="module-topicexplorer.prep">
+<span id="topicexplorer-prep"></span><h1><code class="docutils literal notranslate"><span class="pre">topicexplorer</span> <span class="pre">prep</span></code><a class="headerlink" href="#module-topicexplorer.prep" title="Link to this heading">¶</a></h1>
 <p>Prepares a corpus for modeling with stoplist management tools.</p>
-<div class="section" id="stoplisting">
-<h2>Stoplisting<a class="headerlink" href="#stoplisting" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="what-is-stoplisting">
-<h3>What is stoplisting?<a class="headerlink" href="#what-is-stoplisting" title="Permalink to this headline">¶</a></h3>
+<section id="stoplisting">
+<h2>Stoplisting<a class="headerlink" href="#stoplisting" title="Link to this heading">¶</a></h2>
+<section id="what-is-stoplisting">
+<h3>What is stoplisting?<a class="headerlink" href="#what-is-stoplisting" title="Link to this heading">¶</a></h3>
 <p>Extremely common words can be of little value in discriminating between
-documents and can create uninterpretable topics. Terms like <code class="docutils literal"><span class="pre">the</span></code>, <code class="docutils literal"><span class="pre">of</span></code>,
-<code class="docutils literal"><span class="pre">is</span></code>, <code class="docutils literal"><span class="pre">and</span></code>, <code class="docutils literal"><span class="pre">but</span></code>, and <code class="docutils literal"><span class="pre">or</span></code> are thus excluded from modeling. These
+documents and can create uninterpretable topics. Terms like <code class="docutils literal notranslate"><span class="pre">the</span></code>, <code class="docutils literal notranslate"><span class="pre">of</span></code>,
+<code class="docutils literal notranslate"><span class="pre">is</span></code>, <code class="docutils literal notranslate"><span class="pre">and</span></code>, <code class="docutils literal notranslate"><span class="pre">but</span></code>, and <code class="docutils literal notranslate"><span class="pre">or</span></code> are thus excluded from modeling. These
 terms are called <em>stop words</em>. The process of removing stop words is
 stoplisting.</p>
-</div>
-<div class="section" id="how-topicexplorer-prep-generates-stoplists">
-<h3>How <code class="docutils literal"><span class="pre">topicexplorer</span> <span class="pre">prep</span></code> generates stoplists<a class="headerlink" href="#how-topicexplorer-prep-generates-stoplists" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal"><span class="pre">topicexplorer</span> <span class="pre">prep</span></code> generates stoplists from the frequencies of words in the
+</section>
+<section id="how-topicexplorer-prep-generates-stoplists">
+<h3>How <code class="docutils literal notranslate"><span class="pre">topicexplorer</span> <span class="pre">prep</span></code> generates stoplists<a class="headerlink" href="#how-topicexplorer-prep-generates-stoplists" title="Link to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">topicexplorer</span> <span class="pre">prep</span></code> generates stoplists from the frequencies of words in the
 collection being modeled, rather than using the same list of words across
 different collections. Arbitrary lists can still be excluded with the 
-<a class="reference external" href="#custom-stopwords-stopword-file"><code class="docutils literal"><span class="pre">--stopword-file</span></code> argument</a>.</p>
+<a class="reference external" href="#custom-stopwords-stopword-file"><code class="docutils literal notranslate"><span class="pre">--stopword-file</span></code> argument</a>.</p>
 <p>While most natural language processing (NLP) tools exclude common words,
-<code class="docutils literal"><span class="pre">topicexplorer</span> <span class="pre">prep</span></code> also provides functionality to remove low-frequency
+<code class="docutils literal notranslate"><span class="pre">topicexplorer</span> <span class="pre">prep</span></code> also provides functionality to remove low-frequency
 words.</p>
 <p>The contribution of low-freuqency words to the probability distribution
 is negligible – if a word only occurs once in a 1 million word corpus (which
@@ -70,125 +62,136 @@ words from the word-topic matrix far outweigh the marginal improvements to model
 fit.</p>
 <p>Another benefit of removing low-frequency words is the removal of spurious
 tokens introduced by optical character recognition (OCR) in scanned documents.</p>
-<p>Finally, very small words can be excluded with the <a class="reference external" href="#small-words-min-word-len"><code class="docutils literal"><span class="pre">--min-word-len</span></code> argument</a>.
+<p>Finally, very small words can be excluded with the <a class="reference external" href="#small-words-min-word-len"><code class="docutils literal notranslate"><span class="pre">--min-word-len</span></code> argument</a>.
 These small words often appear when mathematical formulas are in a text (e.g.,
-<code class="docutils literal"><span class="pre">y</span> <span class="pre">=</span> <span class="pre">mx</span> <span class="pre">+</span> <span class="pre">b</span></code> would introduce <code class="docutils literal"><span class="pre">y</span></code>, <code class="docutils literal"><span class="pre">mx</span></code>, and <code class="docutils literal"><span class="pre">b</span></code>). Usually, they will be
+<code class="docutils literal notranslate"><span class="pre">y</span> <span class="pre">=</span> <span class="pre">mx</span> <span class="pre">+</span> <span class="pre">b</span></code> would introduce <code class="docutils literal notranslate"><span class="pre">y</span></code>, <code class="docutils literal notranslate"><span class="pre">mx</span></code>, and <code class="docutils literal notranslate"><span class="pre">b</span></code>). Usually, they will be
 caught by the low-frequency filters, but this ensures they are left out.</p>
 <div class="admonition seealso">
-<p class="first admonition-title">See also</p>
-<dl class="last docutils">
-<dt><a class="reference external" href="https://nlp.stanford.edu/IR-book/html/htmledition/dropping-common-terms-stop-words-1.html">Introduction to Information Retrieval – stop words</a></dt>
-<dd>Stanford textbook on stop words.</dd>
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference external" href="https://nlp.stanford.edu/IR-book/html/htmledition/dropping-common-terms-stop-words-1.html">Introduction to Information Retrieval – stop words</a></dt><dd><p>Stanford textbook on stop words.</p>
+</dd>
 </dl>
 </div>
-</div>
-</div>
-<div class="section" id="recommended-settings">
-<h2>Recommended Settings<a class="headerlink" href="#recommended-settings" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="recommended-settings">
+<h2>Recommended Settings<a class="headerlink" href="#recommended-settings" title="Link to this heading">¶</a></h2>
 <p>Each argument has a suggested value. A quick start, assuming your corpus is in
 a folder called “workset” is:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">topicexplorer</span> <span class="n">prep</span> <span class="n">workset</span> <span class="o">--</span><span class="n">high</span><span class="o">-</span><span class="n">percent</span> <span class="mi">50</span> <span class="o">--</span><span class="n">low</span><span class="o">-</span><span class="n">percent</span> <span class="mi">10</span> <span class="o">--</span><span class="nb">min</span><span class="o">-</span><span class="n">word</span><span class="o">-</span><span class="nb">len</span> <span class="mi">3</span> <span class="o">-</span><span class="n">q</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">topicexplorer</span> <span class="n">prep</span> <span class="n">workset</span> <span class="o">--</span><span class="n">high</span><span class="o">-</span><span class="n">percent</span> <span class="mi">50</span> <span class="o">--</span><span class="n">low</span><span class="o">-</span><span class="n">percent</span> <span class="mi">10</span> <span class="o">--</span><span class="nb">min</span><span class="o">-</span><span class="n">word</span><span class="o">-</span><span class="nb">len</span> <span class="mi">3</span> <span class="o">-</span><span class="n">q</span>
 </pre></div>
 </div>
 <p>These parameters work well for English-language text. For languages without
-articles (e.g., “a”, “the”), we recommend reducing the <code class="docutils literal"><span class="pre">--high-percent</span></code>
-argument to <code class="docutils literal"><span class="pre">--high-percent</span> <span class="pre">25</span></code>.</p>
-</div>
-<div class="section" id="command-line-arguments">
-<h2>Command Line Arguments<a class="headerlink" href="#command-line-arguments" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="high-probability-words-high-percent">
-<h3>High-probability words (<code class="docutils literal"><span class="pre">--high-percent</span></code>)<a class="headerlink" href="#high-probability-words-high-percent" title="Permalink to this headline">¶</a></h3>
-<p>Remove common words from the corpus, accounting for up to <code class="docutils literal"><span class="pre">HIGH_PERCENT</span></code> of
+articles (e.g., “a”, “the”), we recommend reducing the <code class="docutils literal notranslate"><span class="pre">--high-percent</span></code>
+argument to <code class="docutils literal notranslate"><span class="pre">--high-percent</span> <span class="pre">25</span></code>.</p>
+</section>
+<section id="command-line-arguments">
+<h2>Command Line Arguments<a class="headerlink" href="#command-line-arguments" title="Link to this heading">¶</a></h2>
+<section id="high-probability-words-high-percent">
+<h3>High-probability words (<code class="docutils literal notranslate"><span class="pre">--high-percent</span></code>)<a class="headerlink" href="#high-probability-words-high-percent" title="Link to this heading">¶</a></h3>
+<p>Remove common words from the corpus, accounting for up to <code class="docutils literal notranslate"><span class="pre">HIGH_PERCENT</span></code> of
 the total occurrences in the corpus.</p>
-<p><strong>Recommended, but not default:</strong> <code class="docutils literal"><span class="pre">--high-percent</span> <span class="pre">50</span></code></p>
-</div>
-<div class="section" id="low-probability-words-low-percent">
-<h3>Low-probability words (<code class="docutils literal"><span class="pre">--low-percent</span></code>)<a class="headerlink" href="#low-probability-words-low-percent" title="Permalink to this headline">¶</a></h3>
-<p>Remove uncommon words from the corpus, accounting for up to <code class="docutils literal"><span class="pre">LOW_PERCENT</span></code> of
+<p><strong>Recommended, but not default:</strong> <code class="docutils literal notranslate"><span class="pre">--high-percent</span> <span class="pre">50</span></code></p>
+</section>
+<section id="low-probability-words-low-percent">
+<h3>Low-probability words (<code class="docutils literal notranslate"><span class="pre">--low-percent</span></code>)<a class="headerlink" href="#low-probability-words-low-percent" title="Link to this heading">¶</a></h3>
+<p>Remove uncommon words from the corpus, accounting for up to <code class="docutils literal notranslate"><span class="pre">LOW_PERCENT</span></code> of
 the total occurrences in the corpus.</p>
-<p><strong>Recommended, but not default:</strong> <code class="docutils literal"><span class="pre">--low-percent</span> <span class="pre">10</span></code></p>
-</div>
-<div class="section" id="small-words-min-word-len">
-<h3>Small words (<code class="docutils literal"><span class="pre">--min-word-len</span></code>)<a class="headerlink" href="#small-words-min-word-len" title="Permalink to this headline">¶</a></h3>
+<p><strong>Recommended, but not default:</strong> <code class="docutils literal notranslate"><span class="pre">--low-percent</span> <span class="pre">10</span></code></p>
+</section>
+<section id="small-words-min-word-len">
+<h3>Small words (<code class="docutils literal notranslate"><span class="pre">--min-word-len</span></code>)<a class="headerlink" href="#small-words-min-word-len" title="Link to this heading">¶</a></h3>
 <p>Remove words with few characters from the corpus. Often includes mathematical
 notation and OCR errors.</p>
-<p><strong>Recommended, but not default:</strong> <code class="docutils literal"><span class="pre">--min-word-len</span> <span class="pre">3</span></code></p>
-</div>
-<div class="section" id="custom-stopwords-stopword-file">
-<h3>Custom stopwords (<code class="docutils literal"><span class="pre">-stopword-file</span></code>)<a class="headerlink" href="#custom-stopwords-stopword-file" title="Permalink to this headline">¶</a></h3>
+<p><strong>Recommended, but not default:</strong> <code class="docutils literal notranslate"><span class="pre">--min-word-len</span> <span class="pre">3</span></code></p>
+</section>
+<section id="custom-stopwords-stopword-file">
+<h3>Custom stopwords (<code class="docutils literal notranslate"><span class="pre">-stopword-file</span></code>)<a class="headerlink" href="#custom-stopwords-stopword-file" title="Link to this heading">¶</a></h3>
 <p>Remove custom words from the corpus.</p>
-</div>
-<div class="section" id="quiet-mode-q">
-<h3>Quiet mode (<code class="docutils literal"><span class="pre">-q</span></code>)<a class="headerlink" href="#quiet-mode-q" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="quiet-mode-q">
+<h3>Quiet mode (<code class="docutils literal notranslate"><span class="pre">-q</span></code>)<a class="headerlink" href="#quiet-mode-q" title="Link to this heading">¶</a></h3>
 <p>Suppresses all user input requests. Uses default values unless otherwise
 specified by other argument flags. Very useful for scripting automated
 pipelines.</p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
           </div>
+          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#"><code class="docutils literal"><span class="pre">topicexplorer</span> <span class="pre">prep</span></code></a><ul>
-<li><a class="reference internal" href="#stoplisting">Stoplisting</a><ul>
-<li><a class="reference internal" href="#what-is-stoplisting">What is stoplisting?</a></li>
-<li><a class="reference internal" href="#how-topicexplorer-prep-generates-stoplists">How <code class="docutils literal"><span class="pre">topicexplorer</span> <span class="pre">prep</span></code> generates stoplists</a></li>
+<h1 class="logo"><a href="index.html">InPhO Topic Explorer</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Topic Explorer Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="init.html"><code class="docutils literal notranslate"><span class="pre">topicexplorer</span> <span class="pre">init</span></code></a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">topicexplorer</span> <span class="pre">prep</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#stoplisting">Stoplisting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#recommended-settings">Recommended Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#command-line-arguments">Command Line Arguments</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#recommended-settings">Recommended Settings</a></li>
-<li><a class="reference internal" href="#command-line-arguments">Command Line Arguments</a><ul>
-<li><a class="reference internal" href="#high-probability-words-high-percent">High-probability words (<code class="docutils literal"><span class="pre">--high-percent</span></code>)</a></li>
-<li><a class="reference internal" href="#low-probability-words-low-percent">Low-probability words (<code class="docutils literal"><span class="pre">--low-percent</span></code>)</a></li>
-<li><a class="reference internal" href="#small-words-min-word-len">Small words (<code class="docutils literal"><span class="pre">--min-word-len</span></code>)</a></li>
-<li><a class="reference internal" href="#custom-stopwords-stopword-file">Custom stopwords (<code class="docutils literal"><span class="pre">-stopword-file</span></code>)</a></li>
-<li><a class="reference internal" href="#quiet-mode-q">Quiet mode (<code class="docutils literal"><span class="pre">-q</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="train.html"><code class="docutils literal notranslate"><span class="pre">topicexplorer</span> <span class="pre">train</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="launch.html"><code class="docutils literal notranslate"><span class="pre">topicexplorer</span> <span class="pre">launch</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebook.html"><code class="docutils literal notranslate"><span class="pre">topicexplorer</span> <span class="pre">notebook</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="metadata.html"><code class="docutils literal notranslate"><span class="pre">topicexplorer</span> <span class="pre">metadata</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="import_export.html">Import and Export</a></li>
+<li class="toctree-l1"><a class="reference internal" href="htrc.html">HathiTrust Integrations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rest_api.html">REST API</a></li>
 </ul>
-</li>
-</ul>
-</li>
-</ul>
+
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="init.html" title="previous chapter"><code class="docutils literal"><span class="pre">topicexplorer</span> <span class="pre">init</span></code></a></li>
-      <li>Next: <a href="train.html" title="next chapter"><code class="docutils literal"><span class="pre">topicexplorer</span> <span class="pre">train</span></code></a></li>
+      <li>Previous: <a href="init.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">topicexplorer</span> <span class="pre">init</span></code></a></li>
+      <li>Next: <a href="train.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">topicexplorer</span> <span class="pre">train</span></code></a></li>
   </ul></li>
 </ul>
 </div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/prep.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
     </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
         </div>
       </div>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2018, InPhO Project.
+      &#169;2018, InPhO Project.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
       |
       <a href="_sources/prep.rst.txt"

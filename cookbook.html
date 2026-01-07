@@ -1,52 +1,45 @@
+<!DOCTYPE html>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en" data-content_root="./">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
     <title>Cookbook &#8212; InPhO Topic Explorer 1.0b217 documentation</title>
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '1.0b217',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b76e3c8a" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
+    <script src="_static/documentation_options.js?v=3ad1187b"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="REST API" href="rest_api.html" />
     <link rel="prev" title="HathiTrust Integrations" href="htrc.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body>
+  
+  
+
+  </head><body>
   
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
-  <div class="section" id="cookbook">
-<h1>Cookbook<a class="headerlink" href="#cookbook" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="hathitrust-collection-to-topic-explorer">
-<h2>HathiTrust Collection to Topic Explorer<a class="headerlink" href="#hathitrust-collection-to-topic-explorer" title="Permalink to this headline">¶</a></h2>
+  <section id="cookbook">
+<h1>Cookbook<a class="headerlink" href="#cookbook" title="Link to this heading">¶</a></h1>
+<section id="hathitrust-collection-to-topic-explorer">
+<h2>HathiTrust Collection to Topic Explorer<a class="headerlink" href="#hathitrust-collection-to-topic-explorer" title="Link to this heading">¶</a></h2>
 <p>The following script downloads <a class="reference external" href="https://babel.hathitrust.org/cgi/mb?a=listis;c=1100976828">a collection of Vonnegut’s works and associated
 criticism</a>. It can
 easily be adapted to other collections.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
 
 <span class="c1"># install the tools</span>
 <span class="n">pip</span> <span class="n">install</span> <span class="n">topicexplorer</span><span class="p">[</span><span class="n">htrc</span><span class="p">]</span> <span class="n">htrc</span>
@@ -68,66 +61,89 @@ easily be adapted to other collections.</p>
 <span class="n">topicexplorer</span> <span class="n">launch</span> <span class="n">vonnegut</span><span class="o">.</span><span class="n">txt</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="import-and-export">
-<h2>Import and export<a class="headerlink" href="#import-and-export" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="import-and-export">
+<h2>Import and export<a class="headerlink" href="#import-and-export" title="Link to this heading">¶</a></h2>
 <p>This example shows how to use export and import.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">topicexplorer</span> <span class="n">export</span> <span class="n">workset</span><span class="o">.</span><span class="n">ini</span> <span class="o">-</span><span class="n">o</span> <span class="n">workset</span><span class="o">.</span><span class="n">tez</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">topicexplorer</span> <span class="n">export</span> <span class="n">workset</span><span class="o">.</span><span class="n">ini</span> <span class="o">-</span><span class="n">o</span> <span class="n">workset</span><span class="o">.</span><span class="n">tez</span>
 <span class="n">topicexplorer</span> <span class="kn">import</span> <span class="nn">workset.tez</span>
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>
+          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">Cookbook</a><ul>
-<li><a class="reference internal" href="#hathitrust-collection-to-topic-explorer">HathiTrust Collection to Topic Explorer</a></li>
-<li><a class="reference internal" href="#import-and-export">Import and export</a></li>
+<h1 class="logo"><a href="index.html">InPhO Topic Explorer</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Topic Explorer Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="init.html"><code class="docutils literal notranslate"><span class="pre">topicexplorer</span> <span class="pre">init</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="prep.html"><code class="docutils literal notranslate"><span class="pre">topicexplorer</span> <span class="pre">prep</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="train.html"><code class="docutils literal notranslate"><span class="pre">topicexplorer</span> <span class="pre">train</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="launch.html"><code class="docutils literal notranslate"><span class="pre">topicexplorer</span> <span class="pre">launch</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebook.html"><code class="docutils literal notranslate"><span class="pre">topicexplorer</span> <span class="pre">notebook</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="metadata.html"><code class="docutils literal notranslate"><span class="pre">topicexplorer</span> <span class="pre">metadata</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="import_export.html">Import and Export</a></li>
+<li class="toctree-l1"><a class="reference internal" href="htrc.html">HathiTrust Integrations</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Cookbook</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#hathitrust-collection-to-topic-explorer">HathiTrust Collection to Topic Explorer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#import-and-export">Import and export</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="rest_api.html">REST API</a></li>
 </ul>
+
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
       <li>Previous: <a href="htrc.html" title="previous chapter">HathiTrust Integrations</a></li>
+      <li>Next: <a href="rest_api.html" title="next chapter">REST API</a></li>
   </ul></li>
 </ul>
 </div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/cookbook.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
     </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
         </div>
       </div>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2018, InPhO Project.
+      &#169;2018, InPhO Project.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
       |
       <a href="_sources/cookbook.rst.txt"
