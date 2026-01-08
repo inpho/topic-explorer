@@ -7,26 +7,22 @@
   // redirect for error introduced by CAS
   if (window.location.href.includes('%3d'))
     window.location.href = window.location.href.replace('%3d','=');
-  
-  var ks = [{{#topic_range}}{{.}}, {{/topic_range}}];
   </script>
 
-  <script src="/lib/jquery-2.2.4.min.js"></script>
-  <!--<script src="https://code.jquery.com/jquery-1.12.4.js"></script>-->
+  <script src="/lib/jquery-3.7.1.min.js"></script>
   <script src="/lib/jquery.superdom.min.js"></script>
   <script src="/lib/jquery.cookie.min.js"></script>
-  <script src="/lib/bootstrap-2.3.2/js/bootstrap.min.js"></script>
+  <script src="/lib/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+  <script src="/lib/bootstrap3-typeahead.js"></script>
   <script src="/lib/d3.v3.min.js"></script>
-  <script src="/lib/d3.promise.min.js"></script>
   <script src="/lib/mustache.js"></script>
   <script src="/lib/showdown.min.js"></script>
   <script src="/lib/inpho/util.js"></script>
   <script src="/fulltext.js"></script>
   <script src="/htrc.js"></script>
-  <script src="../icons.js"></script>
-  <script src="icons.js"></script>
   <script src="/topicprint.js"></script>
-  <link rel="stylesheet" type="text/css" href="/lib/bootstrap-3.3.6/css/bootstrap.min.css" />
+  <script src="../icons.js"></script>
+  <link rel="stylesheet" type="text/css" href="/lib/bootstrap-3.4.1/css/bootstrap.min.css" />
   <!-- <link rel="stylesheet" type="text/css" href="/lib/bootstrap-2.3.2/css/bootstrap.min.css" /> -->
   <link rel='stylesheet prefetch' href='/css/simple-sidebar.css'>
   <link rel='stylesheet prefetch' href='/css/master.css'>
@@ -59,6 +55,7 @@
     </div>
   
     <script>
+    var ks = [{{#topic_range}}{{.}}, {{/topic_range}}];
     $('#sidebar-wrapper li a').tooltip();
     </script>
     

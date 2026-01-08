@@ -4,6 +4,7 @@ standard_library.install_aliases()
 from builtins import input
 from builtins import range
 
+
 try:
     # Python 3 or Python 2 w/backport
     from importlib import reload
@@ -15,10 +16,10 @@ def pypi_versions(package_name):
     # Based on: http://stackoverflow.com/a/27239645
     from pip._vendor.packaging.version import parse as parse_version
     import json
-    import urllib.request, urllib.error, urllib.parse
+    import requests
 
     url = "https://pypi.python.org/pypi/%s/json" % (package_name,)
-    data = json.load(urllib.request.urlopen(urllib.request.Request(url)))
+    data = requests.get(url, timeout=31).json()
     versions = data["releases"].keys()
     versions = sorted(versions, key=parse_version)
     return versions
@@ -45,10 +46,10 @@ def process_exists(processname): # pragma: no cover
     import platform
 
     if platform.system() == 'Windows':
-        tlcall = 'TASKLIST', '/FI', 'imagename eq %s' % processname
+        tlcall = ['TASKLIST', '/FI', 'imagename eq %s' % processname]
         # shell=True hides the shell window, stdout to PIPE enables
         # communicate() to get the tasklist command result
-        tlproc = subprocess.Popen(tlcall, shell=True, stdout=subprocess.PIPE)
+        tlproc = subprocess.Popen(tlcall, shell=False, stdout=subprocess.PIPE)
         # trimming it to the actual lines with information
         tlout = tlproc.communicate()[0].strip().split('\r\n')
         # if TASKLIST returns single line without processname: it's not running
@@ -184,9 +185,8 @@ def update(args=None):
                     return
 
             try:
-                subprocess.check_call(
-                    'pip install topicexplorer=={} --no-cache-dir'.format(pypi_version),
-                    shell=True)
+                cmd = ['pip', 'install', f'topicexplorer=={pypi_version}', '--no-cache-dir']
+                subprocess.check_call(cmd, shell=False)
             except CalledProcessError:
                 print("ERROR: Update did not comlete installation.\n")
             else:
