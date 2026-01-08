@@ -8,8 +8,8 @@ from time import sleep
 
 import git
 import pypandoc
-from travispy import TravisPy
-from travispy.errors import TravisError
+#from travispy import TravisPy
+#from travispy.errors import TravisError
 
 from topicexplorer import __version__
 
@@ -47,6 +47,7 @@ elif (__version__ in repo.remotes.origin.repo.tags and
     print("Increment the version number and run release again.\n")
     sys.exit(1)
 
+'''
 # check for a no-travis flag
 if sys.argv[-1] != '--no-travis':
     ### TRAVIS-CI CHECKS ###
@@ -69,7 +70,7 @@ if sys.argv[-1] != '--no-travis':
             url = "https://github.com/settings/tokens/new"
             url += "?scopes=repo_deployment,repo:status,write:repo_hook,read:org,user:email"
             url += "&description=travis%20ci%20token"
-            # TODO: Prompt to open browser or automate token grab
+            B# TODO: Prompt to open browser or automate token grab
             print(url)
         else:
             print(".travis.key file detected, but there was an error communicating with Travis.")
@@ -104,27 +105,26 @@ if sys.argv[-1] != '--no-travis':
     else:
         print("Travis build of release {} failed. Aborting release.\n".format(__version__))
         sys.exit(1)
+'''
 
 ### Convert documentation for PyPI ###
-pypandoc.convert('README.md', 'rst', outputfile='README.txt')
+pypandoc.convert_file('README.md', 'rst', outputfile='README.txt')
 try:
     if sys.argv[-1] == 'test':
-        check_output("python setup.py register -r pypitest", shell=True)
+        check_output("twine upload -r testpypi dist/*", shell=True)
     else:
-        print("Registering package with PyPI.")
-        check_output("python setup.py register", shell=True)
-
-        print("Uploading source to PyPI.")
-        check_output("python setup.py sdist upload", shell=True)
+        print("Building sdist and bdist_wheel")
+        check_output("python setup.py sdist bdist_wheel", shell=True)
 
         print("Uploading wheel to PyPI.")
-        check_output("python setup.py bdist_wheel upload", shell=True)
+        check_output("twine upload dist/*", shell=True)
 
 except CalledProcessError as e:
-    print("\nFailed to register and upload the package to PyPI.\n")
+    print("\nFailed to upload the package to PyPI.\n")
     sys.exit(1)
 finally:
-    os.remove('README.txt')
+    pass
+    #os.remove('README.txt')
 
 print("Creating local tag for release.\n")
 repo.create_tag(__version__)
