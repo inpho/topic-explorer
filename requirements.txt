@@ -36,6 +36,7 @@ win_unicode_console; sys_platform=='win32'
 
 anyio>=4.4.0 # not directly required, pinned by Snyk to avoid a vulnerability
 fonttools>=4.61.0 # not directly required, pinned by Snyk to avoid a vulnerability
+pillow>=10.3.0 # not directly required, pinned by Snyk to avoid a vulnerability
 pygments>=2.7.4 # not directly required, pinned by Snyk to avoid a vulnerability
 tornado>=6.5.3 # not directly required, pinned by Snyk to avoid a vulnerability
 urllib3>=2.6.0 # not directly required, pinned by Snyk to avoid a vulnerability
