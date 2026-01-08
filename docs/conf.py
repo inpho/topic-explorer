@@ -33,6 +33,22 @@ extensions = [
     'sphinx.ext.doctest',
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
+    'sphinxcontrib.redoc'
+]
+
+# Generate a standalone ReDoc HTML page for the OpenAPI specification.
+# The output page will be: _build/html/rest_api.html
+redoc = [
+    {
+        'name': 'REST API',
+        'page': 'rest_api',
+        'spec': '_static/openapi.yaml',
+        'embed': True,
+        'opts': {
+            # Reduce visual noise; keep paths/verbs readable.
+            'hide-hostname': True,
+        },
+    },
 ]
 
 # Add any paths that contain templates here, relative to this directory.

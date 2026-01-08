@@ -31,13 +31,13 @@ except ImportError:
 def convert(fname, pages=None):
     try:
         # attempt to find a pdftotext binary
-        cmd = "where" if platform.system() == "Windows" else "which"
-        cmd = subprocess.check_output(cmd + ' pdftotext', shell=True)
+        cmd = ["where" if platform.system() == "Windows" else "which", 'pdftotext']
+        cmd = subprocess.check_output(cmd, shell=False)
         cmd = cmd.decode('utf8').strip()
         if not cmd:
             raise EnvironmentError("pdftotext not found")
         
-        return subprocess.check_output(' '.join([cmd, cmd_quote(fname), '-']), shell=True)
+        return subprocess.check_output([cmd, cmd_quote(fname), '-'], shell=False)
     except (EnvironmentError, subprocess.CalledProcessError):
         #logging.warning("pdftotext not found, defaulting to pdfminer.")
         return convert_miner(fname, pages=pages)

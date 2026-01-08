@@ -1,28 +1,29 @@
-bottle>=0.12.0
+bottle>=0.12.0,<0.13.0
 brewer2mpl>=1.4.0,<1.5.0
 decorator>=4.0.5
+defusedxml>=0.7.1
 future>=0.16.0
 langdetect>=1.0.0
 matplotlib>=2.0.0
 mock>=2.0.0
 nltk>=3.0.0,<4.0.0
 notebook>=4.0.0
-numpy>=1.11.3,<1.16.4
+numpy<2.0.0
 Paste==2.0.3
 pdfminer.six==20170720
 profilehooks>=1.8.0
 progressbar2>=3.18.0
-pybtex==0.21
-pystache==0.5.4
-requests>=2.14.2
+pybtex>=0.21
+pystache>=0.5.4
+requests>=2.32.4
 scikit_learn>=0.18.1
 scipy>=0.19.0
 snakeviz>=0.4.0
 sortedcontainers>=1.5.7
-ujson==1.35
+ujson>=5.4.0
 Unidecode
 vsm>=0.4.15
-waitress>=1.0.0
+waitress>=3.0.1
 webtest>=2.0.29
 wget>=3.2
 
@@ -32,4 +33,8 @@ importlib==1.0.4; python_version=='2.7'
 
 pywin32>=220; sys_platform=='win32'
 win_unicode_console; sys_platform=='win32'
+
 zipp>=3.19.1 # not directly required, pinned by Snyk to avoid a vulnerability
+fonttools>=4.61.0 # not directly required, pinned by Snyk to avoid a vulnerability
+tornado>=6.5.3 # not directly required, pinned by Snyk to avoid a vulnerability
+urllib3>=2.6.0 # not directly required, pinned by Snyk to avoid a vulnerability

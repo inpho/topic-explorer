@@ -21,6 +21,7 @@ Contents:
    import_export
    htrc
    cookbook
+   rest_api
 
 
 

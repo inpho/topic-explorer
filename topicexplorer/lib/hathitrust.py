@@ -16,11 +16,11 @@ from time import sleep
 from urllib.request import urlopen
 from urllib.error import HTTPError
 from urllib.parse import quote_plus, urlencode
-import xml.etree.ElementTree as ET
 from zipfile import ZipFile  # used to decompress requested zip archives.
 import requests
 import re
 
+from defusedxml import ElementTree as ET
 
 from topicexplorer.lib.util import *
 
@@ -32,7 +32,7 @@ def metadata(id, sleep_time=1):
     if sleep_time:
         sleep(sleep_time)  # JUST TO MAKE SURE WE ARE THROTTLED
     try:
-        data = json.load(urlopen(solr))
+        data = requests.get(solr, timeout=31).json()
         print(id)
         return data['response']['docs'][0]
     except (ValueError, IndexError, HTTPError):
@@ -54,7 +54,7 @@ def record_data(id, sleep_time=1):
     url = "http://catalog.hathitrust.org/api/volumes/brief/recordnumber/{0}.json"
 
     url = url.format(id)
-    r = requests.get(url)
+    r = requests.get(url, timeout=31)
     data = r.json()
 
     # data = data['items'][id]
