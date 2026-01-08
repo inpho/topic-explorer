@@ -121,6 +121,8 @@ import os.path
 import topicexplorer.config
 from topicexplorer.lib.util import bool_prompt, int_prompt, is_valid_configfile
 
+import ast
+
 
 def build_models(corpus, corpus_filename, model_path, context_type, krange,
                  n_iterations=200, n_proc=1, seed=None, dry_run=False):
@@ -219,7 +221,7 @@ def main(args):
     if args.k is None:
         try:
             if config.get("main", "topics"):
-                default = ' '.join(map(str, eval(config.get("main", "topics"))))
+                default = ' '.join(map(str, ast.literal_eval(config.get("main", "topics"))))
                 if args.quiet:
                     args.k = [int(n) for n in default.split()]
             else:
@@ -276,7 +278,7 @@ Do you want to continue training your existing models? """, default=True))):
 
         # if the set changes, build some new models and continue some old ones
 
-        config_topics = eval(config.get("main", "topics"))
+        config_topics = ast.literal_eval(config.get("main", "topics"))
         if args.k != config_topics:
             new_models = set(args.k) - set(config_topics)
             continuing_models = set(args.k) & set(config_topics)

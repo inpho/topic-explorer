@@ -12,6 +12,7 @@ from builtins import map
 from builtins import range
 from builtins import object
 
+import ast
 from codecs import open
 from collections import defaultdict
 from configparser import ConfigParser as ConfigParser
@@ -52,8 +53,8 @@ class dimensionReduce(object):
             raise IndexError("No topic range")
         else:
             keys = list(self.model_v.keys())
-            return np.vstack(self.model_v[keys[i]].phi.T 
-                for i in np.argsort(keys))
+            return np.vstack([self.model_v[keys[i]].phi.T 
+                for i in np.argsort(keys)])
             """
             temp_merge = self.model_v[sorted(self.model_v.keys())[0]].phi.T
             for i in range(1,len(self.topic_range)):
@@ -135,7 +136,7 @@ class moduleLoad(object):
     def create_model_pattern(self):
         self.pattern = self.config.get('main', 'model_pattern')
         if self.config.get('main', 'topics'):
-            self.topic_range = eval(self.config.get('main', 'topics'))
+            self.topic_range = ast.literal_eval(self.config.get('main', 'topics'))
 
     def load_model(self,k):
         if k in self.topic_range:

@@ -516,7 +516,7 @@ def write_config(args, config_file=None):
 
     config.add_section("www")
     config.set("www", "corpus_name", args.corpus_print_name)
-    config.set("www", "icons", "fingerprint,link")
+    config.set("www", "icons", "link")
     config.set("www", "fulltext", "false")
     config.set("www", "tokenizer", args.tokenizer);
     # adds a pdf element to the config file and set it to true if
