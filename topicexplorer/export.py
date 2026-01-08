@@ -4,6 +4,7 @@ standard_library.install_aliases()
 from builtins import input
 from builtins import range
 
+import ast
 from codecs import open
 import os
 import os.path
@@ -132,7 +133,7 @@ def main(args=None):
     
     # topic variables
     if config.get('main', 'topics'):
-        topic_range = eval(config.get('main', 'topics'))
+        topic_range = ast.literal_eval(config.get('main', 'topics'))
     if args.include_corpus:
         raw_corpus = config.get('main', 'raw_corpus')
     else:

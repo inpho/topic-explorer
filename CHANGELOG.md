@@ -10,6 +10,19 @@ This CHANGELOG follows the conventions at [Keep a CHANGELOG](http://keepachangel
 
 ## Unreleased
 
+## [1.0b232] - 2025-03-07
+- Added:
+  - Added support for Python 3.12
+- Changed:
+  - Partially removed support for Python 2.7 by introducing f-strings.
+  - Minimum version Python 3.9 due to flags on E-Tag sha1 hashes.
+- Fixed:
+  - Corrected all medium and high severity issues running `bandit -r -ll topicexplorer`.
+  - [#368](https://github.com/inpho/topic-explorer/issues/368) Bold document labels not replacing unbold versions
+
+## [1.0b227] - 2020-08-08
+- Last known Python 2.7 release
+
 ## [1.0b182] - 2017-10-08
 - Added:
   - [#200](https://github.com/inpho/topic-explorer/issues/200) Python 3 Support

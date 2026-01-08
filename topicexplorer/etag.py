@@ -4,7 +4,7 @@ import hashlib
 def generate_etag(v):
     ''' Takes a model view and generates an etag using the v.phi and v.theta attributes '''
     # TODO: write a function using a hashlib digest
-    x = hashlib.sha1()
+    x = hashlib.sha1(usedforsecurity=False) 
     x.update(repr(v.phi).encode('utf-8'))
     x.update(repr(v.theta).encode('utf-8'))
     return x.hexdigest()

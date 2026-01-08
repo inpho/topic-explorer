@@ -3,7 +3,11 @@ sandbox
 .coverage
 mprofile_*
 
+*.csv
 *.ini
+*.ini.md
+*.npz
+data/
 
 start-servers.sh
 logs/*
@@ -31,3 +35,8 @@ ChangeLog
 docs/_build
 
 ap*
+
+node_modules
+.eslintrc.json
+package.json
+package-lock.json

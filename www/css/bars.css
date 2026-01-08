@@ -77,9 +77,13 @@ rect:hover, .legend.hover rect, .legend.selected rect {
 .selected text, .hover text {
   font-weight: bold;
 }
+label {
+    font-weight: normal;
+}
 .doc text {
   font-size: 18px;
   }
+
 #legend, #controls {
   position: absolute;
   overflow: visible;
@@ -91,14 +95,15 @@ rect:hover, .legend.hover rect, .legend.selected rect {
   top: 100px;
 }
 #controls {
-  top: 0 !important;
+  top: 0;
+  visibility: hidden;
 }
 .primary {
   text-transform: uppercase;
 }
-text.hover, .title{ 
+/*text.hover, .title{ 
   font-weight: bold;
-  }
+}*/
 /*
 .primary.doc:hover, .primary.doc {
   stroke: #000;
