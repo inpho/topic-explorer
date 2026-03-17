@@ -10,7 +10,7 @@ nltk>=3.0.0,<4.0.0
 notebook>=4.0.0
 numpy<2.0.0
 Paste==2.0.3
-pdfminer.six==20170720
+pdfminer.six==20251107
 profilehooks>=1.8.0
 progressbar2>=3.18.0
 pybtex>=0.21
