@@ -1,0 +1,126 @@
+[build-system]
+requires = ["setuptools>=61", "wheel", "setuptools-scm>=7"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "topicexplorer"
+dynamic = ["version"]
+description = "InPhO Topic Explorer"
+readme = { file = "README.txt", content-type = "text/plain" }
+license = { text = "MIT" }
+authors = [
+    { name = "The Indiana Philosophy Ontology (InPhO) Project", email = "inpho@indiana.edu" },
+]
+maintainers = [
+    { name = "Jaimie Murdock", email = "jaimie@inphoproject.org" },
+]
+keywords = ["topic modeling", "lda", "visualization"]
+classifiers = [
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 2",
+    "Programming Language :: Python :: 3",
+    "Development Status :: 4 - Beta",
+    "Environment :: Web Environment",
+    "Framework :: Bottle",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Visualization",
+    "Topic :: Software Development :: User Interfaces",
+    "Topic :: Text Processing :: Linguistic",
+]
+requires-python = ">=2.7"
+dependencies = [
+    "bottle>=0.12.0,<0.13.0",
+    "brewer2mpl>=1.4.0,<1.5.0",
+    "decorator>=4.0.5",
+    "defusedxml>=0.7.1",
+    "future>=0.16.0",
+    "langdetect>=1.0.0",
+    "matplotlib>=2.0.0",
+    "mock>=2.0.0",
+    "nltk>=3.0.0,<4.0.0",
+    "notebook>=4.0.0",
+    "numpy<2.0.0",
+    "Paste==2.0.3",
+    "pdfminer.six==20170720",
+    "profilehooks>=1.8.0",
+    "progressbar2>=3.18.0",
+    "pybtex>=0.21",
+    "pystache>=0.5.4",
+    "requests>=2.32.4",
+    "scikit-learn>=0.18.1",
+    "scipy>=0.19.0",
+    "snakeviz>=0.4.0",
+    "sortedcontainers>=1.5.7",
+    "ujson>=5.4.0",
+    "Unidecode",
+    "vsm>=0.4.15",
+    "waitress>=3.0.1",
+    "webtest>=2.0.29",
+    "wget>=3.2",
+
+    # Python 2.7-only deps
+    'configparser==3.5.0; python_version == "2.7"',
+    'futures>=3.0.5; python_version == "2.7"',
+    'importlib==1.0.4; python_version == "2.7"',
+
+    # Windows-only
+    'pywin32>=220; sys_platform == "win32"',
+    'win_unicode_console; sys_platform == "win32"',
+    
+    # Security-pinned transitive deps (from your requirements.txt)
+    "anyio>=4.4.0",
+    "fonttools>=4.61.0",
+    "mistune>=2.0.1",
+    "pillow>=10.3.0",
+    "pygments>=2.7.4",
+    "tornado>=6.5.3",
+    "urllib3>=2.6.0",
+    "zipp>=3.19.1"
+]
+
+[project.urls]
+Homepage = "https://www.hypershelf.org"
+Download = "http://github.com/inpho/topic-explorer"
+
+[project.scripts]
+vsm = "topicexplorer.__main__:vsm"
+topicexplorer = "topicexplorer.__main__:main"
+htutils = "topicexplorer.lib.hathitrust:main"
+
+# Optional extras (grouped per your setup.cfg)
+[project.optional-dependencies]
+inpho = [
+    "inpho",
+    "sqlalchemy"
+]
+htrc = [
+    "htrc-feature-reader>=1.92",
+    "htrc"
+]
+
+[tool.setuptools]
+zip-safe = false
+include-package-data = true
+
+# Package config for setuptools-scm + data files
+[tool.setuptools.packages.find]
+where = ["."]
+
+[tool.setuptools.package-data]
+"topicexplorer" = [
+    "opt/topicexplorer/topics.zip",
+    "opt/topicexplorer/www/*",
+    "opt/topicexplorer/demo/*",
+    "opt/topicexplorer/ipynb/*",
+    "opt/topicexplorer/mmseg/*"
+]
+
+# setuptools-scm config
+[tool.setuptools_scm]
+version_scheme = "no-guess-dev"
+local_scheme = "dirty-tag"
+fallback_version = "0.0.0"
