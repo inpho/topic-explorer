@@ -147,7 +147,7 @@ import re
 import socket
 import sys
 import threading
-from urllib.parse import unquote
+from urllib.parse import unquote, urlparse
 import webbrowser
 
 from bottle import (abort, redirect, request, response, route, run, 
@@ -175,19 +175,15 @@ def _set_acao_headers(f):
     embedding of Topic Explorer bars.
     """
     def set_header(*args, **kwargs):
-        host = request.get_header('Origin')
-        if host and 'cogs.indiana.edu' in host: # pragma: no cover
-            response.headers['Access-Control-Allow-Origin'] = host
-        elif host and '127.0.0.1' in host: # pragma: no cover
-            response.headers['Access-Control-Allow-Origin'] = host
-        elif host and 'codepen.io' in host:
-            response.headers['Access-Control-Allow-Origin'] = host
-        elif host and 'inphoproject.org' in host:
-            response.headers['Access-Control-Allow-Origin'] = host
-        elif host and 'hypershelf.org' in host:
-            response.headers['Access-Control-Allow-Origin'] = host
-        elif host and 'tjmind.org' in host:
-            response.headers['Access-Control-Allow-Origin'] = host
+        origin = request.get_header('Origin')
+        hostname = urlparse(origin).hostname if origin else None
+        allowed = ('cogs.indiana.edu', 'codepen.io', 'inphoproject.org',
+                   'hypershelf.org', 'tjmind.org')
+        if hostname and (hostname == '127.0.0.1'
+                         or any(hostname == domain
+                                or hostname.endswith('.' + domain)
+                                for domain in allowed)):
+            response.headers['Access-Control-Allow-Origin'] = origin
         return f(*args, **kwargs)
     return set_header
 
