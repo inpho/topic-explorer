@@ -1,8 +1,3 @@
-from __future__ import absolute_import, print_function
-import sys
-if sys.version_info[0] == 2:
-    import backports.tempfile
-
 from itertools import chain, repeat
 import os.path
 import pickle
@@ -45,8 +40,8 @@ def download_vols(ids, output_dir=None):
 
 def process_pages(vol, pickle_dir=None):
     corpus = []
-    for _, page in vol.tokenlist(section='body', case=False, pos=False).iteritems():
-        tokens = chain.from_iterable(repeat(process_word(token[-1]), count) for token, count in page.iteritems())
+    for _, page in vol.tokenlist(section='body', case=False, pos=False).items():
+        tokens = chain.from_iterable(repeat(process_word(token[-1]), count) for token, count in page.items())
         if tokens:
             corpus.extend(tokens)
     corpus = list(corpus)
@@ -67,11 +62,7 @@ def create_corpus(ids, nltk_stop=False, freq=0, verbose=1):
         pbar = pbar.start()
         n = 0
 
-    if sys.version_info[0] == 2:
-        TD = backports.tempfile.TemporaryDirectory 
-    else:
-        TD = tempfile.TemporaryDirectory
-    with TD(prefix='vsm-') as pickle_dir:
+    with tempfile.TemporaryDirectory(prefix='vsm-') as pickle_dir:
         with warnings.catch_warnings():
             warnings.simplefilter('ignore')
 

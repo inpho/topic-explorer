@@ -1,9 +1,4 @@
 #!/usr/bin/env python
-from __future__ import print_function
-from future import standard_library
-standard_library.install_aliases()
-from past.builtins import basestring
-
 from codecs import open
 import concurrent.futures
 from glob import glob
@@ -23,10 +18,7 @@ from progressbar import ProgressBar, Percentage, Bar
 
 from topicexplorer.lib import util
 
-try:
-    from shlex import quote as cmd_quote
-except ImportError:
-    from pipes import quote as cmd_quote
+from shlex import quote as cmd_quote
 
 def convert(fname, pages=None):
     try:
@@ -80,7 +72,7 @@ def convert_and_write(fname, output_dir=None, overwrite=False, verbose=False):
 
 
 def main(path_or_paths, output_dir=None, verbose=1):
-    if isinstance(path_or_paths, basestring):
+    if isinstance(path_or_paths, str):
         path_or_paths = [path_or_paths]
 
     with concurrent.futures.ProcessPoolExecutor() as executor:
@@ -109,7 +101,7 @@ def main(path_or_paths, output_dir=None, verbose=1):
 """
 # This drop in replacement is for testing of the pdf converters in serial
 def main(path_or_paths, output_dir=None, verbose=1):
-    if isinstance(path_or_paths, basestring):
+    if isinstance(path_or_paths, str):
         path_or_paths = [path_or_paths]
 
     pbar = ProgressBar(widgets=[Percentage(), Bar()]).start()

@@ -4,13 +4,6 @@ Created on Sun Apr 17 23:15:56 2016
 
 @author: adi
 """
-from __future__ import absolute_import
-from future import standard_library
-standard_library.install_aliases()
-from builtins import zip
-from builtins import map
-from builtins import range
-from builtins import object
 
 import ast
 from codecs import open

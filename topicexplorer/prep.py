@@ -109,15 +109,6 @@ pipelines.
 
 """
 
-from __future__ import division
-from __future__ import print_function
-from future import standard_library
-standard_library.install_aliases()
-from builtins import input
-from builtins import zip
-from builtins import str
-from past.utils import old_div
-
 import json
 import os.path
 import re
@@ -277,14 +268,14 @@ def get_closest_bin(c, thresh, reverse=False, counts=None):
             counts = counts[::-1]
 
         # find insertion point
-        cumsum = old_div(np.cumsum(counts), float(c.original_length))
+        cumsum = np.cumsum(counts) / float(c.original_length)
         return counts[min(np.searchsorted(cumsum, thresh), len(counts)-1)]
 
 
 def get_high_filter(c, words=None, items=None, counts=None):
     import numpy as np
     header = "FILTER HIGH FREQUENCY WORDS"
-    stars = old_div((80 - len(header) - 2), 2)
+    stars = (80 - len(header) - 2) // 2
     print("\n\n{0} {1} {0}".format('*' * stars, header))
     print("    This will remove all words occurring N or more times.")
     print("    The histogram below shows how many words will be removed")
@@ -307,7 +298,7 @@ def get_high_filter(c, words=None, items=None, counts=None):
         for bin, count in zip(bins[-2::-1], np.cumsum(bin_counts[::-1])):
             filtered_counts = counts[get_mask(c, words)]
             if (filtered_counts >= bin).sum() > last_row:
-                percentage = 1. - (old_div(counts[counts < bin].sum(), float(c.original_length)))
+                percentage = 1. - (counts[counts < bin].sum() / float(c.original_length))
                 print("{0:>5.0f}x".format(bin).rjust(8), end=' ')
                 print('{0:2.1f}%'.format(percentage * 100).rjust(8), end=' ')
                 print((u'\u2588' * int(percentage * 36)).ljust(36), end=' ')
@@ -366,7 +357,7 @@ def get_high_filter(c, words=None, items=None, counts=None):
 def get_low_filter(c, words=None, items=None, counts=None):
     import numpy as np
     header = "FILTER LOW FREQUENCY WORDS"
-    stars = old_div((80 - len(header) - 2), 2)
+    stars = (80 - len(header) - 2) // 2
     print("\n\n{0} {1} {0}".format('*' * stars, header))
     print("    This will remove all words occurring less than N times.")
     print("    The histogram below shows how many words will be removed")
@@ -391,7 +382,7 @@ def get_low_filter(c, words=None, items=None, counts=None):
         for bin, count in zip(bins, np.cumsum(bin_counts)):
             filtered_counts = counts[get_mask(c, words)]
             if last_row < (filtered_counts < bin).sum() <= len(filtered_counts):
-                percentage = (old_div(counts[counts <= bin].sum(), float(c.original_length)))
+                percentage = (counts[counts <= bin].sum() / float(c.original_length))
                 print("{0:>5.0f}x".format(bin).rjust(8), end=' ')
                 print('{0:2.1f}%'.format(percentage * 100).rjust(8), end=' ')
                 print((u'\u2588' * int(percentage * 36)).ljust(36), end=' ')

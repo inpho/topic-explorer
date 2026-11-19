@@ -1,20 +1,8 @@
-from __future__ import print_function
-from future import standard_library
-standard_library.install_aliases()
-from builtins import input
-from builtins import range
-
-
-try:
-    # Python 3 or Python 2 w/backport
-    from importlib import reload
-except ImportError:
-    # Python 2 without backports, use default reload
-    pass
+from importlib import reload
 
 def pypi_versions(package_name):
     # Based on: http://stackoverflow.com/a/27239645
-    from pip._vendor.packaging.version import parse as parse_version
+    from packaging.version import parse as parse_version
     import json
     import requests
 
@@ -26,17 +14,40 @@ def pypi_versions(package_name):
 
 
 def get_dist(dist_name):
-    """Get the installed version of dist_name avoiding pkg_resources cache"""
-    from pip._vendor import pkg_resources
-    # Create a requirement that we'll look for inside of setuptools.
-    req = pkg_resources.Requirement.parse(dist_name)
+    """Get the installed distribution metadata for dist_name."""
+    from importlib.metadata import distribution, PackageNotFoundError
 
-    # We want to avoid having this cached, so we need to construct a new
-    # working set each time.
-    working_set = pkg_resources.WorkingSet()
+    try:
+        return distribution(dist_name)
+    except PackageNotFoundError:
+        return None
 
-    # Get the installed distribution from our working set
-    return working_set.find(req)
+
+def install_location():
+    """Directory containing the topicexplorer package.
+
+    For editable installs this is the source repository root; for regular
+    installs it is the environment's site-packages directory.
+    """
+    import os.path
+    import topicexplorer
+
+    return os.path.dirname(os.path.dirname(os.path.abspath(topicexplorer.__file__)))
+
+
+def dist_is_editable(dist_name='topicexplorer'):
+    """Whether the package was installed in editable mode (PEP 610)."""
+    from importlib.metadata import distribution, PackageNotFoundError
+
+    try:
+        raw = distribution(dist_name).read_text('direct_url.json')
+    except (PackageNotFoundError, FileNotFoundError, KeyError):
+        return False
+    if not raw:
+        return False
+    import json
+
+    return bool(json.loads(raw).get('dir_info', {}).get('editable'))
 
 
 def process_exists(processname): # pragma: no cover
@@ -62,20 +73,20 @@ def process_exists(processname): # pragma: no cover
 
 
 def update(args=None):
-    try:
-        from pip._internal.utils.misc import (get_installed_version, dist_is_editable, dist_location)
-    except ImportError:
-        from pip.utils import (get_installed_version, dist_is_editable, dist_location)
-
     import platform
     import subprocess
     from subprocess import CalledProcessError
 
     dist = get_dist('topicexplorer')
+    if dist is None:  # pragma: no cover
+        print("Topic Explorer does not appear to be installed.\n")
+        return
 
-    if dist_is_editable(dist):  # pragma: no cover
+    location = install_location()
+
+    if dist_is_editable():  # pragma: no cover
         print("You have an editable install, so updates will be pulled from git.")
-        print("Your install directory is: {}\n".format(dist.location))
+        print("Your install directory is: {}\n".format(location))
         for attempt in range(2):
             try:
                 import git
@@ -85,7 +96,7 @@ def update(args=None):
                 install = input(
                     "GitPython is required, but is not installed. Install? [Y/n] ")
                 if install == '' or install.lower()[0] == 'y':
-                    subprocess.check_call('pip install gitpython', shell=True)
+                    subprocess.check_call('uv pip install gitpython', shell=True)
                     # TODO: Add error handling for failed gitpython install
                     # Refresh local python path to reflect gitpython
                     import site
@@ -101,7 +112,7 @@ def update(args=None):
             return
 
         try:
-            repo = git.Repo(dist.location)
+            repo = git.Repo(location)
         except InvalidGitRepositoryError:
             print("pip has detected an editable install, but the install directory")
             print("is not a valid git repository.\n")
@@ -148,8 +159,8 @@ def update(args=None):
                 repo.remotes.origin.pull()
                 # reinstall, just in case dependencies or version have updated
                 try:
-                    subprocess.check_call('python setup.py develop',
-                                          cwd=dist.location, shell=True)
+                    subprocess.check_call('uv pip install -e .',
+                                          cwd=location, shell=True)
                 except:
                     print("ERROR: Update did not comlete installation.\n")
                 else:
@@ -166,9 +177,10 @@ def update(args=None):
     else:
         # TODO: Check if pre-release, if so, then continue beta updates.
         # If not, then wait for stable release. Allow for override flag.
-        from pip._vendor.packaging.version import parse as parse_version
+        from importlib.metadata import distribution
+        from packaging.version import parse as parse_version
 
-        installed_version = parse_version(get_installed_version('topicexplorer'))
+        installed_version = parse_version(distribution('topicexplorer').version)
         pypi_version = parse_version(pypi_versions('topicexplorer')[-1])
         update_available = pypi_version > installed_version
 
@@ -185,7 +197,7 @@ def update(args=None):
                     return
 
             try:
-                cmd = ['pip', 'install', f'topicexplorer=={pypi_version}', '--no-cache-dir']
+                cmd = ['uv', 'pip', 'install', f'topicexplorer=={pypi_version}', '--no-cache-dir']
                 subprocess.check_call(cmd, shell=False)
             except CalledProcessError:
                 print("ERROR: Update did not comlete installation.\n")

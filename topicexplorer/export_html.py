@@ -5,9 +5,6 @@ from multiprocessing import Process
 import os
 import os.path
 import shutil
-import sys
-if sys.version_info[0] == 2:
-    import backports.tempfile
 import tempfile
 from zipfile import ZipFile
 
@@ -26,11 +23,7 @@ def main(args):
     
     app = TestApp(app)
 
-    if sys.version_info[0] == 2:
-        TD = backports.tempfile.TemporaryDirectory
-    else:
-        TD = tempfile.TemporaryDirectory
-    with TD(prefix='vsm-') as OUTPUT_DIR:
+    with tempfile.TemporaryDirectory(prefix='vsm-') as OUTPUT_DIR:
         files = []
         output = os.path.join(OUTPUT_DIR, 'topics.html')
         with open(output, 'w', encoding='utf-8') as outfile:

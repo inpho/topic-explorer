@@ -6,9 +6,6 @@ TODO: Move boilerpalte from `vsm.extensions.corpusbuilders.util`
 TODO: Create function for str -> tokenizer mappings. Shared among
       both init and serve stages.
 """
-from builtins import str
-from past.builtins import basestring
-
 # Example character removal, used in simple_tokenizer
 # In practice, we use string.punctuation for REMOVE.
 REMOVE = '\'",.;:!?' + '0123456789'
@@ -25,11 +22,7 @@ def simple_tokenizer(text):
     
     # Remove punctuation from file
     if isinstance(text, str):
-        # Python 2+3 unicode strings
         text = text.translate(REMOVE_TABLE)
-    elif isinstance(text, basestring):
-        # Python 2 old-style strings
-        text = text.translate(None, REMOVE.encode('utf-8'))
 
     # Split the tokens
     return text.split()

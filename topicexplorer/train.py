@@ -106,14 +106,6 @@ specified by other argument flags. Very useful for scripting automated
 pipelines.
 
 """
-from __future__ import print_function
-from __future__ import absolute_import
-from future import standard_library
-standard_library.install_aliases()
-from builtins import str
-from builtins import input
-from builtins import map
-from builtins import range
 
 from configparser import NoOptionError
 import os.path

@@ -15,8 +15,6 @@ default browser.
 
 """
 
-from __future__ import print_function
-from builtins import str
 from glob import glob
 import os
 import os.path
@@ -52,12 +50,10 @@ def main(args):
         print("Writing", filename)
         with open(filename, 'w') as corpusloader:
             corpusloader.write(corpus_py)
-    pyflag = 'py2' if sys.version_info.major == 2 else 'py3'
-    glob_path = (get_static_resource_path('ipynb') + '/*.{}.ipynb').format(pyflag)
+    glob_path = get_static_resource_path('ipynb') + '/*.ipynb'
 
     for notebook in glob(glob_path):
-        new_nb_name = os.path.basename(notebook).replace('.' +pyflag, '')
-        new_nb_path = os.path.join(ipynb_path, new_nb_name)
+        new_nb_path = os.path.join(ipynb_path, os.path.basename(notebook))
         if overwrite_prompt(new_nb_path, default=False):
             print("Copying", notebook)
             shutil.copy(notebook, new_nb_path)

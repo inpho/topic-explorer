@@ -1,5 +1,3 @@
-from future import standard_library
-standard_library.install_aliases()
 from collections import defaultdict
 import numpy as np
 

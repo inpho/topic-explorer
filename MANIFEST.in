@@ -1,7 +1,4 @@
-recursive-include www *
-include demo/*
-include ipynb/*
+recursive-include topicexplorer/data *
 include README.md
 include LICENSE.txt
 include citation.bib
-include requirements.txt

@@ -181,13 +181,7 @@ specified by other argument flags. Very useful for scripting automated
 pipelines.
 
 """
-from __future__ import print_function
 
-from future import standard_library
-standard_library.install_aliases()
-from builtins import str
-from builtins import filter
-from builtins import input
 from configparser import RawConfigParser as ConfigParser # used to write a new config file
 from collections import defaultdict
 import os

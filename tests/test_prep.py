@@ -1,14 +1,6 @@
-from __future__ import print_function
-from future import standard_library
-standard_library.install_aliases()
-
 import unittest
 
-import sys
-if sys.version_info.major == 2:
-    from mock import Mock, patch, PropertyMock
-elif sys.version_info.major == 3:
-    from unittest.mock import Mock, patch, PropertyMock
+from unittest.mock import Mock, patch, PropertyMock
 
 import numpy as np
 

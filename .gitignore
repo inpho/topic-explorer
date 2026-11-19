@@ -40,3 +40,10 @@ node_modules
 .eslintrc.json
 package.json
 package-lock.json
+
+.venv/
+uv.lock
+
+# package data ships inside the wheel (the blanket "data/" rule above
+# would otherwise hide new asset files from git add)
+!topicexplorer/data/

@@ -1,6 +1,3 @@
-from future import standard_library
-standard_library.install_aliases()
-
 from configparser import ConfigParser
 from html.parser import HTMLParser
 import os.path

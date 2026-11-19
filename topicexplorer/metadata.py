@@ -71,10 +71,6 @@ The argument is only a flag, and does not require a TSV file to be specified.
 
 
 """
-from __future__ import print_function
-from future import standard_library
-standard_library.install_aliases()
-from builtins import str
 
 from ast import literal_eval
 from codecs import open 

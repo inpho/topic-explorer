@@ -4,10 +4,8 @@ to the next handlers.
 
 See: http://stackoverflow.com/a/15472811 for more details
 """
-from future import standard_library
-standard_library.install_aliases()
 import os
-import imp
+from importlib.util import find_spec
 import ctypes
 import _thread
 import win32api
@@ -15,7 +13,7 @@ import sys
 
 # Load the DLL manually to ensure its handler gets
 # set before our handler.
-basepath = imp.find_module('numpy')[1]
+basepath = os.path.dirname(find_spec('numpy').origin)
 numpy_libmmd = os.path.join(basepath, 'core', 'libmmd.dll')
 numpy_libifcoremd = os.path.join(basepath, 'core', 'libifcoremd.dll')
 if os.path.exists(numpy_libmmd) and os.path.exists(numpy_libifcoremd):

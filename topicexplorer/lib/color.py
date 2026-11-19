@@ -1,24 +1,19 @@
-from __future__ import division
-from __future__ import print_function
-from builtins import zip
-from builtins import range
-
-from collections import defaultdict
-import itertools
-
-import brewer2mpl as brewer
 import numpy as np
+from matplotlib import colormaps
+from matplotlib.colors import to_hex
+
+
+def _sequential(name, N, reverse=True):
+    """Sample the ColorBrewer ramp ``name`` at N evenly spaced points."""
+    cmap = colormaps[name]
+    if reverse:
+        cmap = cmap.reversed()
+    return [to_hex(cmap(i)) for i in np.linspace(0, 1, N + 1)][:N]
 
 
 def brew(N, n_cls, reverse=True):
-    b = [
-        brewer.get_map('Blues', 'Sequential', N + 1, reverse=reverse).hex_colors[:N],
-        brewer.get_map('Oranges', 'Sequential', N + 1, reverse=reverse).hex_colors[:N],
-        brewer.get_map('Greens', 'Sequential', N + 1, reverse=reverse).hex_colors[:N],
-        brewer.get_map('Purples', 'Sequential', N + 1, reverse=reverse).hex_colors[:N],
-        brewer.get_map('Reds', 'Sequential', N + 1, reverse=reverse).hex_colors[:N],
-        brewer.get_map('Greys', 'Sequential', N + 1, reverse=reverse).hex_colors[:N],
-    ]
+    b = [_sequential(name, N, reverse=reverse)
+         for name in ('Blues', 'Oranges', 'Greens', 'Purples', 'Reds', 'Greys')]
     return b[:n_cls]
 
 # d3.category20c()
@@ -38,9 +33,9 @@ def rgb2hex(rgb):
 
 def get_topic_colors(v):
     ncolors = 8
-    bmap = brewer.get_map('Dark2', 'Qualitative', ncolors)
+    dark2 = colormaps['Dark2']
 
-    topic_colors = [(n, bmap.mpl_colormap((n % ncolors) / (ncolors - 1)))
+    topic_colors = [(n, dark2((n % ncolors) / (ncolors - 1)))
                     for n in range(v.model.K)]
 
     topic_colors.sort(key=lambda x: x[0])

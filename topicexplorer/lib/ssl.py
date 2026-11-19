@@ -34,10 +34,9 @@ class SSLWSGIRefServer(ServerAdapter):
         ca_certs = self.options.pop('ca_certs', None)
 
         srv = make_server(self.host, self.port, handler, **self.options)
-        srv.socket = ssl.wrap_socket(
-            srv.socket,
-            certfile=certfile,  # path to certificate
-            keyfile=keyfile,
-            ca_certs=ca_certs,
-            server_side=True)
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        if ca_certs:
+            context.load_verify_locations(cafile=ca_certs)
+        context.load_cert_chain(certfile=certfile, keyfile=keyfile)
+        srv.socket = context.wrap_socket(srv.socket, server_side=True)
         srv.serve_forever()

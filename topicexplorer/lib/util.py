@@ -1,18 +1,11 @@
 """
 topicexplorer.lib.util contains some helper functions for command prompts, argparse, and globing
 """
-from __future__ import print_function
-from future import standard_library
-standard_library.install_aliases()
-from builtins import input
-from past.builtins import basestring
-
 from codecs import open
 import fnmatch
 from glob import glob
 import os
 import os.path
-from pkg_resources import resource_filename
 import shutil
 import sys
 
@@ -182,19 +175,25 @@ def isint(x):
         return False
 
 def get_static_resource_path(path):
+    """Locate a static data file relative to the package.
+
+    Search order: current working directory; the ``lib`` directory and its
+    parents (source checkout); the in-package ``data`` directory (wheel
+    install); the environment prefix, including the legacy pbr
+    ``<prefix>/opt/topicexplorer`` location.
+    """
+    lib_dir = os.path.dirname(os.path.abspath(__file__))
     if os.path.exists(path):
         return os.path.abspath(path)
-    elif os.path.exists(resource_filename(__name__, path)):
-        return resource_filename(__name__, path)
-    elif os.path.exists(resource_filename(__name__, '../' + path)):
-        return resource_filename(__name__, '../' + path)
-    elif os.path.exists(resource_filename(__name__, '../../' + path)):
-        return resource_filename(__name__, '../../' + path)
-    elif os.path.exists(os.path.join(sys.prefix, path)):
-        return os.path.abspath(os.path.join(sys.prefix, path))
-    elif os.path.exists(os.path.join(
-             os.path.join(sys.prefix, 'opt/topicexplorer'), path)):
-        return os.path.abspath(os.path.join(
-            os.path.join(sys.prefix, 'opt/topicexplorer'), path))
-    else:
-        raise OSError("File not found: {}".format(path))
+    for base in (lib_dir,
+                 os.path.join(lib_dir, '..'),
+                 os.path.join(lib_dir, '..', '..'),
+                 os.path.join(lib_dir, '..', 'data')):
+        candidate = os.path.normpath(os.path.join(base, path))
+        if os.path.exists(candidate):
+            return candidate
+    for base in (sys.prefix, os.path.join(sys.prefix, 'opt', 'topicexplorer')):
+        candidate = os.path.join(base, path)
+        if os.path.exists(candidate):
+            return os.path.abspath(candidate)
+    raise OSError("File not found: {}".format(path))

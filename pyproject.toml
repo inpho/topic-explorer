@@ -1,13 +1,14 @@
 [build-system]
-requires = ["setuptools>=61", "wheel", "setuptools-scm>=7"]
+requires = ["setuptools>=77", "setuptools-scm>=7"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "topicexplorer"
 dynamic = ["version"]
 description = "InPhO Topic Explorer"
-readme = { file = "README.txt", content-type = "text/plain" }
-license = { text = "MIT" }
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE.txt"]
 authors = [
     { name = "The Indiana Philosophy Ontology (InPhO) Project", email = "inpho@indiana.edu" },
 ]
@@ -17,13 +18,14 @@ maintainers = [
 keywords = ["topic modeling", "lda", "visualization"]
 classifiers = [
     "Programming Language :: Python",
-    "Programming Language :: Python :: 2",
-    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
     "Development Status :: 4 - Beta",
     "Environment :: Web Environment",
     "Framework :: Bottle",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
@@ -31,21 +33,19 @@ classifiers = [
     "Topic :: Software Development :: User Interfaces",
     "Topic :: Text Processing :: Linguistic",
 ]
-requires-python = ">=2.7"
+requires-python = ">=3.12"
 dependencies = [
     "bottle>=0.12.0,<0.13.0",
-    "brewer2mpl>=1.4.0,<1.5.0",
     "decorator>=4.0.5",
     "defusedxml>=0.7.1",
-    "future>=0.16.0",
     "langdetect>=1.0.0",
     "matplotlib>=2.0.0",
-    "mock>=2.0.0",
     "nltk>=3.0.0,<4.0.0",
     "notebook>=4.0.0",
     "numpy<2.0.0",
-    "Paste==2.0.3",
-    "pdfminer.six==20170720",
+    "packaging",
+    "Paste>=3.8",
+    "pdfminer.six>=20240706",
     "profilehooks>=1.8.0",
     "progressbar2>=3.18.0",
     "pybtex>=0.21",
@@ -57,20 +57,15 @@ dependencies = [
     "sortedcontainers>=1.5.7",
     "ujson>=5.4.0",
     "Unidecode",
-    "vsm>=0.4.15",
+    "vsm>=1.0.0b1",
     "waitress>=3.0.1",
     "webtest>=2.0.29",
     "wget>=3.2",
 
-    # Python 2.7-only deps
-    'configparser==3.5.0; python_version == "2.7"',
-    'futures>=3.0.5; python_version == "2.7"',
-    'importlib==1.0.4; python_version == "2.7"',
-
     # Windows-only
     'pywin32>=220; sys_platform == "win32"',
     'win_unicode_console; sys_platform == "win32"',
-    
+
     # Security-pinned transitive deps (from your requirements.txt)
     "anyio>=4.4.0",
     "fonttools>=4.61.0",
@@ -93,31 +88,24 @@ htutils = "topicexplorer.lib.hathitrust:main"
 
 # Optional extras (grouped per your setup.cfg)
 [project.optional-dependencies]
-inpho = [
-    "inpho",
-    "sqlalchemy"
-]
 htrc = [
     "htrc-feature-reader>=1.92",
     "htrc"
+]
+
+[dependency-groups]
+dev = [
+    "coverage",
+    "pytest",
 ]
 
 [tool.setuptools]
 zip-safe = false
 include-package-data = true
 
-# Package config for setuptools-scm + data files
 [tool.setuptools.packages.find]
 where = ["."]
-
-[tool.setuptools.package-data]
-"topicexplorer" = [
-    "opt/topicexplorer/topics.zip",
-    "opt/topicexplorer/www/*",
-    "opt/topicexplorer/demo/*",
-    "opt/topicexplorer/ipynb/*",
-    "opt/topicexplorer/mmseg/*"
-]
+include = ["topicexplorer*"]
 
 # setuptools-scm config
 [tool.setuptools_scm]

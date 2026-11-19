@@ -1,14 +1,7 @@
-from __future__ import print_function
-from future import standard_library
-standard_library.install_aliases()
-from builtins import input
-from builtins import range
-
 import ast
 from codecs import open
 import os
 import os.path
-import sys
 from tempfile import NamedTemporaryFile
 from zipfile import ZipFile
 
@@ -39,10 +32,7 @@ def build_manifest(config_file, corpus_file, model_pattern, topic_range,
     return files
 
 def create_relative_config_file(config_file, manifest, include_corpus=False):
-    if sys.version_info[0] == 3:
-        root = os.path.commonpath(map(os.path.abspath, manifest)) + '/'
-    else:
-        root = os.path.commonprefix(map(os.path.abspath, manifest))
+    root = os.path.commonpath(list(map(os.path.abspath, manifest))) + '/'
     
     config = topicexplorer.config.read(config_file)
 
@@ -83,10 +73,7 @@ def create_relative_config_file(config_file, manifest, include_corpus=False):
     return temp_config_file
 
 def zip_files(outfile, manifest, include_corpus=False, verbose=False):
-    if sys.version_info[0] == 3:
-        root = os.path.commonpath(map(os.path.abspath, manifest))
-    else:
-        root = os.path.commonprefix(map(os.path.abspath, manifest))
+    root = os.path.commonpath(list(map(os.path.abspath, manifest)))
 
     files = [(f, os.path.relpath(f, root)) for f in manifest]
 

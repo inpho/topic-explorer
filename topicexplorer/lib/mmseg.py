@@ -1,7 +1,6 @@
 #!/usr/bin/python 
 # -*- encoding: UTF-8 -*-
 # http://yongsun.me/2013/06/simple-implementation-of-mmseg-with-python/
-from __future__ import print_function
 
 import codecs
 import sys

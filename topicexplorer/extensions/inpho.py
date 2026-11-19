@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 from inpho.model import Session, Searchpattern
 from vsm.extensions.corpusbuilders.util import strip_punc_word, PUNC_TABLE, rehyph
 

@@ -17,9 +17,6 @@ In addition, `topicexplorer.__main__` defines the benchmark commands
 for execution time and profiling.
 
 """
-from __future__ import print_function
-from future import standard_library
-standard_library.install_aliases()
 
 # Import the standard library modules
 import argparse

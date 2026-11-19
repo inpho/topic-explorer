@@ -1,5 +1,4 @@
 """Version information with Lazy Loading"""
-from builtins import str
 
 import types
 import sys
@@ -9,19 +8,24 @@ class _VersionModule(types.ModuleType):
 
     @property
     def __version__(self):
-        return "1.0b233"
+        from importlib.metadata import version, PackageNotFoundError
+
+        try:
+            return version("topicexplorer")
+        except PackageNotFoundError:
+            # package is not installed (e.g. running from a source checkout)
+            return "1.0b234"
 
     @property
     def __pretty_version__(self):
-        from topicexplorer.update import get_dist
+        from topicexplorer.update import install_location
 
-        dist = get_dist('topicexplorer')
         __pv__ = None
         try:
             import subprocess
             __pv__ = subprocess.check_output(
                 'git describe --long --tags --always --dirty',
-                cwd=dist.location, shell=True)
+                cwd=install_location(), shell=True)
             __pv__ = __pv__.decode('utf8')
             __pv__ = __pv__.strip()
             return __pv__

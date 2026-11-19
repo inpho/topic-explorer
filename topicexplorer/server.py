@@ -123,11 +123,7 @@ pipelines.
 
 """
 
-from __future__ import print_function
-from future import standard_library
-standard_library.install_aliases()
-from builtins import zip
-from builtins import str as text
+text = str  # used to cast values for JSON serialization
 
 import ast
 from codecs import open
@@ -137,12 +133,11 @@ from datetime import datetime, timedelta
 from functools import partial
 import hashlib
 from importlib import import_module
-from io import BytesIO,StringIO
+from io import StringIO
 import json
 import itertools
 import math
 import os.path
-from pkg_resources import resource_filename
 import re
 import socket
 import sys
@@ -314,10 +309,7 @@ class Application(Bottle):
             except KeyErrror:
                 data = self.v[k].doc_topics(doc_id.decode('utf-8'))
 
-            if sys.version_info[0] == 3:
-                output = StringIO()
-            else:
-                output = BytesIO()
+            output = StringIO()
 
             writer = csv.writer(output)
             writer.writerow(['topic', 'prob'])
@@ -346,10 +338,7 @@ class Application(Bottle):
             except KeyError:
                 data = self.v[k].dist_doc_doc(doc_id.decode('utf-8'))
 
-            if sys.version_info[0] == 3:
-                output = StringIO()
-            else:
-                output = BytesIO()
+            output = StringIO()
 
             writer = csv.writer(output)
             writer.writerow(['doc', 'prob'])
